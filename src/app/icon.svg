@@ -1,0 +1,33 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Deep Dark Background -->
+  <rect width="512" height="512" rx="128" fill="#0A0E13"/>
+  <!-- Premium gradient border -->
+  <rect x="16" y="16" width="480" height="480" rx="112" stroke="url(#paint_stroke)" stroke-width="8" stroke-opacity="0.8"/>
+  
+  <!-- The outer loop of 'D' -->
+  <path d="M160 140 C160 128.954 168.954 120 180 120 H280 C368.366 120 440 191.634 440 280 C440 368.366 368.366 440 280 440 H180 C168.954 440 160 431.046 160 420 V140 Z" fill="url(#paint0_linear)"/>
+  
+  <!-- Inner cutout for 'D' -->
+  <path d="M230 190 H280 C329.706 190 370 230.294 370 280 C370 329.706 329.706 370 280 370 H230 V190 Z" fill="#0A0E13"/>
+  
+  <!-- Overlapping bright stem to give a 3D folded effect -->
+  <path d="M160 140 C160 128.954 168.954 120 180 120 H230 V440 H180 C168.954 440 160 431.046 160 420 V140 Z" fill="url(#paint1_linear)"/>
+
+  <defs>
+    <!-- Deep red gradient for the loop -->
+    <linearGradient id="paint0_linear" x1="160" y1="120" x2="440" y2="440" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C8102E"/>
+      <stop offset="1" stop-color="#6b0616"/>
+    </linearGradient>
+    <!-- Bright punchy red gradient for the stem -->
+    <linearGradient id="paint1_linear" x1="160" y1="120" x2="230" y2="440" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF3855"/>
+      <stop offset="1" stop-color="#EF233C"/>
+    </linearGradient>
+    <!-- Stroke gradient -->
+    <linearGradient id="paint_stroke" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EF233C" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#C8102E" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+</svg>
