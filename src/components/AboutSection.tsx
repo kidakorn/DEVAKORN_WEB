@@ -20,8 +20,8 @@ const TECH_STACK = [
 ];
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
 };
 
 export default function AboutSection() {
@@ -59,7 +59,7 @@ export default function AboutSection() {
             hidden: {},
             visible: { transition: { staggerChildren: 0.15 } },
           }}
-          className="relative w-full max-w-5xl mx-auto rounded-[2rem] p-8 md:p-16 border shadow-2xl"
+          className="relative w-full max-w-5xl mx-auto rounded-[2rem] p-8 md:p-16 border shadow-2xl overflow-hidden"
           style={{
             background: "var(--bg-card)",
             borderColor: "var(--border-main)",
@@ -75,19 +75,22 @@ export default function AboutSection() {
             
             {/* Avatar & Location */}
             <motion.div variants={fadeUp} className="flex flex-col items-center gap-6">
-              <div
-                className="w-40 h-40 rounded-full flex items-center justify-center text-4xl font-bold select-none shadow-2xl relative"
+              <motion.div
+                className="w-40 h-40 rounded-full flex items-center justify-center shadow-2xl relative"
                 style={{
                   background: "linear-gradient(135deg, var(--color-primary-red), var(--color-secondary-red))",
-                  color: "#fff",
                 }}
-                aria-label="Avatar — initials DK"
-                role="img"
+                animate={{ y: [-8, 8, -8] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
-                DK
+                <img 
+                  src="/profile.png" 
+                  alt="Devakorn Profile" 
+                  className="w-full h-full object-cover rounded-full p-[2px]" 
+                />
                 {/* Glow ring */}
                 <div className="absolute inset-[-10px] rounded-full opacity-30 blur-md pointer-events-none" style={{ border: "2px solid var(--color-primary-red)" }}></div>
-              </div>
+              </motion.div>
               <p
                 className="flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full border backdrop-blur-sm"
                 style={{ color: "var(--text-strong)", borderColor: "var(--border-main)", background: "var(--bg-hover)" }}
@@ -116,37 +119,92 @@ export default function AboutSection() {
             {/* Tech Stack Separator */}
             <motion.div variants={fadeUp} className="w-24 h-1 rounded-full mt-4" style={{ background: "var(--border-main)" }} />
 
-            {/* Tech Stack */}
-            <motion.div variants={fadeUp} className="flex flex-col items-center gap-6 mt-4">
+            {/* ── Infinite Marquee Tech Stack ───────────────────────── */}
+            <motion.div variants={fadeUp} className="flex flex-col items-center gap-4 mt-4 w-full">
               <h3
                 className="text-xs font-bold uppercase tracking-[0.2em]"
                 style={{ color: "var(--text-muted)" }}
               >
                 {t("about_stack_title")}
               </h3>
-              <div className="flex flex-wrap justify-center gap-3 max-w-4xl">
-                {TECH_STACK.map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 border hover:-translate-y-1 hover:shadow-lg"
-                    style={{
-                      background: "var(--bg-main)",
-                      borderColor: "var(--border-main)",
-                      color: "var(--text-strong)",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary-red)";
-                      (e.currentTarget as HTMLElement).style.color = "var(--color-primary-red)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "var(--border-main)";
-                      (e.currentTarget as HTMLElement).style.color = "var(--text-strong)";
-                    }}
-                  >
-                    {tech}
-                  </span>
-                ))}
+
+              {/* Inject animation keyframes */}
+              <style>{`
+                @keyframes marquee-left {
+                  0% { transform: translateX(0); }
+                  100% { transform: translateX(-50%); }
+                }
+                @keyframes marquee-right {
+                  0% { transform: translateX(-50%); }
+                  100% { transform: translateX(0); }
+                }
+                .marquee-track-left {
+                  animation: marquee-left 20s linear infinite;
+                }
+                .marquee-track-right {
+                  animation: marquee-right 24s linear infinite;
+                }
+                .marquee-track-left:hover,
+                .marquee-track-right:hover {
+                  animation-play-state: paused;
+                }
+              `}</style>
+
+              {/* Row 1 — scrolls left */}
+              <div className="w-full overflow-hidden" style={{ maskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)" }}>
+                <div className="marquee-track-left flex gap-3 w-max">
+                  {/* Duplicate array for seamless loop */}
+                  {[...TECH_STACK, ...TECH_STACK].map((tech, i) => (
+                    <span
+                      key={`r1-${tech}-${i}`}
+                      className="whitespace-nowrap px-6 py-3 rounded-full text-sm font-semibold border transition-all duration-300 cursor-default"
+                      style={{
+                        background: "var(--bg-main)",
+                        borderColor: "var(--border-main)",
+                        color: "var(--text-strong)",
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary-red)";
+                        (e.currentTarget as HTMLElement).style.color = "var(--color-primary-red)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = "var(--border-main)";
+                        (e.currentTarget as HTMLElement).style.color = "var(--text-strong)";
+                      }}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
               </div>
+
+              {/* Row 2 — scrolls right (reversed array for visual variety) */}
+              <div className="w-full overflow-hidden" style={{ maskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)" }}>
+                <div className="marquee-track-right flex gap-3 w-max">
+                  {[...[...TECH_STACK].reverse(), ...[...TECH_STACK].reverse()].map((tech, i) => (
+                    <span
+                      key={`r2-${tech}-${i}`}
+                      className="whitespace-nowrap px-6 py-3 rounded-full text-sm font-semibold border transition-all duration-300 cursor-default"
+                      style={{
+                        background: "var(--bg-main)",
+                        borderColor: "var(--border-main)",
+                        color: "var(--text-strong)",
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary-red)";
+                        (e.currentTarget as HTMLElement).style.color = "var(--color-primary-red)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = "var(--border-main)";
+                        (e.currentTarget as HTMLElement).style.color = "var(--text-strong)";
+                      }}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
             </motion.div>
 
           </div>

@@ -6,8 +6,9 @@
 // Real socials: GitHub, Facebook, Fastwork
 // ─────────────────────────────────────────────────────────────────
 
+import { useState } from "react";
 import { motion, type Variants } from "framer-motion";
-import { Mail, GitFork, Globe, Briefcase, Phone, MapPin } from "lucide-react";
+import { Mail, GitFork, Globe, Briefcase, Phone, MapPin, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 
 const EMAIL = "kidakorn.1@gmail.com";
@@ -20,12 +21,20 @@ const SOCIAL_LINKS = [
 ] as const;
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
 };
 
 export default function ContactSection() {
   const { t } = useLanguage();
+  const [copied, setCopied] = useState(false);
+
+  const handleEmailClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent mailto from opening blank tabs if no client is configured
+    navigator.clipboard.writeText(EMAIL);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <section
@@ -73,24 +82,29 @@ export default function ContactSection() {
           <motion.div variants={fadeUp} className="relative z-10 flex flex-col sm:flex-row items-center gap-6">
             <a
               href={`mailto:${EMAIL}`}
+              onClick={handleEmailClick}
               id="contact-email-btn"
-              className="group relative flex items-center gap-4 px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl overflow-hidden"
+              className={`group relative flex items-center gap-4 px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl overflow-hidden cursor-pointer ${copied ? "border-[var(--color-primary-red)] text-[var(--color-primary-red)]" : ""}`}
               style={{
                 background: "var(--bg-main)",
-                color: "var(--text-strong)",
-                border: "2px solid var(--border-main)",
+                color: copied ? "var(--color-primary-red)" : "var(--text-strong)",
+                border: `2px solid ${copied ? "var(--color-primary-red)" : "var(--border-main)"}`,
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary-red)";
+                if (!copied) (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary-red)";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "var(--border-main)";
+                if (!copied) (e.currentTarget as HTMLElement).style.borderColor = "var(--border-main)";
               }}
             >
-              <Mail size={24} className="group-hover:text-[var(--color-primary-red)] transition-colors" />
-              {t("contact_email_btn")}
+              {copied ? (
+                <CheckCircle2 size={24} className="text-[var(--color-primary-red)] transition-colors" />
+              ) : (
+                <Mail size={24} className="group-hover:text-[var(--color-primary-red)] transition-colors" />
+              )}
+              {copied ? t("contact_email_copied") : t("contact_email_btn")}
             </a>
-            
+
             <a
               href={`tel:+66${PHONE.replace(/-/g, "").slice(1)}`}
               className="flex items-center gap-3 px-8 py-5 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105"

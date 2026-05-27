@@ -69,13 +69,29 @@ export const translations: Record<string, Record<Lang, string>> = {
     th: "มีโปรเจกต์หรืองานที่อยากทำร่วมกัน? ส่งอีเมลหาผมได้เลย",
     en: "Have a project in mind? I'm always open to new ideas and creative work.",
   },
-  contact_email_btn: { th: "ส่งอีเมล", en: "Send Email" },
+  contact_email_btn: { th: "ส่งอีเมลหาฉัน", en: "Send me an Email" },
+  contact_email_copied: { th: "คัดลอกอีเมลแล้ว!", en: "Email Copied!" },
   contact_email: { th: "kidakorn.1@gmail.com", en: "kidakorn.1@gmail.com" },
   contact_phone: { th: "090-759-6314", en: "090-759-6314" },
   contact_location: { th: "ลำพูน, ประเทศไทย", en: "Lamphun, Thailand" },
 
   // ── Footer ──────────────────────────────────────────────────────
   footer_copy: { th: "© 2025 Devakorn. สงวนลิขสิทธิ์.", en: "© 2025 Devakorn. All rights reserved." },
+
+  // ── Projects Editor ─────────────────────────────────────────────
+  project_edit: { th: "แก้ไข", en: "Edit" },
+  project_delete: { th: "ลบ", en: "Delete" },
+  project_delete_confirm: { th: "คุณแน่ใจหรือไม่ว่าต้องการลบโปรเจกต์นี้?", en: "Are you sure you want to delete this project?" },
+  project_add_btn: { th: "+ เพิ่มโปรเจกต์", en: "+ Add Project" },
+  modal_add_project: { th: "เพิ่มโปรเจกต์ใหม่", en: "Add New Project" },
+  modal_edit_project: { th: "แก้ไขโปรเจกต์", en: "Edit Project" },
+  modal_label_name: { th: "ชื่อโปรเจกต์", en: "Project Name" },
+  modal_label_desc: { th: "คำอธิบายสั้นๆ", en: "Short Description" },
+  modal_label_tags: { th: "เทคโนโลยี (คั่นด้วยคอมมา)", en: "Tech Tags (comma separated)" },
+  modal_label_github: { th: "ลิงก์ GitHub (ไม่บังคับ)", en: "GitHub URL (optional)" },
+  modal_label_live: { th: "ลิงก์เว็บไซต์ (ไม่บังคับ)", en: "Live URL (optional)" },
+  btn_save: { th: "บันทึก", en: "Save" },
+  btn_cancel: { th: "ยกเลิก", en: "Cancel" },
 
   // ── Misc ────────────────────────────────────────────────────────
   aria_toggle_theme: { th: "เปลี่ยนธีม", en: "Toggle theme" },

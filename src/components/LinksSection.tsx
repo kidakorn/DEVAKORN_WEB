@@ -45,8 +45,8 @@ const LINKS: Array<{
 ];
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
 };
 
 export default function LinksSection() {
@@ -77,7 +77,7 @@ export default function LinksSection() {
           </motion.div>
           <p className="mb-10 text-sm text-[var(--text-muted)]">{t("links_subtitle")}</p>
 
-          {/* Premium Wide Buttons */}
+          {/* Bento Box Grid */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -86,10 +86,13 @@ export default function LinksSection() {
               hidden: {},
               visible: { transition: { staggerChildren: 0.15 } },
             }}
-            className="flex flex-col gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-            {LINKS.map(({ id, titleKey, descKey, icon: Icon, href, external }) => {
-               return (
+            {LINKS.map(({ id, titleKey, descKey, icon: Icon, href, external }, index) => {
+              // The first link (GitHub) spans the full width
+              const isFeatured = index === 0;
+
+              return (
                 <motion.a
                   key={id}
                   variants={fadeUp}
@@ -97,7 +100,11 @@ export default function LinksSection() {
                   href={href}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
-                  className="group relative flex items-center justify-between p-6 md:p-8 rounded-[2rem] border transition-all duration-500 shadow-md hover:shadow-2xl hover:-translate-y-2"
+                  className={`group relative flex rounded-[2rem] border transition-all duration-500 shadow-md hover:shadow-2xl hover:-translate-y-2 overflow-hidden ${
+                    isFeatured 
+                      ? "col-span-1 md:col-span-2 p-8 md:p-12 flex-col md:flex-row items-start md:items-center justify-between gap-8" 
+                      : "col-span-1 p-8 flex-col justify-between min-h-[280px] gap-8"
+                  }`}
                   style={{
                     background: "var(--bg-card)",
                     borderColor: "var(--border-main)",
@@ -112,22 +119,55 @@ export default function LinksSection() {
                   {/* Hover background sweep */}
                   <div className="absolute inset-0 w-full h-full bg-[var(--color-primary-red)] opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none" />
                   
-                  <div className="flex items-center gap-6 md:gap-8 relative z-10">
-                    {/* Icon */}
-                    <div
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 shadow-inner group-hover:scale-110"
-                      style={{
-                        background: "var(--bg-hover)",
-                        color: "var(--color-primary-red)",
-                        border: "1px solid var(--border-main)",
-                      }}
-                      aria-hidden="true"
-                    >
-                      <Icon size={32} strokeWidth={1.5} />
-                    </div>
+                  {/* Inner Layout Container */}
+                  <div className={`flex relative z-10 w-full h-full ${isFeatured ? "flex-col md:flex-row items-start md:items-center gap-6 md:gap-8" : "flex-col items-start gap-6"}`}>
                     
-                    {/* Text */}
-                    <div>
+                    {/* -- For Square Cards -- */}
+                    {!isFeatured && (
+                      <div className="flex w-full justify-between items-start">
+                        {/* Icon */}
+                        <div
+                          className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 shadow-inner group-hover:scale-110"
+                          style={{
+                            background: "var(--bg-hover)",
+                            color: "var(--color-primary-red)",
+                            border: "1px solid var(--border-main)",
+                          }}
+                          aria-hidden="true"
+                        >
+                          <Icon size={32} strokeWidth={1.5} />
+                        </div>
+
+                        {/* Arrow (Top Right) */}
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-500 group-hover:border-[var(--color-primary-red)] group-hover:bg-[rgba(200,16,46,0.1)]" style={{ borderColor: "var(--border-main)", background: "var(--bg-hover)" }}>
+                          <ChevronRight
+                            size={24}
+                            strokeWidth={2}
+                            aria-hidden="true"
+                            className="transition-transform duration-500 group-hover:translate-x-1 group-hover:text-[var(--color-primary-red)]"
+                            style={{ color: "var(--text-main)" }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* -- For Featured Card -- */}
+                    {isFeatured && (
+                      <div
+                        className="w-20 h-20 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 shadow-inner group-hover:scale-110 shrink-0"
+                        style={{
+                          background: "var(--bg-hover)",
+                          color: "var(--color-primary-red)",
+                          border: "1px solid var(--border-main)",
+                        }}
+                        aria-hidden="true"
+                      >
+                        <Icon size={40} strokeWidth={1.5} />
+                      </div>
+                    )}
+                    
+                    {/* Text block */}
+                    <div className={`${!isFeatured ? "mt-auto pt-6" : ""}`}>
                       <p
                         className="text-2xl md:text-3xl font-bold tracking-tight mb-2 transition-colors duration-500 group-hover:text-[var(--color-primary-red)]"
                         style={{ color: "var(--text-strong)" }}
@@ -135,7 +175,7 @@ export default function LinksSection() {
                         {t(titleKey)}
                       </p>
                       <p
-                        className="text-base md:text-lg"
+                        className="text-base md:text-lg max-w-md"
                         style={{ color: "var(--text-muted)" }}
                       >
                         {t(descKey)}
@@ -143,18 +183,35 @@ export default function LinksSection() {
                     </div>
                   </div>
 
-                  {/* Arrow */}
-                  <div className="relative z-10">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-500 group-hover:border-[var(--color-primary-red)] group-hover:bg-[rgba(200,16,46,0.1)]" style={{ borderColor: "var(--border-main)", background: "var(--bg-hover)" }}>
-                      <ChevronRight
-                        size={24}
-                        strokeWidth={2}
-                        aria-hidden="true"
-                        className="transition-transform duration-500 group-hover:translate-x-1 group-hover:text-[var(--color-primary-red)]"
-                        style={{ color: "var(--text-main)" }}
-                      />
+                  {/* Arrow for Featured Card (Desktop side) */}
+                  {isFeatured && (
+                    <div className="relative z-10 hidden md:flex shrink-0">
+                      <div className="w-14 h-14 rounded-full flex items-center justify-center border transition-all duration-500 group-hover:border-[var(--color-primary-red)] group-hover:bg-[rgba(200,16,46,0.1)]" style={{ borderColor: "var(--border-main)", background: "var(--bg-hover)" }}>
+                        <ChevronRight
+                          size={28}
+                          strokeWidth={2}
+                          aria-hidden="true"
+                          className="transition-transform duration-500 group-hover:translate-x-1 group-hover:text-[var(--color-primary-red)]"
+                          style={{ color: "var(--text-main)" }}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* Arrow for Featured Card (Mobile top-right corner) */}
+                  {isFeatured && (
+                    <div className="md:hidden absolute top-8 right-8 z-10">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-500 group-hover:border-[var(--color-primary-red)] group-hover:bg-[rgba(200,16,46,0.1)]" style={{ borderColor: "var(--border-main)", background: "var(--bg-hover)" }}>
+                        <ChevronRight
+                          size={24}
+                          strokeWidth={2}
+                          aria-hidden="true"
+                          className="transition-transform duration-500 group-hover:translate-x-1 group-hover:text-[var(--color-primary-red)]"
+                          style={{ color: "var(--text-main)" }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </motion.a>
               );
             })}

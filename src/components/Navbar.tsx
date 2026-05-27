@@ -79,11 +79,10 @@ export default function Navbar() {
     <motion.header
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
-        scrolled
-          ? "glass-card shadow-lg border-b"
-          : "bg-transparent border-b border-transparent"
-      }`}
+      className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${scrolled
+        ? "glass-card shadow-lg border-b"
+        : "bg-transparent border-b border-transparent"
+        }`}
       style={{ borderColor: scrolled ? "var(--border-main)" : "transparent" }}
     >
       <nav
@@ -93,16 +92,16 @@ export default function Navbar() {
         {/* ── Logo ───────────────────────────────────────────────── */}
         <a
           href="#"
-          className="flex items-center gap-3 focus-visible:rounded group"
+          className="flex items-center gap-0.5 focus-visible:rounded group"
           aria-label="Devakorn — back to top"
         >
-          <img 
-            src="/icon.svg" 
-            alt="Devakorn Logo" 
-            className="w-9 h-9 rounded-[8px] transition-all duration-300 group-hover:scale-105 shadow-[0_0_10px_rgba(200,16,46,0.2)] group-hover:shadow-[0_0_15px_rgba(200,16,46,0.6)]" 
+          <img
+            src="/icon.svg"
+            alt="Devakorn Logo"
+            className="w-8 h-8 transition-all duration-300 group-hover:scale-110 drop-shadow-md"
           />
-          <span className="text-xl font-bold tracking-tight gradient-text group-hover:brightness-110 transition-all">
-            Devakorn
+          <span className="text-2xl font-bold tracking-tight gradient-text group-hover:brightness-110 transition-all">
+            EVAKORN
           </span>
         </a>
 
@@ -115,11 +114,10 @@ export default function Navbar() {
               <li key={key}>
                 <a
                   href={href}
-                  className={`text-sm font-medium transition-colors duration-200 ${
-                    isActive
-                      ? "text-[var(--color-primary-red)]"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"
-                  }`}
+                  className={`text-sm font-medium transition-colors duration-200 ${isActive
+                    ? "text-[var(--color-primary-red)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"
+                    }`}
                 >
                   {t(key)}
                 </a>
@@ -191,11 +189,10 @@ export default function Navbar() {
                     <a
                       href={href}
                       onClick={handleNavClick}
-                      className={`block py-3 text-sm font-medium transition-colors min-h-[44px] flex items-center ${
-                        isActive
-                          ? "text-[var(--color-primary-red)]"
-                          : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"
-                      }`}
+                      className={`block py-3 text-sm font-medium transition-colors min-h-[44px] flex items-center ${isActive
+                        ? "text-[var(--color-primary-red)]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"
+                        }`}
                     >
                       {t(key)}
                     </a>

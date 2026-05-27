@@ -26,7 +26,7 @@ const syncopate = Syncopate({
 // ── SEO Metadata ─────────────────────────────────────────────────
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.devakorn.com"),
-  title: "Kidakorn Intha (Devakorn) — Web Developer & Graphic Designer",
+  title: "Devakorn Website",
   description:
     "Web Developer and Graphic Designer specializing in Angular, React, Node.js, and creative branding. Based in Thailand.",
   keywords: [
