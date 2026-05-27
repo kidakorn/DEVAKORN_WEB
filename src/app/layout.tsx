@@ -26,7 +26,10 @@ const syncopate = Syncopate({
 // ── SEO Metadata ─────────────────────────────────────────────────
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.devakorn.com"),
-  title: "Devakorn Website",
+  title: {
+    template: "%s | Kidakorn Intha (Devakorn)",
+    default: "Devakorn | Kidakorn Intha — Web Developer & Graphic Designer",
+  },
   description:
     "Web Developer and Graphic Designer specializing in Angular, React, Node.js, and creative branding. Based in Thailand.",
   keywords: [
@@ -51,7 +54,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/profile.jpg",
+        url: "/profile.png",
         width: 1200,
         height: 630,
         alt: "Kidakorn Intha (Devakorn) — Web Developer & Graphic Designer",
