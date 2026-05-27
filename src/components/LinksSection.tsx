@@ -77,7 +77,7 @@ export default function LinksSection() {
           </motion.div>
           <p className="mb-10 text-sm text-[var(--text-muted)]">{t("links_subtitle")}</p>
 
-          {/* Bento Box Grid */}
+          {/* Premium Vertical List Layout */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -86,12 +86,9 @@ export default function LinksSection() {
               hidden: {},
               visible: { transition: { staggerChildren: 0.15 } },
             }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            className="flex flex-col border-t border-[var(--border-main)] w-full max-w-5xl mx-auto mt-12"
           >
-            {LINKS.map(({ id, titleKey, descKey, icon: Icon, href, external }, index) => {
-              // The first link (GitHub) spans the full width
-              const isFeatured = index === 0;
-
+            {LINKS.map(({ id, titleKey, descKey, icon: Icon, href, external }) => {
               return (
                 <motion.a
                   key={id}
@@ -100,118 +97,44 @@ export default function LinksSection() {
                   href={href}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
-                  className={`group relative flex rounded-[2rem] border transition-all duration-500 shadow-md hover:shadow-2xl hover:-translate-y-2 overflow-hidden ${
-                    isFeatured 
-                      ? "col-span-1 md:col-span-2 p-8 md:p-12 flex-col md:flex-row items-start md:items-center justify-between gap-8" 
-                      : "col-span-1 p-8 flex-col justify-between min-h-[280px] gap-8"
-                  }`}
-                  style={{
-                    background: "var(--bg-card)",
-                    borderColor: "var(--border-main)",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary-red)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--border-main)";
-                  }}
+                  className="group relative flex flex-col md:flex-row items-start md:items-center justify-between py-10 md:py-16 border-b border-[var(--border-main)] overflow-hidden transition-colors"
                 >
-                  {/* Hover background sweep */}
-                  <div className="absolute inset-0 w-full h-full bg-[var(--color-primary-red)] opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none" />
+                  {/* Background Slide-in Animation on Hover */}
+                  <div className="absolute inset-0 w-full h-full bg-[var(--color-primary-red)] -translate-y-[101%] group-hover:translate-y-0 transition-transform duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none z-0" />
                   
-                  {/* Inner Layout Container */}
-                  <div className={`flex relative z-10 w-full h-full ${isFeatured ? "flex-col md:flex-row items-start md:items-center gap-6 md:gap-8" : "flex-col items-start gap-6"}`}>
+                  {/* Inner Content Container */}
+                  <div className="relative z-10 flex items-center gap-6 md:gap-14 w-full">
+                    {/* Large Desktop Icon */}
+                    <div className="text-[var(--text-muted)] group-hover:text-white transition-colors duration-500 hidden md:block shrink-0">
+                      <Icon size={56} strokeWidth={1} />
+                    </div>
                     
-                    {/* -- For Square Cards -- */}
-                    {!isFeatured && (
-                      <div className="flex w-full justify-between items-start">
-                        {/* Icon */}
-                        <div
-                          className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 shadow-inner group-hover:scale-110"
-                          style={{
-                            background: "var(--bg-hover)",
-                            color: "var(--color-primary-red)",
-                            border: "1px solid var(--border-main)",
-                          }}
-                          aria-hidden="true"
-                        >
-                          <Icon size={32} strokeWidth={1.5} />
-                        </div>
-
-                        {/* Arrow (Top Right) */}
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-500 group-hover:border-[var(--color-primary-red)] group-hover:bg-[rgba(200,16,46,0.1)]" style={{ borderColor: "var(--border-main)", background: "var(--bg-hover)" }}>
-                          <ChevronRight
-                            size={24}
-                            strokeWidth={2}
-                            aria-hidden="true"
-                            className="transition-transform duration-500 group-hover:translate-x-1 group-hover:text-[var(--color-primary-red)]"
-                            style={{ color: "var(--text-main)" }}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* -- For Featured Card -- */}
-                    {isFeatured && (
-                      <div
-                        className="w-20 h-20 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 shadow-inner group-hover:scale-110 shrink-0"
-                        style={{
-                          background: "var(--bg-hover)",
-                          color: "var(--color-primary-red)",
-                          border: "1px solid var(--border-main)",
-                        }}
-                        aria-hidden="true"
-                      >
-                        <Icon size={40} strokeWidth={1.5} />
-                      </div>
-                    )}
-                    
-                    {/* Text block */}
-                    <div className={`${!isFeatured ? "mt-auto pt-6" : ""}`}>
-                      <p
-                        className="text-2xl md:text-3xl font-bold tracking-tight mb-2 transition-colors duration-500 group-hover:text-[var(--color-primary-red)]"
-                        style={{ color: "var(--text-strong)" }}
-                      >
-                        {t(titleKey)}
-                      </p>
-                      <p
-                        className="text-base md:text-lg max-w-md"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        {t(descKey)}
-                      </p>
+                    {/* Text Block */}
+                    <div className="flex flex-col">
+                       <div className="flex items-center gap-4 mb-2">
+                         {/* Mobile Icon */}
+                         <div className="md:hidden text-[var(--text-muted)] group-hover:text-white transition-colors duration-500">
+                           <Icon size={32} strokeWidth={1.5} />
+                         </div>
+                         {/* Title */}
+                         <p className="text-4xl md:text-6xl lg:text-7xl font-bold font-[var(--font-display)] tracking-tighter text-[var(--text-strong)] group-hover:text-white transition-colors duration-500">
+                           {t(titleKey)}
+                         </p>
+                       </div>
+                       {/* Subtitle */}
+                       <p className="text-lg md:text-xl lg:text-2xl text-[var(--text-muted)] group-hover:text-[rgba(255,255,255,0.8)] transition-colors duration-500 font-light max-w-2xl">
+                         {t(descKey)}
+                       </p>
                     </div>
                   </div>
 
-                  {/* Arrow for Featured Card (Desktop side) */}
-                  {isFeatured && (
-                    <div className="relative z-10 hidden md:flex shrink-0">
-                      <div className="w-14 h-14 rounded-full flex items-center justify-center border transition-all duration-500 group-hover:border-[var(--color-primary-red)] group-hover:bg-[rgba(200,16,46,0.1)]" style={{ borderColor: "var(--border-main)", background: "var(--bg-hover)" }}>
-                        <ChevronRight
-                          size={28}
-                          strokeWidth={2}
-                          aria-hidden="true"
-                          className="transition-transform duration-500 group-hover:translate-x-1 group-hover:text-[var(--color-primary-red)]"
-                          style={{ color: "var(--text-main)" }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Arrow for Featured Card (Mobile top-right corner) */}
-                  {isFeatured && (
-                    <div className="md:hidden absolute top-8 right-8 z-10">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-500 group-hover:border-[var(--color-primary-red)] group-hover:bg-[rgba(200,16,46,0.1)]" style={{ borderColor: "var(--border-main)", background: "var(--bg-hover)" }}>
-                        <ChevronRight
-                          size={24}
-                          strokeWidth={2}
-                          aria-hidden="true"
-                          className="transition-transform duration-500 group-hover:translate-x-1 group-hover:text-[var(--color-primary-red)]"
-                          style={{ color: "var(--text-main)" }}
-                        />
-                      </div>
-                    </div>
-                  )}
+                  {/* Animated Arrow Button */}
+                  <div className="relative z-10 mt-8 md:mt-0 self-end md:self-center shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-full border border-[var(--border-main)] group-hover:border-white flex items-center justify-center bg-[var(--bg-main)] group-hover:bg-transparent transition-all duration-500 overflow-hidden shadow-sm group-hover:shadow-none">
+                    {/* Primary Arrow (shoots out right) */}
+                    <ChevronRight size={32} className="absolute text-[var(--text-strong)] group-hover:text-white group-hover:translate-x-[150%] transition-transform duration-500 ease-in-out" />
+                    {/* Secondary Arrow (shoots in from left) */}
+                    <ChevronRight size={32} className="absolute text-white -translate-x-[150%] group-hover:translate-x-0 transition-transform duration-500 ease-in-out" />
+                  </div>
                 </motion.a>
               );
             })}

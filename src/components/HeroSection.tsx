@@ -12,6 +12,7 @@ import { motion, type Variants } from "framer-motion";
 import { GitFork, Globe, Briefcase, ArrowDown } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import TypingText from "@/components/TypingText";
+import Hero3DScene from "@/components/Hero3DScene";
 
 // Real social links
 const SOCIAL_LINKS = [
@@ -182,41 +183,15 @@ export default function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Right Column: Abstract Decorative Elements */}
+          {/* Right Column: 3D Interactive Scene */}
           <motion.div 
-            className="hidden lg:flex justify-end items-center relative h-full min-h-[400px]"
+            className="hidden lg:flex justify-end items-center relative h-full min-h-[500px] w-full"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
           >
-             <div className="relative w-80 h-80">
-                {/* Decorative glowing circles */}
-                <motion.div 
-                  className="absolute inset-0 rounded-full border border-dashed"
-                  style={{ borderColor: "var(--border-main)" }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                />
-                <motion.div 
-                  className="absolute inset-4 rounded-full border"
-                  style={{ borderColor: "var(--border-main)", opacity: 0.5 }}
-                  animate={{ rotate: -360 }}
-                  transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <div 
-                     className="w-40 h-40 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-xl border"
-                     style={{ 
-                       background: "var(--bg-card)", 
-                       borderColor: "var(--color-primary-red)",
-                       boxShadow: "0 0 60px -15px rgba(200, 16, 46, 0.4)" 
-                     }}
-                   >
-                     <span className="font-[var(--font-display)] text-5xl font-bold gradient-text tracking-tighter">
-                       DK
-                     </span>
-                   </div>
-                </div>
+             <div className="relative w-full h-[500px]">
+                <Hero3DScene />
              </div>
           </motion.div>
         </div>

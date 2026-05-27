@@ -8,8 +8,14 @@
 
 import { useState } from "react";
 import { motion, type Variants } from "framer-motion";
-import { Mail, GitFork, Globe, Briefcase, Phone, MapPin, CheckCircle2 } from "lucide-react";
+import { GitFork, Globe, Briefcase, Phone, MapPin, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
+import Lottie from "lottie-react";
+
+// TODO: Replace this with your own downloaded Lottie JSON file from lottiefiles.com!
+const emailAnimationData = {
+  v: "5.5.2", fr: 60, ip: 0, op: 60, w: 100, h: 100, nm: "Placeholder", ddd: 0, assets: [], layers: []
+};
 
 const EMAIL = "kidakorn.1@gmail.com";
 const PHONE = "090-759-6314";
@@ -98,9 +104,16 @@ export default function ContactSection() {
               }}
             >
               {copied ? (
-                <CheckCircle2 size={24} className="text-[var(--color-primary-red)] transition-colors" />
+                <CheckCircle2 size={32} className="text-[var(--color-primary-red)] transition-colors" />
               ) : (
-                <Mail size={24} className="group-hover:text-[var(--color-primary-red)] transition-colors" />
+                <div className="w-8 h-8 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                  {/* Lottie Animation placeholder */}
+                  <Lottie 
+                    animationData={emailAnimationData} 
+                    loop={true}
+                    style={{ width: "100%", height: "100%" }}
+                  />
+                </div>
               )}
               {copied ? t("contact_email_copied") : t("contact_email_btn")}
             </a>

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.devakorn.com"),
   title: {
     template: "%s | Kidakorn Intha (Devakorn)",
-    default: "Devakorn | Kidakorn Intha — Web Developer & Graphic Designer",
+    default: "Devakorn | Kidakorn Intha",
   },
   description:
     "Web Developer and Graphic Designer specializing in Angular, React, Node.js, and creative branding. Based in Thailand.",
@@ -76,6 +76,7 @@ export const metadata: Metadata = {
 import Preloader from "@/components/Preloader";
 import ScrollToTop from "@/components/ScrollToTop";
 import ContactWidget from "@/components/ContactWidget";
+import SmoothScrolling from "@/components/SmoothScrolling";
 
 // ── Root Layout ──────────────────────────────────────────────────
 export default function RootLayout({
@@ -92,9 +93,11 @@ export default function RootLayout({
       <body className={`${spaceGrotesk.variable} ${syncopate.variable} min-h-screen antialiased`}>
         <ThemeProvider>
           <LanguageProvider>
-            <Preloader />
-            <ScrollToTop />
-            {children}
+            <SmoothScrolling>
+              <Preloader />
+              <ScrollToTop />
+              {children}
+            </SmoothScrolling>
           </LanguageProvider>
         </ThemeProvider>
       </body>
