@@ -10,34 +10,41 @@ export default function ResumePage() {
 
   const isThai = lang === "th";
 
-  // Placeholder Data - the user can fill this in later
   const workExperience = [
     {
-      title: isThai ? "นักพัฒนาเว็บ (Web Developer)" : "Web Developer",
-      company: "Freelance / Fastwork",
-      date: "2023 - Present",
+      title: isThai ? "โปรแกรมเมอร์ (Staff Programmer)" : "Staff Programmer",
+      company: "NISSHINBO MICRO DEVICES (THAILAND) CO., LTD.",
+      date: "June 2025 - Present",
       description: isThai 
-        ? "พัฒนาและออกแบบเว็บไซต์, Web Application และ Landing Page โดยใช้ React, Next.js, Node.js และ TailwindCSS" 
-        : "Developed and designed websites, Web Applications, and Landing Pages using React, Next.js, Node.js, and TailwindCSS.",
+        ? "รับผิดชอบในการพัฒนาระบบ IBM i (AS400) เพื่อสนับสนุนการดำเนินธุรกิจ" 
+        : "Responsible for developing IBM i (AS400) systems to support business operations.",
     },
     {
-      title: isThai ? "นักออกแบบกราฟิก (Graphic Designer)" : "Graphic Designer",
-      company: "Freelance",
-      date: "2021 - Present",
+      title: isThai ? "กราฟิกดีไซน์ (Graphic Design)" : "Graphic Design",
+      company: "Longurie Production",
+      date: "Jan 2025 - Mar 2025",
       description: isThai 
-        ? "ออกแบบโลโก้ แบนเนอร์โฆษณา และสื่อสิ่งพิมพ์สำหรับแบรนด์ต่างๆ เพื่อสร้างเอกลักษณ์ที่โดดเด่น"
-        : "Designed logos, advertising banners, and print media for various brands to create distinct identities.",
+        ? "สร้างเอกลักษณ์ของแบรนด์ สื่อการตลาด และตัดต่อวิดีโอสำหรับแคมเปญโซเชียลมีเดีย"
+        : "Created compelling brand identities and marketing materials & editor video content for social media campaigns",
+    },
+    {
+      title: isThai ? "นักศึกษาฝึกงาน (Apprentice)" : "Apprentice",
+      company: "National Telecom Public Co., Ltd.",
+      date: "Nov 2022 – Feb 2023",
+      description: isThai 
+        ? "บำรุงรักษาและให้บริการเครือข่ายโทรคมนาคมในจังหวัดลำพูน"
+        : "Maintained and serviced telecommunication networks in Lamphun Province.",
     },
   ];
 
   const education = [
     {
-      degree: isThai ? "ปริญญาตรี สาขาวิทยาการคอมพิวเตอร์" : "Bachelor's Degree in Computer Science",
-      school: isThai ? "มหาวิทยาลัย..." : "University of ...",
-      date: "2019 - 2023",
+      degree: isThai ? "ปริญญาตรี วิศวกรรมคอมพิวเตอร์" : "Bachelor's Degree in Computer Engineering",
+      school: isThai ? "มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา เชียงใหม่" : "Rajamangala University of Technology Lanna Chiang Mai",
+      date: "2020 - 2023",
       description: isThai 
-        ? "มุ่งเน้นการพัฒนาซอฟต์แวร์ โครงสร้างข้อมูล และการออกแบบระบบ"
-        : "Focused on software development, data structures, and system design.",
+        ? "เรียนรู้และประยุกต์ใช้วิศวกรรมคอมพิวเตอร์และการพัฒนาซอฟต์แวร์"
+        : "Studied and applied computer engineering principles and software development.",
     }
   ];
 
@@ -60,13 +67,6 @@ export default function ResumePage() {
           <ArrowLeft size={18} />
           {isThai ? "กลับหน้าหลัก" : "Back to Home"}
         </Link>
-        <button 
-          onClick={() => alert("Please add your resume.pdf to the public folder to enable downloads.")}
-          className="flex items-center gap-2 px-6 py-2 rounded-full bg-[var(--color-primary-red)] text-white font-bold hover:shadow-[0_4px_20px_rgba(200,16,46,0.5)] transition-all duration-300 hover:scale-105"
-        >
-          <Download size={18} />
-          {isThai ? "ดาวน์โหลด PDF" : "Download PDF"}
-        </button>
       </div>
 
       <div className="max-w-4xl mx-auto bg-[var(--bg-card)] rounded-[2rem] border border-[var(--border-main)] shadow-2xl overflow-hidden">

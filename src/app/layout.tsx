@@ -4,22 +4,22 @@
 // ─────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
-import { Space_Grotesk, Syncopate } from "next/font/google";
+import { Prompt, Chakra_Petch } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import { LanguageProvider } from "@/lib/LanguageContext";
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["300", "500", "700"],
-  variable: "--font-space-grotesk",
+const prompt = Prompt({
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["latin", "thai"],
+  variable: "--font-kanit", // Keeping the variable name the same so it works with the rest of the app without changing other CSS
   display: "swap",
 });
 
-const syncopate = Syncopate({
-  subsets: ["latin"],
-  weight: ["700"],
-  variable: "--font-syncopate",
+const chakra = Chakra_Petch({
+  weight: ["500", "600", "700"],
+  subsets: ["latin", "thai"],
+  variable: "--font-syncopate", // Keeping the variable name the same so it maps to the display font
   display: "swap",
 });
 
@@ -92,7 +92,7 @@ export default function RootLayout({
      *   data-theme from localStorage before first paint (avoids mismatch)
      */
     <html lang="th" data-theme="dark" suppressHydrationWarning>
-      <body className={`${spaceGrotesk.variable} ${syncopate.variable} min-h-screen antialiased`}>
+      <body className={`${prompt.variable} ${chakra.variable} min-h-screen antialiased`} style={{ fontFamily: 'var(--font-kanit), sans-serif' }}>
         <ThemeProvider>
           <LanguageProvider>
             <SmoothScrolling>

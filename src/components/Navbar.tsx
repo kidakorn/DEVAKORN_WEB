@@ -19,6 +19,8 @@ const NAV_LINKS = [
   { key: "nav_projects", href: "#projects" },
   { key: "nav_links", href: "#links" },
   { key: "nav_contact", href: "#contact" },
+  { key: "nav_resume", href: "/resume" },
+  { key: "nav_login", href: "/login" },
 ] as const;
 
 const SECTION_IDS = ["about", "projects", "links", "contact"];
@@ -74,6 +76,11 @@ export default function Navbar() {
 
   // ── Handle Navigation without updating URL Hash ───────────────
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!href.startsWith("#")) {
+      setMenuOpen(false);
+      return; // Allow default browser navigation for /resume and /login
+    }
+
     e.preventDefault();
     setMenuOpen(false);
 

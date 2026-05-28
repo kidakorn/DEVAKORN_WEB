@@ -7,10 +7,19 @@ export default function Preloader() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Hide preloader after 2 seconds to match the reference
+    // Check if the user has already visited in this session
+    const hasVisited = sessionStorage.getItem("devakorn_visited");
+    if (hasVisited) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Hide preloader after 2 seconds on first visit
     const timer = setTimeout(() => {
       setIsLoading(false);
+      sessionStorage.setItem("devakorn_visited", "true");
     }, 2000);
+    
     return () => clearTimeout(timer);
   }, []);
 
