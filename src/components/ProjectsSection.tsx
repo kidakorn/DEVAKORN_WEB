@@ -208,7 +208,7 @@ export default function ProjectsSection() {
           {t("projects_subtitle")}
         </p>
 
-        {/* Premium Vertical Projects List */}
+        {/* Premium Projects Grid Layout */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -217,7 +217,7 @@ export default function ProjectsSection() {
             hidden: {},
             visible: { transition: { staggerChildren: 0.1 } },
           }}
-          className="flex flex-col w-full max-w-6xl mx-auto border-t border-[var(--border-main)] mt-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto mt-8"
         >
           {projects.map((project) => {
             const Icon = ICON_MAP[project.iconName] || Code2;
@@ -226,13 +226,15 @@ export default function ProjectsSection() {
                 key={project.id}
                 id={project.id}
                 variants={fadeUp}
-                className="group relative flex flex-col lg:flex-row items-start lg:items-center justify-between p-8 lg:p-12 border-b border-[var(--border-main)] transition-colors overflow-hidden"
+                className="group relative rounded-[2rem] p-8 flex flex-col items-start gap-6 border transition-all duration-500 overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2"
+                style={{
+                  background: "var(--bg-card)",
+                  borderColor: "var(--border-main)",
+                }}
               >
-                {/* Background Hover Sweep (Slides up from bottom) */}
-                <div className="absolute inset-0 w-full h-full bg-[var(--bg-card)] translate-y-[101%] group-hover:translate-y-0 transition-transform duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none z-0 shadow-2xl" />
-                {/* Subtle red line accent at the bottom on hover */}
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-[var(--color-primary-red)] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-[800ms] ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none z-0" />
-
+                {/* Background Sweep on hover */}
+                <div className="absolute inset-0 w-full h-full bg-[var(--color-primary-red)] opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none z-0" />
+                
                 {/* Editor Action Buttons (Top Right - Always on top) */}
                 <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
                   <button
@@ -253,21 +255,20 @@ export default function ProjectsSection() {
                   </button>
                 </div>
 
-                <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center gap-8 lg:gap-16 w-full">
-
+                <div className="relative z-10 flex flex-col items-start gap-6 w-full h-full">
                   {/* Premium Icon Block */}
-                  <div className="flex-shrink-0 w-16 h-16 lg:w-24 lg:h-24 rounded-[1.5rem] lg:rounded-[2rem] flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:bg-[var(--color-primary-red)] group-hover:border-transparent"
-                    style={{ background: "var(--bg-hover)", border: "1px solid var(--border-main)" }}
+                  <div className="flex-shrink-0 w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-inner group-hover:bg-[var(--color-primary-red)] group-hover:border-transparent"
+                       style={{ background: "var(--bg-hover)", border: "1px solid var(--border-main)" }}
                   >
-                    <Icon strokeWidth={1.5} className="w-8 h-8 lg:w-12 lg:h-12 text-[var(--color-primary-red)] group-hover:text-white transition-colors duration-500" />
+                    <Icon strokeWidth={1.5} className="w-8 h-8 text-[var(--color-primary-red)] group-hover:text-white transition-colors duration-500" />
                   </div>
 
                   {/* Text Content */}
-                  <div className="flex-1 flex flex-col items-start text-left gap-4">
-                    <h3 className="text-3xl lg:text-5xl font-bold tracking-tight font-[var(--font-display)] text-[var(--text-strong)] group-hover:text-[var(--color-primary-red)] transition-colors duration-500">
+                  <div className="flex flex-col items-start text-left gap-4 flex-1 w-full">
+                    <h3 className="text-2xl font-bold tracking-tight text-[var(--text-strong)] group-hover:text-[var(--color-primary-red)] transition-colors duration-500 pr-10">
                       {t(project.nameKey)}
                     </h3>
-                    <p className="text-lg lg:text-xl text-[var(--text-muted)] group-hover:text-[var(--text-strong)] transition-colors duration-500 max-w-3xl font-light leading-relaxed">
+                    <p className="text-base text-[var(--text-muted)] group-hover:text-[var(--text-strong)] transition-colors duration-500 font-light leading-relaxed">
                       {t(project.descKey)}
                     </p>
 
@@ -276,7 +277,7 @@ export default function ProjectsSection() {
                       {project.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-xs tracking-widest uppercase px-4 py-1.5 rounded-full border border-[var(--border-main)] group-hover:border-[var(--color-primary-red)] group-hover:text-[var(--color-primary-red)] transition-colors duration-500 font-semibold"
+                          className="text-xs tracking-wide px-3 py-1 rounded-full border border-[var(--border-main)] group-hover:border-[var(--color-primary-red)] group-hover:text-[var(--color-primary-red)] transition-colors duration-500 font-medium"
                           style={{ background: "var(--bg-main)" }}
                         >
                           {tag}
@@ -286,16 +287,16 @@ export default function ProjectsSection() {
                   </div>
 
                   {/* Action Links */}
-                  <div className="flex flex-row lg:flex-col gap-4 mt-6 lg:mt-0 shrink-0">
+                  <div className="flex flex-row flex-wrap gap-4 mt-auto pt-4 w-full border-t border-[var(--border-main)] group-hover:border-[var(--color-primary-red)] transition-colors duration-500">
                     {project.github && (
                       <a
                         href={project.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 px-6 py-3 rounded-full border border-[var(--border-main)] group-hover:border-transparent group-hover:bg-[var(--bg-main)] text-[var(--text-main)] hover:text-white hover:!bg-[var(--text-strong)] transition-all duration-300 font-semibold shadow-sm hover:shadow-md"
+                        className="flex items-center gap-2 text-sm font-semibold transition-colors text-[var(--text-main)] hover:text-[var(--color-primary-red)]"
                       >
-                        <GitFork size={20} strokeWidth={2} />
-                        <span className="hidden lg:inline">{t("project_view_github")}</span>
+                        <GitFork size={18} strokeWidth={2} />
+                        {t("project_view_github")}
                       </a>
                     )}
                     {project.live && (
@@ -303,10 +304,10 @@ export default function ProjectsSection() {
                         href={project.live}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 px-6 py-3 rounded-full border border-transparent bg-[var(--color-primary-red)] text-white hover:bg-[var(--text-strong)] transition-all duration-300 font-semibold shadow-[0_4px_14px_rgba(200,16,46,0.4)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)]"
+                        className="flex items-center gap-2 text-sm font-semibold transition-colors text-[var(--text-main)] hover:text-[var(--color-primary-red)]"
                       >
-                        <ExternalLink size={20} strokeWidth={2} />
-                        <span className="hidden lg:inline">{t("project_view_live")}</span>
+                        <ExternalLink size={18} strokeWidth={2} />
+                        {t("project_view_live")}
                       </a>
                     )}
                   </div>
