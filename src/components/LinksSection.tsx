@@ -19,6 +19,14 @@ const LINKS: Array<{
   external: boolean;
 }> = [
   {
+    id: "link-resume",
+    titleKey: "link4_title",
+    descKey: "link4_desc",
+    icon: Briefcase,
+    href: "/resume",
+    external: false,
+  },
+  {
     id: "link-github",
     titleKey: "link1_title",
     descKey: "link1_desc",

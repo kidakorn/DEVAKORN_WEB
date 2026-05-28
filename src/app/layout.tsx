@@ -78,6 +78,8 @@ import ScrollToTop from "@/components/ScrollToTop";
 import ContactWidget from "@/components/ContactWidget";
 import SmoothScrolling from "@/components/SmoothScrolling";
 
+import { Analytics } from "@vercel/analytics/react";
+
 // ── Root Layout ──────────────────────────────────────────────────
 export default function RootLayout({
   children,
@@ -97,6 +99,7 @@ export default function RootLayout({
               <Preloader />
               <ScrollToTop />
               {children}
+              <Analytics />
             </SmoothScrolling>
           </LanguageProvider>
         </ThemeProvider>

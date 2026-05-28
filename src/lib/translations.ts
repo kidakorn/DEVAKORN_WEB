@@ -62,6 +62,8 @@ export const translations: Record<string, Record<Lang, string>> = {
   link2_desc: { th: "ติดตามผลงานและอัปเดต", en: "Follow my work and updates" },
   link3_title: { th: "Fastwork", en: "Fastwork" },
   link3_desc: { th: "จ้างงานฟรีแลนซ์ผ่าน Fastwork", en: "Hire me on Fastwork for freelance work" },
+  link4_title: { th: "เรซูเม่แบบอินเทอร์แอกทีฟ", en: "Interactive Resume" },
+  link4_desc: { th: "ประวัติการทำงาน การศึกษา และทักษะ", en: "Work experience, education, and skills" },
 
   // ── Contact ─────────────────────────────────────────────────────
   contact_title: { th: "ติดต่อผม", en: "Get In Touch" },

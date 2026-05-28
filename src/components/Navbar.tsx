@@ -72,8 +72,22 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu when a link is clicked
-  const handleNavClick = () => setMenuOpen(false);
+  // ── Handle Navigation without updating URL Hash ───────────────
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setMenuOpen(false);
+
+    if (href === "#") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    const targetId = href.replace("#", "");
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <motion.header
@@ -92,6 +106,7 @@ export default function Navbar() {
         {/* ── Logo ───────────────────────────────────────────────── */}
         <a
           href="#"
+          onClick={(e) => handleNavClick(e, "#")}
           className="flex items-center gap-0.5 focus-visible:rounded group"
           aria-label="Devakorn — back to top"
         >
@@ -114,6 +129,7 @@ export default function Navbar() {
               <li key={key}>
                 <a
                   href={href}
+                  onClick={(e) => handleNavClick(e, href)}
                   className={`text-sm font-medium transition-colors duration-200 ${isActive
                     ? "text-[var(--color-primary-red)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"
@@ -188,7 +204,7 @@ export default function Navbar() {
                   <li key={key}>
                     <a
                       href={href}
-                      onClick={handleNavClick}
+                      onClick={(e) => handleNavClick(e, href)}
                       className={`block py-3 text-sm font-medium transition-colors min-h-[44px] flex items-center ${isActive
                         ? "text-[var(--color-primary-red)]"
                         : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"

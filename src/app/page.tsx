@@ -11,14 +11,19 @@ import LinksSection from "@/components/LinksSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
-export default function Home() {
+import { cookies } from "next/headers";
+
+export default async function Home() {
+  const cookieStore = await cookies();
+  const isAdmin = cookieStore.has("admin_token");
+
   return (
     <>
       <Navbar />
       <main>
         <HeroSection />
         <AboutSection />
-        <ProjectsSection />
+        <ProjectsSection isAdmin={isAdmin} />
         <LinksSection />
         <ContactSection />
       </main>

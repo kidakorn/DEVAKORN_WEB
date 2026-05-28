@@ -10,6 +10,7 @@ import { motion, type Variants } from "framer-motion";
 import { LayoutTemplate, Code2, PenTool, ExternalLink, GitFork, Pencil, Trash } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 
 // Map string names to Lucide icons for serialization
@@ -64,10 +65,11 @@ const fadeUp: Variants = {
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
 };
 
-export default function ProjectsSection() {
+export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean }) {
   const { t } = useLanguage();
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   // Editor State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -81,34 +83,45 @@ export default function ProjectsSection() {
   const [formGithub, setFormGithub] = useState("");
   const [formLive, setFormLive] = useState("");
 
-  // Hydrate from localStorage
+  // Hydrate from Cloud Database (or fallback to memory/default)
   useEffect(() => {
-    const saved = localStorage.getItem("devakorn_projects");
-    if (saved) {
+    const fetchProjects = async () => {
       try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setProjects(parsed);
+        const res = await fetch("/api/projects");
+        const data = await res.json();
+        if (data.projects && Array.isArray(data.projects) && data.projects.length > 0) {
+          setProjects(data.projects);
         } else {
           setProjects(DEFAULT_PROJECTS);
         }
       } catch (e) {
+        console.error("Failed to load projects", e);
         setProjects(DEFAULT_PROJECTS);
       }
-    } else {
-      setProjects(DEFAULT_PROJECTS);
-    }
-    setMounted(true);
+      setMounted(true);
+    };
+
+    fetchProjects();
   }, []);
 
-  const saveToStorage = (newProjects: ProjectItem[]) => {
+  const saveToCloud = async (newProjects: ProjectItem[]) => {
+    // Optimistic UI update
     setProjects(newProjects);
-    localStorage.setItem("devakorn_projects", JSON.stringify(newProjects));
+    
+    try {
+      await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projects: newProjects }),
+      });
+    } catch (e) {
+      console.error("Failed to save projects to cloud", e);
+    }
   };
 
   const handleDelete = (id: string) => {
     if (window.confirm(t("project_delete_confirm"))) {
-      saveToStorage(projects.filter((p) => p.id !== id));
+      saveToCloud(projects.filter((p) => p.id !== id));
     }
   };
 
@@ -155,7 +168,7 @@ export default function ProjectsSection() {
             }
             : p
         );
-        saveToStorage(updated);
+        saveToCloud(updated);
       } else {
         // Add new
         const newProject: ProjectItem = {
@@ -167,7 +180,7 @@ export default function ProjectsSection() {
           github: formGithub || null,
           live: formLive || null,
         };
-        saveToStorage([...projects, newProject]);
+        saveToCloud([...projects, newProject]);
       }
       setIsSaving(false);
       setIsModalOpen(false);
@@ -236,24 +249,26 @@ export default function ProjectsSection() {
                 <div className="absolute inset-0 w-full h-full bg-[var(--color-primary-red)] opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none z-0" />
                 
                 {/* Editor Action Buttons (Top Right - Always on top) */}
-                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                  <button
-                    onClick={() => openEditModal(project)}
-                    className="btn btn-sm btn-circle btn-ghost text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--bg-hover)]"
-                    title={t("project_edit")}
-                    aria-label={t("project_edit")}
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(project.id)}
-                    className="btn btn-sm btn-circle btn-ghost text-[var(--text-muted)] hover:text-[var(--color-primary-red)] hover:bg-[var(--bg-hover)]"
-                    title={t("project_delete")}
-                    aria-label={t("project_delete")}
-                  >
-                    <Trash size={16} />
-                  </button>
-                </div>
+                {isAdmin && (
+                  <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                    <button
+                      onClick={() => openEditModal(project)}
+                      className="btn btn-sm btn-circle btn-ghost text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--bg-hover)]"
+                      title={t("project_edit")}
+                      aria-label={t("project_edit")}
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(project.id)}
+                      className="btn btn-sm btn-circle btn-ghost text-[var(--text-muted)] hover:text-[var(--color-primary-red)] hover:bg-[var(--bg-hover)]"
+                      title={t("project_delete")}
+                      aria-label={t("project_delete")}
+                    >
+                      <Trash size={16} />
+                    </button>
+                  </div>
+                )}
 
                 <div className="relative z-10 flex flex-col items-start gap-6 w-full h-full">
                   {/* Premium Icon Block */}
@@ -317,20 +332,31 @@ export default function ProjectsSection() {
           })}
         </motion.div>
 
-        {/* Add Project Button */}
-        <div className="mt-12 flex justify-center">
-          <button
-            onClick={openAddModal}
-            className="btn rounded-full px-8 font-semibold shadow-lg transition-all hover:scale-105"
-            style={{
-              backgroundColor: "var(--color-primary-red)",
-              color: "#fff",
-              border: "none"
-            }}
-          >
-            {t("project_add_btn")}
-          </button>
-        </div>
+        {/* Admin Controls */}
+        {isAdmin && (
+          <div className="mt-12 flex flex-col items-center gap-4">
+            <button
+              onClick={openAddModal}
+              className="btn rounded-full px-8 font-semibold shadow-lg transition-all hover:scale-105"
+              style={{
+                backgroundColor: "var(--color-primary-red)",
+                color: "#fff",
+                border: "none"
+              }}
+            >
+              {t("project_add_btn")}
+            </button>
+            <button
+              onClick={async () => {
+                await fetch("/api/logout", { method: "POST" });
+                router.refresh(); // Refresh page to remove admin state
+              }}
+              className="text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--color-primary-red)] transition-colors underline underline-offset-4"
+            >
+              Logout of Admin
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── Editor Modal ──────────────────────────────────────────── */}
