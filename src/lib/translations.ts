@@ -9,6 +9,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   // ── Navbar ──────────────────────────────────────────────────────
   nav_about: { th: "เกี่ยวกับ", en: "About" },
   nav_projects: { th: "ผลงาน", en: "Projects" },
+  nav_clients: { th: "พาร์ทเนอร์", en: "Partners" },
   nav_links: { th: "ลิงก์", en: "Links" },
   nav_contact: { th: "ติดต่อ", en: "Contact" },
   nav_resume: { th: "เรซูเม่", en: "Resume" },
@@ -54,6 +55,19 @@ export const translations: Record<string, Record<Lang, string>> = {
     th: "สร้างโลโก้, ออกแบบแบนเนอร์ และจัดเลย์เอาต์สิ่งพิมพ์ที่มีเอกลักษณ์เฉพาะตัว",
     en: "Unique logo creation, banner design, and print media layout for standout branding.",
   },
+
+  // ── Clients Timeline ────────────────────────────────────────────
+  clients_title: { th: "ลูกค้าและความร่วมมือ", en: "Our Clients & Partners" },
+  clients_subtitle: { th: "พันธมิตรที่ผมเคยร่วมงานด้วย", en: "Partners & Brands I've worked with" },
+  client_add_btn: { th: "+ เพิ่มลูกค้า", en: "+ Add Client" },
+  client_edit: { th: "แก้ไข", en: "Edit" },
+  client_delete: { th: "ลบ", en: "Delete" },
+  client_delete_confirm: { th: "คุณแน่ใจหรือไม่ว่าต้องการลบลูกค้ารายนี้?", en: "Are you sure you want to delete this client?" },
+  modal_add_client: { th: "เพิ่มลูกค้าใหม่", en: "Add New Client" },
+  modal_edit_client: { th: "แก้ไขลูกค้า", en: "Edit Client" },
+  modal_label_client_name: { th: "ชื่อลูกค้า", en: "Client Name" },
+  modal_label_date: { th: "ปี / วันที่", en: "Date / Year" },
+  modal_label_image: { th: "ลิงก์รูปภาพ (โลโก้)", en: "Image URL (Logo)" },
 
   // ── Links Hub ───────────────────────────────────────────────────
   links_title: { th: "ลิงก์ทั้งหมด", en: "Links Hub" },

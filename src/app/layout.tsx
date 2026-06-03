@@ -12,14 +12,14 @@ import { LanguageProvider } from "@/lib/LanguageContext";
 const prompt = Prompt({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin", "thai"],
-  variable: "--font-kanit", // Keeping the variable name the same so it works with the rest of the app without changing other CSS
+  variable: "--font-prompt",
   display: "swap",
 });
 
 const chakra = Chakra_Petch({
   weight: ["500", "600", "700"],
   subsets: ["latin", "thai"],
-  variable: "--font-syncopate", // Keeping the variable name the same so it maps to the display font
+  variable: "--font-chakra",
   display: "swap",
 });
 
@@ -27,26 +27,30 @@ const chakra = Chakra_Petch({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.devakorn.com"),
   title: {
-    template: "%s | Kidakorn Intha (Devakorn)",
-    default: "Devakorn | Kidakorn Intha",
+    template: "%s | Devakorn (Kidakorn Intha)",
+    default: "Devakorn | Web Developer",
   },
   description:
-    "Web Developer and Graphic Designer specializing in Angular, React, Node.js, and creative branding. Based in Thailand.",
+    "Portfolio of Kidakorn Intha (Devakorn), a Full Stack Web Developer and UI/UX Graphic Designer based in Thailand. Specializing in modern web applications using Next.js, React, Node.js, and creative branding solutions.",
   keywords: [
     "Kidakorn Intha",
     "Devakorn",
-    "Web Developer",
+    "Full Stack Developer",
+    "Web Developer Thailand",
+    "Frontend Engineer",
     "Graphic Designer",
-    "Angular",
+    "UI/UX Design",
+    "Next.js Developer",
     "React",
     "Node.js",
-    "Portfolio",
-    "Thailand",
+    "TypeScript",
+    "Freelance Web Developer",
+    "Custom Web Applications"
   ],
   openGraph: {
-    title: "Kidakorn Intha (Devakorn) — Web Developer & Graphic Designer",
+    title: "Devakorn | Full Stack Web Developer & Designer",
     description:
-      "Web Developer and Graphic Designer specializing in Angular, React, Node.js, and creative branding. Based in Thailand.",
+      "Explore the portfolio of Kidakorn Intha (Devakorn). Expert in building fast, scalable web applications and delivering highly engaging UI/UX designs.",
     url: "https://www.devakorn.com",
     siteName: "Devakorn Portfolio",
     locale: "th_TH",
@@ -57,15 +61,15 @@ export const metadata: Metadata = {
         url: "/profile.png",
         width: 1200,
         height: 630,
-        alt: "Kidakorn Intha (Devakorn) — Web Developer & Graphic Designer",
+        alt: "Devakorn | Full Stack Web Developer & Designer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kidakorn Intha (Devakorn) — Web Developer & Graphic Designer",
+    title: "Devakorn | Full Stack Web Developer & Designer",
     description:
-      "Web Developer and Graphic Designer specializing in Angular, React, Node.js, and creative branding. Based in Thailand.",
+      "Explore the portfolio of Kidakorn Intha (Devakorn). Expert in building fast, scalable web applications and delivering highly engaging UI/UX designs.",
   },
   robots: {
     index: true,
@@ -92,7 +96,7 @@ export default function RootLayout({
      *   data-theme from localStorage before first paint (avoids mismatch)
      */
     <html lang="th" data-theme="dark" suppressHydrationWarning>
-      <body className={`${prompt.variable} ${chakra.variable} min-h-screen antialiased`} style={{ fontFamily: 'var(--font-kanit), sans-serif' }}>
+      <body className={`${prompt.variable} ${chakra.variable} font-sans bg-main text-main min-h-screen antialiased`}>
         <ThemeProvider>
           <LanguageProvider>
             <SmoothScrolling>

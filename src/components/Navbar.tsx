@@ -17,13 +17,14 @@ import { useTheme } from "@/lib/ThemeContext";
 const NAV_LINKS = [
   { key: "nav_about", href: "#about" },
   { key: "nav_projects", href: "#projects" },
+  { key: "nav_clients", href: "#clients" },
   { key: "nav_links", href: "#links" },
   { key: "nav_contact", href: "#contact" },
   { key: "nav_resume", href: "/resume" },
   { key: "nav_login", href: "/login" },
 ] as const;
 
-const SECTION_IDS = ["about", "projects", "links", "contact"];
+const SECTION_IDS = ["about", "projects", "clients", "links", "contact"];
 
 export default function Navbar() {
   const { t, lang, toggleLang } = useLanguage();

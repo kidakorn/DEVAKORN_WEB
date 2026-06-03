@@ -20,8 +20,8 @@
 
 /* ── Tailwind theme overrides ───────────────────────────────────── */
 @theme {
-  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-syncopate), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-prompt), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -107,6 +107,16 @@ body {
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
+}
+
+/* Force font inheritance on form elements */
+button, input, textarea, select {
+  font-family: inherit;
+}
+
+/* Force headings to use the display font globally */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
 }
 
 /* ─────────────────────────────────────────────────────────────────

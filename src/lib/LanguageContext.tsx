@@ -40,7 +40,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     (key: string): string => {
       const entry = translations[key];
       if (!entry) {
-        console.error(`[i18n] Missing translation key: "${key}"`);
+        // For dynamic content like user-generated Project Names, they won't have translation keys.
+        // We gracefully return the raw string without logging an error.
         return key;
       }
       return entry[lang];
