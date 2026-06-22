@@ -3,7 +3,7 @@
    - Tailwind CSS v4 via @import
    - DaisyUI v5 via @plugin
    - CSS custom properties (color tokens)
-   - Inter font (Google Fonts)
+   - Prompt + Chakra Petch fonts
    - Base & reset styles
    ───────────────────────────────────────────────────────────────── */
 
@@ -20,8 +20,11 @@
 
 /* ── Tailwind theme overrides ───────────────────────────────────── */
 @theme {
+  /* Body font: Prompt first (has Thai), then system fallbacks */
   --font-sans: var(--font-prompt), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
+
+  /* Display font: Chakra Petch for Latin, Prompt as Thai fallback */
+  --font-display: var(--font-chakra), var(--font-prompt), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -35,32 +38,35 @@
   /* Light mode surfaces */
   --bg-main: #f5f7fa;
   --bg-card: #ffffff;
-  --bg-hover: #f8f9fb;
+  --bg-hover: #f0f2f5;
 
   /* Light mode text */
-  --text-strong: #0f1117;
+  --text-strong: #0a0c10;
   --text-main: #1a1d2e;
   --text-muted: #8a8fa8;
 
   /* Light mode borders */
-  --border-main: #e8eaed;
+  --border-main: #e2e4e9;
 
   /* Glass */
-  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-bg: rgba(255, 255, 255, 0.88);
   --glass-hover-shadow: 0 8px 32px rgba(200, 16, 46, 0.12);
+
+  /* Spacing */
+  --section-py: 7rem;
 }
 
 /* ── Dark mode tokens ───────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg-main: #0d1117;
-  --bg-card: #161b22;
-  --bg-hover: #21262d;
-  --text-strong: #e6edf3;
-  --text-main: #c9d1d9;
-  --text-muted: #8b949e;
-  --border-main: #30363d;
-  --glass-bg: rgba(22, 27, 34, 0.85);
-  --glass-hover-shadow: 0 8px 32px rgba(239, 35, 60, 0.18);
+  --bg-main: #080b10;
+  --bg-card: #0f1318;
+  --bg-hover: #161b22;
+  --text-strong: #eef0f4;
+  --text-main: #c1c9d4;
+  --text-muted: #6b7280;
+  --border-main: #1e2530;
+  --glass-bg: rgba(10, 14, 20, 0.9);
+  --glass-hover-shadow: 0 8px 32px rgba(200, 16, 46, 0.2);
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -75,24 +81,22 @@
 }
 
 [data-theme="dark"] {
-  --color-base-100: #161b22;
-  --color-base-200: #0d1117;
-  --color-base-300: #21262d;
-  --color-base-content: #c9d1d9;
+  --color-base-100: #0f1318;
+  --color-base-200: #080b10;
+  --color-base-300: #161b22;
+  --color-base-content: #c1c9d4;
 }
 
 [data-theme="light"] {
   --color-base-100: #ffffff;
   --color-base-200: #f5f7fa;
-  --color-base-300: #e8eaed;
+  --color-base-300: #e2e4e9;
   --color-base-content: #1a1d2e;
 }
 
 /* ─────────────────────────────────────────────────────────────────
    BASE & RESET
    ───────────────────────────────────────────────────────────────── */
-/* Base CSS Reset is handled by Tailwind's Preflight automatically.
-   Avoid unlayered global resets as they override layered Tailwind utilities. */
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -114,20 +118,51 @@ button, input, textarea, select {
   font-family: inherit;
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   THAI TYPOGRAPHY
+   Prompt is the Thai font. We force heavy weight and tighter
+   line-height on Thai text so it looks bold and impactful,
+   not plain/ordinary like a system default.
+   ───────────────────────────────────────────────────────────────── */
+:lang(th) h1,
+:lang(th) h2,
+:lang(th) h3,
+:lang(th) .section-title,
+:lang(th) .section-label {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* Thai body text: slightly heavier than 400 for better readability */
+:lang(th) p,
+:lang(th) span,
+:lang(th) li {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  line-height: 1.85;
+}
+
+/* Thai nav links: semibold for clarity */
+:lang(th) a,
+:lang(th) button {
+  font-family: var(--font-sans);
+}
+
 /* Force headings to use the display font globally */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   UTILITY CLASSES (project-specific helpers)
+   UTILITY CLASSES
    ───────────────────────────────────────────────────────────────── */
 
 /* Glass card surface */
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-main);
   transition:
     box-shadow 0.3s ease,
@@ -139,22 +174,54 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-4px);
 }
 
-/* Subtle dot-grid background for hero */
+/* ── CSS Noise Grain Overlay ────────────────────────────────────── */
+/* Adds subtle film-grain texture to sections for depth on dark mode */
+.noise-bg {
+  position: relative;
+  isolation: isolate;
+}
+
+.noise-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+[data-theme="dark"] .noise-bg::before {
+  opacity: 0.045;
+}
+
+/* Subtle line-grid background (replaces dot-grid for hero) */
+.line-grid-bg {
+  background-image:
+    linear-gradient(var(--border-main) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-main) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: center center;
+}
+
+/* Subtle dot-grid background (kept for backwards compat) */
 .dot-grid-bg {
   background-image: radial-gradient(
     circle,
     var(--border-main) 1px,
     transparent 1px
   );
-  background-size: 28px 28px;
+  background-size: 30px 30px;
 }
 
 /* Gradient text utility */
 .gradient-text {
   background: linear-gradient(
     135deg,
-    var(--color-primary-red),
-    var(--color-secondary-red)
+    var(--color-primary-red) 0%,
+    var(--color-secondary-red) 60%,
+    #ff6b6b 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -168,56 +235,68 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 4px;
 }
 
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* ─────────────────────────────────────────────────────────────────
-   REFERENCE UI PATTERNS
+   SECTION TITLES
    ───────────────────────────────────────────────────────────────── */
 
-/* Headings & Section Titles */
+.section-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-primary-red);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 2px;
+  background: var(--color-primary-red);
+  flex-shrink: 0;
+}
+
 .section-title {
   font-family: var(--font-display);
-  font-size: 2.25rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 2.5rem;
-  padding-bottom: 1rem;
-  position: relative;
-  display: inline-block;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+  margin-bottom: 1.5rem;
 }
 
-@media (min-width: 768px) {
-  .section-title {
-    font-size: 3rem;
-    letter-spacing: 2px;
-    margin-bottom: 3rem;
-  }
-}
+/* ─────────────────────────────────────────────────────────────────
+   BUTTON STYLES
+   ───────────────────────────────────────────────────────────────── */
 
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 60px;
-  height: 4px;
-  background: linear-gradient(135deg, var(--color-primary-red), var(--color-secondary-red));
-}
-
-/* Button Refinements (from reference) */
+/* Outlined pill button with animated fill */
 .btn-ref {
-  padding: 12px 30px;
-  border: 1px solid var(--color-primary-red);
+  padding: 14px 36px;
+  border: 1.5px solid var(--color-primary-red);
   color: var(--color-primary-red);
   background: transparent;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  border-radius: 9999px; /* keep pill shape to blend with existing DaisyUI */
+  border-radius: 9999px;
+  cursor: pointer;
 }
 
 .btn-ref::before {
@@ -234,7 +313,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-ref:hover {
   color: #fff;
-  box-shadow: 0 0 20px rgba(200, 16, 46, 0.5);
+  box-shadow: 0 0 30px rgba(200, 16, 46, 0.4);
+  transform: translateY(-2px);
 }
 
 .btn-ref:hover::before {
@@ -244,5 +324,34 @@ h1, h2, h3, h4, h5, h6 {
 .btn-solid-ref {
   background: linear-gradient(135deg, var(--color-primary-red), var(--color-secondary-red));
   color: #fff;
-  border: none;
+  border-color: transparent;
+  box-shadow: 0 4px 20px rgba(200, 16, 46, 0.35);
+}
+
+.btn-solid-ref::before {
+  background: linear-gradient(135deg, var(--color-secondary-red), var(--color-primary-red));
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   ANIMATED UNDERLINE FOR NAV LINKS
+   ───────────────────────────────────────────────────────────────── */
+.nav-link-underline {
+  position: relative;
+}
+
+.nav-link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: var(--color-primary-red);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.nav-link-underline:hover::after,
+.nav-link-underline.active::after {
+  width: 100%;
 }

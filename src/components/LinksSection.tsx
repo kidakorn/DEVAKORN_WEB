@@ -2,7 +2,7 @@
 
 // ─────────────────────────────────────────────────────────────────
 // LinksSection.tsx — Linktree-style vertical link list
-// Real links: GitHub, Facebook, Fastwork
+// Full-width rows with muted index numbers + red slide-in on hover
 // ─────────────────────────────────────────────────────────────────
 
 import { motion, type Variants } from "framer-motion";
@@ -53,8 +53,8 @@ const LINKS: Array<{
 ];
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
 };
 
 export default function LinksSection() {
@@ -64,89 +64,130 @@ export default function LinksSection() {
     <section
       id="links"
       aria-labelledby="links-heading"
-      className="w-full px-6 py-20"
-      style={{ background: "var(--bg-hover)" }}
+      className="w-full px-6 py-28 border-t noise-bg"
+      style={{
+        background: "var(--bg-hover)",
+        borderColor: "var(--border-main)",
+      }}
     >
       <div className="max-w-6xl mx-auto">
-          {/* Heading */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={fadeUp}
-            className="mb-10 flex justify-start"
+        {/* Heading */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={fadeUp}
+          className="mb-20"
+        >
+          <p className="section-label">{t("links_subtitle")}</p>
+          <h2
+            id="links-heading"
+            className="section-title mt-2"
           >
-            <h2
-              id="links-heading"
-              className="section-title text-[var(--text-strong)] tracking-tight"
+            {t("links_title")}
+          </h2>
+        </motion.div>
+
+        {/* Premium Vertical List */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-60px" }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
+          className="flex flex-col border-t"
+          style={{ borderColor: "var(--border-main)" }}
+        >
+          {LINKS.map(({ id, titleKey, descKey, icon: Icon, href, external }, index) => (
+            <motion.a
+              key={id}
+              variants={fadeUp}
+              id={id}
+              href={href}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noopener noreferrer" : undefined}
+              className="group relative flex flex-col md:flex-row items-start md:items-center justify-between py-10 md:py-14 border-b overflow-hidden"
+              style={{ borderColor: "var(--border-main)" }}
             >
-              {t("links_title")}
-            </h2>
-          </motion.div>
-          <p className="mb-10 text-sm text-[var(--text-muted)]">{t("links_subtitle")}</p>
+              {/* Red background slide-in on hover */}
+              <div
+                className="absolute inset-0 w-full h-full -translate-y-[101%] group-hover:translate-y-0 pointer-events-none z-0"
+                style={{
+                  background: "var(--color-primary-red)",
+                  transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
+                aria-hidden="true"
+              />
 
-          {/* Premium Vertical List Layout */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={{
-              hidden: {},
-              visible: { transition: { staggerChildren: 0.15 } },
-            }}
-            className="flex flex-col border-t border-[var(--border-main)] w-full max-w-5xl mx-auto mt-12"
-          >
-            {LINKS.map(({ id, titleKey, descKey, icon: Icon, href, external }) => {
-              return (
-                <motion.a
-                  key={id}
-                  variants={fadeUp}
-                  id={id}
-                  href={href}
-                  target={external ? "_blank" : undefined}
-                  rel={external ? "noopener noreferrer" : undefined}
-                  className="group relative flex flex-col md:flex-row items-start md:items-center justify-between py-10 md:py-16 border-b border-[var(--border-main)] overflow-hidden transition-colors"
+              <div className="relative z-10 flex items-center gap-6 md:gap-10 w-full">
+                {/* Muted index number */}
+                <span
+                  className="hidden md:block text-sm font-bold tabular-nums flex-shrink-0 w-8 transition-colors duration-300 group-hover:text-white/60"
+                  style={{
+                    color: "var(--color-primary-red)",
+                    fontFamily: "var(--font-display)",
+                  }}
+                  aria-hidden="true"
                 >
-                  {/* Background Slide-in Animation on Hover */}
-                  <div className="absolute inset-0 w-full h-full bg-[var(--color-primary-red)] -translate-y-[101%] group-hover:translate-y-0 transition-transform duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none z-0" />
-                  
-                  {/* Inner Content Container */}
-                  <div className="relative z-10 flex items-center gap-6 md:gap-14 w-full">
-                    {/* Large Desktop Icon */}
-                    <div className="text-[var(--text-muted)] group-hover:text-white transition-colors duration-500 hidden md:block shrink-0">
-                      <Icon size={56} strokeWidth={1} />
-                    </div>
-                    
-                    {/* Text Block */}
-                    <div className="flex flex-col">
-                       <div className="flex items-center gap-4 mb-2">
-                         {/* Mobile Icon */}
-                         <div className="md:hidden text-[var(--text-muted)] group-hover:text-white transition-colors duration-500">
-                           <Icon size={32} strokeWidth={1.5} />
-                         </div>
-                         {/* Title */}
-                         <p className="text-4xl md:text-6xl lg:text-7xl font-bold font-[var(--font-display)] tracking-tighter text-[var(--text-strong)] group-hover:text-white transition-colors duration-500">
-                           {t(titleKey)}
-                         </p>
-                       </div>
-                       {/* Subtitle */}
-                       <p className="text-lg md:text-xl lg:text-2xl text-[var(--text-muted)] group-hover:text-[rgba(255,255,255,0.8)] transition-colors duration-500 font-light max-w-2xl">
-                         {t(descKey)}
-                       </p>
-                    </div>
-                  </div>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
 
-                  {/* Animated Arrow Button */}
-                  <div className="relative z-10 mt-8 md:mt-0 self-end md:self-center shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-full border border-[var(--border-main)] group-hover:border-white flex items-center justify-center bg-[var(--bg-main)] group-hover:bg-transparent transition-all duration-500 overflow-hidden shadow-sm group-hover:shadow-none">
-                    {/* Primary Arrow (shoots out right) */}
-                    <ChevronRight size={32} className="absolute text-[var(--text-strong)] group-hover:text-white group-hover:translate-x-[150%] transition-transform duration-500 ease-in-out" />
-                    {/* Secondary Arrow (shoots in from left) */}
-                    <ChevronRight size={32} className="absolute text-white -translate-x-[150%] group-hover:translate-x-0 transition-transform duration-500 ease-in-out" />
+                {/* Desktop Icon */}
+                <div
+                  className="hidden md:block flex-shrink-0 transition-colors duration-500 group-hover:text-white"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  <Icon size={44} strokeWidth={1} />
+                </div>
+
+                {/* Text */}
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-3 mb-1">
+                    {/* Mobile Icon */}
+                    <div
+                      className="md:hidden flex-shrink-0 transition-colors duration-500 group-hover:text-white"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      <Icon size={28} strokeWidth={1.5} />
+                    </div>
+                    <p
+                      className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tighter transition-colors duration-500 group-hover:text-white"
+                      style={{
+                        color: "var(--text-strong)",
+                        fontFamily: "var(--font-display)",
+                      }}
+                    >
+                      {t(titleKey)}
+                    </p>
                   </div>
-                </motion.a>
-              );
-            })}
-          </motion.div>
+                  <p
+                    className="text-base md:text-lg font-light transition-colors duration-500 group-hover:text-white/80"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {t(descKey)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Arrow button */}
+              <div
+                className="relative z-10 mt-6 md:mt-0 self-end md:self-center flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-full border flex items-center justify-center transition-all duration-500 overflow-hidden group-hover:border-white group-hover:bg-transparent"
+                style={{
+                  background: "var(--bg-main)",
+                  borderColor: "var(--border-main)",
+                }}
+              >
+                <ChevronRight
+                  size={24}
+                  className="absolute text-[var(--text-strong)] group-hover:text-white group-hover:translate-x-[200%] transition-transform duration-400 ease-in-out"
+                />
+                <ChevronRight
+                  size={24}
+                  className="absolute text-white -translate-x-[200%] group-hover:translate-x-0 transition-transform duration-400 ease-in-out"
+                />
+              </div>
+            </motion.a>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

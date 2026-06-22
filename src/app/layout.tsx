@@ -10,7 +10,7 @@ import { ThemeProvider } from "@/lib/ThemeContext";
 import { LanguageProvider } from "@/lib/LanguageContext";
 
 const prompt = Prompt({
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   subsets: ["latin", "thai"],
   variable: "--font-prompt",
   display: "swap",
@@ -96,7 +96,13 @@ export default function RootLayout({
      *   data-theme from localStorage before first paint (avoids mismatch)
      */
     <html lang="th" data-theme="dark" suppressHydrationWarning>
-      <body className={`${prompt.variable} ${chakra.variable} font-sans bg-main text-main min-h-screen antialiased`}>
+      <body 
+        className={`${prompt.variable} ${chakra.variable} font-sans bg-main text-main min-h-screen antialiased`}
+        style={{
+          '--font-sans': `${prompt.style.fontFamily}, ui-sans-serif, system-ui, sans-serif`,
+          '--font-display': `${chakra.style.fontFamily}, ${prompt.style.fontFamily}, ui-sans-serif, system-ui, sans-serif`
+        } as React.CSSProperties}
+      >
         <ThemeProvider>
           <LanguageProvider>
             <SmoothScrolling>

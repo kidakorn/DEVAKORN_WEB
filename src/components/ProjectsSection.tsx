@@ -1,24 +1,17 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// ProjectsSection.tsx — Service/project card grid
-// 3 col desktop → 2 col tablet → 1 col mobile
-// Includes Inline Project Editor with localStorage persistence
+// ProjectsSection.tsx — Numbered editorial list layout
+// Each project is a full-width row with large index number,
+// tech tags, and a red slide-in border on hover
+// Includes Inline Project Editor with cloud persistence
 // ─────────────────────────────────────────────────────────────────
 
 import { motion, type Variants } from "framer-motion";
-import { LayoutTemplate, Code2, PenTool, ExternalLink, GitFork, Pencil, Trash } from "lucide-react";
+import { ExternalLink, GitFork, Pencil, Trash, Plus } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
-
-// Map string names to Lucide icons for serialization
-const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutTemplate,
-  Code2,
-  PenTool,
-};
 
 type ProjectItem = {
   id: string;
@@ -61,8 +54,8 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
 ];
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
 };
 
 export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean }) {
@@ -83,7 +76,6 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
   const [formGithub, setFormGithub] = useState("");
   const [formLive, setFormLive] = useState("");
 
-  // Hydrate from Cloud Database (or fallback to memory/default)
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -100,14 +92,11 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
       }
       setMounted(true);
     };
-
     fetchProjects();
   }, []);
 
   const saveToCloud = async (newProjects: ProjectItem[]) => {
-    // Optimistic UI update
     setProjects(newProjects);
-    
     try {
       await fetch("/api/projects", {
         method: "POST",
@@ -127,11 +116,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
 
   const openAddModal = () => {
     setEditingProject(null);
-    setFormName("");
-    setFormDesc("");
-    setFormTags("");
-    setFormGithub("");
-    setFormLive("");
+    setFormName(""); setFormDesc(""); setFormTags(""); setFormGithub(""); setFormLive("");
     setIsModalOpen(true);
   };
 
@@ -147,36 +132,22 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
 
   const handleSave = () => {
     setIsSaving(true);
-    // Simulate brief network delay for UX
     setTimeout(() => {
-      const parsedTags = formTags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0);
-
+      const parsedTags = formTags.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
       if (editingProject) {
-        // Edit existing
         const updated = projects.map((p) =>
           p.id === editingProject.id
-            ? {
-              ...p,
-              nameKey: formName,
-              descKey: formDesc,
-              tags: parsedTags,
-              github: formGithub || null,
-              live: formLive || null,
-            }
+            ? { ...p, nameKey: formName, descKey: formDesc, tags: parsedTags, github: formGithub || null, live: formLive || null }
             : p
         );
         saveToCloud(updated);
       } else {
-        // Add new
         const newProject: ProjectItem = {
           id: `project-${Date.now()}`,
           nameKey: formName,
           descKey: formDesc,
           tags: parsedTags,
-          iconName: "Code2", // Default icon for new projects
+          iconName: "Code2",
           github: formGithub || null,
           live: formLive || null,
         };
@@ -187,10 +158,9 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
     }, 400);
   };
 
-  // Prevent hydration mismatch by returning a skeleton or nothing until mounted
   if (!mounted) {
     return (
-      <section id="projects" className="w-full px-6 py-20 min-h-screen" style={{ background: "var(--bg-hover)" }}></section>
+      <section id="projects" className="w-full px-6 py-28 min-h-[50vh]" style={{ background: "var(--bg-hover)" }} />
     );
   }
 
@@ -198,120 +168,135 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
     <section
       id="projects"
       aria-labelledby="projects-heading"
-      className="w-full px-6 py-20 relative"
-      style={{ background: "var(--bg-hover)" }}
+      className="w-full px-6 py-28 noise-bg border-t"
+      style={{
+        background: "var(--bg-hover)",
+        borderColor: "var(--border-main)",
+      }}
     >
       <div className="max-w-6xl mx-auto">
-        {/* Heading */}
+
+        {/* Header row */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
           variants={fadeUp}
-          className="mb-12 flex justify-start"
+          className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-20"
         >
-          <h2
-            id="projects-heading"
-            className="section-title text-[var(--text-strong)]"
-          >
-            {t("projects_title")}
-          </h2>
+          <div>
+            <p className="section-label">{t("projects_title")}</p>
+            <h2
+              id="projects-heading"
+              className="section-title mt-2"
+            >
+              {t("projects_subtitle")}
+            </h2>
+          </div>
+          {isAdmin && (
+            <button
+              onClick={openAddModal}
+              className="btn-ref flex-shrink-0 self-start sm:self-auto"
+            >
+              <Plus size={16} />
+              {t("project_add_btn")}
+            </button>
+          )}
         </motion.div>
-        <p className="mb-12 text-sm text-[var(--text-muted)]">
-          {t("projects_subtitle")}
-        </p>
 
-        {/* Premium Projects Grid Layout */}
+        {/* ── Bento Box Project Grid ───────────────────────────── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.1 } },
-          }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto mt-8"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full"
         >
-          {projects.map((project) => {
-            const Icon = ICON_MAP[project.iconName] || Code2;
+          {projects.map((project, index) => {
+            const isFeatured = index === 0; // First item spans both columns on large screens
+
             return (
               <motion.article
                 key={project.id}
                 id={project.id}
                 variants={fadeUp}
-                className="group relative rounded-[2rem] p-8 flex flex-col items-start gap-6 border transition-all duration-500 overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2"
+                className={`group relative flex flex-col justify-between p-8 md:p-12 overflow-hidden border rounded-[2rem] transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl ${
+                  isFeatured ? "lg:col-span-2" : "col-span-1"
+                }`}
                 style={{
                   background: "var(--bg-card)",
                   borderColor: "var(--border-main)",
                 }}
               >
-                {/* Background Sweep on hover */}
-                <div className="absolute inset-0 w-full h-full bg-[var(--color-primary-red)] opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none z-0" />
-                
-                {/* Editor Action Buttons (Top Right - Always on top) */}
-                {isAdmin && (
-                  <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                    <button
-                      onClick={() => openEditModal(project)}
-                      className="btn btn-sm btn-circle btn-ghost text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--bg-hover)]"
-                      title={t("project_edit")}
-                      aria-label={t("project_edit")}
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(project.id)}
-                      className="btn btn-sm btn-circle btn-ghost text-[var(--text-muted)] hover:text-[var(--color-primary-red)] hover:bg-[var(--bg-hover)]"
-                      title={t("project_delete")}
-                      aria-label={t("project_delete")}
-                    >
-                      <Trash size={16} />
-                    </button>
-                  </div>
-                )}
+                {/* Noise overlay for premium texture */}
+                <div className="absolute inset-0 noise-bg opacity-[0.2] pointer-events-none mix-blend-overlay" />
 
-                <div className="relative z-10 flex flex-col items-start gap-6 w-full h-full">
-                  {/* Premium Icon Block */}
-                  <div className="flex-shrink-0 w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-inner group-hover:bg-[var(--color-primary-red)] group-hover:border-transparent"
-                       style={{ background: "var(--bg-hover)", border: "1px solid var(--border-main)" }}
+                {/* Glowing hover aura */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                  style={{
+                    background: "radial-gradient(circle at 50% 150%, rgba(200,16,46,0.15) 0%, transparent 60%)",
+                  }}
+                />
+
+                {/* Giant Typographic Watermark */}
+                <span
+                  className="absolute -bottom-10 -right-6 text-[10rem] md:text-[16rem] font-black leading-none select-none pointer-events-none transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-3"
+                  style={{
+                    color: "var(--text-strong)",
+                    opacity: 0.03,
+                    fontFamily: "var(--font-display)",
+                  }}
+                  aria-hidden="true"
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                {/* Card Content Top */}
+                <div className="relative z-10 flex flex-col gap-4 max-w-2xl mb-12">
+                  <h3
+                    className="text-3xl md:text-5xl font-bold tracking-tight transition-colors duration-300 group-hover:text-[var(--color-primary-red)]"
+                    style={{ color: "var(--text-strong)", fontFamily: "var(--font-display)" }}
                   >
-                    <Icon strokeWidth={1.5} className="w-8 h-8 text-[var(--color-primary-red)] group-hover:text-white transition-colors duration-500" />
+                    {t(project.nameKey)}
+                  </h3>
+                  <p
+                    className="text-lg md:text-xl leading-relaxed font-light"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {t(project.descKey)}
+                  </p>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {project.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs font-semibold px-4 py-1.5 rounded-full border transition-colors duration-300 group-hover:border-[var(--color-primary-red)] group-hover:text-[var(--color-primary-red)] bg-white/5 backdrop-blur-md"
+                        style={{
+                          borderColor: "var(--border-main)",
+                          color: "var(--text-muted)",
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Text Content */}
-                  <div className="flex flex-col items-start text-left gap-4 flex-1 w-full">
-                    <h3 className="text-2xl font-bold tracking-tight text-[var(--text-strong)] group-hover:text-[var(--color-primary-red)] transition-colors duration-500 pr-10">
-                      {t(project.nameKey)}
-                    </h3>
-                    <p className="text-base text-[var(--text-muted)] group-hover:text-[var(--text-strong)] transition-colors duration-500 font-light leading-relaxed">
-                      {t(project.descKey)}
-                    </p>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-xs tracking-wide px-3 py-1 rounded-full border border-[var(--border-main)] group-hover:border-[var(--color-primary-red)] group-hover:text-[var(--color-primary-red)] transition-colors duration-500 font-medium"
-                          style={{ background: "var(--bg-main)" }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Action Links */}
-                  <div className="flex flex-row flex-wrap gap-4 mt-auto pt-4 w-full border-t border-[var(--border-main)] group-hover:border-[var(--color-primary-red)] transition-colors duration-500">
+                {/* Card Bottom: Actions & Admin Controls */}
+                <div className="relative z-10 flex items-center justify-between w-full mt-auto pt-6 border-t border-[var(--border-main)] border-opacity-50">
+                  <div className="flex items-center gap-3">
                     {project.github && (
                       <a
                         href={project.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm font-semibold transition-colors text-[var(--text-main)] hover:text-[var(--color-primary-red)]"
+                        className="w-12 h-12 flex items-center justify-center rounded-full border transition-all duration-300 hover:bg-[var(--color-primary-red)] hover:border-[var(--color-primary-red)] hover:text-white"
+                        style={{ color: "var(--text-strong)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                        aria-label={t("project_view_github")}
                       >
-                        <GitFork size={18} strokeWidth={2} />
-                        {t("project_view_github")}
+                        <GitFork size={20} strokeWidth={2} />
                       </a>
                     )}
                     {project.live && (
@@ -319,39 +304,52 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
                         href={project.live}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm font-semibold transition-colors text-[var(--text-main)] hover:text-[var(--color-primary-red)]"
+                        className="w-12 h-12 flex items-center justify-center rounded-full border transition-all duration-300 hover:bg-[var(--color-primary-red)] hover:border-[var(--color-primary-red)] hover:text-white"
+                        style={{ color: "var(--text-strong)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                        aria-label={t("project_view_live")}
                       >
-                        <ExternalLink size={18} strokeWidth={2} />
-                        {t("project_view_live")}
+                        <ExternalLink size={20} strokeWidth={2} />
                       </a>
                     )}
                   </div>
+
+                  {/* Admin Editor Buttons */}
+                  {isAdmin && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openEditModal(project)}
+                        className="px-4 py-2 text-sm font-semibold rounded-full border transition-colors hover:text-[var(--color-primary-red)] hover:border-[var(--color-primary-red)]"
+                        style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                        title={t("project_edit")}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(project.id)}
+                        className="w-10 h-10 flex items-center justify-center rounded-full border transition-colors hover:text-red-500 hover:border-red-500"
+                        style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                        title={t("project_delete")}
+                      >
+                        <Trash size={16} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </motion.article>
             );
           })}
         </motion.div>
 
-        {/* Admin Controls */}
+        {/* Admin logout */}
         {isAdmin && (
-          <div className="mt-12 flex flex-col items-center gap-4">
-            <button
-              onClick={openAddModal}
-              className="btn rounded-full px-8 font-semibold shadow-lg transition-all hover:scale-105"
-              style={{
-                backgroundColor: "var(--color-primary-red)",
-                color: "#fff",
-                border: "none"
-              }}
-            >
-              {t("project_add_btn")}
-            </button>
+          <div className="mt-12 flex justify-center">
             <button
               onClick={async () => {
                 await fetch("/api/logout", { method: "POST" });
-                router.refresh(); // Refresh page to remove admin state
+                router.refresh();
               }}
-              className="text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--color-primary-red)] transition-colors underline underline-offset-4"
+              className="text-sm font-semibold transition-colors underline underline-offset-4"
+              style={{ color: "var(--text-muted)" }}
             >
               Logout of Admin
             </button>
@@ -362,89 +360,56 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
       {/* ── Editor Modal ──────────────────────────────────────────── */}
       {isModalOpen && (
         <dialog className="modal modal-open" style={{ zIndex: 9999 }}>
-          <div className="modal-box w-11/12 max-w-3xl" style={{ background: "var(--bg-card)", color: "var(--text-main)" }}>
-            <h3 className="font-bold text-2xl mb-6 text-[var(--text-strong)]">
+          <div
+            className="modal-box w-11/12 max-w-3xl rounded-2xl border"
+            style={{ background: "var(--bg-card)", color: "var(--text-main)", borderColor: "var(--border-main)" }}
+          >
+            <h3 className="font-bold text-2xl mb-6" style={{ color: "var(--text-strong)" }}>
               {editingProject ? t("modal_edit_project") : t("modal_add_project")}
             </h3>
 
             <div className="flex flex-col gap-4">
-              {/* Name */}
+              {[
+                { label: t("modal_label_name"), value: formName, set: setFormName, type: "text", placeholder: "e.g. My Awesome Web App" },
+                { label: t("modal_label_tags"), value: formTags, set: setFormTags, type: "text", placeholder: "React, Tailwind, Node.js" },
+                { label: t("modal_label_github"), value: formGithub, set: setFormGithub, type: "url", placeholder: "https://github.com/..." },
+                { label: t("modal_label_live"), value: formLive, set: setFormLive, type: "url", placeholder: "https://..." },
+              ].map(({ label, value, set, type, placeholder }) => (
+                <div key={label} className="form-control">
+                  <label className="label"><span className="label-text font-semibold" style={{ color: "var(--text-strong)" }}>{label}</span></label>
+                  <input
+                    type={type}
+                    value={value}
+                    onChange={(e) => set(e.target.value)}
+                    placeholder={placeholder}
+                    className="input input-bordered w-full focus:outline-none"
+                    style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
+                  />
+                </div>
+              ))}
               <div className="form-control">
-                <label className="label"><span className="label-text font-semibold text-[var(--text-strong)]">{t("modal_label_name")}</span></label>
-                <input
-                  type="text"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  className="input input-bordered w-full bg-[var(--bg-main)] text-[var(--text-strong)] border-[var(--border-main)] focus:outline-none focus:border-[var(--color-primary-red)]"
-                  placeholder="e.g. My Awesome Web App"
-                />
-              </div>
-
-              {/* Description */}
-              <div className="form-control">
-                <label className="label"><span className="label-text font-semibold text-[var(--text-strong)]">{t("modal_label_desc")}</span></label>
+                <label className="label"><span className="label-text font-semibold" style={{ color: "var(--text-strong)" }}>{t("modal_label_desc")}</span></label>
                 <textarea
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
-                  className="textarea textarea-bordered h-24 w-full bg-[var(--bg-main)] text-[var(--text-strong)] border-[var(--border-main)] focus:outline-none focus:border-[var(--color-primary-red)]"
-                  placeholder="e.g. A fullstack application built with Next.js..."
-                ></textarea>
-              </div>
-
-              {/* Tags */}
-              <div className="form-control">
-                <label className="label"><span className="label-text font-semibold text-[var(--text-strong)]">{t("modal_label_tags")}</span></label>
-                <input
-                  type="text"
-                  value={formTags}
-                  onChange={(e) => setFormTags(e.target.value)}
-                  className="input input-bordered w-full bg-[var(--bg-main)] text-[var(--text-strong)] border-[var(--border-main)] focus:outline-none focus:border-[var(--color-primary-red)]"
-                  placeholder="e.g. React, Tailwind, Node.js"
+                  className="textarea textarea-bordered h-24 w-full focus:outline-none"
+                  placeholder="A short description..."
+                  style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
                 />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* GitHub */}
-                <div className="form-control">
-                  <label className="label"><span className="label-text font-semibold text-[var(--text-strong)]">{t("modal_label_github")}</span></label>
-                  <input
-                    type="url"
-                    value={formGithub}
-                    onChange={(e) => setFormGithub(e.target.value)}
-                    className="input input-bordered w-full bg-[var(--bg-main)] text-[var(--text-strong)] border-[var(--border-main)] focus:outline-none focus:border-[var(--color-primary-red)]"
-                    placeholder="https://github.com/..."
-                  />
-                </div>
-
-                {/* Live URL */}
-                <div className="form-control">
-                  <label className="label"><span className="label-text font-semibold text-[var(--text-strong)]">{t("modal_label_live")}</span></label>
-                  <input
-                    type="url"
-                    value={formLive}
-                    onChange={(e) => setFormLive(e.target.value)}
-                    className="input input-bordered w-full bg-[var(--bg-main)] text-[var(--text-strong)] border-[var(--border-main)] focus:outline-none focus:border-[var(--color-primary-red)]"
-                    placeholder="https://..."
-                  />
-                </div>
               </div>
             </div>
 
             <div className="modal-action mt-8">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="btn btn-ghost"
-                disabled={isSaving}
-              >
+              <button onClick={() => setIsModalOpen(false)} className="btn btn-ghost" disabled={isSaving}>
                 {t("btn_cancel")}
               </button>
               <button
                 onClick={handleSave}
                 className="btn"
-                style={{ backgroundColor: "var(--color-primary-red)", color: "#fff", border: "none" }}
+                style={{ background: "var(--color-primary-red)", color: "#fff", border: "none" }}
                 disabled={isSaving || !formName.trim()}
               >
-                {isSaving ? <span className="loading loading-spinner"></span> : t("btn_save")}
+                {isSaving ? <span className="loading loading-spinner" /> : t("btn_save")}
               </button>
             </div>
           </div>
@@ -456,5 +421,3 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
     </section>
   );
 }
-
-

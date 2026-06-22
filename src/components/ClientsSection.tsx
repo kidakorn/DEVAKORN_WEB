@@ -147,13 +147,13 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
   }
 
   return (
-    <section ref={sectionRef} id="clients" className="relative w-full px-6 py-20 bg-[var(--bg-main)] border-t border-[var(--border-main)] overflow-hidden">
+    <section ref={sectionRef} id="clients" className="relative w-full px-6 py-28 border-t overflow-hidden noise-bg" style={{ background: "var(--bg-main)", borderColor: "var(--border-main)" }}>
       {/* Parallax Background Blob */}
       <motion.div
         style={{ y: bgY }}
-        className="absolute inset-0 z-0 pointer-events-none opacity-20 flex justify-center items-center"
+        className="absolute inset-0 z-0 pointer-events-none opacity-10 flex justify-center items-center"
       >
-        <div className="w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,_var(--color-primary-red)_0%,_transparent_70%)] blur-[100px] rounded-full" />
+        <div className="w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--color-primary-red)_0%,_transparent_70%)] blur-[120px] rounded-full" />
       </motion.div>
 
       <div className="max-w-6xl mx-auto relative z-10">
@@ -163,13 +163,13 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
           variants={fadeUp}
-          className="mb-12 flex flex-col justify-start"
+          className="mb-16 flex flex-col justify-start"
         >
-          <h2 className="section-title text-[var(--text-strong)]">{t("clients_title")}</h2>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">{t("clients_subtitle")}</p>
+          <p className="section-label">{t("clients_subtitle")}</p>
+          <h2 className="section-title">{t("clients_title")}</h2>
         </motion.div>
 
-        {/* Continuous Marquee "Hall of Fame" */}
+        {/* Continuous Marquee */}
         <div className="relative w-full overflow-hidden py-4 marquee-container">
           {/* Fading Edges for Scroll Indication */}
           <div className="absolute top-0 left-0 bottom-0 w-24 bg-gradient-to-r from-[var(--bg-main)] to-transparent z-10 pointer-events-none" />
@@ -221,7 +221,7 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
                     <img
                       src={client.imageUrl}
                       alt={client.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0"
                     />
                   ) : (
                     <div className="text-[var(--text-muted)] flex flex-col items-center gap-2 group-hover:text-[var(--color-primary-red)] transition-colors duration-500">

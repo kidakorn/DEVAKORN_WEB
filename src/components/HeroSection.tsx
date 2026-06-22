@@ -1,20 +1,19 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// HeroSection.tsx — Full-viewport hero
-// - Bilingual greeting + name + tagline (staggered 0.15s delay)
-// - CSS-only dot-grid background
-// - CTA scroll button
-// - Social icon links (GitHub, Facebook, Fastwork)
+// HeroSection.tsx — Full-viewport cinematic hero
+// - Giant centered name display
+// - Animated typing role line
+// - Line-grid background with red drift glow
+// - New logo.png as brand mark
 // ─────────────────────────────────────────────────────────────────
 
 import { motion, type Variants } from "framer-motion";
 import { GitFork, Globe, Briefcase, ArrowDown } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import TypingText from "@/components/TypingText";
-import Hero3DScene from "@/components/Hero3DScene";
+import Image from "next/image";
 
-// Real social links
 const SOCIAL_LINKS = [
   {
     id: "github-link",
@@ -36,13 +35,12 @@ const SOCIAL_LINKS = [
   },
 ] as const;
 
-// Staggered fade + slide-up for hero elements (0.15s between each)
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 32 },
+  hidden: { opacity: 0, y: 24 },
   visible: (delay: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, delay, ease: "easeOut" as const },
+    transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const },
   }),
 };
 
@@ -50,169 +48,206 @@ export default function HeroSection() {
   const { t, lang } = useLanguage();
 
   return (
-    <section id="hero" className="relative w-full px-6 py-20 min-h-screen flex items-center dot-grid-bg overflow-hidden">
-      {/* ── Abstract Glow Backgrounds ─────────────────────────────── */}
-      <div 
-        className="absolute inset-y-0 left-0 w-[800px] flex items-center pointer-events-none"
+    <section
+      id="hero"
+      className="relative w-full min-h-screen flex flex-col items-center justify-center line-grid-bg overflow-hidden noise-bg"
+    >
+      {/* ── Drifting Red Glow ─────────────────────────────────────── */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
       >
-        <div 
-          className="w-[800px] h-[600px] rounded-full opacity-10 blur-[100px]"
+        {/* Center pulse */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full opacity-[0.07]"
           style={{
-            background: "radial-gradient(circle, var(--color-primary-red) 0%, transparent 70%)"
+            background:
+              "radial-gradient(circle, var(--color-primary-red) 0%, transparent 65%)",
           }}
+          animate={{
+            scale: [1, 1.15, 1],
+            opacity: [0.07, 0.11, 0.07],
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         />
-      </div>
+        {/* Off-center drift */}
+        <motion.div
+          className="absolute top-[30%] left-[20%] w-[400px] h-[400px] rounded-full opacity-[0.04]"
+          style={{
+            background:
+              "radial-gradient(circle, var(--color-primary-red) 0%, transparent 70%)",
+          }}
+          animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </motion.div>
 
-      {/* ── Content ─────────────────────────────────────────────── */}
-      <div className="max-w-6xl mx-auto w-full relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          
-          {/* Left Column: Typography & CTAs */}
-          <div className="flex flex-col items-start text-left gap-6">
-            
-            {/* Location badge — delay 0 */}
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              custom={0}
-            >
-              <span
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider border shadow-sm backdrop-blur-sm"
+      {/* ── Thin top accent line ──────────────────────────────────── */}
+      <motion.div
+        className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-primary-red)] to-transparent"
+        initial={{ width: "0%", opacity: 0 }}
+        animate={{ width: "100%", opacity: 1 }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+        aria-hidden="true"
+      />
+
+      {/* ── Main Content ─────────────────────────────────────────── */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center text-center gap-6">
+
+        {/* Logo Brand Mark */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0}
+          className="relative w-20 h-20 mx-auto rounded-full overflow-hidden"
+        >
+          <div
+            className="absolute inset-0 rounded-full blur-2xl opacity-40"
+            style={{ background: "var(--color-primary-red)" }}
+            aria-hidden="true"
+          />
+          <Image
+            src="/logo.png"
+            alt="Devakorn"
+            fill
+            className="object-contain relative z-10"
+            priority
+          />
+        </motion.div>
+
+        {/* Location badge */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0.1}
+        >
+          <span
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] border"
+            style={{
+              borderColor: "var(--border-main)",
+              color: "var(--text-muted)",
+              background: "var(--bg-card)",
+            }}
+          >
+            <span
+              className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-red)] animate-pulse"
+              aria-hidden="true"
+            />
+            {t("hero_location")}
+          </span>
+        </motion.div>
+
+        {/* Greeting */}
+        <motion.p
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0.2}
+          className="text-lg md:text-xl font-semibold"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {t("hero_greeting")}
+        </motion.p>
+
+        {/* Giant Name */}
+        <motion.h1
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0.3}
+          className="gradient-text font-black tracking-[-0.04em] leading-[0.9] uppercase"
+          style={{
+            fontSize: "clamp(4.5rem, 14vw, 12rem)",
+            fontFamily: "var(--font-display)",
+          }}
+        >
+          {t("hero_name")}
+        </motion.h1>
+
+        {/* Tagline with typing */}
+        <motion.p
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0.45}
+          className="text-lg md:text-2xl font-bold mt-2"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {lang === "en" ? "I am a " : "ผมคือ "}
+          <TypingText
+            strings={["Software Developer", "Builder", "Problem Solver"]}
+            className="font-bold text-[var(--text-strong)]"
+          />
+        </motion.p>
+
+        {/* CTA + Social row */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0.6}
+          className="flex flex-col sm:flex-row items-center gap-5 mt-4"
+        >
+          <a
+            href="#projects"
+            id="hero-cta-btn"
+            className="btn-ref btn-solid-ref min-h-12 px-8 text-sm"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            {t("hero_cta")}
+            <ArrowDown size={16} aria-hidden="true" />
+          </a>
+
+          {/* Divider */}
+          <div
+            className="hidden sm:block w-px h-8 opacity-30"
+            style={{ background: "var(--border-main)" }}
+            aria-hidden="true"
+          />
+
+          {/* Social icons */}
+          <div className="flex items-center gap-2">
+            {SOCIAL_LINKS.map(({ id, href, icon: Icon, label }) => (
+              <a
+                key={id}
+                id={id}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="w-10 h-10 flex items-center justify-center rounded-lg border transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-primary-red)] hover:text-[var(--color-primary-red)]"
                 style={{
-                  borderColor: "var(--border-main)",
                   color: "var(--text-muted)",
                   background: "var(--bg-card)",
+                  borderColor: "var(--border-main)",
                 }}
               >
-                <span className="w-2 h-2 rounded-full bg-[var(--color-primary-red)] animate-pulse" />
-                {t("hero_location")}
-              </span>
-            </motion.div>
-
-            <div className="space-y-2">
-              {/* Greeting — delay 0.15 */}
-              <motion.p
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                custom={0.15}
-                className="text-xl md:text-2xl font-medium"
-                style={{ color: "var(--text-muted)" }}
-              >
-                {t("hero_greeting")}
-              </motion.p>
-
-              {/* Name (h1) — delay 0.30 */}
-              <motion.h1
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                custom={0.3}
-                className="font-[var(--font-display)] text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-[1.1] gradient-text max-w-full break-words"
-              >
-                {t("hero_name")}
-              </motion.h1>
-            </div>
-
-            {/* Tagline — delay 0.45 */}
-            <motion.p
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              custom={0.45}
-              className="text-xl md:text-3xl mt-2 font-medium"
-              style={{ color: "var(--text-main)" }}
-            >
-              {lang === "en" ? "I am a " : "ผมคือ "}
-              <TypingText
-                strings={["Software Developer", "Builder", "Problem Solver"]}
-                className="font-bold text-[var(--color-primary-red)]"
-              />
-            </motion.p>
-
-            {/* CTA + Social — delay 0.60 */}
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              custom={0.6}
-              className="flex flex-col sm:flex-row items-center gap-6 mt-6"
-            >
-              <a
-                href="#projects"
-                id="hero-cta-btn"
-                className="btn-ref btn-solid-ref min-h-12 px-8 text-sm"
-              >
-                {t("hero_cta")}
-                <ArrowDown size={18} aria-hidden="true" />
+                <Icon size={17} strokeWidth={1.75} />
               </a>
-
-              {/* Social icons */}
-              <div className="flex items-center gap-3">
-                {SOCIAL_LINKS.map(({ id, href, icon: Icon, label }) => (
-                  <a
-                    key={id}
-                    id={id}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={label}
-                    className="w-12 h-12 flex items-center justify-center rounded-full border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg backdrop-blur-sm"
-                    style={{ 
-                      color: "var(--text-muted)",
-                      background: "var(--bg-card)",
-                      borderColor: "var(--border-main)"
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary-red)";
-                      (e.currentTarget as HTMLElement).style.color = "var(--color-primary-red)";
-                      (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 25px -5px rgba(200, 16, 46, 0.25)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "var(--border-main)";
-                      (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
-                      (e.currentTarget as HTMLElement).style.boxShadow = "";
-                    }}
-                  >
-                    <Icon size={20} strokeWidth={1.75} />
-                  </a>
-                ))}
-              </div>
-            </motion.div>
+            ))}
           </div>
-
-          {/* Right Column: 3D Interactive Scene */}
-          <motion.div 
-            className="hidden lg:flex justify-end items-center relative h-full min-h-[500px] w-full"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-          >
-             <div className="relative w-full h-[500px]">
-                <Hero3DScene />
-             </div>
-          </motion.div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Bouncing scroll indicator */}
+      {/* ── Scroll indicator ─────────────────────────────────────── */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 10, 0] }}
-        transition={{ delay: 1.5, duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.6 }}
         aria-hidden="true"
       >
-        <div className="w-8 h-12 rounded-full border-2 flex justify-center pt-2" style={{ borderColor: "var(--text-muted)" }}>
-          <motion.div 
-            className="w-1.5 h-3 rounded-full" 
-            style={{ background: "var(--text-muted)" }}
-            animate={{ y: [0, 12, 0], opacity: [1, 0, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
+        <motion.div
+          className="w-px h-12 origin-top"
+          style={{ background: "linear-gradient(to bottom, var(--color-primary-red), transparent)" }}
+          animate={{ scaleY: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
       </motion.div>
     </section>
   );

@@ -84,7 +84,8 @@ export default function ContactSection() {
     <section
       id="contact"
       aria-labelledby="contact-heading"
-      className="w-full px-6 py-20"
+      className="w-full px-6 py-28 border-t noise-bg"
+      style={{ background: "var(--bg-main)", borderColor: "var(--border-main)" }}
     >
       <div className="max-w-6xl mx-auto">
         <motion.div
@@ -103,19 +104,24 @@ export default function ContactSection() {
         >
 
           {/* Main Grid Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 w-full relative z-10 text-left items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-20 w-full relative z-10 text-left items-center">
             
             {/* Left Column: Text & Info */}
             <div className="flex flex-col items-start">
               {/* Heading */}
+              <motion.p variants={fadeUp} className="section-label mb-4">Get in touch</motion.p>
               <motion.h2
                 variants={fadeUp}
                 id="contact-heading"
-                className="text-5xl md:text-7xl font-bold font-[var(--font-display)] tracking-tighter leading-[1.1] mb-8"
-                style={{ color: "var(--text-strong)" }}
+                className="font-bold leading-[1.0] tracking-tight mb-8"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(2rem, 4vw, 4rem)",
+                  color: "var(--text-strong)",
+                }}
               >
                 Let's build something <br className="hidden md:block" />
-                <span className="gradient-text text-[var(--color-primary-red)] drop-shadow-xl">extraordinary.</span>
+                <span className="gradient-text text-[var(--color-primary-red)] drop-shadow-xl whitespace-nowrap">extraordinary.</span>
               </motion.h2>
 
               {/* Subtitle */}

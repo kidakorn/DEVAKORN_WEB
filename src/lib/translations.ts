@@ -10,9 +10,9 @@ export const translations: Record<string, Record<Lang, string>> = {
   nav_about: { th: "เกี่ยวกับ", en: "About" },
   nav_projects: { th: "ผลงาน", en: "Projects" },
   nav_clients: { th: "พาร์ทเนอร์", en: "Partners" },
+  nav_resume: { th: "เรซูเม่", en: "Resume" },
   nav_links: { th: "ลิงก์", en: "Links" },
   nav_contact: { th: "ติดต่อ", en: "Contact" },
-  nav_resume: { th: "เรซูเม่", en: "Resume" },
   nav_login: { th: "แอดมิน", en: "Admin Login" },
 
   // ── Hero ────────────────────────────────────────────────────────

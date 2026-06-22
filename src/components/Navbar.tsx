@@ -2,10 +2,10 @@
 
 // ─────────────────────────────────────────────────────────────────
 // Navbar.tsx — Sticky navigation bar
-// - Logo/name left, nav links center, toggles right
-// - Active section highlight via IntersectionObserver
-// - Smooth hide on scroll-down, show on scroll-up (Framer Motion)
-// - Hamburger menu on mobile (< 768px)
+// - Logo (logo.png) left, nav links center, toggles right
+// - Active section highlight with animated red underline on scroll
+// - Smooth hide on scroll-down, show on scroll-up
+// - Hamburger menu on mobile
 // ─────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
@@ -13,6 +13,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import { useTheme } from "@/lib/ThemeContext";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const NAV_LINKS = [
   { key: "nav_about", href: "#about" },
@@ -31,10 +33,11 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const [activeSection, setActiveSection] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hidden, setHidden] = useState(false); // true = slid off-screen
+  const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const lastScrollY = useRef(0);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const router = useRouter();
 
   // ── Highlight active section on scroll ──────────────────────────
   useEffect(() => {
@@ -62,7 +65,6 @@ export default function Navbar() {
     const handleScroll = () => {
       const y = window.scrollY;
       setScrolled(y > 24);
-      // Only hide after user has scrolled past the hero (> 80px)
       if (y > 80) {
         setHidden(y > lastScrollY.current);
       } else {
@@ -75,15 +77,16 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ── Handle Navigation without updating URL Hash ───────────────
+  // ── Handle Navigation ─────────────────────────────────────────
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (!href.startsWith("#")) {
-      setMenuOpen(false);
-      return; // Allow default browser navigation for /resume and /login
-    }
-
     e.preventDefault();
     setMenuOpen(false);
+
+    if (!href.startsWith("#")) {
+      // It's a different page route (e.g., /resume)
+      router.push(href);
+      return;
+    }
 
     if (href === "#") {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -92,44 +95,56 @@ export default function Navbar() {
 
     const targetId = href.replace("#", "");
     const targetElement = document.getElementById(targetId);
+    
     if (targetElement) {
+      // Element exists on current page, smooth scroll to it
       targetElement.scrollIntoView({ behavior: "smooth" });
+    } else {
+      // Element is on the home page, but we are on a different page
+      router.push("/" + href);
     }
   };
 
   return (
     <motion.header
       animate={{ y: hidden ? "-100%" : "0%" }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${scrolled
-        ? "glass-card shadow-lg border-b"
-        : "bg-transparent border-b border-transparent"
-        }`}
-      style={{ borderColor: scrolled ? "var(--border-main)" : "transparent" }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "glass-card shadow-[0_1px_0_var(--border-main)]"
+          : "bg-transparent border-b border-transparent"
+      }`}
     >
       <nav
-        className="max-w-6xl mx-auto px-6 flex items-center justify-between h-20 w-full"
+        className="max-w-6xl mx-auto px-6 flex items-center justify-between h-[70px] w-full"
         aria-label="Main navigation"
       >
         {/* ── Logo ───────────────────────────────────────────────── */}
         <a
           href="#"
           onClick={(e) => handleNavClick(e, "#")}
-          className="flex items-center gap-0.5 focus-visible:rounded group"
+          className="flex items-center gap-2.5 focus-visible:rounded group"
           aria-label="Devakorn — back to top"
         >
-          <img
-            src="/icon.svg"
-            alt="Devakorn Logo"
-            className="w-8 h-8 transition-all duration-300 group-hover:scale-110 drop-shadow-md"
-          />
-          <span className="text-2xl font-bold tracking-tight gradient-text group-hover:brightness-110 transition-all">
-            EVAKORN
+          <div className="relative w-9 h-9 flex-shrink-0 transition-transform duration-300 group-hover:scale-110 rounded-full overflow-hidden">
+            <Image
+              src="/logo.png"
+              alt="Devakorn Logo"
+              fill
+              className="object-contain drop-shadow-[0_0_8px_rgba(200,16,46,0.5)]"
+              priority
+            />
+          </div>
+          <span
+            className="text-lg font-bold tracking-tight transition-colors duration-300"
+            style={{ fontFamily: "var(--font-display)", color: "var(--text-strong)" }}
+          >
+            Devakorn
           </span>
         </a>
 
         {/* ── Desktop Nav Links ───────────────────────────────────── */}
-        <ul className="hidden md:flex items-center gap-8" role="list">
+        <ul className="hidden md:flex items-center gap-1" role="list">
           {NAV_LINKS.map(({ key, href }) => {
             const sectionId = href.replace("#", "");
             const isActive = activeSection === sectionId;
@@ -138,10 +153,11 @@ export default function Navbar() {
                 <a
                   href={href}
                   onClick={(e) => handleNavClick(e, href)}
-                  className={`text-sm font-medium transition-colors duration-200 ${isActive
-                    ? "text-[var(--color-primary-red)]"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"
-                    }`}
+                  className={`nav-link-underline relative px-3 py-2 text-sm font-medium transition-colors duration-200 rounded-md ${
+                    isActive
+                      ? "text-[var(--color-primary-red)] active"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"
+                  }`}
                 >
                   {t(key)}
                 </a>
@@ -151,41 +167,43 @@ export default function Navbar() {
         </ul>
 
         {/* ── Toggles ─────────────────────────────────────────────── */}
-        <div className="flex items-center gap-2">
-          {/* Language toggle — min 44px tap target */}
+        <div className="flex items-center gap-1">
+          {/* Language toggle */}
           <button
             onClick={toggleLang}
-            className="btn btn-ghost btn-sm text-xs font-semibold tracking-wide px-3 min-h-11"
+            className="btn btn-ghost btn-sm text-xs font-bold tracking-wider px-3 min-h-10 rounded-lg"
+            style={{ color: "var(--text-muted)" }}
             aria-label={t("aria_toggle_lang")}
             id="lang-toggle-btn"
           >
             {lang === "th" ? "EN" : "TH"}
           </button>
 
-          {/* Theme toggle — min 44px tap target */}
+          {/* Theme toggle */}
           <button
             onClick={toggleTheme}
-            className="btn btn-ghost btn-sm btn-circle min-h-11 min-w-11"
+            className="btn btn-ghost btn-sm btn-circle min-h-10 min-w-10 rounded-lg"
+            style={{ color: "var(--text-muted)" }}
             aria-label={t("aria_toggle_theme")}
             id="theme-toggle-btn"
           >
             {theme === "dark" ? (
-              <Sun size={18} strokeWidth={1.75} />
+              <Sun size={17} strokeWidth={1.75} />
             ) : (
-              <Moon size={18} strokeWidth={1.75} />
+              <Moon size={17} strokeWidth={1.75} />
             )}
           </button>
 
-          {/* Hamburger — mobile only, min 44px tap target */}
+          {/* Hamburger — mobile only */}
           <button
-            className="btn btn-ghost btn-sm btn-circle md:hidden min-h-11 min-w-11"
+            className="btn btn-ghost btn-sm btn-circle md:hidden min-h-10 min-w-10 rounded-lg"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={menuOpen ? t("aria_close_menu") : t("aria_open_menu")}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             id="hamburger-btn"
           >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </nav>
@@ -200,11 +218,16 @@ export default function Navbar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="md:hidden overflow-hidden"
-            style={{ background: "var(--glass-bg)", backdropFilter: "blur(12px)" }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="md:hidden overflow-hidden border-t relative z-50"
+            style={{
+              background: "var(--glass-bg)",
+              backdropFilter: "blur(16px)",
+              borderColor: "var(--border-main)",
+              isolation: "isolate",
+            }}
           >
-            <ul className="flex flex-col gap-1 px-6 pb-4 pt-2" role="list">
+            <ul className="flex flex-col px-6 py-4" role="list">
               {NAV_LINKS.map(({ key, href }) => {
                 const sectionId = href.replace("#", "");
                 const isActive = activeSection === sectionId;
@@ -213,11 +236,16 @@ export default function Navbar() {
                     <a
                       href={href}
                       onClick={(e) => handleNavClick(e, href)}
-                      className={`block py-3 text-sm font-medium transition-colors min-h-[44px] flex items-center ${isActive
-                        ? "text-[var(--color-primary-red)]"
-                        : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"
-                        }`}
+                      className={`flex items-center gap-3 py-3.5 text-sm font-medium transition-colors border-b min-h-[44px] ${
+                        isActive
+                          ? "text-[var(--color-primary-red)]"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-strong)]"
+                      }`}
+                      style={{ borderColor: "var(--border-main)" }}
                     >
+                      {isActive && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-red)]" />
+                      )}
                       {t(key)}
                     </a>
                   </li>
