@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useLanguage } from "@/lib/LanguageContext";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Pencil, Trash, ExternalLink, Image as ImageIcon } from "lucide-react";
 
 type ClientItem = {
@@ -53,7 +54,6 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
 
   // Background moves down, Images move up slightly
   const bgY = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -274,7 +274,7 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
       </div>
 
       {/* Editor Modal */}
-      {isModalOpen && (
+      {isModalOpen && mounted && createPortal(
         <dialog className="modal modal-open" style={{ zIndex: 9999 }}>
           <div className="modal-box w-11/12 max-w-2xl bg-[var(--bg-card)] text-[var(--text-main)] border border-[var(--border-main)]">
             <h3 className="font-bold text-2xl mb-6 text-[var(--text-strong)]">
@@ -327,23 +327,25 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
               </div>
             </div>
 
-            <div className="modal-action mt-8">
-              <button onClick={() => setIsModalOpen(false)} className="btn btn-ghost text-[var(--text-main)]" disabled={isSaving}>
-                Cancel
+            <div className="modal-action mt-6">
+              <button onClick={() => setIsModalOpen(false)} className="btn btn-ghost" disabled={isSaving}>
+                {t("btn_cancel")}
               </button>
               <button
                 onClick={handleSave}
-                className="btn bg-[var(--color-primary-red)] text-white border-none hover:bg-[var(--color-secondary-red)]"
+                className="btn text-white border-none"
+                style={{ background: "var(--color-primary-red)" }}
                 disabled={isSaving || !formName.trim()}
               >
-                {isSaving ? <span className="loading loading-spinner"></span> : "Save Client"}
+                {isSaving ? <span className="loading loading-spinner" /> : t("btn_save")}
               </button>
             </div>
           </div>
-          <form method="dialog" className="modal-backdrop">
-            <button onClick={() => setIsModalOpen(false)}>close</button>
+          <form method="dialog" className="modal-backdrop" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
+            <button type="submit">close</button>
           </form>
-        </dialog>
+        </dialog>,
+        document.body
       )}
     </section>
   );

@@ -8,10 +8,12 @@
 // ─────────────────────────────────────────────────────────────────
 
 import { motion, type Variants } from "framer-motion";
-import { ExternalLink, GitFork, Pencil, Trash, Plus } from "lucide-react";
+import { ExternalLink, GitFork, Pencil, Trash, Plus, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type ProjectItem = {
   id: string;
@@ -21,11 +23,14 @@ type ProjectItem = {
   iconName: string;
   github: string | null;
   live: string | null;
+  slug?: string; // URL-safe identifier for the /projects/[slug] sub-page
+  isPrivateDocs?: boolean; // If true, only admins can view the project docs
 };
 
 const DEFAULT_PROJECTS: ProjectItem[] = [
   {
     id: "project-1",
+    slug: "wordpress-development",
     nameKey: "project1_name",
     descKey: "project1_desc",
     tags: ["WordPress", "PHP", "CSS"],
@@ -35,6 +40,7 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
   },
   {
     id: "project-2",
+    slug: "web-application-development",
     nameKey: "project2_name",
     descKey: "project2_desc",
     tags: ["Angular", "Node.js", "Express", "MySQL"],
@@ -44,6 +50,7 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
   },
   {
     id: "project-3",
+    slug: "graphic-design-branding",
     nameKey: "project3_name",
     descKey: "project3_desc",
     tags: ["Branding", "Print Media", "Social Media"],
@@ -75,6 +82,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
   const [formTags, setFormTags] = useState("");
   const [formGithub, setFormGithub] = useState("");
   const [formLive, setFormLive] = useState("");
+  const [formPrivate, setFormPrivate] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -82,7 +90,11 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
         const res = await fetch("/api/projects");
         const data = await res.json();
         if (data.projects && Array.isArray(data.projects) && data.projects.length > 0) {
-          setProjects(data.projects);
+          const withSlugs = data.projects.map((p: any) => ({
+            ...p,
+            slug: p.slug ?? p.nameKey?.toLowerCase().replace(/[^a-z0-9]+/g, "-") ?? p.id,
+          }));
+          setProjects(withSlugs);
         } else {
           setProjects(DEFAULT_PROJECTS);
         }
@@ -116,7 +128,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
 
   const openAddModal = () => {
     setEditingProject(null);
-    setFormName(""); setFormDesc(""); setFormTags(""); setFormGithub(""); setFormLive("");
+    setFormName(""); setFormDesc(""); setFormTags(""); setFormGithub(""); setFormLive(""); setFormPrivate(false);
     setIsModalOpen(true);
   };
 
@@ -127,6 +139,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
     setFormTags(project.tags.join(", "));
     setFormGithub(project.github || "");
     setFormLive(project.live || "");
+    setFormPrivate(project.isPrivateDocs || false);
     setIsModalOpen(true);
   };
 
@@ -137,19 +150,21 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
       if (editingProject) {
         const updated = projects.map((p) =>
           p.id === editingProject.id
-            ? { ...p, nameKey: formName, descKey: formDesc, tags: parsedTags, github: formGithub || null, live: formLive || null }
+            ? { ...p, nameKey: formName, descKey: formDesc, tags: parsedTags, github: formGithub || null, live: formLive || null, isPrivateDocs: formPrivate }
             : p
         );
         saveToCloud(updated);
       } else {
         const newProject: ProjectItem = {
           id: `project-${Date.now()}`,
+          slug: formName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
           nameKey: formName,
           descKey: formDesc,
           tags: parsedTags,
           iconName: "Code2",
           github: formGithub || null,
           live: formLive || null,
+          isPrivateDocs: formPrivate,
         };
         saveToCloud([...projects, newProject]);
       }
@@ -313,27 +328,47 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
                     )}
                   </div>
 
-                  {/* Admin Editor Buttons */}
-                  {isAdmin && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => openEditModal(project)}
-                        className="px-4 py-2 text-sm font-semibold rounded-full border transition-colors hover:text-[var(--color-primary-red)] hover:border-[var(--color-primary-red)]"
-                        style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
-                        title={t("project_edit")}
+                  <div className="flex items-center gap-2">
+                    {/* Admin Editor Buttons */}
+                    {isAdmin && (
+                      <>
+                        <button
+                          onClick={() => openEditModal(project)}
+                          className="px-4 py-2 text-sm font-semibold rounded-full border transition-colors hover:text-[var(--color-primary-red)] hover:border-[var(--color-primary-red)]"
+                          style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                          title={t("project_edit")}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(project.id)}
+                          className="w-10 h-10 flex items-center justify-center rounded-full border transition-colors hover:text-red-500 hover:border-red-500"
+                          style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                          title={t("project_delete")}
+                        >
+                          <Trash size={16} />
+                        </button>
+                      </>
+                    )}
+                    
+                    {/* "View Details" link */}
+                    {project.slug && (!project.isPrivateDocs || isAdmin) && (
+                      <Link
+                        href={`/projects/${project.slug}`}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border transition-all duration-300 hover:bg-[var(--color-primary-red)] hover:border-[var(--color-primary-red)] hover:text-white"
+                        style={{
+                          color: "var(--text-strong)",
+                          borderColor: "var(--border-main)",
+                          background: "var(--bg-main)",
+                        }}
                       >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(project.id)}
-                        className="w-10 h-10 flex items-center justify-center rounded-full border transition-colors hover:text-red-500 hover:border-red-500"
-                        style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
-                        title={t("project_delete")}
-                      >
-                        <Trash size={16} />
-                      </button>
-                    </div>
-                  )}
+                        <span className="hidden sm:inline">
+                          {project.isPrivateDocs ? t("projects_view_details") + " 🔒" : t("projects_view_details")}
+                        </span>
+                        <ArrowRight size={14} />
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </motion.article>
             );
@@ -358,7 +393,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
       </div>
 
       {/* ── Editor Modal ──────────────────────────────────────────── */}
-      {isModalOpen && (
+      {isModalOpen && mounted && createPortal(
         <dialog className="modal modal-open" style={{ zIndex: 9999 }}>
           <div
             className="modal-box w-11/12 max-w-3xl rounded-2xl border"
@@ -397,6 +432,22 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
                   style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
                 />
               </div>
+
+              {/* Private Checkbox */}
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-4">
+                  <input
+                    type="checkbox"
+                    checked={formPrivate}
+                    onChange={(e) => setFormPrivate(e.target.checked)}
+                    className="checkbox"
+                    style={{ borderColor: "var(--border-main)", accentColor: "var(--color-primary-red)" }}
+                  />
+                  <span className="label-text font-semibold" style={{ color: "var(--text-strong)" }}>
+                    Admin Only Docs (Hide 'View Details' from public)
+                  </span>
+                </label>
+              </div>
             </div>
 
             <div className="modal-action mt-8">
@@ -413,10 +464,11 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
               </button>
             </div>
           </div>
-          <form method="dialog" className="modal-backdrop">
-            <button onClick={() => setIsModalOpen(false)}>close</button>
+          <form method="dialog" className="modal-backdrop" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
+            <button type="submit">close</button>
           </form>
-        </dialog>
+        </dialog>,
+        document.body
       )}
     </section>
   );

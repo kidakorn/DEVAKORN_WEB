@@ -116,4 +116,37 @@ export const translations: Record<string, Record<Lang, string>> = {
   aria_toggle_lang: { th: "เปลี่ยนภาษา", en: "Toggle language" },
   aria_open_menu: { th: "เปิดเมนู", en: "Open menu" },
   aria_close_menu: { th: "ปิดเมนู", en: "Close menu" },
+
+  // ── Breadcrumb & Project Sub-pages ──────────────────────────────
+  breadcrumb_home: { th: "หน้าหลัก", en: "Home" },
+  breadcrumb_projects: { th: "ผลงาน", en: "Projects" },
+
+  // Projects listing page (/projects)
+  projects_page_title: { th: "ผลงานทั้งหมด", en: "All Projects" },
+  projects_page_subtitle: { th: "เลือกโปรเจกต์เพื่อดูเอกสารและรายละเอียด", en: "Select a project to view documents and details" },
+  projects_view_details: { th: "ดูรายละเอียด", en: "View Details" },
+
+  // Project detail page (/projects/[slug])
+  project_docs_title: { th: "เอกสารอ้างอิง", en: "Reference Documents" },
+  project_docs_empty: { th: "ยังไม่มีเอกสาร", en: "No documents yet" },
+  project_docs_empty_sub: { th: "เพิ่มเอกสาร HTML แรกของโปรเจกต์นี้", en: "Upload the first HTML document for this project" },
+  project_back: { th: "← กลับไปยังผลงาน", en: "← Back to Projects" },
+
+  // Document upload modal
+  doc_add_btn: { th: "+ เพิ่มเอกสาร", en: "+ Add Document" },
+  doc_modal_add_title: { th: "อัปโหลดเอกสาร HTML", en: "Upload HTML Document" },
+  doc_modal_edit_title: { th: "แก้ไขเอกสาร", en: "Edit Document" },
+  doc_label_title: { th: "ชื่อเอกสาร", en: "Document Title" },
+  doc_label_desc: { th: "คำอธิบายสั้นๆ", en: "Short Description" },
+  doc_label_file: { th: "เลือกไฟล์ .html", en: "Choose .html file" },
+  doc_uploading: { th: "กำลังอัปโหลด...", en: "Uploading..." },
+  doc_upload_success: { th: "อัปโหลดสำเร็จ!", en: "Upload successful!" },
+  doc_delete_confirm: { th: "คุณแน่ใจหรือไม่ว่าต้องการลบเอกสารนี้?", en: "Are you sure you want to delete this document?" },
+  doc_view_btn: { th: "เปิดดู", en: "Open" },
+  doc_edit_btn: { th: "แก้ไข", en: "Edit" },
+  doc_delete_btn: { th: "ลบ", en: "Delete" },
+
+  // HTML viewer page (/projects/[slug]/[docId])
+  viewer_open_new_tab: { th: "เปิดในแท็บใหม่", en: "Open in new tab" },
+  viewer_back: { th: "← กลับ", en: "← Back" },
 };
