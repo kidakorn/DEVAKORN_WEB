@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Roadmap — ต้นไม้ทักษะ</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Sarabun:wght@300;400;500;600&display=swap');
+
+    :root {
+      --bg: #080c10;
+      --bg2: #0d1117;
+      --bg3: #161b22;
+      --border: #21262d;
+      --border2: #30363d;
+      --text: #e6edf3;
+      --muted: #7d8590;
+      --dim: #484f58;
+      --cyan: #00d4ff;
+      --cyan2: #006fff;
+      --green: #3fb950;
+      --yellow: #e3b341;
+      --orange: #ff6b35;
+      --purple: #bc8cff;
+      --red: #f85149;
+      --pink: #ff79c6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Sarabun', 'Space Grotesk', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 72px 24px 56px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0, 212, 255, .07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(188, 140, 255, .05) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 40% at 80% 60%, rgba(63, 185, 80, .04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11.5px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 18px;
+      opacity: .8;
+    }
+
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(36px, 5vw, 62px);
+      font-weight: 700;
+      letter-spacing: -.025em;
+      line-height: 1.08;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+
+    .hero-sub {
+      font-size: 15.5px;
+      color: var(--muted);
+      max-width: 500px;
+      margin: 0 auto 30px;
+      line-height: 1.7;
+    }
+
+    .legend {
+      display: inline-flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+    }
+
+    .lc {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* ── TREE CONTAINER ── */
+    .tree-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── TRUNK (ROOT) ── */
+    .trunk {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .root-node {
+      background: linear-gradient(135deg, rgba(0, 212, 255, .15), rgba(0, 111, 255, .1));
+      border: 2px solid var(--cyan);
+      border-radius: 12px;
+      padding: 20px 40px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 0 40px rgba(0, 212, 255, .12);
+    }
+
+    .root-node .label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 4px;
+    }
+
+    .root-node .sub {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* ── CONNECTOR ── */
+    .connector-v {
+      width: 2px;
+      background: linear-gradient(to bottom, var(--cyan), var(--border2));
+      flex-shrink: 0;
+    }
+
+    .connector-v.short {
+      height: 32px;
+    }
+
+    .connector-v.med {
+      height: 48px;
+    }
+
+    /* ── BRANCHES ROW ── */
+    .branches {
+      display: flex;
+      gap: 0;
+      align-items: flex-start;
+      width: 100%;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* horizontal bar connecting branches */
+    .branches::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 120px);
+      height: 2px;
+      background: var(--border2);
+    }
+
+    .branch {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding: 0 8px;
+    }
+
+    .branch::before {
+      content: '';
+      width: 2px;
+      height: 36px;
+      background: var(--border2);
+      flex-shrink: 0;
+    }
+
+    /* ── BRANCH NODE ── */
+    .branch-node {
+      border-radius: 10px;
+      padding: 14px 16px;
+      width: 100%;
+      text-align: center;
+      border: 1.5px solid;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+    }
+
+    .branch-node:hover {
+      transform: translateY(-3px);
+    }
+
+    .branch-node.core {
+      border-color: rgba(0, 212, 255, .5);
+      background: rgba(0, 212, 255, .05);
+    }
+
+    .branch-node.db {
+      border-color: rgba(188, 140, 255, .5);
+      background: rgba(188, 140, 255, .05);
+    }
+
+    .branch-node.api {
+      border-color: rgba(255, 107, 53, .5);
+      background: rgba(255, 107, 53, .05);
+    }
+
+    .branch-node.fe {
+      border-color: rgba(63, 185, 80, .5);
+      background: rgba(63, 185, 80, .05);
+    }
+
+    .branch-node.mobile {
+      border-color: rgba(227, 179, 65, .5);
+      background: rgba(227, 179, 65, .05);
+    }
+
+    .branch-node.infra {
+      border-color: rgba(248, 81, 73, .5);
+      background: rgba(248, 81, 73, .05);
+    }
+
+    .branch-node.biz {
+      border-color: rgba(255, 121, 198, .5);
+      background: rgba(255, 121, 198, .05);
+    }
+
+    .branch-node .ico {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .branch-node .bn-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .branch-node .bn-en {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9.5px;
+      color: var(--muted);
+    }
+
+    /* ── LEAVES ── */
+    .leaves {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 0;
+      margin-top: 0;
+    }
+
+    .leaf-connector {
+      width: 2px;
+      height: 24px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .leaf {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      width: 100%;
+      font-size: 12px;
+      line-height: 1.5;
+      transition: border-color .2s;
+    }
+
+    .leaf:hover {
+      border-color: var(--border2);
+    }
+
+    .leaf .lf-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .leaf .lf-topics {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 8px;
+    }
+
+    .leaf .lf-topics li {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 1.5px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+    }
+
+    .leaf .lf-topics li::before {
+      content: '·';
+      color: var(--dim);
+      flex-shrink: 0;
+    }
+
+    .lf-projects {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .ptag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9.5px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: rgba(0, 212, 255, .07);
+      border: 1px solid rgba(0, 212, 255, .2);
+      color: var(--cyan);
+      white-space: nowrap;
+    }
+
+    .ptag.db {
+      background: rgba(188, 140, 255, .07);
+      border-color: rgba(188, 140, 255, .2);
+      color: var(--purple);
+    }
+
+    .ptag.api {
+      background: rgba(255, 107, 53, .07);
+      border-color: rgba(255, 107, 53, .2);
+      color: var(--orange);
+    }
+
+    .ptag.fe {
+      background: rgba(63, 185, 80, .07);
+      border-color: rgba(63, 185, 80, .2);
+      color: var(--green);
+    }
+
+    .ptag.mob {
+      background: rgba(227, 179, 65, .07);
+      border-color: rgba(227, 179, 65, .2);
+      color: var(--yellow);
+    }
+
+    .ptag.inf {
+      background: rgba(248, 81, 73, .07);
+      border-color: rgba(248, 81, 73, .2);
+      color: var(--red);
+    }
+
+    .ptag.biz {
+      background: rgba(255, 121, 198, .07);
+      border-color: rgba(255, 121, 198, .2);
+      color: var(--pink);
+    }
+
+    .lf-proj-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--dim);
+      margin-bottom: 5px;
+      margin-top: 10px;
+    }
+
+    .lf-resources {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .res-link {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9.5px;
+      color: var(--dim);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: color .15s, background .15s;
+    }
+
+    .res-link:hover {
+      color: var(--cyan);
+      background: rgba(0, 212, 255, .06);
+    }
+
+    .res-link .type {
+      font-size: 8.5px;
+      padding: 1px 4px;
+      border-radius: 2px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--dim);
+      flex-shrink: 0;
+    }
+
+    .res-link .type.free {
+      color: var(--green);
+      border-color: rgba(63, 185, 80, .3);
+    }
+
+    .res-link .type.paid {
+      color: var(--yellow);
+      border-color: rgba(227, 179, 65, .3);
+    }
+
+    .res-link .type.th {
+      color: var(--purple);
+      border-color: rgba(188, 140, 255, .3);
+    }
+
+    /* ── LEVEL LABELS ── */
+    .level-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+      color: var(--dim);
+      margin: 20px 0 10px;
+      text-align: center;
+    }
+
+    /* ── MILESTONE STRIP ── */
+    .milestones {
+      max-width: 1200px;
+      margin: 20px auto 0;
+      padding: 0 24px 48px;
+    }
+
+    .ms-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .ms-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ms-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+    }
+
+    .ms-card.m1::before {
+      background: var(--green);
+    }
+
+    .ms-card.m2::before {
+      background: var(--yellow);
+    }
+
+    .ms-card.m3::before {
+      background: var(--orange);
+    }
+
+    .ms-card.m4::before {
+      background: var(--red);
+    }
+
+    .ms-card.m5::before {
+      background: var(--purple);
+    }
+
+    .ms-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--border2);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .ms-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .ms-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .ms-time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--dim);
+      margin-top: 8px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 22px 24px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+      .branches {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .branches::before {
+        display: none;
+      }
+
+      .branch {
+        flex: 1 1 calc(50% - 12px);
+        min-width: 160px;
+      }
+
+      .branch::before {
+        height: 20px;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .branch {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-bg"></div>
+    <div class="eyebrow">Developer Skill Roadmap</div>
+    <h1>ต้นไม้ทักษะ<br><em>Developer</em> ระบบองค์กร</h1>
+    <p class="hero-sub">เส้นทางเรียนรู้ตั้งแต่รากถึงยอด พร้อมแหล่งเรียนรู้แนะนำในแต่ละขั้น</p>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="lc" style="background:var(--green)"></div> Free
+      </div>
+      <div class="legend-item">
+        <div class="lc" style="background:var(--yellow)"></div> Paid
+      </div>
+      <div class="legend-item">
+        <div class="lc" style="background:var(--purple)"></div> ภาษาไทย
+      </div>
+    </div>
+  </header>
+
+  <div class="tree-wrap">
+    <div class="trunk">
+
+      <!-- ROOT -->
+      <div class="root-node">
+        <div class="label">🌱 Developer ระบบองค์กร</div>
+        <div class="sub">Enterprise System Developer</div>
+      </div>
+      <div class="connector-v short"></div>
+
+      <!-- BRANCHES -->
+      <div class="branches">
+
+        <!-- 1. CORE PROGRAMMING -->
+        <div class="branch">
+          <div class="branch-node core">
+            <div class="ico">⚙️</div>
+            <div class="bn-title">Core Programming</div>
+            <div class="bn-en">รากฐานการเขียนโค้ด</div>
+          </div>
+          <div class="leaves">
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">JavaScript / TypeScript</div>
+              <ul class="lf-topics">
+                <li>Variables, Functions, OOP</li>
+                <li>Async / Promise / Fetch</li>
+                <li>TypeScript Types & Generics</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag">Budget Tracker</span>
+                <span class="ptag">URL Shortener</span>
+                <span class="ptag">Quiz App</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://javascript.info" target="_blank"><span
+                    class="type free">FREE</span>javascript.info</a>
+                <a class="res-link" href="https://www.typescriptlang.org/docs" target="_blank"><span
+                    class="type free">FREE</span>TypeScript Official Docs</a>
+                <a class="res-link" href="https://www.youtube.com/@CodeWithKru" target="_blank"><span
+                    class="type th">TH</span>Code With Kru (YouTube)</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">Python (ทางเลือก Backend/AI)</div>
+              <ul class="lf-topics">
+                <li>Syntax, List, Dict, Class</li>
+                <li>FastAPI / Django</li>
+                <li>Data manipulation (pandas)</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag">Sales Report Automation</span>
+                <span class="ptag">REST API Starter</span>
+                <span class="ptag">CSV Data Cleaner</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://docs.python.org/3/tutorial" target="_blank"><span
+                    class="type free">FREE</span>Python Official Tutorial</a>
+                <a class="res-link" href="https://www.youtube.com/@KongRuksiang" target="_blank"><span
+                    class="type th">TH</span>Kong Ruksiang (YouTube)</a>
+                <a class="res-link" href="https://www.udemy.com/course/complete-python-bootcamp" target="_blank"><span
+                    class="type paid">PAID</span>Complete Python Bootcamp – Udemy</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">Data Structures & Algorithms</div>
+              <ul class="lf-topics">
+                <li>Array, Stack, Queue, Tree, Graph</li>
+                <li>Sorting & Searching</li>
+                <li>Big-O notation</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag">Sorting Visualizer</span>
+                <span class="ptag">Pathfinding Visualizer</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://neetcode.io" target="_blank"><span
+                    class="type free">FREE</span>NeetCode.io</a>
+                <a class="res-link" href="https://www.cs50.harvard.edu" target="_blank"><span
+                    class="type free">FREE</span>CS50 – Harvard</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. DATABASE -->
+        <div class="branch">
+          <div class="branch-node db">
+            <div class="ico">🗄️</div>
+            <div class="bn-title">Database</div>
+            <div class="bn-en">ฐานข้อมูล</div>
+          </div>
+          <div class="leaves">
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">SQL & Relational DB</div>
+              <ul class="lf-topics">
+                <li>SELECT, JOIN, GROUP BY, INDEX</li>
+                <li>Database design & normalization</li>
+                <li>Transaction, ACID</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag db">Library Management DB</span>
+                <span class="ptag db">School Grade System</span>
+                <span class="ptag db">Inventory Schema Design</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://sqlbolt.com" target="_blank"><span
+                    class="type free">FREE</span>SQLBolt (Interactive)</a>
+                <a class="res-link" href="https://pgexercises.com" target="_blank"><span
+                    class="type free">FREE</span>PostgreSQL Exercises</a>
+                <a class="res-link" href="https://www.youtube.com/@ArnoldCode" target="_blank"><span
+                    class="type free">FREE</span>Arnold Code – DB Design</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">ORM & Query Builder</div>
+              <ul class="lf-topics">
+                <li>Prisma / TypeORM / Drizzle</li>
+                <li>Migration management</li>
+                <li>Relation design (1:1, 1:N, M:N)</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag db">Blog API with Comments</span>
+                <span class="ptag db">Product Catalog API</span>
+                <span class="ptag db">Todo App with Tags</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://www.prisma.io/docs" target="_blank"><span
+                    class="type free">FREE</span>Prisma Official Docs</a>
+                <a class="res-link" href="https://orm.drizzle.team" target="_blank"><span
+                    class="type free">FREE</span>Drizzle ORM Docs</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">NoSQL & Cache</div>
+              <ul class="lf-topics">
+                <li>MongoDB (document store)</li>
+                <li>Redis (cache, session, queue)</li>
+                <li>เลือกใช้ให้ถูกกรณี</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag db">Chat Message Store</span>
+                <span class="ptag db">Session Cache Service</span>
+                <span class="ptag db">Rate Limiter API</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://university.mongodb.com" target="_blank"><span
+                    class="type free">FREE</span>MongoDB University</a>
+                <a class="res-link" href="https://redis.io/learn" target="_blank"><span
+                    class="type free">FREE</span>Redis Official Learn</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. BACKEND / API -->
+        <div class="branch">
+          <div class="branch-node api">
+            <div class="ico">🔌</div>
+            <div class="bn-title">Backend & API</div>
+            <div class="bn-en">เซิร์ฟเวอร์และ API</div>
+          </div>
+          <div class="leaves">
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">REST API Design</div>
+              <ul class="lf-topics">
+                <li>HTTP Methods, Status codes</li>
+                <li>Express.js / NestJS / Hono</li>
+                <li>Middleware, Error handling</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag api">Expense Tracker API</span>
+                <span class="ptag api">Employee Directory API</span>
+                <span class="ptag api">Notification Service</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://www.theodinproject.com" target="_blank"><span
+                    class="type free">FREE</span>The Odin Project</a>
+                <a class="res-link" href="https://docs.nestjs.com" target="_blank"><span
+                    class="type free">FREE</span>NestJS Official Docs</a>
+                <a class="res-link" href="https://www.udemy.com/course/nodejs-the-complete-guide" target="_blank"><span
+                    class="type paid">PAID</span>NodeJS Complete – Udemy</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">Authentication & Security</div>
+              <ul class="lf-topics">
+                <li>JWT, Session, OAuth2 / OIDC</li>
+                <li>RBAC, Permission design</li>
+                <li>OWASP Top 10</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag api">Auth System + 2FA</span>
+                <span class="ptag api">RBAC Admin Panel</span>
+                <span class="ptag api">OAuth2 Login (Google/LINE)</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://owasp.org/www-project-top-ten" target="_blank"><span
+                    class="type free">FREE</span>OWASP Top 10</a>
+                <a class="res-link" href="https://jwt.io/introduction" target="_blank"><span
+                    class="type free">FREE</span>JWT.io Introduction</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">Workflow & Background Jobs</div>
+              <ul class="lf-topics">
+                <li>State machine pattern</li>
+                <li>BullMQ / Cron jobs</li>
+                <li>Approval flow design</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag api">Leave Approval System</span>
+                <span class="ptag api">Purchase Order Workflow</span>
+                <span class="ptag api">Scheduled Report Emailer</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://docs.bullmq.io" target="_blank"><span
+                    class="type free">FREE</span>BullMQ Docs</a>
+                <a class="res-link" href="https://stately.ai/docs" target="_blank"><span
+                    class="type free">FREE</span>XState / Stately Docs</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. FRONTEND -->
+        <div class="branch">
+          <div class="branch-node fe">
+            <div class="ico">🖥️</div>
+            <div class="bn-title">Frontend</div>
+            <div class="bn-en">ส่วนหน้าของแอป</div>
+          </div>
+          <div class="leaves">
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">React & Ecosystem</div>
+              <ul class="lf-topics">
+                <li>JSX, Hooks, State management</li>
+                <li>Next.js (SSR, App Router)</li>
+                <li>TanStack Query (data fetching)</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag fe">Admin Dashboard</span>
+                <span class="ptag fe">CRM Web App</span>
+                <span class="ptag fe">Kanban Board</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://react.dev" target="_blank"><span class="type free">FREE</span>React
+                  Official Docs</a>
+                <a class="res-link" href="https://nextjs.org/learn" target="_blank"><span
+                    class="type free">FREE</span>Next.js Learn</a>
+                <a class="res-link" href="https://www.youtube.com/@PattaradetBoonma" target="_blank"><span
+                    class="type th">TH</span>Pattaradet – YouTube</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">UI & Design System</div>
+              <ul class="lf-topics">
+                <li>Tailwind CSS</li>
+                <li>shadcn/ui, Radix UI</li>
+                <li>Responsive & Accessibility</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag fe">Component Library</span>
+                <span class="ptag fe">Landing Page SaaS</span>
+                <span class="ptag fe">Form Builder UI</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://tailwindcss.com/docs" target="_blank"><span
+                    class="type free">FREE</span>Tailwind CSS Docs</a>
+                <a class="res-link" href="https://ui.shadcn.com" target="_blank"><span
+                    class="type free">FREE</span>shadcn/ui</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">Data Visualization</div>
+              <ul class="lf-topics">
+                <li>Recharts / Chart.js</li>
+                <li>D3.js (advanced)</li>
+                <li>Dashboard layout design</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag fe">Sales KPI Dashboard</span>
+                <span class="ptag fe">CSV Visualizer</span>
+                <span class="ptag fe">Stock Price Chart</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://recharts.org" target="_blank"><span
+                    class="type free">FREE</span>Recharts Docs</a>
+                <a class="res-link" href="https://d3js.org" target="_blank"><span class="type free">FREE</span>D3.js
+                  Official</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. MOBILE -->
+        <div class="branch">
+          <div class="branch-node mobile">
+            <div class="ico">📱</div>
+            <div class="bn-title">Mobile App</div>
+            <div class="bn-en">แอปมือถือ</div>
+          </div>
+          <div class="leaves">
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">Flutter (Cross-platform)</div>
+              <ul class="lf-topics">
+                <li>Dart syntax, Widget tree</li>
+                <li>State: Riverpod / Bloc</li>
+                <li>iOS + Android จาก codebase เดียว</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag mob">Attendance Check-in App</span>
+                <span class="ptag mob">Mobile POS</span>
+                <span class="ptag mob">Delivery Driver App</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://flutter.dev/docs" target="_blank"><span
+                    class="type free">FREE</span>Flutter Official Docs</a>
+                <a class="res-link" href="https://www.youtube.com/@flutterdev" target="_blank"><span
+                    class="type free">FREE</span>Flutter YouTube Channel</a>
+                <a class="res-link" href="https://www.udemy.com/course/learn-flutter-dart-to-build-ios-android-apps"
+                  target="_blank"><span class="type paid">PAID</span>Flutter Bootcamp – Udemy</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">React Native (ทางเลือก)</div>
+              <ul class="lf-topics">
+                <li>Expo สำหรับเริ่มต้นง่าย</li>
+                <li>Navigation (Expo Router)</li>
+                <li>Native modules เมื่อจำเป็น</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag mob">Field Inspection App</span>
+                <span class="ptag mob">Task Manager Mobile</span>
+                <span class="ptag mob">Expense Claim Mobile</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://reactnative.dev/docs/getting-started" target="_blank"><span
+                    class="type free">FREE</span>React Native Docs</a>
+                <a class="res-link" href="https://docs.expo.dev" target="_blank"><span class="type free">FREE</span>Expo
+                  Docs</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">Mobile-specific Skills</div>
+              <ul class="lf-topics">
+                <li>Offline-first & sync strategy</li>
+                <li>Camera, GPS, Barcode scanner</li>
+                <li>Push notification (FCM)</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag mob">Asset QR Scanner</span>
+                <span class="ptag mob">GPS Fleet Tracker App</span>
+                <span class="ptag mob">Offline Stock Counter</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://firebase.google.com/docs/cloud-messaging" target="_blank"><span
+                    class="type free">FREE</span>Firebase Cloud Messaging</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. INFRA / DEVOPS -->
+        <div class="branch">
+          <div class="branch-node infra">
+            <div class="ico">☁️</div>
+            <div class="bn-title">Infra & DevOps</div>
+            <div class="bn-en">โครงสร้างพื้นฐาน</div>
+          </div>
+          <div class="leaves">
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">Docker & Containers</div>
+              <ul class="lf-topics">
+                <li>Dockerfile, docker-compose</li>
+                <li>Image build & registry</li>
+                <li>Multi-service local dev</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag inf">Containerize Existing App</span>
+                <span class="ptag inf">Full-stack Compose Setup</span>
+                <span class="ptag inf">Private Docker Registry</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://docs.docker.com/get-started" target="_blank"><span
+                    class="type free">FREE</span>Docker Official Get Started</a>
+                <a class="res-link" href="https://www.youtube.com/@TechWorldwithNana" target="_blank"><span
+                    class="type free">FREE</span>TechWorld with Nana</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">Cloud & Deploy</div>
+              <ul class="lf-topics">
+                <li>AWS / GCP / Azure พื้นฐาน</li>
+                <li>VPS: DigitalOcean, Vultr</li>
+                <li>PaaS: Railway, Render, Fly.io</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag inf">Deploy Full-stack to VPS</span>
+                <span class="ptag inf">S3 File Upload Service</span>
+                <span class="ptag inf">Serverless API (Lambda)</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://aws.amazon.com/training/free" target="_blank"><span
+                    class="type free">FREE</span>AWS Free Training</a>
+                <a class="res-link" href="https://railway.com/docs" target="_blank"><span
+                    class="type free">FREE</span>Railway Docs</a>
+                <a class="res-link" href="https://www.udemy.com/course/aws-certified-developer-associate"
+                  target="_blank"><span class="type paid">PAID</span>AWS Dev Associate – Udemy</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">CI/CD & Git</div>
+              <ul class="lf-topics">
+                <li>Git flow, branching strategy</li>
+                <li>GitHub Actions</li>
+                <li>Automated test & deploy</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag inf">Auto-deploy Pipeline</span>
+                <span class="ptag inf">Test + Lint on PR</span>
+                <span class="ptag inf">Semantic Release Bot</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://docs.github.com/actions" target="_blank"><span
+                    class="type free">FREE</span>GitHub Actions Docs</a>
+                <a class="res-link" href="https://learngitbranching.js.org" target="_blank"><span
+                    class="type free">FREE</span>Learn Git Branching (Visual)</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. BUSINESS DOMAIN -->
+        <div class="branch">
+          <div class="branch-node biz">
+            <div class="ico">🧠</div>
+            <div class="bn-title">Business Domain</div>
+            <div class="bn-en">ความรู้เชิงธุรกิจ</div>
+          </div>
+          <div class="leaves">
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">บัญชี & การเงินพื้นฐาน</div>
+              <ul class="lf-topics">
+                <li>หลักบัญชีคู่ (Double-entry)</li>
+                <li>งบการเงิน 3 รูปแบบ</li>
+                <li>ภาษีมูลค่าเพิ่ม, ภาษีหัก ณ ที่จ่าย</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag biz">Invoice Generator</span>
+                <span class="ptag biz">Simple Accounting SaaS</span>
+                <span class="ptag biz">VAT Calculator Tool</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://www.youtube.com/@krunueng_acc" target="_blank"><span
+                    class="type th">TH</span>ครูหนึ่ง บัญชี (YouTube)</a>
+                <a class="res-link" href="https://www.coursera.org/learn/financial-accounting" target="_blank"><span
+                    class="type free">FREE</span>Financial Accounting – Coursera</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">กฎหมายที่ Developer ควรรู้</div>
+              <ul class="lf-topics">
+                <li>PDPA — ข้อมูลส่วนบุคคล</li>
+                <li>พ.ร.บ. คอมพิวเตอร์</li>
+                <li>กฎหมายแรงงานพื้นฐาน</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag biz">PDPA Consent Manager</span>
+                <span class="ptag biz">Data Deletion Request Portal</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://www.pdpc.or.th" target="_blank"><span
+                    class="type th">TH</span>PDPC.or.th (PDPA Official)</a>
+                <a class="res-link" href="https://www.etda.or.th" target="_blank"><span class="type th">TH</span>ETDA —
+                  กฎหมาย Digital</a>
+              </div>
+            </div>
+            <div class="leaf-connector"></div>
+            <div class="leaf">
+              <div class="lf-title">SaaS & Product Thinking</div>
+              <ul class="lf-topics">
+                <li>Pricing model (subscription, per-seat)</li>
+                <li>Multi-tenant architecture</li>
+                <li>Customer onboarding & retention</li>
+              </ul>
+              <div class="lf-proj-label">📁 โปรเจ็คแนะนำ</div>
+              <div class="lf-projects">
+                <span class="ptag biz">Multi-tenant SaaS Starter</span>
+                <span class="ptag biz">Subscription Billing System</span>
+                <span class="ptag biz">Onboarding Flow + Analytics</span>
+              </div>
+              <div class="lf-resources">
+                <a class="res-link" href="https://www.lennysnewsletter.com" target="_blank"><span
+                    class="type free">FREE</span>Lenny's Newsletter</a>
+                <a class="res-link" href="https://stripe.com/guides/atlas" target="_blank"><span
+                    class="type free">FREE</span>Stripe Atlas Guide</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end branches -->
+    </div><!-- end trunk -->
+  </div><!-- end tree-wrap -->
+
+  <!-- MILESTONES -->
+  <div class="milestones">
+    <div class="ms-title">// Milestone ที่ควรทำให้ได้</div>
+    <div class="ms-grid">
+      <div class="ms-card m1">
+        <div class="ms-num">01</div>
+        <div class="ms-name">Hello, World Project</div>
+        <div class="ms-desc">สร้าง full-stack app แรก: CRUD + Auth + DB deploy ขึ้น cloud</div>
+        <div class="ms-time">⏱ ภายใน 3 เดือนแรก</div>
+      </div>
+      <div class="ms-card m2">
+        <div class="ms-num">02</div>
+        <div class="ms-name">First Real User</div>
+        <div class="ms-desc">นำโปรเจ็คไปให้ธุรกิจจริง 1 แห่งใช้งาน รับ feedback จริง</div>
+        <div class="ms-time">⏱ เดือนที่ 4–6</div>
+      </div>
+      <div class="ms-card m3">
+        <div class="ms-num">03</div>
+        <div class="ms-name">First Paid Customer</div>
+        <div class="ms-desc">ลูกค้าแรกที่จ่ายเงิน แม้แต่ 500 บาท/เดือน ถือว่า validate แล้ว</div>
+        <div class="ms-time">⏱ เดือนที่ 6–12</div>
+      </div>
+      <div class="ms-card m4">
+        <div class="ms-num">04</div>
+        <div class="ms-name">Multi-tenant System</div>
+        <div class="ms-desc">ระบบรองรับลูกค้าหลายราย แยกข้อมูลกัน มี onboarding flow</div>
+        <div class="ms-time">⏱ ปีที่ 1–2</div>
+      </div>
+      <div class="ms-card m5">
+        <div class="ms-num">05</div>
+        <div class="ms-name">Recurring Revenue</div>
+        <div class="ms-desc">มีรายได้ subscription สม่ำเสมอ ระบบดูแลตัวเองได้เป็นส่วนใหญ่</div>
+        <div class="ms-time">⏱ ปีที่ 2+</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>// Developer Roadmap · Enterprise Systems</span>
+    <span>Core → DB → API → Frontend → Mobile → Infra → Domain</span>
+  </footer>
+
+</body>
+
+</html>

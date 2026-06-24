@@ -9,15 +9,17 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import Navbar from "@/components/Navbar";
 import HtmlViewerClient from "@/components/HtmlViewerClient";
+import fs from "fs";
+import path from "path";
 
 const isRedisConfigured =
   !!process.env.KV_REST_API_URL && !!process.env.KV_REST_API_TOKEN;
 
 const redis = isRedisConfigured
   ? new Redis({
-      url: process.env.KV_REST_API_URL!,
-      token: process.env.KV_REST_API_TOKEN!,
-    })
+    url: process.env.KV_REST_API_URL!,
+    token: process.env.KV_REST_API_TOKEN!,
+  })
   : null;
 
 const DEFAULT_PROJECTS = [
@@ -32,6 +34,7 @@ type ProjectDoc = {
   description: string;
   blobUrl: string;
   createdAt: string;
+  isLocal?: boolean;
 };
 
 export async function generateMetadata({
@@ -41,10 +44,27 @@ export async function generateMetadata({
 }) {
   const { slug, docId } = await params;
   let doc: ProjectDoc | undefined;
+
   if (redis) {
     const docs = (await redis.get<ProjectDoc[]>(`devakorn_docs:${slug}`)) ?? [];
     doc = docs.find((d) => d.id === docId);
   }
+
+  if (!doc && docId.startsWith("local-")) {
+    const filename = docId.replace("local-", "");
+    const localPath = path.join(process.cwd(), "public", "docs", slug, filename);
+    if (fs.existsSync(localPath)) {
+      doc = {
+        id: docId,
+        title: filename.replace(/\.html?$/, "").replace(/[-_]/g, " "),
+        description: "Local File",
+        blobUrl: `/docs/${slug}/${filename}`,
+        createdAt: new Date().toISOString(),
+        isLocal: true,
+      };
+    }
+  }
+
   return {
     title: doc ? `${doc.title} — Devakorn` : "Document — Devakorn",
   };
@@ -70,7 +90,7 @@ export default async function HtmlViewerPage({
           slug: p.slug ?? p.nameKey?.toLowerCase().replace(/[^a-z0-9]+/g, "-") ?? p.id,
         }));
       }
-    } catch {}
+    } catch { }
   }
   const project = projects.find((p) => p.slug === slug);
   if (!project) return notFound();
@@ -81,8 +101,24 @@ export default async function HtmlViewerPage({
     try {
       const docs = (await redis.get<ProjectDoc[]>(`devakorn_docs:${slug}`)) ?? [];
       doc = docs.find((d) => d.id === docId) ?? null;
-    } catch {}
+    } catch { }
   }
+
+  if (!doc && docId.startsWith("local-")) {
+    const filename = docId.replace("local-", "");
+    const localPath = path.join(process.cwd(), "public", "docs", slug, filename);
+    if (fs.existsSync(localPath)) {
+      doc = {
+        id: docId,
+        title: filename.replace(/\.html?$/, "").replace(/[-_]/g, " "),
+        description: "Local File",
+        blobUrl: `/docs/${slug}/${filename}`,
+        createdAt: fs.statSync(localPath).mtime.toISOString(),
+        isLocal: true,
+      };
+    }
+  }
+
   if (!doc) return notFound();
 
   return (

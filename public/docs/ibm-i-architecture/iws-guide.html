@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IWS + Admin Folder Setup Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --blue:#0f62fe;--dark:#001141;--cyan:#00b4d8;
+    --green:#24a148;--amber:#f1c21b;--red:#da1e28;
+    --purple:#8a3ffc;--gray:#8d8d8d;
+    --bg:#f4f7ff;--surface:#fff;--border:#dde3f0;
+    --text:#161616;--muted:#525252;
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'IBM Plex Sans Thai',sans-serif;
+  }
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);padding:40px 20px 80px;max-width:1100px;margin:0 auto}
+
+  .page-header{text-align:center;margin-bottom:52px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+  h1{font-size:clamp(24px,5vw,42px);font-weight:700;color:var(--dark);line-height:1.2}
+  h1 em{font-style:normal;color:var(--blue)}
+  .subtitle{margin-top:12px;color:var(--muted);font-size:14px;font-weight:300}
+
+  .section-title{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin:48px 0 18px;display:flex;align-items:center;gap:10px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+  .card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px}
+  .card-head{padding:18px 24px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fafcff,#f4f7ff);display:flex;align-items:center;gap:14px}
+  .card-head .icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .card-head h3{font-size:16px;font-weight:700;color:var(--dark)}
+  .card-head .sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .card-body{padding:24px}
+
+  /* Code blocks */
+  .code-block{background:#0d1117;border-radius:10px;padding:18px 22px;font-family:var(--mono);font-size:12px;line-height:2;overflow-x:auto;margin:12px 0}
+  .c-kw{color:#ff7b72}
+  .c-str{color:#a5d6ff}
+  .c-comment{color:#8b949e}
+  .c-fn{color:#d2a8ff}
+  .c-tag{color:#7ee787}
+  .c-val{color:#ffa657}
+  .c-type{color:#79c0ff}
+  .c-num{color:#f2cc60}
+
+  /* Path tree */
+  .path-tree{background:#0d1117;border-radius:10px;padding:18px 22px;font-family:var(--mono);font-size:12.5px;line-height:2.1;overflow-x:auto}
+  .pt-dir{color:#79c0ff;font-weight:700}
+  .pt-file{color:#e6edf3}
+  .pt-comment{color:#8b949e}
+  .pt-active{color:#56d364;font-weight:700}
+  .pt-url{color:#ffa657}
+  .pt-config{color:#d2a8ff}
+
+  /* Flow */
+  .flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:16px 0}
+  .flow-row{display:flex;align-items:stretch;justify-content:center;gap:12px;width:100%;flex-wrap:wrap}
+  .flow-box{padding:12px 20px;border-radius:8px;font-family:var(--mono);font-size:12px;font-weight:700;text-align:center;border:1.5px solid transparent;min-width:160px}
+  .flow-box small{display:block;font-weight:400;font-size:10px;margin-top:3px;opacity:.8}
+  .flow-arrow{color:var(--gray);font-size:22px;display:flex;align-items:center}
+  .flow-down{color:var(--gray);font-size:24px;text-align:center;width:100%;margin:2px 0}
+  .flow-label{font-size:11px;color:var(--muted);font-family:var(--mono);text-align:center;width:100%}
+
+  /* Steps */
+  .steps{display:flex;flex-direction:column;gap:14px;margin-top:16px}
+  .step{display:flex;gap:14px;align-items:flex-start}
+  .step-num{width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .step-num.green{background:var(--green)}
+  .step-num.amber{background:#d97706}
+  .step-num.red{background:var(--red)}
+  .step p{font-size:13px;color:var(--muted);line-height:1.8}
+  .step p b{color:var(--text)}
+  .step p code{font-family:var(--mono);font-size:11px;background:#f4f7ff;padding:1px 6px;border-radius:4px;color:var(--text)}
+
+  /* Grid */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.grid-2{grid-template-columns:1fr}}
+
+  /* Info box */
+  .info-box{border-radius:10px;padding:14px 18px;margin:12px 0}
+  .info-box.blue{background:#eff4ff;border:1.5px solid #c7d7ff}
+  .info-box.green{background:#f0faf4;border:1.5px solid #b8e6c8}
+  .info-box.amber{background:#fffbeb;border:1.5px solid #fde68a}
+  .info-box.red{background:#fff0f0;border:1.5px solid #fecaca}
+  .info-box.purple{background:#faf5ff;border:1.5px solid #e9d5ff}
+  .info-box h4{font-size:13px;font-weight:700;margin-bottom:8px}
+  .info-box.blue h4{color:var(--blue)}
+  .info-box.green h4{color:var(--green)}
+  .info-box.amber h4{color:#92400e}
+  .info-box.red h4{color:var(--red)}
+  .info-box.purple h4{color:var(--purple)}
+  .info-box p,.info-box li{font-size:12.5px;color:var(--muted);line-height:1.8}
+  .info-box ul{list-style:none;display:flex;flex-direction:column;gap:4px;padding-left:4px}
+  .info-box ul li::before{content:'› ';font-weight:700}
+  .info-box.blue ul li::before{color:var(--blue)}
+  .info-box.green ul li::before{color:var(--green)}
+  .info-box.amber ul li::before{color:#d97706}
+  .info-box.purple ul li::before{color:var(--purple)}
+
+  /* Table */
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray);background:#fafcff;padding:10px 16px;text-align:left;border-bottom:1px solid var(--border)}
+  .tbl td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12.5px}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td:first-child{font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--dark)}
+
+  /* Role badge */
+  .role{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+  .role-admin{background:#fde2e2;color:#a3171f}
+  .role-dev{background:#d0f0e0;color:#0a5c2e}
+  .role-both{background:#e0e7ff;color:#3730a3}
+
+  /* Pill */
+  .pill{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
+  .pill-y{background:#d0f0e0;color:#0a5c2e}
+  .pill-n{background:#fde2e2;color:#a3171f}
+  .pill-m{background:#fef3c7;color:#92400e}
+
+  /* Tab */
+  .tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px}
+  .tab{padding:10px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+  .tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+
+  /* Callout */
+  .callout{background:var(--dark);border-radius:14px;padding:32px;color:#fff;position:relative;overflow:hidden;margin-top:0}
+  .callout::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(15,98,254,.25) 0%,transparent 70%)}
+  .callout h3{font-size:18px;font-weight:700;margin-bottom:16px}
+  .callout-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;position:relative;z-index:1}
+  .callout-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px}
+  .callout-item .num{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.1em;margin-bottom:6px}
+  .callout-item p{font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.7}
+  .callout-item code{font-family:var(--mono);font-size:10.5px;background:rgba(255,255,255,.12);padding:1px 5px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <p class="eyebrow">IBM i · IWS + Admin Setup Guide</p>
+  <h1>Admin Set Folder +<br><em>IWS จาก Frontend</em></h1>
+  <p class="subtitle">ทำความเข้าใจ IFS Folder Setup · IWS Config · การเรียก API จาก JS/Angular</p>
+</header>
+
+<!-- ==================== PART 1: ADMIN SETUP ==================== -->
+<p class="section-title">Part 1 — Admin ทำอะไรบ้าง ตั้งแต่ต้น</p>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fff0f0">🔴</div>
+    <div>
+      <h3>สิ่งที่ Admin ต้องทำก่อน Developer เริ่มงาน</h3>
+      <div class="sub">ทั้งหมดนี้ทำผ่าน ACS → IBM Web Administration for i</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="steps">
+      <div class="step">
+        <div class="step-num red">1</div>
+        <p><b>สร้าง HTTP Server Instance</b><br>
+        ACS → IBM Web Administration for i → Create HTTP Server<br>
+        กำหนดชื่อ instance เช่น <code>KIDAKORN</code> และ Port เช่น <code>8080</code> หรือ <code>80</code></p>
+      </div>
+      <div class="step">
+        <div class="step-num red">2</div>
+        <p><b>สร้าง IFS Folder Structure</b><br>
+        IBM i จะสร้าง folder ให้อัตโนมัติใน IFS:<br>
+        <code>/www/KIDAKORN/htdocs/</code> → Document Root<br>
+        <code>/www/KIDAKORN/logs/</code> → Access + Error log<br>
+        <code>/www/KIDAKORN/conf/</code> → httpd.conf</p>
+      </div>
+      <div class="step">
+        <div class="step-num red">3</div>
+        <p><b>แก้ไข httpd.conf</b> — กำหนด URL mapping<br>
+        <code>DocumentRoot "/www/KIDAKORN/htdocs"</code><br>
+        <code>Alias /kidakorn "/www/KIDAKORN/htdocs"</code><br>
+        ทำให้ <code>http://as400xxx/kidakorn/</code> ชี้ไปที่ IFS path นั้น</p>
+      </div>
+      <div class="step">
+        <div class="step-num red">4</div>
+        <p><b>สร้าง Subfolder ให้ Developer</b><br>
+        สร้าง <code>/www/KIDAKORN/htdocs/dev/</code> ให้แต่ละ developer<br>
+        ให้สิทธิ์ write เข้า folder นั้นได้</p>
+      </div>
+      <div class="step">
+        <div class="step-num red">5</div>
+        <p><b>Start HTTP Server</b><br>
+        <code>STRTCPSVR SERVER(*HTTP) HTTPSVR(KIDAKORN)</code><br>
+        หรือผ่าน ACS → Start HTTP Server</p>
+      </div>
+      <div class="step">
+        <div class="step-num red">6</div>
+        <p><b>เปิด IWS (ถ้าต้องการ)</b><br>
+        ACS → IBM Web Administration → Web Services → Enable<br>
+        กำหนด URL prefix เช่น <code>/web/services/</code></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- httpd.conf -->
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#faf5ff">⚙️</div>
+    <div>
+      <h3>httpd.conf — ไฟล์ config หลัก</h3>
+      <div class="sub">Admin แก้ไขเพื่อ map URL → IFS path + เปิด IWS</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="code-block">
+<span class="c-comment"># /www/KIDAKORN/conf/httpd.conf</span>
+<span class="c-comment"># ──────────────────────────────────────────────────</span>
+
+<span class="c-comment"># 1. กำหนด Port ที่ HTTP Server ฟัง</span>
+<span class="c-tag">Listen</span>                *:<span class="c-num">80</span>
+
+<span class="c-comment"># 2. Document Root — folder หลักของเว็บ</span>
+<span class="c-tag">DocumentRoot</span>          <span class="c-str">"/www/KIDAKORN/htdocs"</span>
+
+<span class="c-comment"># 3. Map URL /kidakorn → IFS path</span>
+<span class="c-tag">Alias</span> /kidakorn       <span class="c-str">"/www/KIDAKORN/htdocs"</span>
+
+<span class="c-comment"># 4. ให้สิทธิ์เข้าถึง folder</span>
+&lt;<span class="c-tag">Directory</span> <span class="c-str">"/www/KIDAKORN/htdocs"</span>&gt;
+  <span class="c-tag">Options</span>     Indexes FollowSymLinks
+  <span class="c-tag">AllowOverride</span> None
+  <span class="c-tag">Require</span>     all granted
+&lt;/<span class="c-tag">Directory</span>&gt;
+
+<span class="c-comment"># 5. กำหนด folder สำหรับ Dev แต่ละคน</span>
+<span class="c-tag">Alias</span> /kidakorn/dev    <span class="c-str">"/www/KIDAKORN/htdocs/dev"</span>
+<span class="c-tag">Alias</span> /kidakorn/john   <span class="c-str">"/www/KIDAKORN/htdocs/john"</span>
+
+<span class="c-comment"># 6. เปิด IWS (IBM Web Services)</span>
+<span class="c-tag">LoadModule</span>  zend_enabler_module  /QSYS.LIB/QHTTPSVR.LIB/QZSRCORE.SRVPGM
+<span class="c-tag">WSGIScriptAlias</span> /web/services    /QIBM/ProdData/OS/WebServices/...
+
+<span class="c-comment"># 7. Log files</span>
+<span class="c-tag">ErrorLog</span>    <span class="c-str">"/www/KIDAKORN/logs/error_log"</span>
+<span class="c-tag">CustomLog</span>   <span class="c-str">"/www/KIDAKORN/logs/access_log"</span> combined
+    </div>
+    <div class="info-box amber">
+      <h4>⚠ Developer ไม่ต้องแตะ httpd.conf</h4>
+      <ul>
+        <li>Admin เป็นคนจัดการ httpd.conf ทั้งหมด</li>
+        <li>Developer แค่วางไฟล์ใน folder ที่ Admin กำหนดให้</li>
+        <li>ถ้าต้องการ path ใหม่หรือ config พิเศษ — ขอ Admin แก้ให้</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- IFS Structure -->
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#f0fdf4">📁</div>
+    <div>
+      <h3>IFS Folder Structure ที่ Admin ตั้งไว้</h3>
+      <div class="sub">และส่วนที่ Developer เข้าถึงได้</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="path-tree">
+<span class="pt-comment"># IFS บน IBM i</span>
+<span class="pt-dir">/www/</span>
+  <span class="pt-dir">KIDAKORN/</span>                      <span class="pt-comment"># HTTP Instance ชื่อ KIDAKORN</span>
+    <span class="pt-config">conf/</span>
+      <span class="pt-config">httpd.conf</span>               <span class="pt-comment"># ← Admin ดูแล ห้าม Dev แตะ</span>
+    <span class="pt-comment">logs/</span>
+      <span class="pt-comment">access_log</span>               <span class="pt-comment"># request log</span>
+      <span class="pt-comment">error_log</span>                <span class="pt-comment"># error log</span>
+    <span class="pt-dir">htdocs/</span>                        <span class="pt-comment"># Document Root</span>
+      <span class="pt-file">index.html</span>               <span class="pt-url">→ http://as400xxx/kidakorn/</span>
+      <span class="pt-active">dev/</span>                     <span class="pt-comment"># ← Developer วางไฟล์ตรงนี้</span>
+        <span class="pt-active">index.html</span>           <span class="pt-url">→ http://as400xxx/kidakorn/dev/</span>
+        <span class="pt-active">css/style.css</span>
+        <span class="pt-active">js/app.js</span>
+        <span class="pt-active">assets/</span>
+      <span class="pt-file">john/</span>                    <span class="pt-comment"># folder ของ dev คนอื่น</span>
+      <span class="pt-file">shared/</span>                  <span class="pt-comment"># shared components (ถ้ามี)</span>
+
+<span class="pt-comment"># URL Mapping สรุป:</span>
+<span class="pt-url">http://as400xxx/kidakorn/</span>          <span class="pt-comment">→ htdocs/</span>
+<span class="pt-url">http://as400xxx/kidakorn/dev/</span>      <span class="pt-comment">→ htdocs/dev/     ← ของคุณ</span>
+<span class="pt-url">http://as400xxx/web/services/</span>      <span class="pt-comment">→ IWS REST API endpoint</span>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div class="info-box green">
+        <h4>✅ Developer ทำได้เอง</h4>
+        <ul>
+          <li>สร้าง/แก้ไขไฟล์ใน <code style="font-family:var(--mono);font-size:11px">/htdocs/dev/</code></li>
+          <li>สร้าง subfolder เพิ่มได้ตามต้องการ</li>
+          <li>วาง HTML, CSS, JS, images ได้เลย</li>
+          <li>Build Angular/React แล้ว copy dist/ มาวาง</li>
+        </ul>
+      </div>
+      <div class="info-box red">
+        <h4>🚫 Developer ทำไม่ได้</h4>
+        <ul>
+          <li>แก้ httpd.conf (ต้อง restart HTTP Server)</li>
+          <li>สร้าง HTTP Instance ใหม่</li>
+          <li>เปิด/ปิด IWS</li>
+          <li>เข้า folder ของ dev คนอื่น</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PART 2: IWS SETUP ==================== -->
+<p class="section-title">Part 2 — Admin Setup IWS (IBM Web Services)</p>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fef3c7">🏭</div>
+    <div>
+      <h3>IWS — Admin Expose RPG เป็น REST API</h3>
+      <div class="sub">ทำผ่าน GUI ไม่ต้องเขียน code — ได้ URL ใช้เลย</div>
+    </div>
+  </div>
+  <div class="card-body">
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'tab-flow')">Setup Flow</div>
+      <div class="tab" onclick="switchTab(this,'tab-wizard')">Wizard Steps</div>
+      <div class="tab" onclick="switchTab(this,'tab-result')">ผลลัพธ์ที่ได้</div>
+    </div>
+
+    <div class="tab-content active" id="tab-flow">
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-box" style="background:#fff0f0;color:var(--red);border-color:#fecaca">
+            🔴 RPG Program<br><small>PSS001R ใน X0250661</small>
+          </div>
+        </div>
+        <div class="flow-down">↓</div>
+        <div class="flow-label">Admin เปิด ACS → IBM Web Administration for i</div>
+        <div class="flow-down">↓</div>
+        <div class="flow-row">
+          <div class="flow-box" style="background:#fef3c7;color:#92400e;border-color:#fde68a">
+            🏭 IWS Wizard<br><small>New Web Service → เลือก RPG → กำหนด params</small>
+          </div>
+        </div>
+        <div class="flow-down">↓</div>
+        <div class="flow-label">กด Deploy — IBM i สร้าง REST endpoint ให้อัตโนมัติ</div>
+        <div class="flow-down">↓</div>
+        <div class="flow-row">
+          <div class="flow-box" style="background:#f0fdf4;color:#15803d;border-color:#b8e6c8">
+            🌐 REST API<br><small>http://as400xxx/web/services/PSS001R</small>
+          </div>
+        </div>
+        <div class="flow-down">↓</div>
+        <div class="flow-label">Developer เรียกจาก JS/Angular ได้เลย</div>
+        <div class="flow-down">↓</div>
+        <div class="flow-row">
+          <div class="flow-box" style="background:#e8f0fe;color:var(--blue);border-color:#c7d7ff">
+            🖥 Browser (Frontend)<br><small>fetch / axios / HttpClient</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-wizard">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num amber">1</div>
+          <p><b>เปิด IBM Web Administration for i</b><br>
+          ACS → Tools → IBM Web Administration for i<br>
+          หรือ Browser: <code>http://as400xxx:2001/HTTPAdmin</code></p>
+        </div>
+        <div class="step">
+          <div class="step-num amber">2</div>
+          <p><b>เลือก HTTP Instance</b><br>
+          เลือก instance ที่สร้างไว้ เช่น <code>KIDAKORN</code><br>
+          ไปที่ tab <b>"Web Services"</b></p>
+        </div>
+        <div class="step">
+          <div class="step-num amber">3</div>
+          <p><b>New Web Service</b><br>
+          เลือก <b>Program</b> (ไม่ใช่ SQL)<br>
+          ระบุ Library: <code>X0250661</code> และ Program: <code>PSS001R</code></p>
+        </div>
+        <div class="step">
+          <div class="step-num amber">4</div>
+          <p><b>กำหนด Parameters</b><br>
+          <code>P_REQNO</code> → IN, CHAR(10)<br>
+          <code>P_RESULT</code> → OUT, CHAR(1)<br>
+          <code>P_ERRMSG</code> → OUT, VARCHAR(100)</p>
+        </div>
+        <div class="step">
+          <div class="step-num amber">5</div>
+          <p><b>กำหนด URL + HTTP Method</b><br>
+          Service Name: <code>issueReq</code><br>
+          Method: <code>POST</code><br>
+          URL จะเป็น: <code>/web/services/issueReq</code></p>
+        </div>
+        <div class="step">
+          <div class="step-num amber">6</div>
+          <p><b>Deploy</b><br>
+          กด Deploy — ระบบจะ start service ให้อัตโนมัติ<br>
+          ทดสอบที่: <code>http://as400xxx/web/services/issueReq</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-result">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">ผลลัพธ์หลัง Deploy IWS</div>
+      <div class="code-block">
+<span class="c-comment"># URL ที่ได้หลัง deploy</span>
+POST http://as400xxx/web/services/issueReq
+
+<span class="c-comment"># Request body (JSON)</span>
+{
+  <span class="c-str">"P_REQNO"</span>: <span class="c-str">"REQ001"</span>
+}
+
+<span class="c-comment"># Response (JSON)</span>
+{
+  <span class="c-str">"P_RESULT"</span>: <span class="c-str">"S"</span>,
+  <span class="c-str">"P_ERRMSG"</span>: <span class="c-str">"Issued successfully: REQ001"</span>
+}
+
+<span class="c-comment"># Services อื่นๆ ที่ทำได้เช่นกัน</span>
+POST http://as400xxx/web/services/approveReq
+POST http://as400xxx/web/services/receivePO
+GET  http://as400xxx/web/services/getStock
+      </div>
+      <div class="info-box green">
+        <h4>✅ ข้อดีของ IWS</h4>
+        <ul>
+          <li>ไม่ต้องมี Node.js/.NET backend เลย — ลด complexity มาก</li>
+          <li>RPG รันบน IBM i โดยตรง — เร็วและเสถียร</li>
+          <li>JSON in/out — Frontend เรียกได้ทันที</li>
+          <li>Admin จัดการ version และ security ผ่าน GUI</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== PART 3: CALL FROM FRONTEND ==================== -->
+<p class="section-title">Part 3 — เรียก IWS จาก Frontend</p>
+
+<!-- Vanilla JS -->
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fef3c7">📜</div>
+    <div>
+      <h3>Vanilla JavaScript — fetch API</h3>
+      <div class="sub">ใช้กับ HTML ธรรมดา ไม่ต้องใช้ Framework</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="code-block">
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-comment">// config.js — กำหนด Base URL ของ IWS</span>
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-kw">const</span> API_BASE = <span class="c-str">'http://as400xxx/web/services'</span>;
+
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-comment">// api.js — wrapper function สำหรับเรียก IWS</span>
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-kw">async function</span> <span class="c-fn">callIWS</span>(serviceName, body = {}) {
+  <span class="c-kw">try</span> {
+    <span class="c-kw">const</span> res = <span class="c-kw">await</span> fetch(`${API_BASE}/${serviceName}`, {
+      method:  <span class="c-str">'POST'</span>,
+      headers: { <span class="c-str">'Content-Type'</span>: <span class="c-str">'application/json'</span> },
+      body:    JSON.stringify(body)
+    });
+    <span class="c-kw">if</span> (!res.ok) <span class="c-kw">throw new</span> Error(`HTTP ${res.status}`);
+    <span class="c-kw">return await</span> res.json();
+  } <span class="c-kw">catch</span> (err) {
+    console.error(<span class="c-str">`IWS Error [${serviceName}]:`</span>, err);
+    <span class="c-kw">throw</span> err;
+  }
+}
+
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-comment">// ใช้งานจริง — Issue Requisition</span>
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-kw">async function</span> <span class="c-fn">issueReq</span>(reqNo) {
+  <span class="c-kw">const</span> data = <span class="c-kw">await</span> <span class="c-fn">callIWS</span>(<span class="c-str">'issueReq'</span>, { P_REQNO: reqNo });
+  <span class="c-kw">if</span> (data.P_RESULT === <span class="c-str">'S'</span>) {
+    alert(<span class="c-str">`✅ สำเร็จ: ${data.P_ERRMSG}`</span>);
+  } <span class="c-kw">else</span> {
+    alert(<span class="c-str">`❌ Error: ${data.P_ERRMSG}`</span>);
+  }
+}
+
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-comment">// ดึง Stock List (GET)</span>
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-kw">async function</span> <span class="c-fn">getStock</span>() {
+  <span class="c-kw">const</span> data = <span class="c-kw">await</span> fetch(`${API_BASE}/getStock`).then(r => r.json());
+  <span class="c-comment">// data = [{ CDITEM, NMITEM, QTONHAND, ... }, ...]</span>
+  renderTable(data);
+}
+
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-comment">// Render ข้อมูลเป็นตาราง HTML</span>
+<span class="c-comment">// ──────────────────────────────────────────────</span>
+<span class="c-kw">function</span> <span class="c-fn">renderTable</span>(items) {
+  <span class="c-kw">const</span> tbody = document.querySelector(<span class="c-str">'#stock-table tbody'</span>);
+  tbody.innerHTML = items.map(i => <span class="c-str">`
+    &lt;tr&gt;
+      &lt;td&gt;${i.CDITEM}&lt;/td&gt;
+      &lt;td&gt;${i.NMITEM}&lt;/td&gt;
+      &lt;td&gt;${i.QTONHAND}&lt;/td&gt;
+      &lt;td class="${i.QTONHAND &lt;= i.QTMIN ? 'low' : ''}"&gt;
+        ${i.QTONHAND &lt;= i.QTMIN ? '⚠ Low' : 'OK'}
+      &lt;/td&gt;
+    &lt;/tr&gt;`</span>).join(<span class="c-str">''</span>);
+}
+    </div>
+  </div>
+</div>
+
+<!-- Angular -->
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fde9ec">🅰️</div>
+    <div>
+      <h3>Angular — HttpClient Service</h3>
+      <div class="sub">สร้าง Service class เรียก IWS — แยก concern ชัดเจน</div>
+    </div>
+  </div>
+  <div class="card-body">
+
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:10px;font-weight:700">📄 iws.service.ts</div>
+    <div class="code-block">
+<span class="c-kw">import</span> { Injectable } <span class="c-kw">from</span> <span class="c-str">'@angular/core'</span>;
+<span class="c-kw">import</span> { HttpClient, HttpHeaders } <span class="c-kw">from</span> <span class="c-str">'@angular/common/http'</span>;
+<span class="c-kw">import</span> { Observable } <span class="c-kw">from</span> <span class="c-str">'rxjs'</span>;
+<span class="c-kw">import</span> { catchError } <span class="c-kw">from</span> <span class="c-str">'rxjs/operators'</span>;
+
+<span class="c-comment">// ── Interfaces ──────────────────────────────────</span>
+<span class="c-kw">export interface</span> <span class="c-type">IwsResponse</span> {
+  P_RESULT: <span class="c-kw">string</span>;     <span class="c-comment">// 'S' = Success, 'E' = Error</span>
+  P_ERRMSG: <span class="c-kw">string</span>;
+}
+<span class="c-kw">export interface</span> <span class="c-type">StockItem</span> {
+  CDITEM:   <span class="c-kw">string</span>;
+  NMITEM:   <span class="c-kw">string</span>;
+  QTONHAND: <span class="c-kw">number</span>;
+  QTMIN:    <span class="c-kw">number</span>;
+  TXUNIT:   <span class="c-kw">string</span>;
+}
+
+<span class="c-comment">// ── Service ─────────────────────────────────────</span>
+@Injectable({ providedIn: <span class="c-str">'root'</span> })
+<span class="c-kw">export class</span> <span class="c-type">IwsService</span> {
+  <span class="c-kw">private readonly</span> BASE = <span class="c-str">'http://as400xxx/web/services'</span>;
+  <span class="c-kw">private</span> headers = <span class="c-kw">new</span> <span class="c-type">HttpHeaders</span>({ <span class="c-str">'Content-Type'</span>: <span class="c-str">'application/json'</span> });
+
+  <span class="c-kw">constructor</span>(<span class="c-kw">private</span> http: <span class="c-type">HttpClient</span>) {}
+
+  <span class="c-comment">// Issue Requisition</span>
+  issueReq(reqNo: <span class="c-kw">string</span>): <span class="c-type">Observable</span>&lt;<span class="c-type">IwsResponse</span>&gt; {
+    <span class="c-kw">return</span> <span class="c-kw">this</span>.http.post&lt;<span class="c-type">IwsResponse</span>&gt;(
+      `${<span class="c-kw">this</span>.BASE}/issueReq`,
+      { P_REQNO: reqNo },
+      { headers: <span class="c-kw">this</span>.headers }
+    );
+  }
+
+  <span class="c-comment">// Approve Requisition</span>
+  approveReq(reqNo: <span class="c-kw">string</span>, approvedBy: <span class="c-kw">string</span>): <span class="c-type">Observable</span>&lt;<span class="c-type">IwsResponse</span>&gt; {
+    <span class="c-kw">return</span> <span class="c-kw">this</span>.http.post&lt;<span class="c-type">IwsResponse</span>&gt;(
+      `${<span class="c-kw">this</span>.BASE}/approveReq`,
+      { P_REQNO: reqNo, P_APPROVED_BY: approvedBy },
+      { headers: <span class="c-kw">this</span>.headers }
+    );
+  }
+
+  <span class="c-comment">// Get Stock List</span>
+  getStock(): <span class="c-type">Observable</span>&lt;<span class="c-type">StockItem</span>[]&gt; {
+    <span class="c-kw">return</span> <span class="c-kw">this</span>.http.get&lt;<span class="c-type">StockItem</span>[]&gt;(`${<span class="c-kw">this</span>.BASE}/getStock`);
+  }
+}
+    </div>
+
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin:16px 0 10px;font-weight:700">📄 stock.component.ts — ใช้ Service</div>
+    <div class="code-block">
+<span class="c-kw">import</span> { Component, OnInit } <span class="c-kw">from</span> <span class="c-str">'@angular/core'</span>;
+<span class="c-kw">import</span> { IwsService, StockItem } <span class="c-kw">from</span> <span class="c-str">'../services/iws.service'</span>;
+
+@Component({
+  selector:    <span class="c-str">'app-stock'</span>,
+  templateUrl: <span class="c-str">'./stock.component.html'</span>,
+})
+<span class="c-kw">export class</span> <span class="c-type">StockComponent</span> <span class="c-kw">implements</span> <span class="c-type">OnInit</span> {
+  items:   <span class="c-type">StockItem</span>[] = [];
+  loading = <span class="c-kw">false</span>;
+  error   = <span class="c-str">''</span>;
+
+  <span class="c-kw">constructor</span>(<span class="c-kw">private</span> iws: <span class="c-type">IwsService</span>) {}
+
+  ngOnInit() { <span class="c-kw">this</span>.<span class="c-fn">loadStock</span>(); }
+
+  <span class="c-fn">loadStock</span>() {
+    <span class="c-kw">this</span>.loading = <span class="c-kw">true</span>;
+    <span class="c-kw">this</span>.iws.<span class="c-fn">getStock</span>().subscribe({
+      next:     data  => { <span class="c-kw">this</span>.items = data; <span class="c-kw">this</span>.loading = <span class="c-kw">false</span>; },
+      error:    err   => { <span class="c-kw">this</span>.error = err.message; <span class="c-kw">this</span>.loading = <span class="c-kw">false</span>; }
+    });
+  }
+
+  <span class="c-fn">onIssue</span>(reqNo: <span class="c-kw">string</span>) {
+    <span class="c-kw">this</span>.iws.<span class="c-fn">issueReq</span>(reqNo).subscribe(res => {
+      <span class="c-kw">if</span> (res.P_RESULT === <span class="c-str">'S'</span>) {
+        alert(<span class="c-str">`✅ ${res.P_ERRMSG}`</span>);
+        <span class="c-kw">this</span>.<span class="c-fn">loadStock</span>(); <span class="c-comment">// refresh</span>
+      } <span class="c-kw">else</span> {
+        alert(<span class="c-str">`❌ ${res.P_ERRMSG}`</span>);
+      }
+    });
+  }
+
+  <span class="c-fn">isLow</span>(item: <span class="c-type">StockItem</span>) { <span class="c-kw">return</span> item.QTONHAND &lt;= item.QTMIN; }
+}
+    </div>
+
+    <div class="info-box blue">
+      <h4>💡 ถ้าเกิด CORS Error</h4>
+      <ul>
+        <li>Browser block request ข้าม origin — Admin ต้องเพิ่มใน httpd.conf:</li>
+        <li><code style="font-family:var(--mono);font-size:11px">Header always set Access-Control-Allow-Origin "*"</code></li>
+        <li>หรือระบุ origin เฉพาะ: <code style="font-family:var(--mono);font-size:11px">Access-Control-Allow-Origin "http://as400xxx"</code></li>
+        <li>ถ้า Frontend อยู่บน IBM i เดียวกัน — ปกติไม่มี CORS ปัญหา</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ROLE COMPARISON ==================== -->
+<p class="section-title">สรุป — ใครทำอะไร</p>
+
+<div class="card">
+  <div class="card-body" style="padding:0;overflow-x:auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>งาน</th>
+          <th>ใครทำ</th>
+          <th>ทำที่ไหน</th>
+          <th>รายละเอียด</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>สร้าง HTTP Instance</td>
+          <td><span class="role role-admin">🔴 Admin</span></td>
+          <td>ACS → IBM Web Admin</td>
+          <td style="font-size:12px;color:var(--muted)">ทำครั้งเดียว กำหนดชื่อ instance และ port</td>
+        </tr>
+        <tr>
+          <td>แก้ httpd.conf</td>
+          <td><span class="role role-admin">🔴 Admin</span></td>
+          <td>IFS /www/KIDAKORN/conf/</td>
+          <td style="font-size:12px;color:var(--muted)">DocumentRoot, Alias, CORS headers</td>
+        </tr>
+        <tr>
+          <td>สร้าง IFS Folder ให้ Dev</td>
+          <td><span class="role role-admin">🔴 Admin</span></td>
+          <td>ACS → IFS Browser</td>
+          <td style="font-size:12px;color:var(--muted)">สร้าง /htdocs/dev/ และให้สิทธิ์ write</td>
+        </tr>
+        <tr>
+          <td>Deploy IWS Service</td>
+          <td><span class="role role-admin">🔴 Admin</span></td>
+          <td>ACS → IBM Web Admin → Web Services</td>
+          <td style="font-size:12px;color:var(--muted)">Expose RPG Program เป็น REST API</td>
+        </tr>
+        <tr>
+          <td>Start/Stop HTTP Server</td>
+          <td><span class="role role-admin">🔴 Admin</span></td>
+          <td>STRTCPSVR / ENDTCPSVR</td>
+          <td style="font-size:12px;color:var(--muted)">หลังแก้ config ต้อง restart</td>
+        </tr>
+        <tr>
+          <td>วางไฟล์ HTML/CSS/JS</td>
+          <td><span class="role role-dev">🟢 Developer</span></td>
+          <td>IFS /htdocs/dev/ ผ่าน ACS หรือ Network Drive</td>
+          <td style="font-size:12px;color:var(--muted)">ทำได้เองทันที ไม่ต้องขอ Admin</td>
+        </tr>
+        <tr>
+          <td>เรียก IWS API จาก JS</td>
+          <td><span class="role role-dev">🟢 Developer</span></td>
+          <td>Frontend code (fetch / HttpClient)</td>
+          <td style="font-size:12px;color:var(--muted)">ทำได้เองหลัง Admin deploy IWS แล้ว</td>
+        </tr>
+        <tr>
+          <td>เขียน RPG/CL Program</td>
+          <td><span class="role role-both">🔵 Developer (RPG)</span></td>
+          <td>VS Code + Code for IBM i</td>
+          <td style="font-size:12px;color:var(--muted)">เขียนและ compile บน IBM i</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== SUMMARY ==================== -->
+<p class="section-title">สรุปภาพรวม</p>
+<div class="callout">
+  <h3>🎯 ทั้งหมดในหน้านี้</h3>
+  <div class="callout-grid">
+    <div class="callout-item">
+      <div class="num">01 — ADMIN ทำก่อน</div>
+      <p>สร้าง HTTP Instance → แก้ httpd.conf → สร้าง IFS folder → deploy IWS → Start server</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">02 — DEVELOPER ทำได้เลย</div>
+      <p>วางไฟล์ใน <code>/htdocs/dev/</code> → เปิด <code>http://as400xxx/kidakorn/dev/</code> ได้ทันที</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">03 — เรียก IWS จาก JS</div>
+      <p><code>fetch('http://as400xxx/web/services/issueReq')</code> — ไม่ต้องมี Backend Node.js เลย</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">04 — Angular เหมือนกัน</div>
+      <p>สร้าง <code>IwsService</code> inject HttpClient → subscribe → แสดงผล เหมือน REST API ทั่วไปทุกอย่าง</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(el, id) {
+  el.closest('.card-body').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.closest('.card-body').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>

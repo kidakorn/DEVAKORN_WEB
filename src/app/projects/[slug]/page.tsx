@@ -10,6 +10,8 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProjectDetailClient from "@/components/ProjectDetailClient";
+import fs from "fs";
+import path from "path";
 
 const isRedisConfigured =
   !!process.env.KV_REST_API_URL && !!process.env.KV_REST_API_TOKEN;
@@ -91,8 +93,34 @@ export default async function ProjectDetailPage({
   let docs: any[] = [];
   if (redis) {
     try {
-      docs = (await redis.get<any[]>(`devakorn_docs:${slug}`)) ?? [];
+      const cloudDocs = await redis.get<any[]>(`devakorn_docs:${slug}`);
+      if (cloudDocs) docs = [...cloudDocs];
     } catch {}
+  }
+
+  // Also fetch local docs!
+  try {
+    const localDirPath = path.join(process.cwd(), "public", "docs", slug);
+    if (fs.existsSync(localDirPath)) {
+      const files = fs.readdirSync(localDirPath);
+      const htmlFiles = files.filter((f) => f.endsWith(".html") || f.endsWith(".htm"));
+      
+      const localDocs = htmlFiles.map((filename) => {
+        const stats = fs.statSync(path.join(localDirPath, filename));
+        return {
+          id: `local-${filename}`,
+          title: filename.replace(/\.html?$/, "").replace(/[-_]/g, " "),
+          description: "Local File",
+          blobUrl: `/docs/${slug}/${filename}`,
+          createdAt: stats.mtime.toISOString(),
+          isLocal: true,
+        };
+      });
+      
+      docs = [...localDocs, ...docs]; // Put local files first
+    }
+  } catch (fsError) {
+    console.warn("Failed to read local docs directory:", fsError);
   }
 
   return (
