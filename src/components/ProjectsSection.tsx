@@ -375,21 +375,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
           })}
         </motion.div>
 
-        {/* Admin logout */}
-        {isAdmin && (
-          <div className="mt-12 flex justify-center">
-            <button
-              onClick={async () => {
-                await fetch("/api/logout", { method: "POST" });
-                router.refresh();
-              }}
-              className="text-sm font-semibold transition-colors underline underline-offset-4"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Logout of Admin
-            </button>
-          </div>
-        )}
+
       </div>
 
       {/* ── Editor Modal ──────────────────────────────────────────── */}

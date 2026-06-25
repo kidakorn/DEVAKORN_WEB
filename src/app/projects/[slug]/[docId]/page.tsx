@@ -35,6 +35,7 @@ type ProjectDoc = {
   blobUrl: string;
   createdAt: string;
   isLocal?: boolean;
+  isAdminOnly?: boolean;
 };
 
 export async function generateMetadata({
@@ -115,11 +116,14 @@ export default async function HtmlViewerPage({
         blobUrl: `/docs/${slug}/${filename}`,
         createdAt: fs.statSync(localPath).mtime.toISOString(),
         isLocal: true,
+        isAdminOnly: true,
       };
     }
   }
 
   if (!doc) return notFound();
+  
+  if (doc.isAdminOnly && !isAdmin) return notFound();
 
   return (
     <>

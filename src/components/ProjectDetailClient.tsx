@@ -31,6 +31,7 @@ type ProjectDoc = {
   blobUrl: string;
   createdAt: string;
   isLocal?: boolean;
+  isAdminOnly?: boolean;
 };
 
 type Project = {
@@ -310,7 +311,7 @@ export default function ProjectDetailClient({
             variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
           >
-            {docs.map((doc) => (
+            {docs.filter(doc => isAdmin || !doc.isAdminOnly).map((doc) => (
               <motion.div
                 key={doc.id}
                 variants={fadeUp}

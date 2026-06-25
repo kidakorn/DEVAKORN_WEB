@@ -23,12 +23,11 @@ const NAV_LINKS = [
   { key: "nav_links", href: "#links" },
   { key: "nav_contact", href: "#contact" },
   { key: "nav_resume", href: "/resume" },
-  { key: "nav_login", href: "/login" },
 ] as const;
 
 const SECTION_IDS = ["about", "projects", "clients", "links", "contact"];
 
-export default function Navbar() {
+export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const { t, lang, toggleLang } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const [activeSection, setActiveSection] = useState<string>("");
@@ -77,6 +76,21 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ── Strip hash from URL visually ────────────────────────────────
+  useEffect(() => {
+    const stripHash = () => {
+      if (window.location.hash) {
+        setTimeout(() => {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }, 50);
+      }
+    };
+    
+    stripHash();
+    window.addEventListener("hashchange", stripHash);
+    return () => window.removeEventListener("hashchange", stripHash);
+  }, []);
+
   // ── Handle Navigation ─────────────────────────────────────────
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -105,6 +119,12 @@ export default function Navbar() {
     }
   };
 
+  const handleLogout = async () => {
+    setMenuOpen(false);
+    await fetch("/api/logout", { method: "POST" });
+    router.refresh();
+  };
+
   return (
     <motion.header
       animate={{ y: hidden ? "-100%" : "0%" }}
@@ -121,8 +141,8 @@ export default function Navbar() {
       >
         {/* ── Logo ───────────────────────────────────────────────── */}
         <a
-          href="#"
-          onClick={(e) => handleNavClick(e, "#")}
+          href="/"
+          onClick={(e) => handleNavClick(e, "/")}
           className="flex items-center gap-2.5 focus-visible:rounded group"
           aria-label="Devakorn — back to top"
         >
@@ -164,6 +184,27 @@ export default function Navbar() {
               </li>
             );
           })}
+          
+          {/* Dynamic Login/Logout Link */}
+          <li>
+            {isAdmin ? (
+              <button
+                onClick={handleLogout}
+                className="ml-2 px-4 py-2 text-sm font-bold text-white rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                style={{ background: "var(--color-primary-red)" }}
+              >
+                Logout
+              </button>
+            ) : (
+              <a
+                href="/login"
+                onClick={(e) => handleNavClick(e, "/login")}
+                className="nav-link-underline relative px-3 py-2 text-sm font-medium transition-colors duration-200 rounded-md text-[var(--text-muted)] hover:text-[var(--text-strong)]"
+              >
+                {t("nav_login")}
+              </a>
+            )}
+          </li>
         </ul>
 
         {/* ── Toggles ─────────────────────────────────────────────── */}
@@ -251,6 +292,28 @@ export default function Navbar() {
                   </li>
                 );
               })}
+              
+              {/* Mobile Dynamic Login/Logout Link */}
+              <li>
+                {isAdmin ? (
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center justify-center gap-3 py-3 mt-4 text-sm font-bold transition-all rounded-full text-white shadow-sm"
+                    style={{ background: "var(--color-primary-red)" }}
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <a
+                    href="/login"
+                    onClick={(e) => handleNavClick(e, "/login")}
+                    className="flex w-full items-center gap-3 py-3.5 text-sm font-medium transition-colors border-b min-h-[44px] text-[var(--text-muted)] hover:text-[var(--text-strong)]"
+                    style={{ borderColor: "var(--border-main)" }}
+                  >
+                    {t("nav_login")}
+                  </a>
+                )}
+              </li>
             </ul>
           </motion.div>
         )}

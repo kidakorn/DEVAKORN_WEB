@@ -79,7 +79,7 @@ export default async function ProjectsPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar isAdmin={isAdmin} />
       <ProjectsPageClient projects={projects} isAdmin={isAdmin} />
       <Footer />
     </>

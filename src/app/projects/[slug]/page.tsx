@@ -114,6 +114,7 @@ export default async function ProjectDetailPage({
           blobUrl: `/docs/${slug}/${filename}`,
           createdAt: stats.mtime.toISOString(),
           isLocal: true,
+          isAdminOnly: true,
         };
       });
       
@@ -125,7 +126,7 @@ export default async function ProjectDetailPage({
 
   return (
     <>
-      <Navbar />
+      <Navbar isAdmin={isAdmin} />
       <ProjectDetailClient
         project={project}
         initialDocs={docs}

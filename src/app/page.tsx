@@ -20,7 +20,7 @@ export default async function Home() {
 
   return (
     <>
-      <Navbar />
+      <Navbar isAdmin={isAdmin} />
       <main>
         <HeroSection />
         <AboutSection />
