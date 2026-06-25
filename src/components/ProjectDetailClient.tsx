@@ -23,11 +23,16 @@ import {
 import { useLanguage } from "@/lib/LanguageContext";
 import Breadcrumb from "@/components/Breadcrumb";
 import Link from "next/link";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 
 type ProjectDoc = {
   id: string;
   title: string;
   description: string;
+  category?: string;
   blobUrl: string;
   createdAt: string;
   isLocal?: boolean;
@@ -62,6 +67,10 @@ export default function ProjectDetailClient({
   const [docs, setDocs] = useState<ProjectDoc[]>(initialDocs);
   const [mounted, setMounted] = useState(false);
 
+  // Search & Filter state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -71,6 +80,7 @@ export default function ProjectDetailClient({
   const [uploading, setUploading] = useState(false);
   const [formTitle, setFormTitle] = useState("");
   const [formDesc, setFormDesc] = useState("");
+  const [formCategory, setFormCategory] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -78,6 +88,7 @@ export default function ProjectDetailClient({
   const [editDoc, setEditDoc] = useState<ProjectDoc | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
+  const [editCategory, setEditCategory] = useState("");
   const [editSaving, setEditSaving] = useState(false);
 
   const projectName = t(project.nameKey) || project.nameKey;
@@ -92,6 +103,7 @@ export default function ProjectDetailClient({
       fd.append("slug", project.slug);
       fd.append("title", formTitle.trim());
       fd.append("description", formDesc.trim());
+      fd.append("category", formCategory.trim());
       fd.append("file", selectedFile);
 
       const res = await fetch("/api/docs", { method: "POST", body: fd });
@@ -102,6 +114,7 @@ export default function ProjectDetailClient({
         setModalOpen(false);
         setFormTitle("");
         setFormDesc("");
+        setFormCategory("");
         setSelectedFile(null);
       }
     } catch (err) {
@@ -113,7 +126,23 @@ export default function ProjectDetailClient({
 
   // ── Delete document ──────────────────────────────────────────
   const handleDelete = async (doc: ProjectDoc) => {
-    if (!confirm(t("doc_delete_confirm"))) return;
+    const result = await MySwal.fire({
+      title: t("doc_delete_confirm"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "var(--color-primary-red)",
+      cancelButtonColor: "#8a8fa8",
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+      background: "var(--bg-card)",
+      color: "var(--text-main)",
+      customClass: {
+        popup: "rounded-2xl border border-[var(--border-main)] shadow-2xl",
+        title: "font-display text-xl",
+      }
+    });
+
+    if (!result.isConfirmed) return;
     try {
       await fetch(`/api/docs/${doc.id}?slug=${project.slug}`, { method: "DELETE" });
       setDocs((prev) => prev.filter((d) => d.id !== doc.id));
@@ -127,6 +156,7 @@ export default function ProjectDetailClient({
     setEditDoc(doc);
     setEditTitle(doc.title);
     setEditDesc(doc.description);
+    setEditCategory(doc.category || "");
   };
 
   const handleEditSave = async () => {
@@ -136,11 +166,11 @@ export default function ProjectDetailClient({
       await fetch(`/api/docs/${editDoc.id}?slug=${project.slug}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: editTitle, description: editDesc }),
+        body: JSON.stringify({ title: editTitle, description: editDesc, category: editCategory }),
       });
       setDocs((prev) =>
         prev.map((d) =>
-          d.id === editDoc.id ? { ...d, title: editTitle, description: editDesc } : d
+          d.id === editDoc.id ? { ...d, title: editTitle, description: editDesc, category: editCategory } : d
         )
       );
       setEditDoc(null);
@@ -278,6 +308,29 @@ export default function ProjectDetailClient({
           )}
         </div>
 
+        {/* Search & Filter Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <input
+            type="text"
+            placeholder="Search documents by title or description..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="input input-bordered w-full sm:max-w-xs focus:outline-none"
+            style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
+          />
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="select select-bordered w-full sm:max-w-xs focus:outline-none"
+            style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
+          >
+            <option value="All">All Categories</option>
+            {Array.from(new Set(docs.flatMap((d) => d.category ? d.category.split(',').map(c => c.trim()).filter(Boolean) : ["Uncategorized"]))).sort().map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Docs Grid */}
         {docs.length === 0 ? (
           // Empty state
@@ -311,7 +364,15 @@ export default function ProjectDetailClient({
             variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
           >
-            {docs.filter(doc => isAdmin || !doc.isAdminOnly).map((doc) => (
+            {docs
+              .filter(doc => isAdmin || !doc.isAdminOnly)
+              .filter(doc => {
+                const searchMatch = (doc.title + doc.description + (doc.category || "")).toLowerCase().includes(searchTerm.toLowerCase());
+                const docCategories = doc.category ? doc.category.split(',').map(c => c.trim()).filter(Boolean) : ["Uncategorized"];
+                const categoryMatch = selectedCategory === "All" || docCategories.includes(selectedCategory);
+                return searchMatch && categoryMatch;
+              })
+              .map((doc) => (
               <motion.div
                 key={doc.id}
                 variants={fadeUp}
@@ -344,6 +405,27 @@ export default function ProjectDetailClient({
                   >
                     {doc.title}
                   </h3>
+                  {doc.category && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {doc.category.split(',').map((cat) => {
+                        const trimmedCat = cat.trim();
+                        if (!trimmedCat) return null;
+                        return (
+                          <span 
+                            key={trimmedCat}
+                            className="inline-block px-2.5 py-1 text-xs font-bold rounded border"
+                            style={{ 
+                              color: "var(--color-primary-red)", 
+                              borderColor: "rgba(200,16,46,0.2)",
+                              background: "rgba(200,16,46,0.05)"
+                            }}
+                          >
+                            {trimmedCat}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
                   {doc.description && (
                     <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
                       {doc.description}
@@ -368,7 +450,7 @@ export default function ProjectDetailClient({
 
                   {/* Actions */}
                   <div className="flex items-center gap-2">
-                    {isAdmin && !doc.isLocal && (
+                    {isAdmin && (
                       <>
                         <button
                           onClick={() => openEdit(doc)}
@@ -459,6 +541,23 @@ export default function ProjectDetailClient({
                   onChange={(e) => setFormDesc(e.target.value)}
                   placeholder="A short summary of this document..."
                   className="textarea textarea-bordered h-20 w-full focus:outline-none"
+                  style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
+                />
+              </div>
+
+              {/* Category */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold" style={{ color: "var(--text-strong)" }}>
+                    Category (Optional)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={formCategory}
+                  onChange={(e) => setFormCategory(e.target.value)}
+                  placeholder="e.g. Documentation, Guide, Setup"
+                  className="input input-bordered w-full focus:outline-none"
                   style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
                 />
               </div>
@@ -578,6 +677,22 @@ export default function ProjectDetailClient({
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
                   className="textarea textarea-bordered h-20 w-full focus:outline-none"
+                  style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold" style={{ color: "var(--text-strong)" }}>
+                    Category (Optional)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                  placeholder="e.g. Documentation, Guide, Setup"
+                  className="input input-bordered w-full focus:outline-none"
                   style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
                 />
               </div>

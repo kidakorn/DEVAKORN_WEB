@@ -10,6 +10,10 @@
 import { motion, type Variants } from "framer-motion";
 import { ExternalLink, GitFork, Pencil, Trash, Plus, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
@@ -120,9 +124,25 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
     }
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm(t("project_delete_confirm"))) {
-      saveToCloud(projects.filter((p) => p.id !== id));
+  const handleDelete = async (projectId: string) => {
+    const result = await MySwal.fire({
+      title: t("project_delete_confirm"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "var(--color-primary-red)",
+      cancelButtonColor: "#8a8fa8",
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+      background: "var(--bg-card)",
+      color: "var(--text-main)",
+      customClass: {
+        popup: "rounded-2xl border border-[var(--border-main)] shadow-2xl",
+        title: "font-display text-xl",
+      }
+    });
+
+    if (result.isConfirmed) {
+      saveToCloud(projects.filter((p) => p.id !== projectId));
     }
   };
 

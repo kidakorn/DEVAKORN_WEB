@@ -25,6 +25,7 @@ export type ProjectDoc = {
   id: string;       // Unique ID (timestamp-based)
   title: string;    // Display title
   description: string;
+  category?: string; // Document category for filtering
   blobUrl: string;  // Vercel Blob URL or local relative URL
   createdAt: string;
   isLocal?: boolean; // True if this file is hosted locally in public/docs
@@ -41,9 +42,14 @@ export async function GET(req: Request) {
 
   try {
     let docs: ProjectDoc[] = [];
+    let localOverrides: Record<string, Partial<ProjectDoc>> = {};
+
     if (isRedisConfigured) {
       const cloudDocs = await redis?.get<ProjectDoc[]>(`devakorn_docs:${slug}`);
       if (cloudDocs) docs = [...cloudDocs];
+      
+      const overrides = await redis?.get<Record<string, Partial<ProjectDoc>>>(`devakorn_local_docs:${slug}`);
+      if (overrides) localOverrides = overrides;
     }
 
     // -- Read local files from public/docs/[slug] --
@@ -55,10 +61,25 @@ export async function GET(req: Request) {
         
         const localDocs: ProjectDoc[] = htmlFiles.map(filename => {
           const stats = fs.statSync(path.join(localDirPath, filename));
+          
+          let category = undefined;
+          let rawTitle = filename.replace(/\.html?$/, "");
+          
+          // Match naming convention: "[Category] filename.html"
+          const match = rawTitle.match(/^\[(.*?)\]\s*(.*)$/);
+          if (match) {
+            category = match[1];
+            rawTitle = match[2];
+          }
+
+          const docId = `local-${filename}`;
+          const override = localOverrides[docId] || {};
+
           return {
-            id: `local-${filename}`,
-            title: filename.replace(/\.html?$/, "").replace(/[-_]/g, " "),
-            description: "Local File",
+            id: docId,
+            title: override.title || rawTitle.replace(/[-_]/g, " "),
+            description: override.description || "Local File",
+            category: override.category || category,
             blobUrl: `/docs/${slug}/${filename}`,
             createdAt: stats.mtime.toISOString(),
             isLocal: true,
@@ -92,6 +113,7 @@ export async function POST(req: Request) {
     const slug = formData.get("slug") as string;
     const title = formData.get("title") as string;
     const description = (formData.get("description") as string) ?? "";
+    const category = (formData.get("category") as string) ?? "";
     const file = formData.get("file") as File | null;
 
     if (!slug || !title || !file) {
@@ -114,6 +136,7 @@ export async function POST(req: Request) {
       id: `doc-${Date.now()}`,
       title,
       description,
+      category,
       blobUrl: blob.url,
       createdAt: new Date().toISOString(),
     };

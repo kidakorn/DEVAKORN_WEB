@@ -3,6 +3,8 @@ import { Redis } from "@upstash/redis";
 import { del } from "@vercel/blob";
 import { cookies } from "next/headers";
 import type { ProjectDoc } from "@/app/api/docs/route";
+import fs from "fs";
+import path from "path";
 
 // ─────────────────────────────────────────────────────────────────
 // API: /api/docs/[id]
@@ -38,6 +40,18 @@ export async function DELETE(
 
     if (!slug) {
       return NextResponse.json({ error: "Missing ?slug param" }, { status: 400 });
+    }
+
+    if (id.startsWith("local-")) {
+      const filename = id.replace("local-", "");
+      const localPath = path.join(process.cwd(), "public", "docs", slug, filename);
+      
+      if (fs.existsSync(localPath)) {
+        fs.unlinkSync(localPath);
+        return NextResponse.json({ success: true, local: true });
+      } else {
+        return NextResponse.json({ error: "Local file not found" }, { status: 404 });
+      }
     }
 
     if (!redis) {
@@ -97,6 +111,17 @@ export async function PATCH(
       return NextResponse.json({ success: true });
     }
 
+    if (id.startsWith("local-")) {
+      const existingLocalOverrides = (await redis.get<Record<string, Partial<ProjectDoc>>>(`devakorn_local_docs:${slug}`)) ?? {};
+      existingLocalOverrides[id] = {
+        title: body.title,
+        description: body.description,
+        category: body.category,
+      };
+      await redis.set(`devakorn_local_docs:${slug}`, existingLocalOverrides);
+      return NextResponse.json({ success: true });
+    }
+
     const existing = (await redis.get<ProjectDoc[]>(`devakorn_docs:${slug}`)) ?? [];
     const updated = existing.map((doc) =>
       doc.id === id
@@ -104,6 +129,7 @@ export async function PATCH(
             ...doc,
             title: body.title ?? doc.title,
             description: body.description ?? doc.description,
+            category: body.category !== undefined ? body.category : doc.category,
           }
         : doc
     );

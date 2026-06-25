@@ -2,6 +2,10 @@
 
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useLanguage } from "@/lib/LanguageContext";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Pencil, Trash, ExternalLink, Image as ImageIcon } from "lucide-react";
@@ -87,9 +91,25 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
     }
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm(t("client_delete_confirm"))) {
-      saveToCloud(clients.filter((c) => c.id !== id));
+  const handleDelete = async (clientId: string) => {
+    const result = await MySwal.fire({
+      title: t("client_delete_confirm"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "var(--color-primary-red)",
+      cancelButtonColor: "#8a8fa8",
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+      background: "var(--bg-card)",
+      color: "var(--text-main)",
+      customClass: {
+        popup: "rounded-2xl border border-[var(--border-main)] shadow-2xl",
+        title: "font-display text-xl",
+      }
+    });
+
+    if (result.isConfirmed) {
+      saveToCloud(clients.filter((c) => c.id !== clientId));
     }
   };
 
