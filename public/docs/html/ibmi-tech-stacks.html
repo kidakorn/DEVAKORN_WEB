@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Stacks ที่ Support IBM i</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&display=swap');
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --ibm-blue:#0f62fe; --ibm-dark:#001141; --ibm-cyan:#00b4d8;
+    --ibm-green:#24a148; --ibm-amber:#f1c21b; --ibm-red:#da1e28;
+    --ibm-purple:#8a3ffc; --ibm-pink:#ff7eb6; --gray:#8d8d8d;
+    --bg:#f4f7ff; --surface:#fff; --border:#dde3f0;
+    --text:#161616; --muted:#525252;
+    --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans Thai',sans-serif;
+  }
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);padding:40px 20px 80px}
+
+  .page-header{text-align:center;margin-bottom:48px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ibm-blue);margin-bottom:12px}
+  h1{font-size:clamp(26px,5vw,44px);font-weight:700;color:var(--ibm-dark);line-height:1.2}
+  h1 span{color:var(--ibm-purple)}
+  .subtitle{margin-top:12px;color:var(--muted);font-size:14px;font-weight:300}
+
+  .section-title{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin:48px 0 18px;display:flex;align-items:center;gap:10px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+  .section-title:first-of-type{margin-top:0}
+
+  /* Priority highlight strip */
+  .priority-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:8px}
+  .pcard{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;position:relative}
+  .pcard.featured{border-color:var(--ibm-blue);box-shadow:0 0 0 1px var(--ibm-blue)}
+  .pcard .rank{font-family:var(--mono);font-size:10px;color:var(--gray);letter-spacing:.1em;margin-bottom:6px}
+  .pcard.featured .rank{color:var(--ibm-blue)}
+  .pcard h4{font-size:15px;font-weight:700;margin-bottom:4px;color:var(--ibm-dark)}
+  .pcard .note{font-size:11px;color:var(--muted)}
+  .pcard .badge{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:9.5px;padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:.05em}
+  .badge-have{background:#d0f0e0;color:#0a5c2e}
+  .badge-some{background:#fef3c7;color:#92400e}
+  .badge-new{background:#e0e7ff;color:#3730a3}
+
+  /* Stack cards */
+  .stack-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;margin-bottom:24px;overflow:hidden}
+  .stack-head{padding:20px 24px;display:flex;align-items:flex-start;gap:16px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fafcff 0%,#f4f7ff 100%)}
+  .stack-head .icon{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .stack-head h3{font-size:17px;font-weight:700;color:var(--ibm-dark)}
+  .stack-head .desc{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.5}
+  .stack-head .tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-family:var(--mono);font-size:9.5px;padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:.04em}
+
+  .stack-body{padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:760px){.stack-body{grid-template-columns:1fr}}
+
+  .stack-col h4{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:10px;font-weight:700}
+
+  .conn-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;margin-bottom:14px}
+  .conn-box{padding:5px 11px;border-radius:5px;font-weight:600;white-space:nowrap}
+  .conn-sep{color:var(--gray);font-size:12px}
+
+  .lib-list{display:flex;flex-direction:column;gap:6px}
+  .lib-item{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text)}
+  .lib-item .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .lib-item code{font-family:var(--mono);font-size:11.5px;background:var(--bg);padding:2px 6px;border-radius:4px;color:var(--text)}
+
+  .verdict-box{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);font-size:12.5px;line-height:1.7;color:var(--muted)}
+  .verdict-box b{color:var(--text)}
+
+  /* Matrix table */
+  .matrix-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px;overflow-x:auto}
+  table.matrix{width:100%;border-collapse:collapse;font-size:13px;min-width:700px}
+  table.matrix th,table.matrix td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+  table.matrix th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray);background:#fafcff;font-weight:600}
+  table.matrix th:not(:first-child),table.matrix td:not(:first-child){text-align:center}
+  table.matrix td:first-child{font-weight:700;color:var(--ibm-dark)}
+  table.matrix td small{display:block;font-weight:400;color:var(--muted);font-family:var(--mono);font-size:10.5px;margin-top:2px}
+  table.matrix tr:last-child td{border-bottom:none}
+  .y{color:var(--ibm-green);font-weight:700;font-size:16px}
+  .n{color:var(--ibm-red);font-weight:700;font-size:16px}
+  .p{color:var(--ibm-amber);font-weight:700;font-size:16px}
+
+  /* Roadmap timeline */
+  .timeline{position:relative;padding-left:32px}
+  .timeline::before{content:'';position:absolute;left:9px;top:8px;bottom:8px;width:2px;background:var(--border)}
+  .tl-item{position:relative;padding-bottom:28px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:'';position:absolute;left:-32px;top:4px;width:20px;height:20px;border-radius:50%;background:var(--surface);border:3px solid var(--ibm-blue)}
+  .tl-item.done::before{background:var(--ibm-green);border-color:var(--ibm-green)}
+  .tl-phase{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:4px}
+  .tl-item.done .tl-phase{color:var(--ibm-green)}
+  .tl-item h4{font-size:15px;font-weight:700;color:var(--ibm-dark);margin-bottom:6px}
+  .tl-item p{font-size:13px;color:var(--muted);line-height:1.7}
+  .tl-stack{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .tl-tag{font-family:var(--mono);font-size:10.5px;background:var(--bg);padding:3px 9px;border-radius:5px;color:var(--text)}
+
+  .legend{font-size:11px;color:var(--gray);font-family:var(--mono);margin-top:8px}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <p class="eyebrow">IBM i Integration · Tech Stack Survey</p>
+  <h1>Tech Stack อื่นๆ ที่ Support <span>IBM i</span></h1>
+  <p class="subtitle">นอกจาก Node.js — เทียบ .NET/C#, PHP, Java, Python และอื่นๆ พร้อมแนวทางพัฒนา</p>
+</header>
+
+<!-- Priority for this person -->
+<p class="section-title">ตามความสนใจของคุณ</p>
+<div class="priority-strip">
+  <div class="pcard featured">
+    <div class="rank">★ น่าสนใจสุด</div>
+    <h4>.NET / C#</h4>
+    <div class="note">Official driver จาก IBM, ตลาดงานกว้าง</div>
+    <span class="badge badge-new">ยังไม่มีพื้นฐาน</span>
+  </div>
+  <div class="pcard">
+    <div class="rank">มีพื้นฐานอยู่แล้ว</div>
+    <h4>PHP</h4>
+    <div class="note">ODBC/PDO เหมือน Node.js เปลี่ยนภาษาอย่างเดียว</div>
+    <span class="badge badge-some">มีพื้นฐาน</span>
+  </div>
+  <div class="pcard">
+    <div class="rank">มีพื้นฐานอยู่แล้ว</div>
+    <h4>Angular</h4>
+    <div class="note">เป็น Frontend — ใช้คู่กับ backend ใดก็ได้</div>
+    <span class="badge badge-some">มีพื้นฐาน</span>
+  </div>
+  <div class="pcard">
+    <div class="rank">ทำอยู่แล้ว</div>
+    <h4>Node.js</h4>
+    <div class="note">ODBC + itoolkit — โปรเจ็คปัจจุบัน</div>
+    <span class="badge badge-have">กำลังใช้</span>
+  </div>
+</div>
+
+<!-- ============ .NET / C# ============ -->
+<p class="section-title">1 · .NET / C#</p>
+<div class="stack-card">
+  <div class="stack-head">
+    <div class="icon" style="background:#e9f0ff">🟣</div>
+    <div>
+      <h3>.NET (C#) — IBM i Access Client Provider</h3>
+      <div class="desc">Official .NET Data Provider จาก IBM เร็วกว่า ODBC ในหลายกรณี และมี Program Call API เรียก RPG ตรงๆได้</div>
+      <div class="tags">
+        <span class="tag" style="background:#d0f0e0;color:#0a5c2e">Official IBM Driver</span>
+        <span class="tag" style="background:#fef3c7;color:#92400e">ตลาดงานไทยกว้าง</span>
+      </div>
+    </div>
+  </div>
+  <div class="stack-body">
+    <div class="stack-col">
+      <h4>วิธีเชื่อม IBM i</h4>
+      <div class="conn-flow">
+        <span class="conn-box" style="background:#e9f0ff;color:#3730a3">ASP.NET Core</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#e9f0ff;color:#3730a3">IBM.Data.Db2.iSeries</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#e9f0ff;color:#3730a3">DB2 / RPG Program</span>
+      </div>
+      <div class="lib-list">
+        <div class="lib-item"><span class="dot" style="background:#8a3ffc"></span><code>IBM.Data.Db2.iSeries</code> — SQL + Program Call</div>
+        <div class="lib-item"><span class="dot" style="background:#8a3ffc"></span><code>iDB2Connection</code> — connection class</div>
+        <div class="lib-item"><span class="dot" style="background:#8a3ffc"></span>ASP.NET Core Web API — สร้าง REST endpoint</div>
+        <div class="lib-item"><span class="dot" style="background:#8a3ffc"></span>Entity Framework Core — ORM (optional)</div>
+      </div>
+    </div>
+    <div class="stack-col">
+      <h4>แนวทางพัฒนา</h4>
+      <p style="font-size:12.5px;color:var(--muted);line-height:1.8">
+        1. ติดตั้ง <b>IBM i Access Client Solutions</b> (ACS) บนเครื่อง<br>
+        2. ใช้ <code style="font-family:var(--mono);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px">iDB2Connection</code> connect ผ่าน connection string<br>
+        3. Query ปกติด้วย <code style="font-family:var(--mono);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px">iDB2Command</code><br>
+        4. Call RPG Program ผ่าน <b>Program Call</b> class — ไม่ต้อง SSH/itoolkit
+      </p>
+      <div class="verdict-box">
+        <b>เหมาะกับ:</b> สาย Enterprise / Windows Server / ต้องการ type-safety<br>
+        <b>เรียนรู้:</b> C# syntax (~2-4 สัปดาห์ถ้าไม่มีพื้นฐาน OOP) + ASP.NET Core Web API (~2 สัปดาห์)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PHP ============ -->
+<p class="section-title">2 · PHP</p>
+<div class="stack-card">
+  <div class="stack-head">
+    <div class="icon" style="background:#f0e9ff">🐘</div>
+    <div>
+      <h3>PHP — ODBC / PDO_ODBC</h3>
+      <div class="desc">Concept เดียวกับ Node.js ทุกอย่าง — ใช้ ODBC driver ตัวเดียวกัน เปลี่ยนแค่ภาษา</div>
+      <div class="tags">
+        <span class="tag" style="background:#d0f0e0;color:#0a5c2e">มีพื้นฐานแล้ว</span>
+        <span class="tag" style="background:#e0e7ff;color:#3730a3">ง่ายสุดในการย้าย</span>
+      </div>
+    </div>
+  </div>
+  <div class="stack-body">
+    <div class="stack-col">
+      <h4>วิธีเชื่อม IBM i</h4>
+      <div class="conn-flow">
+        <span class="conn-box" style="background:#f0e9ff;color:#6d28d9">Laravel/PHP</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#f0e9ff;color:#6d28d9">PDO_ODBC</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#f0e9ff;color:#6d28d9">DB2 (PUB400)</span>
+      </div>
+      <div class="lib-list">
+        <div class="lib-item"><span class="dot" style="background:#8a3ffc"></span><code>PDO_ODBC</code> — เหมือน node-odbc</div>
+        <div class="lib-item"><span class="dot" style="background:#8a3ffc"></span><code>odbc_connect()</code> — native function</div>
+        <div class="lib-item"><span class="dot" style="background:#8a3ffc"></span>Laravel/Symfony — framework เร็วๆ</div>
+      </div>
+    </div>
+    <div class="stack-col">
+      <h4>แนวทางพัฒนา</h4>
+      <p style="font-size:12.5px;color:var(--muted);line-height:1.8">
+        1. Connection string เดียวกับที่ใช้กับ Node.js<br>
+        2. <code style="font-family:var(--mono);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px">new PDO("odbc:DSN")</code> → query เหมือนเดิม<br>
+        3. Call SP: <code style="font-family:var(--mono);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px">CALL X0250661.ISSUE_REQ(?)</code>
+      </p>
+      <div class="verdict-box">
+        <b>เหมาะกับ:</b> migrate ง่ายที่สุดเพราะ logic เหมือน Node.js 90%<br>
+        <b>เรียนรู้:</b> แทบไม่ต้องเรียนใหม่ — แค่ syntax PHP ที่มีพื้นฐานอยู่แล้ว
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Angular ============ -->
+<p class="section-title">3 · Angular (Frontend only)</p>
+<div class="stack-card">
+  <div class="stack-head">
+    <div class="icon" style="background:#fde9ec">🅰️</div>
+    <div>
+      <h3>Angular — Frontend Framework</h3>
+      <div class="desc">ไม่เชื่อม IBM i ตรง — เป็น Frontend ที่เรียก REST API (จาก Node.js/.NET/PHP) เหมือน Next.js</div>
+      <div class="tags">
+        <span class="tag" style="background:#d0f0e0;color:#0a5c2e">มีพื้นฐานแล้ว</span>
+        <span class="tag" style="background:#fde2e2;color:#a3171f">Frontend อย่างเดียว</span>
+      </div>
+    </div>
+  </div>
+  <div class="stack-body">
+    <div class="stack-col">
+      <h4>ตำแหน่งใน Architecture</h4>
+      <div class="conn-flow">
+        <span class="conn-box" style="background:#fde9ec;color:#a3171f">Angular</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#fde9ec;color:#a3171f">HTTP/REST</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#fde9ec;color:#a3171f">Backend (Node/.NET/PHP)</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#fde9ec;color:#a3171f">IBM i</span>
+      </div>
+      <div class="lib-list">
+        <div class="lib-item"><span class="dot" style="background:#ff7eb6"></span>HttpClient — เรียก REST API</div>
+        <div class="lib-item"><span class="dot" style="background:#ff7eb6"></span>RxJS — handle async data</div>
+        <div class="lib-item"><span class="dot" style="background:#ff7eb6"></span>Angular Material — UI components</div>
+      </div>
+    </div>
+    <div class="stack-col">
+      <h4>แนวทางพัฒนา</h4>
+      <p style="font-size:12.5px;color:var(--muted);line-height:1.8">
+        Angular ไม่ได้ "support IBM i" โดยตรง — มันคือ frontend เหมือน Next.js<br><br>
+        ถ้าจะใช้ Angular แทน Next.js: <b>Backend ยังเป็น Node.js/Express เดิม</b> เปลี่ยนแค่ frontend
+      </p>
+      <div class="verdict-box">
+        <b>เหมาะกับ:</b> ทีมที่คุ้น Angular / Enterprise UI ที่ต้องการ structure เข้มงวด<br>
+        <b>หมายเหตุ:</b> ไม่กระทบ backend เลย — เปลี่ยน frontend ได้โดยไม่ต้องแก้ IBM i connection
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Java ============ -->
+<p class="section-title">4 · Java / Spring Boot</p>
+<div class="stack-card">
+  <div class="stack-head">
+    <div class="icon" style="background:#fff3e0">☕</div>
+    <div>
+      <h3>Java — JT400 / JDBC</h3>
+      <div class="desc">JT400 (IBM Toolbox for Java) เป็น library เก่าแก่ที่สุดและทรงพลังที่สุด — ครอบคลุมทุกอย่างของ IBM i</div>
+      <div class="tags">
+        <span class="tag" style="background:#e0e7ff;color:#3730a3">ครบเครื่องที่สุด</span>
+        <span class="tag" style="background:#fef3c7;color:#92400e">Enterprise มาตรฐาน</span>
+      </div>
+    </div>
+  </div>
+  <div class="stack-body">
+    <div class="stack-col">
+      <h4>วิธีเชื่อม IBM i</h4>
+      <div class="conn-flow">
+        <span class="conn-box" style="background:#fff3e0;color:#9a3412">Spring Boot</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#fff3e0;color:#9a3412">JT400.jar</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#fff3e0;color:#9a3412">AS400 object</span>
+      </div>
+      <div class="lib-list">
+        <div class="lib-item"><span class="dot" style="background:#f59e0b"></span><code>JT400</code> — official, มี ProgramCall, DataQueue, IFS API</div>
+        <div class="lib-item"><span class="dot" style="background:#f59e0b"></span><code>AS400JDBCDriver</code> — JDBC</div>
+        <div class="lib-item"><span class="dot" style="background:#f59e0b"></span>Spring Data — repository pattern</div>
+      </div>
+    </div>
+    <div class="stack-col">
+      <h4>แนวทางพัฒนา</h4>
+      <p style="font-size:12.5px;color:var(--muted);line-height:1.8">
+        JT400 ทำได้ทุกอย่างที่ itoolkit ทำ แต่ <b>เร็วกว่าและไม่ต้อง SSH</b><br>
+        ใช้ <code style="font-family:var(--mono);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px">ProgramCall</code> เรียก RPG ตรงผ่าน socket connection
+      </p>
+      <div class="verdict-box">
+        <b>เหมาะกับ:</b> องค์กรใหญ่ที่มี Java team อยู่แล้ว<br>
+        <b>เรียนรู้:</b> ใช้เวลานานสุดถ้าไม่มีพื้นฐาน Java/Spring (~1-2 เดือน)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Python ============ -->
+<p class="section-title">5 · Python</p>
+<div class="stack-card">
+  <div class="stack-head">
+    <div class="icon" style="background:#e6f4ff">🐍</div>
+    <div>
+      <h3>Python — pyodbc / FastAPI</h3>
+      <div class="desc">เหมาะกับงาน Data Analysis, Report, Automation จาก AS/400 data</div>
+      <div class="tags">
+        <span class="tag" style="background:#d0f0e0;color:#0a5c2e">เรียนง่าย</span>
+        <span class="tag" style="background:#e0e7ff;color:#3730a3">เหมาะ Data/Report</span>
+      </div>
+    </div>
+  </div>
+  <div class="stack-body">
+    <div class="stack-col">
+      <h4>วิธีเชื่อม IBM i</h4>
+      <div class="conn-flow">
+        <span class="conn-box" style="background:#e6f4ff;color:#0369a1">FastAPI</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#e6f4ff;color:#0369a1">pyodbc</span><span class="conn-sep">→</span>
+        <span class="conn-box" style="background:#e6f4ff;color:#0369a1">DB2 (PUB400)</span>
+      </div>
+      <div class="lib-list">
+        <div class="lib-item"><span class="dot" style="background:#0ea5e9"></span><code>pyodbc</code> — เหมือน node-odbc</div>
+        <div class="lib-item"><span class="dot" style="background:#0ea5e9"></span><code>pandas</code> — วิเคราะห์ข้อมูลที่ดึงมา</div>
+        <div class="lib-item"><span class="dot" style="background:#0ea5e9"></span>FastAPI — REST API เร็วและง่าย</div>
+      </div>
+    </div>
+    <div class="stack-col">
+      <h4>แนวทางพัฒนา</h4>
+      <p style="font-size:12.5px;color:var(--muted);line-height:1.8">
+        Concept เดียวกับ Node.js ODBC ทุกอย่าง<br>
+        จุดเด่นคือ <b>pandas</b> — ทำ data transform/report จาก AS/400 ได้ง่ายมาก
+      </p>
+      <div class="verdict-box">
+        <b>เหมาะกับ:</b> งาน Report, Data Pipeline, Excel automation (แทน CL script บางส่วน)<br>
+        <b>เรียนรู้:</b> เร็วถ้ามีพื้นฐานเขียนโค้ดอยู่แล้ว (~2-3 สัปดาห์)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RPG Open Access ============ -->
+<p class="section-title">6 · RPG Open Access / IWS (ฝั่ง IBM i เอง)</p>
+<div class="stack-card">
+  <div class="stack-head">
+    <div class="icon" style="background:#fff0f0">🔴</div>
+    <div>
+      <h3>เขียนฝั่ง IBM i ให้ Expose เอง</h3>
+      <div class="desc">ไม่ใช่ "เชื่อมจากภายนอก" แต่คือทำให้ IBM i เปิด API จากด้านใน — ต้องมี Admin</div>
+      <div class="tags">
+        <span class="tag" style="background:#fde2e2;color:#a3171f">ต้องการ Admin</span>
+      </div>
+    </div>
+  </div>
+  <div class="stack-body">
+    <div class="stack-col">
+      <h4>เครื่องมือ</h4>
+      <div class="lib-list">
+        <div class="lib-item"><span class="dot" style="background:#da1e28"></span>RPG Open Access — RPG handler เขียน Web UI</div>
+        <div class="lib-item"><span class="dot" style="background:#da1e28"></span>IWS (5733-WS1) — Auto REST/SOAP</div>
+        <div class="lib-item"><span class="dot" style="background:#da1e28"></span>Db2 REST (5733-REST)</div>
+      </div>
+    </div>
+    <div class="stack-col">
+      <div class="verdict-box">
+        <b>สถานะ:</b> เหมือนที่คุยกันก่อนหน้า — ทำไม่ได้บน PUB400 เพราะต้องการ Admin ติดตั้ง Licensed Program<br>
+        ใส่ไว้เพื่อความครบถ้วนของภาพรวมเท่านั้น
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Matrix ============ -->
+<p class="section-title">Summary Matrix</p>
+<div class="matrix-wrap">
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th>Stack</th>
+        <th>Driver/Library</th>
+        <th>Call RPG ตรง?</th>
+        <th>ใช้บน PUB400</th>
+        <th>ความเร็ว</th>
+        <th>เวลาเรียนรู้</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Node.js<small>ปัจจุบัน</small></td>
+        <td>node-odbc / itoolkit</td>
+        <td><span class="p">~</span></td>
+        <td><span class="y">✓</span></td>
+        <td>⚡⚡⚡</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>.NET / C#<small>ไม่มีพื้นฐาน</small></td>
+        <td>IBM.Data.Db2.iSeries</td>
+        <td><span class="y">✓</span></td>
+        <td><span class="y">✓</span></td>
+        <td>⚡⚡⚡⚡</td>
+        <td>1-2 เดือน</td>
+      </tr>
+      <tr>
+        <td>PHP<small>มีพื้นฐาน</small></td>
+        <td>PDO_ODBC</td>
+        <td><span class="p">~</span></td>
+        <td><span class="y">✓</span></td>
+        <td>⚡⚡⚡</td>
+        <td>1-2 สัปดาห์</td>
+      </tr>
+      <tr>
+        <td>Angular<small>Frontend only</small></td>
+        <td>HttpClient (REST)</td>
+        <td><span class="n">✗</span></td>
+        <td><span class="y">✓ (ผ่าน backend)</span></td>
+        <td>ขึ้นกับ backend</td>
+        <td>1-2 สัปดาห์</td>
+      </tr>
+      <tr>
+        <td>Java / Spring</td>
+        <td>JT400</td>
+        <td><span class="y">✓</span></td>
+        <td><span class="y">✓</span></td>
+        <td>⚡⚡⚡⚡</td>
+        <td>1-2 เดือน</td>
+      </tr>
+      <tr>
+        <td>Python</td>
+        <td>pyodbc</td>
+        <td><span class="p">~</span></td>
+        <td><span class="y">✓</span></td>
+        <td>⚡⚡⚡</td>
+        <td>2-3 สัปดาห์</td>
+      </tr>
+      <tr>
+        <td>RPG Open Access / IWS<small>ฝั่ง IBM i</small></td>
+        <td>Native IBM i</td>
+        <td><span class="y">✓ (built-in)</span></td>
+        <td><span class="n">✗</span></td>
+        <td>⚡⚡⚡⚡⚡</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p class="legend">✓ ทำได้เต็มที่ &nbsp;·&nbsp; ~ ทำได้ผ่านวิธีเสริม (SP/SSH) &nbsp;·&nbsp; ✗ ทำไม่ได้/ไม่เกี่ยว</p>
+
+<!-- ============ Roadmap ============ -->
+<p class="section-title">แนวทางพัฒนา — ตามสถานการณ์คุณ</p>
+<div class="timeline">
+
+  <div class="tl-item done">
+    <div class="tl-phase">ตอนนี้</div>
+    <h4>Next.js + Node.js + ODBC (PSS System)</h4>
+    <p>ระบบหลักที่ทำอยู่ — โฟกัส Connection Pool + Redis Cache ให้เสร็จก่อน</p>
+    <div class="tl-stack">
+      <span class="tl-tag">Next.js</span><span class="tl-tag">Express</span><span class="tl-tag">ODBC</span><span class="tl-tag">PUB400</span>
+    </div>
+  </div>
+
+  <div class="tl-item">
+    <div class="tl-phase">Parallel — เสริม skill</div>
+    <h4>PHP (ใช้พื้นฐานเดิม)</h4>
+    <p>ลอง re-implement endpoint เดิม 1-2 ตัวด้วย PHP + PDO_ODBC — ใช้ connection string เดียวกัน เห็นความต่าง/เหมือนชัดเจน ใช้เวลาน้อยเพราะมีพื้นฐานแล้ว</p>
+    <div class="tl-stack">
+      <span class="tl-tag">PHP</span><span class="tl-tag">PDO_ODBC</span><span class="tl-tag">Laravel (optional)</span>
+    </div>
+  </div>
+
+  <div class="tl-item">
+    <div class="tl-phase">ระยะกลาง — เป้าหมายตลาดงาน</div>
+    <h4>.NET / C# Fundamentals</h4>
+    <p>เริ่มจาก C# console app พื้นฐาน (OOP, async) → ASP.NET Core Web API ง่ายๆ → เชื่อม IBM.Data.Db2.iSeries กับ PUB400 ทำ endpoint เดียวกับที่มีใน Node.js เพื่อเทียบ</p>
+    <div class="tl-stack">
+      <span class="tl-tag">C# Basics</span><span class="tl-tag">ASP.NET Core</span><span class="tl-tag">IBM.Data.Db2.iSeries</span>
+    </div>
+  </div>
+
+  <div class="tl-item">
+    <div class="tl-phase">ต่อยอด — Frontend</div>
+    <h4>Angular (ถ้าต้องใช้ในงาน)</h4>
+    <p>เปลี่ยน frontend จาก Next.js → Angular โดย backend (.NET หรือ Node.js) ไม่ต้องแก้ — เหมาะถ้าที่ทำงานใหม่ใช้ Angular เป็นมาตรฐาน</p>
+    <div class="tl-stack">
+      <span class="tl-tag">Angular</span><span class="tl-tag">RxJS</span><span class="tl-tag">REST API (เดิม)</span>
+    </div>
+  </div>
+
+  <div class="tl-item">
+    <div class="tl-phase">อนาคต — เมื่อมี AS/400 บริษัท + Admin</div>
+    <h4>JT400 / IWS / Db2 REST</h4>
+    <p>เมื่อทำงานบริษัทที่มี Admin สิทธิ์เต็ม ลองของที่ "เร็วสุด" — Java JT400 หรือ native IWS</p>
+    <div class="tl-stack">
+      <span class="tl-tag">JT400</span><span class="tl-tag">IWS</span><span class="tl-tag">Db2 REST</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

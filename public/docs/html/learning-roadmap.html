@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Roadmap — .NET + IBM i + Web</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&display=swap');
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --blue:#0f62fe; --dark:#001141; --cyan:#00b4d8;
+    --green:#24a148; --amber:#f1c21b; --red:#da1e28;
+    --purple:#8a3ffc; --gray:#8d8d8d;
+    --bg:#f4f7ff; --surface:#fff; --border:#dde3f0;
+    --text:#161616; --muted:#525252;
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'IBM Plex Sans Thai',sans-serif;
+  }
+
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);padding:40px 20px 80px}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* Header */
+  .page-header{text-align:center;margin-bottom:52px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+  h1{font-size:clamp(26px,5vw,46px);font-weight:700;color:var(--dark);line-height:1.2}
+  h1 em{font-style:normal;color:var(--blue)}
+  .subtitle{margin-top:12px;color:var(--muted);font-size:14px;font-weight:300}
+  .meta-pills{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .meta-pill{font-family:var(--mono);font-size:10.5px;padding:4px 12px;border-radius:20px;font-weight:600}
+
+  .section-title{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin:52px 0 20px;display:flex;align-items:center;gap:10px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+  /* Week cards */
+  .week-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden}
+  .week-card.active{border-color:var(--blue)}
+
+  .week-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+  .week-head:hover{background:#fafcff}
+
+  .week-num{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+  .week-info h3{font-size:16px;font-weight:700;color:var(--dark)}
+  .week-info .tagline{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .week-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .wtag{font-family:var(--mono);font-size:9.5px;padding:2px 8px;border-radius:20px;font-weight:700}
+
+  .week-toggle{font-size:18px;color:var(--gray);transition:transform .2s;flex-shrink:0}
+  .week-card.open .week-toggle{transform:rotate(180deg)}
+
+  .week-body{display:none;padding:24px}
+  .week-card.open .week-body{display:block}
+
+  /* Resource grid */
+  .res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px}
+
+  .res-card{border:1.5px solid var(--border);border-radius:10px;padding:16px;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:10px}
+  .res-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,98,254,.08)}
+  .res-card.primary{border-color:var(--blue);background:#fafcff}
+
+  .res-top{display:flex;align-items:flex-start;gap:10px}
+  .res-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+  .res-name{font-size:14px;font-weight:700;color:var(--dark);line-height:1.3}
+  .res-type{font-family:var(--mono);font-size:9.5px;color:var(--gray);margin-top:2px;font-weight:600;letter-spacing:.06em}
+  .res-desc{font-size:12.5px;color:var(--muted);line-height:1.7}
+  .res-topics{display:flex;flex-direction:column;gap:4px}
+  .res-topic{font-size:11.5px;color:var(--text);display:flex;align-items:flex-start;gap:6px}
+  .res-topic::before{content:'›';color:var(--blue);font-weight:700;flex-shrink:0}
+  .res-link{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px;margin-top:2px;transition:opacity .15s;align-self:flex-start}
+  .res-link:hover{opacity:.8}
+  .res-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700;align-self:flex-start}
+
+  /* Timeline steps */
+  .steps{display:flex;flex-direction:column;gap:10px;margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)}
+  .step{display:flex;gap:10px;font-size:12.5px;color:var(--muted);align-items:flex-start}
+  .step-num{font-family:var(--mono);font-size:10px;font-weight:700;background:var(--blue);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .step p{line-height:1.6}
+  .step p b{color:var(--text)}
+
+  /* YouTube section */
+  .yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+  .yt-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px}
+  .yt-top{display:flex;align-items:center;gap:10px}
+  .yt-icon{width:36px;height:36px;border-radius:8px;background:#ff0000;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0}
+  .yt-name{font-size:14px;font-weight:700;color:var(--dark)}
+  .yt-focus{font-size:11px;color:var(--muted);font-family:var(--mono)}
+  .yt-topics{font-size:12px;color:var(--muted);line-height:1.8}
+  .yt-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;font-weight:700;color:#ff0000;padding:5px 10px;border:1px solid #ffcccc;border-radius:5px;margin-top:4px;align-self:flex-start}
+  .yt-link:hover{background:#fff5f5}
+
+  /* IBM i Resources */
+  .ibm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .ibm-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px}
+  .ibm-head{display:flex;align-items:center;gap:10px}
+  .ibm-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .ibm-name{font-size:14px;font-weight:700;color:var(--dark)}
+  .ibm-type{font-family:var(--mono);font-size:9.5px;color:var(--gray);font-weight:600;letter-spacing:.06em}
+  .ibm-desc{font-size:12px;color:var(--muted);line-height:1.7}
+  .ibm-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:5px;margin-top:2px;align-self:flex-start}
+
+  /* Summary timeline */
+  .sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .sum-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:18px}
+  .sum-card.now{border-color:var(--green);background:#f0faf4}
+  .sum-phase{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:6px}
+  .sum-card.now .sum-phase{color:var(--green)}
+  .sum-card h4{font-size:15px;font-weight:700;color:var(--dark);margin-bottom:8px}
+  .sum-items{display:flex;flex-direction:column;gap:5px}
+  .sum-item{font-size:12px;color:var(--muted);display:flex;align-items:flex-start;gap:6px;line-height:1.5}
+  .sum-item::before{content:'›';color:var(--blue);font-weight:700;flex-shrink:0}
+  .sum-card.now .sum-item::before{color:var(--green)}
+
+  /* W3Schools Checklist */
+  .checklist-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px}
+  .checklist-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fafcff,#f4f7ff)}
+  .checklist-head h3{font-size:16px;font-weight:700;color:var(--dark)}
+  .checklist-head .cl-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .checklist-body{padding:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+  .cl-group h4{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .cl-group h4 .gnum{background:var(--blue);color:#fff;width:18px;height:18px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .cl-items{display:flex;flex-direction:column;gap:6px}
+  .cl-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:7px;border:1.5px solid var(--border);cursor:pointer;transition:background .15s;user-select:none;font-size:12.5px;color:var(--text)}
+  .cl-item:hover{background:#f4f7ff}
+  .cl-item.done{background:#f0faf4;border-color:#b8e6c8;color:var(--muted);text-decoration:line-through}
+  .cl-item.current{background:#eff4ff;border-color:var(--blue);font-weight:700;color:var(--blue)}
+  .cl-item .cbox{width:16px;height:16px;border-radius:4px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;transition:all .15s}
+  .cl-item.done .cbox{background:var(--green);border-color:var(--green);color:#fff}
+  .cl-item.current .cbox{border-color:var(--blue)}
+  .cl-item .c-badge{font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:10px;margin-left:auto;flex-shrink:0}
+  .cl-progress{display:flex;align-items:center;gap:12px;padding:16px 24px;border-top:1px solid var(--border);background:#fafcff}
+  .cl-progress .prog-label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+  .cl-progress .prog-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .cl-progress .prog-fill{height:100%;background:var(--green);border-radius:4px;transition:width .4s}
+  .cl-progress .prog-pct{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--green);white-space:nowrap}
+  .ready-box{background:#f0faf4;border:1.5px solid #b8e6c8;border-radius:10px;padding:16px 20px;margin-top:16px}
+  .ready-box h4{font-size:13px;font-weight:700;color:var(--green);margin-bottom:10px}
+  .ready-code{background:var(--dark);color:#a8ff78;font-family:var(--mono);font-size:11.5px;border-radius:8px;padding:16px;line-height:1.8;overflow-x:auto;margin-top:8px}
+  .ready-code .c-keyword{color:#ff79c6}
+  .ready-code .c-type{color:#8be9fd}
+  .ready-code .c-string{color:#f1fa8c}
+  .ready-code .c-comment{color:#6272a4}
+  .ready-code .c-method{color:#50fa7b}
+
+  /* Callout */
+  .callout{background:var(--dark);border-radius:14px;padding:32px;color:#fff;margin-top:48px;position:relative;overflow:hidden}
+  .callout::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(15,98,254,.3) 0%,transparent 70%)}
+  .callout h3{font-size:20px;font-weight:700;margin-bottom:6px}
+  .callout p{color:rgba(255,255,255,.7);font-size:13.5px;line-height:1.7;position:relative;z-index:1}
+  .callout .highlight{color:var(--cyan);font-weight:600}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <p class="eyebrow">12-Week Learning Roadmap</p>
+  <h1>เส้นทางเรียน <em>.NET + IBM i + Web</em></h1>
+  <p class="subtitle">พร้อมแหล่งเรียนรู้ครบทุก source · 20+ ชั่วโมง/สัปดาห์</p>
+  <div class="meta-pills">
+    <span class="meta-pill" style="background:#d0f0e0;color:#0a5c2e">มีพื้นฐาน RPG/CL</span>
+    <span class="meta-pill" style="background:#e0e7ff;color:#3730a3">ต้องการ .NET + IBM i</span>
+    <span class="meta-pill" style="background:#fef3c7;color:#92400e">20+ ชม./สัปดาห์</span>
+  </div>
+</header>
+
+<!-- ==================== W3Schools CHECKLIST ==================== -->
+<p class="section-title">W3Schools C# Checklist — ต้องผ่านทั้งหมดก่อนไป Phase 2</p>
+
+<div class="checklist-wrap">
+  <div class="checklist-head">
+    <div style="font-size:24px">📋</div>
+    <div>
+      <h3>หัวข้อ W3Schools C# ที่ต้องเรียนให้ครบ</h3>
+      <div class="cl-sub">คลิก checkbox เพื่อ track progress · ปัจจุบัน: ถึง Type Casting แล้ว ✅</div>
+    </div>
+  </div>
+
+  <div class="checklist-body">
+
+    <!-- Group 1 -->
+    <div class="cl-group">
+      <h4><span class="gnum">1</span><span style="color:var(--green)">พื้นฐานที่ใช้ทุกวัน</span></h4>
+      <div class="cl-items">
+        <div class="cl-item done" onclick="toggleItem(this)">
+          <div class="cbox">✓</div>C# Intro &amp; Syntax
+          <span class="c-badge" style="background:#d0f0e0;color:#0a5c2e">ผ่านแล้ว</span>
+        </div>
+        <div class="cl-item done" onclick="toggleItem(this)">
+          <div class="cbox">✓</div>Variables &amp; Data Types
+          <span class="c-badge" style="background:#d0f0e0;color:#0a5c2e">ผ่านแล้ว</span>
+        </div>
+        <div class="cl-item done" onclick="toggleItem(this)">
+          <div class="cbox">✓</div>Type Casting
+          <span class="c-badge" style="background:#d0f0e0;color:#0a5c2e">ผ่านแล้ว</span>
+        </div>
+        <div class="cl-item current" onclick="toggleItem(this)">
+          <div class="cbox"></div>User Input
+          <span class="c-badge" style="background:#eff4ff;color:var(--blue)">ถัดไป 👈</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Operators</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Math</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Strings + String Methods</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Booleans</div>
+      </div>
+    </div>
+
+    <!-- Group 2 -->
+    <div class="cl-group">
+      <h4><span class="gnum">2</span><span style="color:var(--blue)">Control Flow</span></h4>
+      <div class="cl-items">
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>If / Else</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Switch</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>While Loop</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>For Loop</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Foreach Loop</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Break / Continue</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Arrays</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Methods + Parameters + Return</div>
+      </div>
+    </div>
+
+    <!-- Group 3 -->
+    <div class="cl-group">
+      <h4><span class="gnum" style="background:var(--amber);color:#000">3</span><span style="color:var(--amber)">OOP — สำคัญมาก</span></h4>
+      <div class="cl-items">
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>Class &amp; Object
+          <span class="c-badge" style="background:#fef3c7;color:#92400e">⭐ สำคัญ</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>Constructor
+          <span class="c-badge" style="background:#fef3c7;color:#92400e">⭐ สำคัญ</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>Access Modifiers (public/private)
+          <span class="c-badge" style="background:#fef3c7;color:#92400e">⭐ สำคัญ</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>Properties (get/set)
+          <span class="c-badge" style="background:#fef3c7;color:#92400e">⭐ สำคัญ</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Inheritance</div>
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>Interface
+          <span class="c-badge" style="background:#fef3c7;color:#92400e">⭐ สำคัญ</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Abstraction</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Enums</div>
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>Exceptions (try/catch/finally)
+          <span class="c-badge" style="background:#fef3c7;color:#92400e">⭐ สำคัญ</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group 4 -->
+    <div class="cl-group">
+      <h4><span class="gnum" style="background:var(--purple)">4</span><span style="color:var(--purple)">ต้องเรียนเพิ่มนอก W3Schools</span></h4>
+      <div class="cl-items">
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>List&lt;T&gt; / Dictionary&lt;K,V&gt;
+          <span class="c-badge" style="background:#f3e8ff;color:#6d28d9">MS Learn</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>LINQ (Where, Select, FirstOrDefault)
+          <span class="c-badge" style="background:#f3e8ff;color:#6d28d9">MS Learn</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>async / await / Task
+          <span class="c-badge" style="background:#f3e8ff;color:#6d28d9">MS Docs</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>Nullable Types (string?, int?)
+          <span class="c-badge" style="background:#f3e8ff;color:#6d28d9">MS Docs</span>
+        </div>
+        <div class="cl-item" onclick="toggleItem(this)">
+          <div class="cbox"></div>Record / DTO class
+          <span class="c-badge" style="background:#f3e8ff;color:#6d28d9">MS Docs</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group 5 skip -->
+    <div class="cl-group">
+      <h4><span class="gnum" style="background:var(--gray)">5</span><span style="color:var(--gray)">ข้ามได้ก่อน (เรียนทีหลัง)</span></h4>
+      <div class="cl-items">
+        <div class="cl-item" style="opacity:.5;cursor:default">
+          <div class="cbox"></div>Files / File I/O
+          <span class="c-badge" style="background:#f0f0f0;color:#888">ทีหลัง</span>
+        </div>
+        <div class="cl-item" style="opacity:.5;cursor:default">
+          <div class="cbox"></div>Date / DateTime
+          <span class="c-badge" style="background:#f0f0f0;color:#888">ทีหลัง</span>
+        </div>
+        <div class="cl-item" style="opacity:.5;cursor:default">
+          <div class="cbox"></div>Generics (advanced)
+          <span class="c-badge" style="background:#f0f0f0;color:#888">ทีหลัง</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="cl-progress">
+    <div class="prog-label">Progress</div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:12%"></div></div>
+    <div class="prog-pct" id="prog-pct">3 / 26</div>
+  </div>
+</div>
+
+<!-- Ready check -->
+<div class="checklist-wrap" style="margin-bottom:48px">
+  <div class="checklist-head">
+    <div style="font-size:24px">🎯</div>
+    <div>
+      <h3>Ready Check — เขียน Code นี้ได้ = พร้อมไป ASP.NET Core</h3>
+      <div class="cl-sub">ถ้าเขียนและเข้าใจ code ด้านล่างได้ทั้งหมด — ข้ามไป Phase 2 ได้เลย</div>
+    </div>
+  </div>
+  <div style="padding:24px">
+    <div class="ready-code"><span class="c-comment">// ✅ Ready Check — C# before ASP.NET Core</span>
+<span class="c-comment">// เขียนได้ทั้งหมดนี้ = พร้อมแล้ว</span>
+
+<span class="c-keyword">public class</span> <span class="c-type">ItemMaster</span> {
+    <span class="c-keyword">public string</span> CdItem  { <span class="c-keyword">get</span>; <span class="c-keyword">set</span>; } = <span class="c-string">""</span>;   <span class="c-comment">// Properties ✓</span>
+    <span class="c-keyword">public string</span> NmItem  { <span class="c-keyword">get</span>; <span class="c-keyword">set</span>; } = <span class="c-string">""</span>;
+    <span class="c-keyword">public decimal</span> QtOnhand { <span class="c-keyword">get</span>; <span class="c-keyword">set</span>; }
+    <span class="c-keyword">public bool</span> IsLowStock =&gt; QtOnhand &lt;= 10;  <span class="c-comment">// Expression property ✓</span>
+}
+
+<span class="c-keyword">public interface</span> <span class="c-type">IItemService</span> {              <span class="c-comment">// Interface ✓</span>
+    <span class="c-type">Task</span>&lt;<span class="c-type">List</span>&lt;<span class="c-type">ItemMaster</span>&gt;&gt; <span class="c-method">GetAllAsync</span>();
+}
+
+<span class="c-keyword">public async</span> <span class="c-type">Task</span>&lt;<span class="c-type">List</span>&lt;<span class="c-type">ItemMaster</span>&gt;&gt; <span class="c-method">GetAllAsync</span>() {  <span class="c-comment">// async/await ✓</span>
+    <span class="c-keyword">try</span> {
+        <span class="c-keyword">var</span> items = <span class="c-keyword">new</span> <span class="c-type">List</span>&lt;<span class="c-type">ItemMaster</span>&gt;();    <span class="c-comment">// List&lt;T&gt; ✓</span>
+        <span class="c-comment">// ... query DB</span>
+        <span class="c-keyword">var</span> lowStock = items.<span class="c-method">Where</span>(i =&gt; i.IsLowStock).<span class="c-method">ToList</span>(); <span class="c-comment">// LINQ ✓</span>
+        <span class="c-keyword">return</span> items;
+    } <span class="c-keyword">catch</span> (<span class="c-type">Exception</span> ex) {                 <span class="c-comment">// Exception ✓</span>
+        <span class="c-type">Console</span>.<span class="c-method">WriteLine</span>(ex.Message);
+        <span class="c-keyword">return new</span> <span class="c-type">List</span>&lt;<span class="c-type">ItemMaster</span>&gt;();
+    }
+}</div>
+    <div class="ready-box">
+      <h4>✅ ถ้าเขียนได้ แปลว่าผ่าน:</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:8px">
+        <div style="font-size:12px;color:var(--muted)">✓ Class + Properties (get/set)</div>
+        <div style="font-size:12px;color:var(--muted)">✓ Interface</div>
+        <div style="font-size:12px;color:var(--muted)">✓ async / await / Task</div>
+        <div style="font-size:12px;color:var(--muted)">✓ List&lt;T&gt; + LINQ</div>
+        <div style="font-size:12px;color:var(--muted)">✓ try/catch</div>
+        <div style="font-size:12px;color:var(--muted)">✓ Expression body property</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 1 ==================== -->
+<p class="section-title">Phase 1 — C# Fundamentals (สัปดาห์ 1-3)</p>
+
+<!-- Week 1 -->
+<div class="week-card open" id="w1">
+  <div class="week-head" onclick="toggle('w1')">
+    <div class="week-num" style="color:var(--blue)">Week 01</div>
+    <div class="week-info">
+      <h3>C# Syntax & พื้นฐานภาษา</h3>
+      <div class="tagline">ทำความรู้จัก C# ก่อนลงลึก — Variables, Types, Control Flow, Methods</div>
+      <div class="week-tags">
+        <span class="wtag" style="background:#e0e7ff;color:#3730a3">C# Basics</span>
+        <span class="wtag" style="background:#d0f0e0;color:#0a5c2e">เป้าหมาย: เขียน Console App ได้</span>
+      </div>
+    </div>
+    <div class="week-toggle">▾</div>
+  </div>
+  <div class="week-body">
+    <div class="res-grid">
+
+      <div class="res-card primary">
+        <div class="res-top">
+          <div class="res-icon">🟢</div>
+          <div>
+            <div class="res-name">W3Schools C#</div>
+            <div class="res-type">📖 Reference · อ่านเร็ว</div>
+          </div>
+        </div>
+        <div class="res-desc">อ่านก่อนเลย — syntax C# ครบในหน้าเดียว เหมาะ quick reference ระหว่างเขียนโค้ด</div>
+        <div class="res-topics">
+          <div class="res-topic">Variables, Data Types, Type Casting</div>
+          <div class="res-topic">If/Else, Switch, For, While, Foreach</div>
+          <div class="res-topic">Methods, Parameters, Return</div>
+          <div class="res-topic">Arrays, String methods</div>
+        </div>
+        <a href="https://www.w3schools.com/cs/index.php" target="_blank" class="res-link" style="background:#4caf50;color:#fff">
+          🔗 w3schools.com/cs
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี 100%</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">🔵</div>
+          <div>
+            <div class="res-name">Microsoft Learn — C# First Steps</div>
+            <div class="res-type">🎓 Interactive Course · Official</div>
+          </div>
+        </div>
+        <div class="res-desc">Official Microsoft — ทำ exercise ในเบราว์เซอร์ได้เลย ไม่ต้องติดตั้งอะไร เหมาะมากสำหรับ week 1</div>
+        <div class="res-topics">
+          <div class="res-topic">Write your first C# code</div>
+          <div class="res-topic">Store and retrieve data</div>
+          <div class="res-topic">Basic logic and conditions</div>
+          <div class="res-topic">มี certificate เมื่อจบ</div>
+        </div>
+        <a href="https://learn.microsoft.com/en-us/training/paths/get-started-c-sharp-part-1/" target="_blank" class="res-link" style="background:#0078d4;color:#fff">
+          🔗 Microsoft Learn C#
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี 100%</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">🛠</div>
+          <div>
+            <div class="res-name">Visual Studio 2022 Community</div>
+            <div class="res-type">💻 IDE · ติดตั้งบน Windows</div>
+          </div>
+        </div>
+        <div class="res-desc">IDE หลักสำหรับ .NET — ฟรีสำหรับ individual เปิด .NET MAUI, ASP.NET, Console App ได้ทุกประเภท</div>
+        <div class="res-topics">
+          <div class="res-topic">ติดตั้ง workload: "ASP.NET and web development"</div>
+          <div class="res-topic">เปิดโปรเจ็คแรก: Console App (.NET 8)</div>
+          <div class="res-topic">ลอง Debug + Breakpoint</div>
+        </div>
+        <a href="https://visualstudio.microsoft.com/vs/community/" target="_blank" class="res-link" style="background:#5c2d91;color:#fff">
+          🔗 Download VS 2022
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+    </div>
+    <!-- MS Learn Checklist W1 -->
+    <div style="margin-top:20px;padding-top:20px;border-top:1px dashed var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">📋 Microsoft Learn — C# First Steps · Module Checklist</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px">
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Write your first C# code</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Store and retrieve data using literal and variable values</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Perform basic string formatting in C#</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Perform basic operations on numbers</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Guided project: Calculate and print student grades</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Guided project: Calculate final GPA</div>
+      </div>
+    </div>
+    <!-- Daily Plan W1 -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">📅 Daily Plan (20+ ชม./สัปดาห์)</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 1</b><br>ติดตั้ง VS 2022 + .NET 8 SDK<br>เปิด Console App แรก "Hello IBM i"</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 2</b><br>W3Schools: Variables → Type Casting<br>ทบทวน + ลองเขียนเองใน VS</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 3-4</b><br>MS Learn Module 1-3<br>ทำ exercise ทุกข้อ</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 5</b><br>W3Schools: Strings, Booleans, Operators<br>ลองเขียนใน VS ทันที</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 6</b><br>MS Learn Module 4-6 (Guided Projects)<br>ทำ project คำนวณ GPA</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 7</b><br>สรุป + เขียน Mini Project:<br>รับชื่อ-นามสกุล แล้วแสดงผล</div>
+      </div>
+    </div>
+    <!-- Code example W1 -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">💻 Code ตัวอย่างท้าย Week 1 — ต้องเขียนได้</div>
+      <div class="ready-code"><span class="c-comment">// Week 1 — Console App พื้นฐาน</span>
+<span class="c-type">Console</span>.<span class="c-method">Write</span>(<span class="c-string">"กรอกชื่อ: "</span>);
+<span class="c-keyword">string</span> name = <span class="c-type">Console</span>.<span class="c-method">ReadLine</span>() ?? <span class="c-string">""</span>;
+
+<span class="c-keyword">int</span> qty = <span class="c-keyword">int</span>.<span class="c-method">Parse</span>(<span class="c-string">"100"</span>);          <span class="c-comment">// Type Casting</span>
+<span class="c-keyword">decimal</span> price = (<span class="c-keyword">decimal</span>)qty * 25.50m;  <span class="c-comment">// Explicit cast</span>
+
+<span class="c-keyword">string</span>[] items = { <span class="c-string">"ITEM001"</span>, <span class="c-string">"ITEM002"</span>, <span class="c-string">"ITEM003"</span> };
+<span class="c-keyword">foreach</span> (<span class="c-keyword">var</span> item <span class="c-keyword">in</span> items)
+    <span class="c-type">Console</span>.<span class="c-method">WriteLine</span>($<span class="c-string">"รายการ: {item} | ราคา: {price:N2} บาท"</span>);
+
+<span class="c-type">Console</span>.<span class="c-method">WriteLine</span>($<span class="c-string">"สวัสดี {name.ToUpper()} จาก PSS System"</span>);</div>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p><b>วันที่ 1-2:</b> ติดตั้ง VS 2022 + อ่าน W3Schools C# ครบทั้งหมด (ประมาณ 2-3 ชั่วโมง)</p></div>
+      <div class="step"><div class="step-num">2</div><p><b>วันที่ 3-5:</b> ทำ Microsoft Learn "C# First Steps" ทุก module จนจบ</p></div>
+      <div class="step"><div class="step-num">3</div><p><b>วันที่ 6-7:</b> สร้าง Console App เขียน Hello World + รับ input + แสดงผล ตาม Code ตัวอย่างด้านบน</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Week 2 -->
+<div class="week-card" id="w2">
+  <div class="week-head" onclick="toggle('w2')">
+    <div class="week-num" style="color:var(--blue)">Week 02</div>
+    <div class="week-info">
+      <h3>OOP + Collections + Async/Await</h3>
+      <div class="tagline">หัวใจของ C# — Class, Interface, LINQ, async ที่ใช้ตลอดใน .NET</div>
+      <div class="week-tags">
+        <span class="wtag" style="background:#e0e7ff;color:#3730a3">OOP</span>
+        <span class="wtag" style="background:#e0e7ff;color:#3730a3">LINQ</span>
+        <span class="wtag" style="background:#e0e7ff;color:#3730a3">Async</span>
+      </div>
+    </div>
+    <div class="week-toggle">▾</div>
+  </div>
+  <div class="week-body">
+    <div class="res-grid">
+
+      <div class="res-card primary">
+        <div class="res-top">
+          <div class="res-icon">🔵</div>
+          <div>
+            <div class="res-name">Microsoft Learn — Object-Oriented C#</div>
+            <div class="res-type">🎓 Interactive Course · Official</div>
+          </div>
+        </div>
+        <div class="res-desc">ต่อจาก Week 1 — เรียน OOP, Generics, Collections ที่ใช้ใน ASP.NET ทุกวัน</div>
+        <div class="res-topics">
+          <div class="res-topic">Classes, Objects, Inheritance</div>
+          <div class="res-topic">Interfaces, Abstract classes</div>
+          <div class="res-topic">List, Dictionary, LINQ</div>
+          <div class="res-topic">Exception handling</div>
+        </div>
+        <a href="https://learn.microsoft.com/en-us/training/paths/get-started-c-sharp-part-3/" target="_blank" class="res-link" style="background:#0078d4;color:#fff">
+          🔗 Microsoft Learn OOP
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">▶️</div>
+          <div>
+            <div class="res-name">Tim Corey — C# OOP Series</div>
+            <div class="res-type">📺 YouTube · ภาคปฏิบัติ</div>
+          </div>
+        </div>
+        <div class="res-desc">อธิบาย OOP แบบ real-world มาก ไม่ใช่แค่ theory — ดูควบคู่กับ MS Learn</div>
+        <div class="res-topics">
+          <div class="res-topic">C# Application from scratch</div>
+          <div class="res-topic">OOP Concepts ด้วย real example</div>
+          <div class="res-topic">Async/Await อธิบายดีมาก</div>
+        </div>
+        <a href="https://www.youtube.com/@IAmTimCorey" target="_blank" class="res-link" style="background:#ff0000;color:#fff">
+          🔗 YouTube: IAmTimCorey
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">📘</div>
+          <div>
+            <div class="res-name">C# Documentation — Async Programming</div>
+            <div class="res-type">📖 Official Docs</div>
+          </div>
+        </div>
+        <div class="res-desc">async/await ใน C# สำคัญมากสำหรับ database call — อ่านให้เข้าใจก่อน Week 3</div>
+        <div class="res-topics">
+          <div class="res-topic">Task, async, await</div>
+          <div class="res-topic">ConfigureAwait</div>
+          <div class="res-topic">Cancellation Token</div>
+        </div>
+        <a href="https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/" target="_blank" class="res-link" style="background:#0078d4;color:#fff">
+          🔗 Async Programming Docs
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+    </div>
+    <!-- MS Learn Checklist W2 -->
+    <div style="margin-top:20px;padding-top:20px;border-top:1px dashed var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">📋 Microsoft Learn — OOP Path · Module Checklist</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px">
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Object-oriented programming principles</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Create C# methods with parameters</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Create C# methods that return values</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Create classes and define class members</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Use properties to define class data</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Define class interfaces and abstract classes</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Work with collections and LINQ</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Implement exception handling</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Implement asynchronous programming</div>
+        <div class="cl-item" onclick="toggleItem(this)"><div class="cbox"></div>Guided project: Implement OOP in C#</div>
+      </div>
+    </div>
+    <!-- Daily Plan W2 -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">📅 Daily Plan</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 1</b><br>W3Schools: Class, Object, Constructor<br>สร้าง class ItemMaster ใน VS</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 2</b><br>W3Schools: Access Modifiers, Properties<br>เพิ่ม get/set ให้ ItemMaster</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 3</b><br>W3Schools: Inheritance, Interface<br>สร้าง IItemService interface</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 4</b><br>MS Learn: Collections + LINQ<br>ลอง Where, Select, OrderBy</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 5</b><br>MS Learn: async/await<br>อ่าน Async Docs + ทำ exercise</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 6</b><br>W3Schools: Exceptions try/catch<br>เพิ่ม error handling ให้ project</div>
+        <div style="background:#f4f7ff;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--blue);font-family:var(--mono)">DAY 7</b><br>Mini Project: Stock Manager Console App<br>CRUD items ใน List&lt;T&gt;</div>
+      </div>
+    </div>
+    <!-- Code example W2 -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">💻 Code ตัวอย่างท้าย Week 2 — ต้องเขียนได้</div>
+      <div class="ready-code"><span class="c-comment">// Week 2 — OOP + Collections + Async</span>
+
+<span class="c-keyword">public class</span> <span class="c-type">ItemMaster</span> {
+    <span class="c-keyword">public string</span> CdItem   { <span class="c-keyword">get</span>; <span class="c-keyword">set</span>; } = <span class="c-string">""</span>;
+    <span class="c-keyword">public string</span> NmItem   { <span class="c-keyword">get</span>; <span class="c-keyword">set</span>; } = <span class="c-string">""</span>;
+    <span class="c-keyword">public decimal</span> QtOnhand { <span class="c-keyword">get</span>; <span class="c-keyword">set</span>; }
+    <span class="c-keyword">public decimal</span> QtMin    { <span class="c-keyword">get</span>; <span class="c-keyword">set</span>; }
+    <span class="c-keyword">public bool</span> IsLowStock  =&gt; QtOnhand &lt;= QtMin; <span class="c-comment">// Expression property</span>
+}
+
+<span class="c-keyword">public interface</span> <span class="c-type">IItemService</span> {
+    <span class="c-type">Task</span>&lt;<span class="c-type">List</span>&lt;<span class="c-type">ItemMaster</span>&gt;&gt; <span class="c-method">GetAllAsync</span>();
+    <span class="c-type">Task</span>&lt;<span class="c-type">ItemMaster</span>?&gt;      <span class="c-method">GetByCodeAsync</span>(<span class="c-keyword">string</span> code);
+}
+
+<span class="c-keyword">public class</span> <span class="c-type">ItemService</span> : <span class="c-type">IItemService</span> {
+    <span class="c-keyword">private readonly</span> <span class="c-type">List</span>&lt;<span class="c-type">ItemMaster</span>&gt; _items = <span class="c-keyword">new</span>();
+
+    <span class="c-keyword">public async</span> <span class="c-type">Task</span>&lt;<span class="c-type">List</span>&lt;<span class="c-type">ItemMaster</span>&gt;&gt; <span class="c-method">GetAllAsync</span>() {
+        <span class="c-keyword">await</span> <span class="c-type">Task</span>.<span class="c-method">Delay</span>(10); <span class="c-comment">// simulate async DB call</span>
+        <span class="c-keyword">return</span> _items.<span class="c-method">Where</span>(i =&gt; i.IsLowStock)
+                     .<span class="c-method">OrderBy</span>(i =&gt; i.CdItem)
+                     .<span class="c-method">ToList</span>();        <span class="c-comment">// LINQ</span>
+    }
+
+    <span class="c-keyword">public async</span> <span class="c-type">Task</span>&lt;<span class="c-type">ItemMaster</span>?&gt; <span class="c-method">GetByCodeAsync</span>(<span class="c-keyword">string</span> code) {
+        <span class="c-keyword">try</span> {
+            <span class="c-keyword">await</span> <span class="c-type">Task</span>.<span class="c-method">Delay</span>(10);
+            <span class="c-keyword">return</span> _items.<span class="c-method">FirstOrDefault</span>(i =&gt; i.CdItem == code);
+        } <span class="c-keyword">catch</span> (<span class="c-type">Exception</span> ex) {
+            <span class="c-type">Console</span>.<span class="c-method">WriteLine</span>($<span class="c-string">"Error: {ex.Message}"</span>);
+            <span class="c-keyword">return null</span>;
+        }
+    }
+}</div>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p><b>วันที่ 1-3:</b> Microsoft Learn OOP path ทำทุก module</p></div>
+      <div class="step"><div class="step-num">2</div><p><b>วันที่ 4-5:</b> Tim Corey — ดู series C# application ทำตาม</p></div>
+      <div class="step"><div class="step-num">3</div><p><b>วันที่ 6-7:</b> เขียน Stock Manager Console App ตาม Code ตัวอย่างด้านบน</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Week 3 -->
+<div class="week-card" id="w3">
+  <div class="week-head" onclick="toggle('w3')">
+    <div class="week-num" style="color:var(--blue)">Week 03</div>
+    <div class="week-info">
+      <h3>เชื่อม PUB400 ครั้งแรกด้วย C#</h3>
+      <div class="tagline">IBM.Data.Db2.iSeries — Query DB2, Call Stored Procedure จาก C# Console App</div>
+      <div class="week-tags">
+        <span class="wtag" style="background:#fde2e2;color:#a3171f">IBM i Connection</span>
+        <span class="wtag" style="background:#e0e7ff;color:#3730a3">C# + DB2</span>
+        <span class="wtag" style="background:#d0f0e0;color:#0a5c2e">ทดสอบกับ PUB400 จริง</span>
+      </div>
+    </div>
+    <div class="week-toggle">▾</div>
+  </div>
+  <div class="week-body">
+    <div class="res-grid">
+
+      <div class="res-card primary">
+        <div class="res-top">
+          <div class="res-icon">🔴</div>
+          <div>
+            <div class="res-name">IBM i Access Client Solutions (ACS)</div>
+            <div class="res-type">💾 IBM Official · ต้องติดตั้ง</div>
+          </div>
+        </div>
+        <div class="res-desc">มี .NET Data Provider อยู่ใน ACS — ต้องดาวน์โหลดและ install ก่อนใช้ IBM.Data.Db2.iSeries</div>
+        <div class="res-topics">
+          <div class="res-topic">Download: IBM i Access Client Solutions</div>
+          <div class="res-topic">ใช้ path: C:\Program Files\IBM\iSeries Access\...</div>
+          <div class="res-topic">เพิ่ม reference IBM.Data.Db2.iSeries.dll</div>
+        </div>
+        <a href="https://www.ibm.com/support/pages/ibm-i-access-client-solutions" target="_blank" class="res-link" style="background:#da1e28;color:#fff">
+          🔗 Download ACS
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">📘</div>
+          <div>
+            <div class="res-name">IBM i Access for Windows .NET Provider</div>
+            <div class="res-type">📖 IBM Official Docs</div>
+          </div>
+        </div>
+        <div class="res-desc">เอกสาร official ของ IBM.Data.Db2.iSeries — connection string, command, data reader ครบ</div>
+        <div class="res-topics">
+          <div class="res-topic">iDB2Connection — connect to IBM i</div>
+          <div class="res-topic">iDB2Command — execute SQL</div>
+          <div class="res-topic">iDB2DataReader — read results</div>
+          <div class="res-topic">iDB2Parameter — prevent SQL injection</div>
+        </div>
+        <a href="https://www.ibm.com/docs/en/i/7.5?topic=iasp-net-data-provider" target="_blank" class="res-link" style="background:#0043ce;color:#fff">
+          🔗 IBM .NET Docs
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">💬</div>
+          <div>
+            <div class="res-name">IBM Community — IBM i + .NET</div>
+            <div class="res-type">💬 Community Forum</div>
+          </div>
+        </div>
+        <div class="res-desc">ถามปัญหาที่เจอตอน connect ได้เลย มีคน IBM i developer ช่วยตอบ รวมถึงปัญหา PUB400</div>
+        <div class="res-topics">
+          <div class="res-topic">ค้นหา "iDB2Connection" ดูตัวอย่างโค้ดจริง</div>
+          <div class="res-topic">ปัญหา connection string บน PUB400</div>
+          <div class="res-topic">การ call stored procedure จาก C#</div>
+        </div>
+        <a href="https://community.ibm.com/community/user/power/home" target="_blank" class="res-link" style="background:#0043ce;color:#fff">
+          🔗 IBM Community
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+    </div>
+    <!-- Daily Plan W3 -->
+    <div style="margin-top:20px;padding-top:20px;border-top:1px dashed var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">📅 Daily Plan — เชื่อม PUB400 จริง</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+        <div style="background:#fff0f0;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--red);font-family:var(--mono)">DAY 1</b><br>Download + Install IBM ACS<br>หา IBM.Data.Db2.iSeries.dll<br>เพิ่ม reference ใน VS project</div>
+        <div style="background:#fff0f0;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--red);font-family:var(--mono)">DAY 2</b><br>เขียน iDB2Connection ครั้งแรก<br>ทดสอบ open/close connection<br>แก้ error connection string</div>
+        <div style="background:#fff0f0;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--red);font-family:var(--mono)">DAY 3</b><br>Query ITEM_MASTER<br>Map ผลลัพธ์เป็น List&lt;ItemMaster&gt;<br>แสดงผลใน console</div>
+        <div style="background:#fff0f0;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--red);font-family:var(--mono)">DAY 4</b><br>Query REQ_HEADER + REQ_DETAIL<br>ใช้ iDB2Parameter ป้องกัน injection<br>Filter by STATUS</div>
+        <div style="background:#fff0f0;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--red);font-family:var(--mono)">DAY 5</b><br>Call SP: ISSUE_REQ<br>รับ P_RESULT + P_ERRMSG กลับ<br>แสดงผลลัพธ์</div>
+        <div style="background:#fff0f0;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--red);font-family:var(--mono)">DAY 6</b><br>Call SP: APPROVE_REQ<br>เพิ่ม Connection Pool config<br>ทดสอบ concurrent calls</div>
+        <div style="background:#fff0f0;border-radius:8px;padding:10px;font-size:12px"><b style="color:var(--red);font-family:var(--mono)">DAY 7</b><br>Wrap ทุกอย่างเป็น Service class<br>เทียบ code กับ Node.js ODBC<br>บันทึกสิ่งที่ต่างกัน</div>
+      </div>
+    </div>
+    <!-- IBM i connection string guide -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">🔌 Connection String Guide — PUB400</div>
+      <div class="ready-code"><span class="c-comment">// Connection String สำหรับ PUB400.COM</span>
+<span class="c-keyword">string</span> connStr = <span class="c-string">"DataSource=pub400.com;UserID=X0250661;Password=YOUR_PWD;"</span>
+               + <span class="c-string">"DefaultCollection=X0250661;Naming=system;"</span>
+               + <span class="c-string">"ConnectionTimeout=30;MaxPoolSize=10;"</span>;
+
+<span class="c-comment">// ตัวเลือก Naming:</span>
+<span class="c-comment">//   sql    → ใช้ dot notation  (X0250661.ITEM_MASTER)</span>
+<span class="c-comment">//   system → ใช้ slash notation (X0250661/ITEM_MASTER)</span></div>
+    </div>
+    <!-- Code example W3 -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;font-weight:700">💻 Code ตัวอย่างท้าย Week 3 — ต้องเขียนได้</div>
+      <div class="ready-code"><span class="c-comment">// Week 3 — C# เชื่อม PUB400 ด้วย IBM.Data.Db2.iSeries</span>
+<span class="c-keyword">using</span> IBM.Data.Db2.iSeries;
+
+<span class="c-keyword">public class</span> <span class="c-type">Db2Service</span> {
+    <span class="c-keyword">private readonly string</span> _conn;
+    <span class="c-keyword">public</span> <span class="c-type">Db2Service</span>(<span class="c-keyword">string</span> connStr) =&gt; _conn = connStr;
+
+    <span class="c-comment">// ── Query: ดึง ITEM_MASTER ──────────────────────</span>
+    <span class="c-keyword">public async</span> <span class="c-type">Task</span>&lt;<span class="c-type">List</span>&lt;<span class="c-type">ItemMaster</span>&gt;&gt; <span class="c-method">GetItemsAsync</span>() {
+        <span class="c-keyword">var</span> list = <span class="c-keyword">new</span> <span class="c-type">List</span>&lt;<span class="c-type">ItemMaster</span>&gt;();
+        <span class="c-keyword">await using var</span> cn = <span class="c-keyword">new</span> <span class="c-type">iDB2Connection</span>(_conn);
+        <span class="c-keyword">await</span> cn.<span class="c-method">OpenAsync</span>();
+
+        <span class="c-keyword">await using var</span> cmd = <span class="c-keyword">new</span> <span class="c-type">iDB2Command</span>(
+            <span class="c-string">"SELECT CDITEM, NMITEM, QTONHAND, QTMIN FROM X0250661.ITEM_MASTER"</span>, cn);
+
+        <span class="c-keyword">await using var</span> rdr = <span class="c-keyword">await</span> cmd.<span class="c-method">ExecuteReaderAsync</span>();
+        <span class="c-keyword">while</span> (<span class="c-keyword">await</span> rdr.<span class="c-method">ReadAsync</span>())
+            list.<span class="c-method">Add</span>(<span class="c-keyword">new</span> <span class="c-type">ItemMaster</span> {
+                CdItem   = rdr.<span class="c-method">GetString</span>(0).<span class="c-method">Trim</span>(),
+                NmItem   = rdr.<span class="c-method">GetString</span>(1).<span class="c-method">Trim</span>(),
+                QtOnhand = rdr.<span class="c-method">GetDecimal</span>(2),
+                QtMin    = rdr.<span class="c-method">GetDecimal</span>(3),
+            });
+        <span class="c-keyword">return</span> list;
+    }
+
+    <span class="c-comment">// ── Call Stored Procedure: ISSUE_REQ ───────────</span>
+    <span class="c-keyword">public async</span> <span class="c-type">Task</span>&lt;(<span class="c-keyword">string</span> result, <span class="c-keyword">string</span> msg)&gt; <span class="c-method">IssueReqAsync</span>(<span class="c-keyword">string</span> reqNo) {
+        <span class="c-keyword">await using var</span> cn = <span class="c-keyword">new</span> <span class="c-type">iDB2Connection</span>(_conn);
+        <span class="c-keyword">await</span> cn.<span class="c-method">OpenAsync</span>();
+        <span class="c-keyword">await using var</span> cmd = <span class="c-keyword">new</span> <span class="c-type">iDB2Command</span>(<span class="c-string">"CALL X0250661.ISSUE_REQ(?, ?, ?)"</span>, cn);
+        cmd.CommandType = <span class="c-type">CommandType</span>.StoredProcedure;
+
+        cmd.Parameters.<span class="c-method">Add</span>(<span class="c-string">"P_REQNO"</span>,  <span class="c-type">iDB2DbType</span>.iDB2Char, 10).<span class="c-method">Value</span> = reqNo;
+        <span class="c-keyword">var</span> pResult = cmd.Parameters.<span class="c-method">Add</span>(<span class="c-string">"P_RESULT"</span>, <span class="c-type">iDB2DbType</span>.iDB2Char, 1);
+        <span class="c-keyword">var</span> pMsg    = cmd.Parameters.<span class="c-method">Add</span>(<span class="c-string">"P_ERRMSG"</span>, <span class="c-type">iDB2DbType</span>.iDB2VarChar, 100);
+        pResult.Direction = pMsg.Direction = <span class="c-type">ParameterDirection</span>.Output;
+
+        <span class="c-keyword">await</span> cmd.<span class="c-method">ExecuteNonQueryAsync</span>();
+        <span class="c-keyword">return</span> (pResult.Value.<span class="c-method">ToString</span>()!, pMsg.Value.<span class="c-method">ToString</span>()!);
+    }
+}</div>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p><b>วันที่ 1:</b> Download + Install IBM ACS → หา IBM.Data.Db2.iSeries.dll</p></div>
+      <div class="step"><div class="step-num">2</div><p><b>วันที่ 2-3:</b> สร้าง Console App → เพิ่ม reference DLL → เขียน iDB2Connection เชื่อม PUB400</p></div>
+      <div class="step"><div class="step-num">3</div><p><b>วันที่ 4-5:</b> Query ITEM_MASTER + REQ_HEADER แสดงผลใน console</p></div>
+      <div class="step"><div class="step-num">4</div><p><b>วันที่ 6-7:</b> Call SP ISSUE_REQ + APPROVE_REQ รับ output กลับ</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 2 ==================== -->
+<p class="section-title">Phase 2 — ASP.NET Core Web API (สัปดาห์ 4-6)</p>
+
+<!-- Week 4-5 -->
+<div class="week-card" id="w45">
+  <div class="week-head" onclick="toggle('w45')">
+    <div class="week-num" style="color:var(--green)">Week 04-05</div>
+    <div class="week-info">
+      <h3>ASP.NET Core Web API — สร้าง REST ด้วย C#</h3>
+      <div class="tagline">เหมือน Express.js แต่เป็น .NET — Controller, Route, DI, Middleware</div>
+      <div class="week-tags">
+        <span class="wtag" style="background:#d0f0e0;color:#0a5c2e">ASP.NET Core</span>
+        <span class="wtag" style="background:#d0f0e0;color:#0a5c2e">REST API</span>
+        <span class="wtag" style="background:#d0f0e0;color:#0a5c2e">Dependency Injection</span>
+      </div>
+    </div>
+    <div class="week-toggle">▾</div>
+  </div>
+  <div class="week-body">
+    <div class="res-grid">
+
+      <div class="res-card primary">
+        <div class="res-top">
+          <div class="res-icon">🔵</div>
+          <div>
+            <div class="res-name">Microsoft Learn — ASP.NET Core Web API</div>
+            <div class="res-type">🎓 Official Course · Interactive</div>
+          </div>
+        </div>
+        <div class="res-desc">Official tutorial สร้าง REST API จนได้ CRUD endpoint ครบ — ทำตามได้ทีละขั้น</div>
+        <div class="res-topics">
+          <div class="res-topic">Create Web API project</div>
+          <div class="res-topic">Controllers + Action methods</div>
+          <div class="res-topic">Routing + HTTP Methods</div>
+          <div class="res-topic">Swagger/OpenAPI</div>
+        </div>
+        <a href="https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api" target="_blank" class="res-link" style="background:#0078d4;color:#fff">
+          🔗 ASP.NET Core Tutorial
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">▶️</div>
+          <div>
+            <div class="res-name">Tim Corey — ASP.NET Core API Series</div>
+            <div class="res-type">📺 YouTube · Practical</div>
+          </div>
+        </div>
+        <div class="res-desc">Series สร้าง API จากศูนย์ ทำ project จริง ดีกว่า tutorial ทั่วไปมาก เน้น clean code</div>
+        <div class="res-topics">
+          <div class="res-topic">Web API from scratch</div>
+          <div class="res-topic">Dependency Injection pattern</div>
+          <div class="res-topic">Repository pattern สำหรับ DB access</div>
+          <div class="res-topic">Error handling + Response model</div>
+        </div>
+        <a href="https://www.youtube.com/@IAmTimCorey/search?query=web+api" target="_blank" class="res-link" style="background:#ff0000;color:#fff">
+          🔗 Tim Corey — Web API
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">▶️</div>
+          <div>
+            <div class="res-name">Nick Chapsas — .NET Best Practices</div>
+            <div class="res-type">📺 YouTube · Advanced Tips</div>
+          </div>
+        </div>
+        <div class="res-desc">ดูเสริมเพื่อเขียน API ให้ดีขึ้น — minimal API, performance tips, modern .NET patterns</div>
+        <div class="res-topics">
+          <div class="res-topic">Minimal API vs Controller API</div>
+          <div class="res-topic">Global error handling</div>
+          <div class="res-topic">Response caching</div>
+        </div>
+        <a href="https://www.youtube.com/@nickchapsas" target="_blank" class="res-link" style="background:#ff0000;color:#fff">
+          🔗 Nick Chapsas YouTube
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p><b>Week 4 วันที่ 1-4:</b> ทำ MS Learn ASP.NET Core tutorial จนจบ มี Swagger UI</p></div>
+      <div class="step"><div class="step-num">2</div><p><b>Week 4 วันที่ 5-7:</b> สร้าง API endpoint <b>/api/items</b> — GET ดึงข้อมูลจาก PUB400 ผ่าน iDB2Connection</p></div>
+      <div class="step"><div class="step-num">3</div><p><b>Week 5:</b> เพิ่ม POST/PUT/DELETE + เชื่อม Stored Procedure ที่มีอยู่แล้ว ISSUE_REQ, APPROVE_REQ</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Week 6 -->
+<div class="week-card" id="w6">
+  <div class="week-head" onclick="toggle('w6')">
+    <div class="week-num" style="color:var(--green)">Week 06</div>
+    <div class="week-info">
+      <h3>Re-implement PSS Modules ด้วย .NET</h3>
+      <div class="tagline">เขียน endpoint เดียวกับ Node.js แต่เป็น C# — เทียบให้เห็นความต่าง</div>
+      <div class="week-tags">
+        <span class="wtag" style="background:#d0f0e0;color:#0a5c2e">PSS API in C#</span>
+        <span class="wtag" style="background:#fef3c7;color:#92400e">เทียบ Node.js vs .NET</span>
+      </div>
+    </div>
+    <div class="week-toggle">▾</div>
+  </div>
+  <div class="week-body">
+    <div class="res-grid">
+
+      <div class="res-card primary">
+        <div class="res-top">
+          <div class="res-icon">📖</div>
+          <div>
+            <div class="res-name">Dapper — Micro ORM</div>
+            <div class="res-type">📦 NuGet Package · แนะนำ</div>
+          </div>
+        </div>
+        <div class="res-desc">ใช้แทนการเขียน DataReader เอง — Map ผล query เป็น C# object ได้เลย เหมาะกับ IBM i มาก</div>
+        <div class="res-topics">
+          <div class="res-topic">Install: NuGet → Dapper</div>
+          <div class="res-topic">Query&lt;T&gt; map ผลตรงเป็น class</div>
+          <div class="res-topic">Execute() สำหรับ INSERT/UPDATE/DELETE</div>
+          <div class="res-topic">DynamicParameters สำหรับ SP</div>
+        </div>
+        <a href="https://github.com/DapperLib/Dapper" target="_blank" class="res-link" style="background:#333;color:#fff">
+          🔗 Dapper GitHub
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี / Open Source</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">📘</div>
+          <div>
+            <div class="res-name">Connection Pooling ใน .NET</div>
+            <div class="res-type">📖 Microsoft Docs</div>
+          </div>
+        </div>
+        <div class="res-desc">.NET จัดการ Connection Pool ให้อัตโนมัติ — อ่านเพื่อเข้าใจและ configure ให้ถูก</div>
+        <div class="res-topics">
+          <div class="res-topic">Connection pooling built-in</div>
+          <div class="res-topic">Max pool size configuration</div>
+          <div class="res-topic">Connection lifetime</div>
+        </div>
+        <a href="https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/connection-pooling" target="_blank" class="res-link" style="background:#0078d4;color:#fff">
+          🔗 Connection Pooling Docs
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p><b>วันที่ 1-2:</b> ติดตั้ง Dapper ลอง query ITEM_MASTER → map เป็น ItemMaster class</p></div>
+      <div class="step"><div class="step-num">2</div><p><b>วันที่ 3-5:</b> สร้าง StockController, ReqController เหมือนที่มีใน Node.js Express</p></div>
+      <div class="step"><div class="step-num">3</div><p><b>วันที่ 6-7:</b> ทดสอบ Swagger UI ว่า endpoint ทำงานครบ แล้วเทียบ response กับ Node.js version</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 3 ==================== -->
+<p class="section-title">Phase 3 — IBM i Deep Dive (สัปดาห์ 7-9)</p>
+
+<div class="week-card" id="w79">
+  <div class="week-head" onclick="toggle('w79')">
+    <div class="week-num" style="color:var(--amber)">Week 07-09</div>
+    <div class="week-info">
+      <h3>Program Call + IFS + Advanced IBM i</h3>
+      <div class="tagline">เรียก RPG Program ตรงๆ จาก C# โดยไม่ต้องใช้ SSH — Program Call API</div>
+      <div class="week-tags">
+        <span class="wtag" style="background:#fef3c7;color:#92400e">RPG Program Call</span>
+        <span class="wtag" style="background:#fef3c7;color:#92400e">IFS Access</span>
+        <span class="wtag" style="background:#fef3c7;color:#92400e">IBM i Advanced</span>
+      </div>
+    </div>
+    <div class="week-toggle">▾</div>
+  </div>
+  <div class="week-body">
+    <div class="res-grid">
+
+      <div class="res-card primary">
+        <div class="res-top">
+          <div class="res-icon">🔴</div>
+          <div>
+            <div class="res-name">IBM i Access .NET — Program Call</div>
+            <div class="res-type">📖 IBM Official Docs</div>
+          </div>
+        </div>
+        <div class="res-desc">เรียก RPG Program ตรงจาก C# — ส่ง parameter เข้า รับ output กลับ ไม่ต้องง้อ SSH/itoolkit</div>
+        <div class="res-topics">
+          <div class="res-topic">iDB2Command + CommandType.StoredProcedure</div>
+          <div class="res-topic">iDB2Parameter สำหรับ IN/OUT params</div>
+          <div class="res-topic">Call PSS001R (Issue Req) จาก C#</div>
+          <div class="res-topic">Error handling จาก IBM i exception</div>
+        </div>
+        <a href="https://www.ibm.com/docs/en/i/7.5?topic=iasp-calling-programs-stored-procedures" target="_blank" class="res-link" style="background:#da1e28;color:#fff">
+          🔗 IBM Program Call Docs
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">💬</div>
+          <div>
+            <div class="res-name">Code400.com</div>
+            <div class="res-type">💬 IBM i Developer Community</div>
+          </div>
+        </div>
+        <div class="res-desc">ชุมชน IBM i developer โดยเฉพาะ มี article เรื่อง .NET + IBM i หลายชิ้น เขียนโดย practitioner จริงๆ</div>
+        <div class="res-topics">
+          <div class="res-topic">ค้นหา ".NET IBM i" ได้ตัวอย่าง real-world</div>
+          <div class="res-topic">มี forum ถามปัญหาได้</div>
+        </div>
+        <a href="https://www.code400.com" target="_blank" class="res-link" style="background:#0043ce;color:#fff">
+          🔗 Code400.com
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">💬</div>
+          <div>
+            <div class="res-name">PUB400.COM Forum</div>
+            <div class="res-type">💬 PUB400 Community</div>
+          </div>
+        </div>
+        <div class="res-desc">Forum ของ PUB400 เอง มีคนที่ใช้ PUB400 สำหรับเรียน IBM i คล้ายๆ กัน ถามปัญหาที่เฉพาะ PUB400 ได้</div>
+        <div class="res-topics">
+          <div class="res-topic">ปัญหา connection + permission บน PUB400</div>
+          <div class="res-topic">Library/User limit ของ PUB400</div>
+        </div>
+        <a href="https://www.pub400.com" target="_blank" class="res-link" style="background:#0043ce;color:#fff">
+          🔗 PUB400.com
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 4 ==================== -->
+<p class="section-title">Phase 4 — Full Stack Web (สัปดาห์ 10-12)</p>
+
+<div class="week-card" id="w1012">
+  <div class="week-head" onclick="toggle('w1012')">
+    <div class="week-num" style="color:var(--purple)">Week 10-12</div>
+    <div class="week-info">
+      <h3>Angular หรือ Next.js เรียก .NET API</h3>
+      <div class="tagline">Wire ทุกอย่างเข้าด้วยกัน — Frontend → .NET API → IBM i</div>
+      <div class="week-tags">
+        <span class="wtag" style="background:#f3e8ff;color:#6d28d9">Angular</span>
+        <span class="wtag" style="background:#f3e8ff;color:#6d28d9">หรือ Next.js เดิม</span>
+        <span class="wtag" style="background:#f3e8ff;color:#6d28d9">Full Stack</span>
+      </div>
+    </div>
+    <div class="week-toggle">▾</div>
+  </div>
+  <div class="week-body">
+    <div class="res-grid">
+
+      <div class="res-card primary">
+        <div class="res-top">
+          <div class="res-icon">🅰️</div>
+          <div>
+            <div class="res-name">Angular Official Docs & Tutorial</div>
+            <div class="res-type">🎓 Official · angular.dev</div>
+          </div>
+        </div>
+        <div class="res-desc">ถ้าเลือก Angular — เริ่มที่ angular.dev ซึ่ง rewrite ใหม่ใน 2024 ดีกว่าเดิมมาก</div>
+        <div class="res-topics">
+          <div class="res-topic">Standalone components (Angular 17+)</div>
+          <div class="res-topic">HttpClient เรียก .NET API</div>
+          <div class="res-topic">Angular Material — UI components</div>
+          <div class="res-topic">Reactive Forms สำหรับ CRUD</div>
+        </div>
+        <a href="https://angular.dev/tutorials" target="_blank" class="res-link" style="background:#dd0031;color:#fff">
+          🔗 angular.dev/tutorials
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">▶️</div>
+          <div>
+            <div class="res-name">Fireship — Angular in 100 Seconds + Courses</div>
+            <div class="res-type">📺 YouTube · สรุปเร็ว</div>
+          </div>
+        </div>
+        <div class="res-desc">สรุป Angular concept ได้เร็วและชัดที่สุด — ดูก่อน angular.dev เพื่อเห็นภาพรวมก่อน</div>
+        <div class="res-topics">
+          <div class="res-topic">Angular in 100 Seconds</div>
+          <div class="res-topic">Angular + REST API</div>
+          <div class="res-topic">Signal-based state management</div>
+        </div>
+        <a href="https://www.youtube.com/@Fireship" target="_blank" class="res-link" style="background:#ff0000;color:#fff">
+          🔗 Fireship YouTube
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+      <div class="res-card">
+        <div class="res-top">
+          <div class="res-icon">📘</div>
+          <div>
+            <div class="res-name">CORS ใน ASP.NET Core</div>
+            <div class="res-type">📖 Microsoft Docs</div>
+          </div>
+        </div>
+        <div class="res-desc">เมื่อ Angular/Next.js เรียก .NET API ต้องตั้ง CORS ก่อนเสมอ — อ่านก่อน Week 10</div>
+        <div class="res-topics">
+          <div class="res-topic">Enable CORS ใน Program.cs</div>
+          <div class="res-topic">Allow specific origin (Angular port)</div>
+          <div class="res-topic">Preflight request handling</div>
+        </div>
+        <a href="https://learn.microsoft.com/en-us/aspnet/core/security/cors" target="_blank" class="res-link" style="background:#0078d4;color:#fff">
+          🔗 CORS Docs
+        </a>
+        <span class="res-badge" style="background:#d0f0e0;color:#0a5c2e">ฟรี</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==================== YouTube Channels ==================== -->
+<p class="section-title">YouTube Channels แนะนำ (ดูตลอด 12 สัปดาห์)</p>
+<div class="yt-grid">
+
+  <div class="yt-card">
+    <div class="yt-top">
+      <div class="yt-icon">▶</div>
+      <div>
+        <div class="yt-name">IAmTimCorey</div>
+        <div class="yt-focus">C# + ASP.NET Core · ภาคปฏิบัติ</div>
+      </div>
+    </div>
+    <div class="yt-topics">เน้น real-world project มากที่สุด ดีที่สุดสำหรับ beginner ที่ต้องการเขียนโค้ดจริง อัปโหลดทุกสัปดาห์</div>
+    <a href="https://www.youtube.com/@IAmTimCorey" target="_blank" class="yt-link">🔗 @IAmTimCorey</a>
+  </div>
+
+  <div class="yt-card">
+    <div class="yt-top">
+      <div class="yt-icon">▶</div>
+      <div>
+        <div class="yt-name">Nick Chapsas</div>
+        <div class="yt-focus">.NET Modern Patterns · Advanced</div>
+      </div>
+    </div>
+    <div class="yt-topics">Best practices สมัยใหม่ของ .NET — Minimal API, Performance, Clean Architecture เหมาะดูเสริมหลัง Week 5</div>
+    <a href="https://www.youtube.com/@nickchapsas" target="_blank" class="yt-link">🔗 @nickchapsas</a>
+  </div>
+
+  <div class="yt-card">
+    <div class="yt-top">
+      <div class="yt-icon">▶</div>
+      <div>
+        <div class="yt-name">Fireship</div>
+        <div class="yt-focus">ทุก Tech · สรุปเร็ว</div>
+      </div>
+    </div>
+    <div class="yt-topics">ดูเพื่อเห็นภาพรวมของ tech ต่างๆ ก่อนลงลึก "X in 100 Seconds" ทุก topic มีครบ</div>
+    <a href="https://www.youtube.com/@Fireship" target="_blank" class="yt-link">🔗 @Fireship</a>
+  </div>
+
+  <div class="yt-card">
+    <div class="yt-top">
+      <div class="yt-icon">▶</div>
+      <div>
+        <div class="yt-name">Kudvenkat</div>
+        <div class="yt-focus">C# + ASP.NET · อธิบายละเอียด</div>
+      </div>
+    </div>
+    <div class="yt-topics">อธิบายแบบ step-by-step ช้าๆ ชัดเจน เหมาะมากตอน Week 1-3 ที่ยังไม่คุ้นกับ C#</div>
+    <a href="https://www.youtube.com/@Csharp-video-tutorialsBlogspot" target="_blank" class="yt-link">🔗 @Kudvenkat</a>
+  </div>
+
+</div>
+
+<!-- ==================== IBM i Resources ==================== -->
+<p class="section-title">IBM i Resources (ใช้ตลอด)</p>
+<div class="ibm-grid">
+
+  <div class="ibm-card">
+    <div class="ibm-head">
+      <div class="ibm-icon" style="background:#fde2e2">📕</div>
+      <div>
+        <div class="ibm-name">IBM i 7.5 Documentation</div>
+        <div class="ibm-type">OFFICIAL IBM DOCS</div>
+      </div>
+    </div>
+    <div class="ibm-desc">Official docs ทุกอย่างของ IBM i — SQL Reference, .NET Provider, IWS, RPG Reference ครบ</div>
+    <a href="https://www.ibm.com/docs/en/i/7.5" target="_blank" class="ibm-link" style="background:#fde2e2;color:#a3171f">🔗 ibm.com/docs/en/i/7.5</a>
+  </div>
+
+  <div class="ibm-card">
+    <div class="ibm-head">
+      <div class="ibm-icon" style="background:#e8f0fe">📘</div>
+      <div>
+        <div class="ibm-name">IBM Redbooks — IBM i + Web</div>
+        <div class="ibm-type">FREE EBOOKS FROM IBM</div>
+      </div>
+    </div>
+    <div class="ibm-desc">IBM Redbooks คือ free ebook เชิงลึก เล่ม "IBM i and the Web" ครอบคลุม .NET, Java, PHP เชื่อม IBM i</div>
+    <a href="https://www.redbooks.ibm.com/cgi-bin/searchsite.cgi?query=IBM+i+web" target="_blank" class="ibm-link" style="background:#e8f0fe;color:#0f62fe">🔗 IBM Redbooks — IBM i Web</a>
+  </div>
+
+  <div class="ibm-card">
+    <div class="ibm-head">
+      <div class="ibm-icon" style="background:#f0fdf4">💬</div>
+      <div>
+        <div class="ibm-name">IT Jungle — IBM i News</div>
+        <div class="ibm-type">NEWSLETTER + ARTICLES</div>
+      </div>
+    </div>
+    <div class="ibm-desc">Newsletter รายสัปดาห์ของ IBM i ecosystem — ข่าว, tutorial, บทความจาก practitioner จริงๆ</div>
+    <a href="https://www.itjungle.com" target="_blank" class="ibm-link" style="background:#f0fdf4;color:#15803d">🔗 itjungle.com</a>
+  </div>
+
+  <div class="ibm-card">
+    <div class="ibm-head">
+      <div class="ibm-icon" style="background:#fff3e0">💬</div>
+      <div>
+        <div class="ibm-name">COMMON — IBM i User Group</div>
+        <div class="ibm-type">COMMUNITY + EVENTS</div>
+      </div>
+    </div>
+    <div class="ibm-desc">Organization ของ IBM i developer ทั่วโลก มี session recording ฟรีบางส่วน และ forum ถามตอบ</div>
+    <a href="https://www.common.org" target="_blank" class="ibm-link" style="background:#fff3e0;color:#9a3412">🔗 common.org</a>
+  </div>
+
+</div>
+
+<!-- ==================== Summary ==================== -->
+<p class="section-title">ภาพรวม 12 สัปดาห์</p>
+<div class="sum-grid">
+  <div class="sum-card now">
+    <div class="sum-phase">Week 1-3 · Phase 1</div>
+    <h4>C# Fundamentals</h4>
+    <div class="sum-items">
+      <div class="sum-item">W3Schools C# (Day 1)</div>
+      <div class="sum-item">Microsoft Learn C# path</div>
+      <div class="sum-item">Tim Corey OOP series</div>
+      <div class="sum-item">เชื่อม PUB400 ด้วย C# Console App</div>
+    </div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-phase">Week 4-6 · Phase 2</div>
+    <h4>ASP.NET Core Web API</h4>
+    <div class="sum-items">
+      <div class="sum-item">MS Learn ASP.NET Core tutorial</div>
+      <div class="sum-item">Tim Corey Web API series</div>
+      <div class="sum-item">Dapper + IBM i</div>
+      <div class="sum-item">Re-implement PSS endpoints</div>
+    </div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-phase">Week 7-9 · Phase 3</div>
+    <h4>IBM i Deep Dive</h4>
+    <div class="sum-items">
+      <div class="sum-item">IBM Docs — Program Call</div>
+      <div class="sum-item">Call RPG ตรงจาก C#</div>
+      <div class="sum-item">IBM Redbooks</div>
+      <div class="sum-item">Code400 + IT Jungle</div>
+    </div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-phase">Week 10-12 · Phase 4</div>
+    <h4>Full Stack</h4>
+    <div class="sum-items">
+      <div class="sum-item">angular.dev tutorials</div>
+      <div class="sum-item">Fireship — Angular overview</div>
+      <div class="sum-item">CORS setup</div>
+      <div class="sum-item">Wire Angular → .NET → IBM i</div>
+    </div>
+  </div>
+</div>
+
+<div class="callout">
+  <h3>🎯 เป้าหมายปลาย 12 สัปดาห์</h3>
+  <p>มี <span class="highlight">PSS System version 2</span> ที่ทำงานด้วย <span class="highlight">Angular + ASP.NET Core + IBM.Data.Db2.iSeries</span> เชื่อม PUB400 ได้จริง — code ที่เขียนบน PUB400 ย้ายไปใช้กับ AS/400 บริษัทได้ทันที แค่เปลี่ยน connection string</p>
+</div>
+
+<script>
+  function toggle(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  function toggleItem(el) {
+    if (el.style.cursor === 'default') return;
+    el.classList.remove('current');
+    el.classList.toggle('done');
+    const cbox = el.querySelector('.cbox');
+    cbox.textContent = el.classList.contains('done') ? '✓' : '';
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const all  = document.querySelectorAll('.cl-item:not([style*="cursor:default"]):not([style*="cursor: default"])');
+    const done = document.querySelectorAll('.cl-item.done');
+    const total = all.length;
+    const count = done.length;
+    const pct   = Math.round((count / total) * 100);
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-pct').textContent  = count + ' / ' + total;
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>

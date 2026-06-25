@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero Cost Stack — เครื่องมือฟรีสำหรับ Developer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Sarabun:wght@300;400;500;600&display=swap');
+
+:root {
+  --paper: #f7f3ec;
+  --paper2: #eee9e0;
+  --white: #ffffff;
+  --ink: #1c1917;
+  --ink2: #44403c;
+  --muted: #78716c;
+  --faint: #a8a29e;
+  --line: #e2ddd6;
+  --green: #166534;
+  --green-bg: #f0fdf4;
+  --green-border: #bbf7d0;
+  --green-mid: #16a34a;
+  --blue: #1d4ed8;
+  --blue-bg: #eff6ff;
+  --blue-border: #bfdbfe;
+  --orange: #9a3412;
+  --orange-bg: #fff7ed;
+  --orange-border: #fed7aa;
+  --purple: #6b21a8;
+  --purple-bg: #faf5ff;
+  --purple-border: #e9d5ff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Sarabun', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 28px 100px; }
+
+/* ── HERO ── */
+.hero {
+  padding: 64px 0 52px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 48px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: end;
+}
+.hero-left .kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-left .kicker::before {
+  content: '';
+  width: 24px;
+  height: 2px;
+  background: var(--green);
+  display: inline-block;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(38px, 5.5vw, 68px);
+  line-height: 1.0;
+  letter-spacing: -.02em;
+  margin-bottom: 20px;
+}
+.hero h1 .accent {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0 10px 4px;
+  transform: rotate(-.5deg);
+}
+.hero-sub {
+  font-size: 15.5px;
+  color: var(--muted);
+  max-width: 500px;
+  line-height: 1.7;
+}
+
+/* STAMP */
+.stamp {
+  flex-shrink: 0;
+  width: 130px;
+  height: 130px;
+  border: 3px solid var(--green);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transform: rotate(6deg);
+  padding: 16px;
+  position: relative;
+}
+.stamp::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1.5px dashed var(--green);
+  border-radius: 50%;
+  opacity: .4;
+}
+.stamp .s1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--green);
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+.stamp .s2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  color: var(--green);
+  line-height: 1;
+}
+.stamp .s3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-top: 2px;
+}
+
+/* ── LEGEND ── */
+.legend-bar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  margin-bottom: 44px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.legend-bar .litem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+.badge.oss    { background: var(--green-bg);   border: 1px solid var(--green-border);  color: var(--green); }
+.badge.forever{ background: var(--blue-bg);    border: 1px solid var(--blue-border);   color: var(--blue); }
+.badge.edu    { background: var(--purple-bg);  border: 1px solid var(--purple-border); color: var(--purple); }
+.badge.warn   { background: var(--orange-bg);  border: 1px solid var(--orange-border); color: var(--orange); }
+.litem .desc { color: var(--muted); font-size: 10.5px; }
+
+/* ── CATEGORY SECTION ── */
+.cat { margin-bottom: 52px; }
+.cat-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--ink);
+}
+.cat-icon { font-size: 20px; }
+.cat-head h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -.01em;
+}
+.cat-head .cat-en {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+/* ── TOOL GRID ── */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.tool-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  padding: 16px 18px;
+  transition: border-color .15s, transform .15s;
+}
+.tool-card:hover {
+  border-color: var(--ink);
+  transform: translateY(-2px);
+}
+.tc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.tc-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15.5px;
+  line-height: 1.2;
+}
+.tc-desc {
+  font-size: 12.5px;
+  color: var(--ink2);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+.tc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.ttag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  padding: 2px 6px;
+  background: var(--paper2);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 2px;
+}
+.tc-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--faint);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  transition: color .15s;
+}
+.tc-link:hover { color: var(--green); }
+.tc-link::before { content: '↗'; font-size: 11px; }
+
+/* note callout */
+.note {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--orange-bg);
+  border-left: 3px solid var(--orange);
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  color: var(--orange);
+  line-height: 1.5;
+}
+.note::before { content: '⚠'; flex-shrink: 0; }
+
+/* ── COMPARISON TABLE ── */
+.tbl-wrap {
+  overflow-x: auto;
+  margin-bottom: 52px;
+}
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.comp-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--paper);
+  text-align: left;
+  white-space: nowrap;
+}
+.comp-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.comp-table tr:hover td { background: var(--paper2); }
+.comp-table .bold { font-weight: 600; font-family: 'Syne', sans-serif; font-size: 13.5px; }
+.comp-table .mono-s { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+.chk { color: var(--green-mid); font-size: 14px; }
+.cx  { color: var(--faint); font-size: 14px; }
+
+/* ── PROJECT MATRIX ── */
+.matrix-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--ink);
+}
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 52px;
+}
+.mx-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  padding: 16px;
+}
+.mx-proj {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.mx-stack { display: flex; flex-direction: column; gap: 4px; }
+.mx-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.mx-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  background: var(--paper2);
+  padding: 2px 5px;
+  border-radius: 2px;
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.mx-tool { color: var(--ink2); }
+
+footer {
+  padding: 22px 0;
+  border-top: 1.5px solid var(--line);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--faint);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .hero { grid-template-columns: 1fr; }
+  .stamp { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-left">
+    <div class="kicker">Zero Cost Developer Stack</div>
+    <h1>เครื่องมือ<span class="accent">ฟรีจริง</span><br>สำหรับ Developer</h1>
+    <p class="hero-sub">รวมเครื่องมือที่ใช้ได้ฟรีถาวร ไม่มีกำหนดหมดอายุ ไม่ต้องกรอกบัตรเครดิต — เลือกเฉพาะที่ใช้พัฒนาระบบองค์กรได้จริง</p>
+  </div>
+  <div class="stamp">
+    <div class="s1">Verified</div>
+    <div class="s2">FREE</div>
+    <div class="s1">No Credit Card</div>
+    <div class="s3">Open Source / Forever</div>
+  </div>
+</header>
+
+<!-- LEGEND -->
+<div class="legend-bar">
+  <div class="litem"><span class="badge oss">Open Source</span><span class="desc">ซอร์สโค้ดเปิดเผย ใช้ฟรีตลอด</span></div>
+  <div class="litem"><span class="badge forever">Free Forever</span><span class="desc">มี free tier ถาวร ไม่หมดอายุ</span></div>
+  <div class="litem"><span class="badge edu">Student/OSS</span><span class="desc">ฟรีสำหรับนักศึกษาหรือโปรเจ็ค open source</span></div>
+  <div class="litem"><span class="badge warn">มีข้อจำกัด</span><span class="desc">ฟรีแต่มีเงื่อนไขที่ควรรู้</span></div>
+</div>
+
+<!-- ═══════════ 01 CODE EDITOR ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">✏️</span>
+    <h2>Code Editor & IDE</h2>
+    <span class="cat-en">เครื่องมือเขียนโค้ด</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">VS Code</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Editor มาตรฐานอุตสาหกรรม มี extension ครบทุกภาษา ฟรี 100% จาก Microsoft รองรับ GitHub Copilot, AI extensions</p>
+      <div class="tc-tags"><span class="ttag">ทุกโปรเจ็ค</span><span class="ttag">Windows/Mac/Linux</span></div>
+      <a class="tc-link" href="https://code.visualstudio.com" target="_blank">code.visualstudio.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Neovim</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Terminal-based editor ที่เร็วมาก นิยมในกลุ่ม developer ขั้นสูง ปรับแต่งได้ทุกส่วน มี community config เช่น LazyVim</p>
+      <div class="tc-tags"><span class="ttag">Backend</span><span class="ttag">Terminal</span></div>
+      <a class="tc-link" href="https://neovim.io" target="_blank">neovim.io</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">IntelliJ IDEA Community</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">IDE ระดับ enterprise สำหรับ Java/Kotlin รุ่น Community Edition ฟรีถาวร เหมาะสำหรับ Spring Boot, Android</p>
+      <div class="tc-tags"><span class="ttag">Java / Kotlin</span><span class="ttag">Spring Boot</span></div>
+      <a class="tc-link" href="https://www.jetbrains.com/idea/download" target="_blank">jetbrains.com/idea</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Zed</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Editor ตัวใหม่ เขียนด้วย Rust เปิดเร็วมาก มี AI built-in ฟรี รองรับ collaboration แบบ real-time</p>
+      <div class="tc-tags"><span class="ttag">เร็ว</span><span class="ttag">AI built-in</span></div>
+      <a class="tc-link" href="https://zed.dev" target="_blank">zed.dev</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 02 VERSION CONTROL ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">🔀</span>
+    <h2>Version Control & Collaboration</h2>
+    <span class="cat-en">จัดการโค้ดและทีม</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Git</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Version control พื้นฐานที่ต้องมี ติดตั้งในเครื่อง ฟรีถาวร ทุกโปรเจ็คต้องใช้</p>
+      <div class="tc-tags"><span class="ttag">ต้องมี</span><span class="ttag">ทุกโปรเจ็ค</span></div>
+      <a class="tc-link" href="https://git-scm.com" target="_blank">git-scm.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">GitHub</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Repository ฟรีไม่จำกัด (public & private) มี Actions CI/CD ฟรี 2,000 นาที/เดือน, GitHub Pages สำหรับ deploy static site</p>
+      <div class="tc-tags"><span class="ttag">Repository</span><span class="ttag">CI/CD</span><span class="ttag">Pages</span></div>
+      <a class="tc-link" href="https://github.com" target="_blank">github.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">GitLab CE</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Self-hosted Git server ครบ มี CI/CD, Issue tracker, Registry ในตัว เหมาะกับองค์กรที่ต้องการเก็บโค้ดในเซิร์ฟเวอร์ตัวเอง</p>
+      <div class="tc-tags"><span class="ttag">Self-hosted</span><span class="ttag">CI/CD</span></div>
+      <a class="tc-link" href="https://gitlab.com/gitlab-org/gitlab" target="_blank">gitlab.com/gitlab-org/gitlab</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Gitea</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Git server เบาสุดสำหรับ self-host ใช้ RAM น้อยมาก เหมาะกับ VPS เล็ก ๆ หรือ NAS ในบ้าน/สำนักงาน</p>
+      <div class="tc-tags"><span class="ttag">Self-hosted</span><span class="ttag">เบา</span></div>
+      <a class="tc-link" href="https://gitea.com" target="_blank">gitea.com</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 03 BACKEND / RUNTIME ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">⚙️</span>
+    <h2>Backend Runtime & Framework</h2>
+    <span class="cat-en">เซิร์ฟเวอร์และ Framework</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Node.js</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">JavaScript runtime สำหรับ backend ฟรีถาวร ecosystem ใหญ่ที่สุด เหมาะกับ API, real-time, microservice</p>
+      <div class="tc-tags"><span class="ttag">JavaScript</span><span class="ttag">API</span><span class="ttag">Real-time</span></div>
+      <a class="tc-link" href="https://nodejs.org" target="_blank">nodejs.org</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Python + FastAPI</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">FastAPI สร้าง REST API เร็วมาก มี auto docs (Swagger) ฟรีในตัว เหมาะกับ data processing, ERP backend, automation</p>
+      <div class="tc-tags"><span class="ttag">Python</span><span class="ttag">API</span><span class="ttag">Auto Docs</span></div>
+      <a class="tc-link" href="https://fastapi.tiangolo.com" target="_blank">fastapi.tiangolo.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Go (Golang)</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">ภาษาที่เร็ว, compile เป็น binary เดียว, รับ load สูงมาก เหมาะกับ high-performance API, logistics tracking, microservice</p>
+      <div class="tc-tags"><span class="ttag">High Performance</span><span class="ttag">Tracking</span></div>
+      <a class="tc-link" href="https://go.dev" target="_blank">go.dev</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">NestJS</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Framework Node.js แบบ opinionated มี structure ชัดเจน เหมาะกับระบบใหญ่ มี DI, Guards, Interceptors ในตัว</p>
+      <div class="tc-tags"><span class="ttag">TypeScript</span><span class="ttag">Enterprise</span></div>
+      <a class="tc-link" href="https://nestjs.com" target="_blank">nestjs.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Hono</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Lightweight web framework รันได้บน Node, Deno, Bun, Cloudflare Workers เร็วมาก เขียนง่าย เหมาะกับ API เล็ก-กลาง</p>
+      <div class="tc-tags"><span class="ttag">Lightweight</span><span class="ttag">Edge-ready</span></div>
+      <a class="tc-link" href="https://hono.dev" target="_blank">hono.dev</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Bun</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">JavaScript runtime ตัวใหม่ เร็วกว่า Node.js มาก มี bundler, test runner, package manager ในตัว ฟรีถาวร</p>
+      <div class="tc-tags"><span class="ttag">Runtime</span><span class="ttag">Fast</span></div>
+      <a class="tc-link" href="https://bun.sh" target="_blank">bun.sh</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 04 FRONTEND ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">🖥️</span>
+    <h2>Frontend Framework & UI</h2>
+    <span class="cat-en">ส่วนหน้าของแอป</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">React</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Library สำหรับสร้าง UI ที่ได้รับความนิยมสูงสุด ecosystem ใหญ่ ฟรีถาวร จาก Meta</p>
+      <div class="tc-tags"><span class="ttag">UI Library</span><span class="ttag">Web App</span></div>
+      <a class="tc-link" href="https://react.dev" target="_blank">react.dev</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Next.js</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Full-stack React framework มี SSR, API Routes, File-based routing ฟรีถาวร เหมาะกับ web app ทุกขนาด</p>
+      <div class="tc-tags"><span class="ttag">Full-stack</span><span class="ttag">SSR</span><span class="ttag">SEO</span></div>
+      <a class="tc-link" href="https://nextjs.org" target="_blank">nextjs.org</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Vue.js</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Progressive JS framework เรียนรู้ง่าย เหมาะกับ developer ที่มาจาก HTML/CSS เขียน admin panel ได้เร็วมาก</p>
+      <div class="tc-tags"><span class="ttag">Admin Panel</span><span class="ttag">เรียนง่าย</span></div>
+      <a class="tc-link" href="https://vuejs.org" target="_blank">vuejs.org</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Tailwind CSS</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Utility-first CSS framework เขียน style โดยไม่ต้องออกจากไฟล์ HTML เร็วมาก ฟรีถาวร</p>
+      <div class="tc-tags"><span class="ttag">Styling</span><span class="ttag">ทุก Framework</span></div>
+      <a class="tc-link" href="https://tailwindcss.com" target="_blank">tailwindcss.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">shadcn/ui</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Component library copy-paste ฟรี 100% ไม่ใช่ npm package แต่เป็นโค้ดที่เป็นเจ้าของเอง สวย accessible ครบ</p>
+      <div class="tc-tags"><span class="ttag">Components</span><span class="ttag">React</span></div>
+      <a class="tc-link" href="https://ui.shadcn.com" target="_blank">ui.shadcn.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Recharts</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Chart library สำหรับ React ฟรีถาวร สร้าง Bar, Line, Pie, Area chart ได้เลย เหมาะสำหรับ Dashboard</p>
+      <div class="tc-tags"><span class="ttag">Charts</span><span class="ttag">Dashboard</span><span class="ttag">React</span></div>
+      <a class="tc-link" href="https://recharts.org" target="_blank">recharts.org</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 05 DATABASE ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">🗄️</span>
+    <h2>Database</h2>
+    <span class="cat-en">ฐานข้อมูล</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">PostgreSQL</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Relational database ที่ดีที่สุดสำหรับระบบองค์กร รองรับ JSON, Full-text search, Geo queries ฟรีถาวร</p>
+      <div class="tc-tags"><span class="ttag">แนะนำเป็นอันดับ 1</span><span class="ttag">ทุกโปรเจ็ค</span></div>
+      <a class="tc-link" href="https://www.postgresql.org" target="_blank">postgresql.org</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">MySQL / MariaDB</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">DB ยอดนิยม hosting รองรับกว้าง MariaDB เป็น fork ฟรีไม่มีข้อจำกัด เหมาะกับ web hosting ทั่วไป</p>
+      <div class="tc-tags"><span class="ttag">Web Hosting</span><span class="ttag">WordPress</span></div>
+      <a class="tc-link" href="https://mariadb.org" target="_blank">mariadb.org</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">SQLite</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Database แบบ file-based ไม่ต้องติดตั้ง server เหมาะกับ prototype, desktop app, mobile app, embedded</p>
+      <div class="tc-tags"><span class="ttag">Desktop App</span><span class="ttag">Prototype</span><span class="ttag">Mobile</span></div>
+      <a class="tc-link" href="https://sqlite.org" target="_blank">sqlite.org</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Redis</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">In-memory data store ใช้เป็น cache, session store, message queue, pub/sub Redis Community Edition ฟรีถาวร</p>
+      <div class="tc-tags"><span class="ttag">Cache</span><span class="ttag">Session</span><span class="ttag">Queue</span></div>
+      <a class="tc-link" href="https://redis.io" target="_blank">redis.io</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">MongoDB Community</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Document database ยืดหยุ่น self-host ฟรีถาวร เหมาะกับ log storage, content management, ข้อมูล schema ไม่คงที่</p>
+      <div class="tc-tags"><span class="ttag">NoSQL</span><span class="ttag">Log</span><span class="ttag">Flexible Schema</span></div>
+      <a class="tc-link" href="https://www.mongodb.com/try/download/community" target="_blank">mongodb.com/community</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Prisma ORM</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">ORM สำหรับ TypeScript/JS ที่ดีที่สุด มี type-safe query, migration, Studio GUI ฟรีถาวร ใช้กับ PostgreSQL, MySQL, SQLite</p>
+      <div class="tc-tags"><span class="ttag">ORM</span><span class="ttag">TypeScript</span><span class="ttag">Migration</span></div>
+      <a class="tc-link" href="https://prisma.io" target="_blank">prisma.io</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 06 DATABASE GUI ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">🔍</span>
+    <h2>Database GUI Tools</h2>
+    <span class="cat-en">เครื่องมือดู/จัดการฐานข้อมูล</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">DBeaver Community</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">GUI ฟรีที่ดีที่สุดสำหรับ PostgreSQL, MySQL, SQLite, MongoDB ใช้งานได้ครบ เขียน query, ดู schema, export ข้อมูล</p>
+      <div class="tc-tags"><span class="ttag">แนะนำ</span><span class="ttag">PostgreSQL</span><span class="ttag">MySQL</span><span class="ttag">SQLite</span></div>
+      <a class="tc-link" href="https://dbeaver.io" target="_blank">dbeaver.io</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">TablePlus (Free Tier)</div>
+        <span class="badge warn">มีข้อจำกัด</span>
+      </div>
+      <p class="tc-desc">GUI สวยงาม ใช้งานง่าย free tier เปิด tab ได้จำกัด แต่สำหรับโปรเจ็คเล็กพอใช้ได้ ถ้าต้องการเต็มรูปแบบใช้ DBeaver แทน</p>
+      <div class="tc-tags"><span class="ttag">สวย</span><span class="ttag">Mac/Windows</span></div>
+      <a class="tc-link" href="https://tableplus.com" target="_blank">tableplus.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Prisma Studio</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">GUI สำหรับดูและแก้ไขข้อมูลในฐานข้อมูล มาพร้อมกับ Prisma ฟรีถาวร รัน `npx prisma studio` ได้เลย</p>
+      <div class="tc-tags"><span class="ttag">Prisma</span><span class="ttag">Built-in</span></div>
+      <a class="tc-link" href="https://prisma.io/studio" target="_blank">prisma.io/studio</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Redis Insight</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">GUI อย่างเป็นทางการสำหรับ Redis ดู key-value, memory usage, pub/sub ได้ง่าย ฟรีถาวร</p>
+      <div class="tc-tags"><span class="ttag">Redis</span><span class="ttag">Cache Monitoring</span></div>
+      <a class="tc-link" href="https://redis.io/insight" target="_blank">redis.io/insight</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 07 DEPLOY / HOSTING ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">☁️</span>
+    <h2>Deploy & Hosting</h2>
+    <span class="cat-en">การ deploy และ hosting</span>
+  </div>
+
+  <div class="note">ระวัง: Platform หลายตัวมี free tier ที่ "หลับ" หลัง 15–30 นาทีไม่ใช้งาน (cold start) ไม่เหมาะกับ production จริง ใช้ได้ดีสำหรับ prototype และเรียนรู้</div>
+
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Railway (Free Tier)</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Deploy Node.js, Python, Go ได้เลย มี PostgreSQL ฟรีในตัว free tier $5 credit/เดือน ไม่หลับ เหมาะกับโปรเจ็คเริ่มต้น</p>
+      <div class="tc-tags"><span class="ttag">แนะนำ</span><span class="ttag">Node/Python/Go</span><span class="ttag">PostgreSQL ฟรี</span></div>
+      <a class="tc-link" href="https://railway.com" target="_blank">railway.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Vercel</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Deploy Next.js/React ได้ทันที free tier ไม่จำกัด bandwidth สำหรับ static/SSR site เหมาะกับ frontend และ landing page</p>
+      <div class="tc-tags"><span class="ttag">Next.js</span><span class="ttag">Frontend</span><span class="ttag">Serverless</span></div>
+      <a class="tc-link" href="https://vercel.com" target="_blank">vercel.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Cloudflare Pages/Workers</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Deploy static site และ edge function ฟรีมาก Workers free tier 100,000 requests/วัน ไม่มี cold start เพราะรันบน edge</p>
+      <div class="tc-tags"><span class="ttag">Edge</span><span class="ttag">Static Site</span><span class="ttag">API</span></div>
+      <a class="tc-link" href="https://pages.cloudflare.com" target="_blank">pages.cloudflare.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">GitHub Pages</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Host static website จาก GitHub repo ฟรีถาวร เหมาะกับ landing page, portfolio, documentation</p>
+      <div class="tc-tags"><span class="ttag">Static Site</span><span class="ttag">Portfolio</span><span class="ttag">Docs</span></div>
+      <a class="tc-link" href="https://pages.github.com" target="_blank">pages.github.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Docker</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Container runtime ฟรีถาวร (Personal/OSS plan) ใช้สำหรับ local dev, packaging, deploy บน VPS ส่วน Docker Desktop มีข้อจำกัดเชิงพาณิชย์</p>
+      <div class="tc-tags"><span class="ttag">Container</span><span class="ttag">Local Dev</span><span class="ttag">VPS</span></div>
+      <a class="tc-link" href="https://docs.docker.com/engine/install" target="_blank">docs.docker.com/engine</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Coolify</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Self-hosted Heroku/Vercel ทางเลือก deploy app, DB, service บน VPS ตัวเองได้ มี UI สวยงาม ฟรีถาวร self-host</p>
+      <div class="tc-tags"><span class="ttag">Self-hosted PaaS</span><span class="ttag">VPS</span></div>
+      <a class="tc-link" href="https://coolify.io" target="_blank">coolify.io</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 08 API TESTING ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">🧪</span>
+    <h2>API Testing & Development</h2>
+    <span class="cat-en">ทดสอบ API</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Hoppscotch</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">API testing tool บน browser ฟรีถาวร ใช้แทน Postman ได้ รองรับ REST, GraphQL, WebSocket มี self-host ด้วย</p>
+      <div class="tc-tags"><span class="ttag">แนะนำแทน Postman</span><span class="ttag">REST</span><span class="ttag">GraphQL</span></div>
+      <a class="tc-link" href="https://hoppscotch.io" target="_blank">hoppscotch.io</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Bruno</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">API client แบบ desktop เก็บ collection เป็นไฟล์ plain text ใน Git ได้เลย ไม่ต้องสมัครสมาชิก ฟรีถาวร offline</p>
+      <div class="tc-tags"><span class="ttag">Offline</span><span class="ttag">Git-friendly</span><span class="ttag">แทน Postman</span></div>
+      <a class="tc-link" href="https://usebruno.com" target="_blank">usebruno.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">curl / httpie</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Command-line HTTP client curl ติดมากับทุก OS httpie เป็น curl ที่อ่านง่ายกว่า เหมาะกับ script และ automation</p>
+      <div class="tc-tags"><span class="ttag">Terminal</span><span class="ttag">Script</span></div>
+      <a class="tc-link" href="https://httpie.io" target="_blank">httpie.io</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Swagger / OpenAPI</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Document และ test API ผ่าน browser ฟรีถาวร FastAPI มีในตัว หรือใช้ swagger-ui-express กับ Node.js</p>
+      <div class="tc-tags"><span class="ttag">API Docs</span><span class="ttag">FastAPI Built-in</span></div>
+      <a class="tc-link" href="https://swagger.io/tools/swagger-ui" target="_blank">swagger.io</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 09 MOBILE ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">📱</span>
+    <h2>Mobile Development</h2>
+    <span class="cat-en">พัฒนาแอปมือถือ</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Flutter SDK</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Framework สำหรับสร้าง app iOS, Android, Web, Desktop จาก codebase เดียว ฟรีถาวร จาก Google</p>
+      <div class="tc-tags"><span class="ttag">iOS + Android</span><span class="ttag">Cross-platform</span></div>
+      <a class="tc-link" href="https://flutter.dev" target="_blank">flutter.dev</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Expo (React Native)</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Platform สำหรับ React Native ที่ง่ายที่สุด free tier ใช้ได้ครบสำหรับโปรเจ็คส่วนตัว build ฟรีบน cloud</p>
+      <div class="tc-tags"><span class="ttag">React Native</span><span class="ttag">Easy Start</span></div>
+      <a class="tc-link" href="https://expo.dev" target="_blank">expo.dev</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Android Studio</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">IDE อย่างเป็นทางการสำหรับ Android ฟรีถาวร มี emulator ในตัว เหมาะกับ native Android หรือ Flutter</p>
+      <div class="tc-tags"><span class="ttag">Android</span><span class="ttag">Emulator</span><span class="ttag">Flutter IDE</span></div>
+      <a class="tc-link" href="https://developer.android.com/studio" target="_blank">developer.android.com/studio</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Firebase (Free Tier)</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Backend-as-a-service จาก Google Firestore, Auth, Storage ฟรีในระดับที่พอสำหรับโปรเจ็คเริ่มต้น Spark plan ฟรีถาวร</p>
+      <div class="tc-tags"><span class="ttag">Auth</span><span class="ttag">Realtime DB</span><span class="ttag">Storage</span></div>
+      <a class="tc-link" href="https://firebase.google.com/pricing" target="_blank">firebase.google.com/pricing</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 10 AI TOOLS ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">🤖</span>
+    <h2>AI Coding Tools</h2>
+    <span class="cat-en">AI ช่วยเขียนโค้ด</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Claude (Anthropic)</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">AI ช่วยเขียนโค้ด อธิบาย debug แนะนำสถาปัตยกรรม free tier ใช้ได้ทุกวัน เหมาะกับการเรียนรู้และพัฒนา</p>
+      <div class="tc-tags"><span class="ttag">โค้ด</span><span class="ttag">Debug</span><span class="ttag">Architecture</span></div>
+      <a class="tc-link" href="https://claude.ai" target="_blank">claude.ai</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">GitHub Copilot (Student)</div>
+        <span class="badge edu">Student/OSS</span>
+      </div>
+      <p class="tc-desc">AI autocomplete ใน VS Code ฟรีสำหรับนักศึกษาผ่าน GitHub Education Pack และ maintainer โปรเจ็ค open source ยอดนิยม</p>
+      <div class="tc-tags"><span class="ttag">นักศึกษา</span><span class="ttag">VS Code</span></div>
+      <a class="tc-link" href="https://education.github.com/pack" target="_blank">education.github.com/pack</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Codeium</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">AI autocomplete ฟรีถาวรไม่จำกัด รองรับ VS Code, Neovim, JetBrains ทางเลือกฟรีแทน Copilot</p>
+      <div class="tc-tags"><span class="ttag">Autocomplete</span><span class="ttag">VS Code</span><span class="ttag">ฟรีถาวร</span></div>
+      <a class="tc-link" href="https://codeium.com" target="_blank">codeium.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Ollama</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">รัน LLM บนเครื่องตัวเองฟรี 100% ออฟไลน์ได้ รองรับ Llama, Mistral, CodeLlama เหมาะกับงานที่ข้อมูล sensitive</p>
+      <div class="tc-tags"><span class="ttag">Local AI</span><span class="ttag">Offline</span><span class="ttag">Private</span></div>
+      <a class="tc-link" href="https://ollama.com" target="_blank">ollama.com</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 11 DESIGN ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">🎨</span>
+    <h2>Design & Prototyping</h2>
+    <span class="cat-en">ออกแบบ UI/UX</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Figma (Starter)</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Design tool มาตรฐาน free tier: 3 project ไม่จำกัด viewer เหมาะกับโปรเจ็คส่วนตัวและทีมเล็ก</p>
+      <div class="tc-tags"><span class="ttag">UI Design</span><span class="ttag">Prototype</span><span class="ttag">3 Projects</span></div>
+      <a class="tc-link" href="https://figma.com/pricing" target="_blank">figma.com/pricing</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Penpot</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Design tool แบบ open source ทางเลือกแทน Figma ฟรี 100% ใช้งานบน browser หรือ self-host ได้</p>
+      <div class="tc-tags"><span class="ttag">แทน Figma</span><span class="ttag">Self-host ได้</span></div>
+      <a class="tc-link" href="https://penpot.app" target="_blank">penpot.app</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Excalidraw</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Whiteboard สำหรับวาด diagram, wireframe, system design แบบ hand-drawn ฟรีถาวร ใช้บน browser ได้เลย</p>
+      <div class="tc-tags"><span class="ttag">Diagram</span><span class="ttag">System Design</span><span class="ttag">Whiteboard</span></div>
+      <a class="tc-link" href="https://excalidraw.com" target="_blank">excalidraw.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">draw.io / diagrams.net</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">วาด flowchart, ER diagram, architecture diagram ฟรีถาวร บันทึกเป็นไฟล์หรือใน Google Drive ได้</p>
+      <div class="tc-tags"><span class="ttag">ER Diagram</span><span class="ttag">Flowchart</span><span class="ttag">Architecture</span></div>
+      <a class="tc-link" href="https://diagrams.net" target="_blank">diagrams.net</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 12 TESTING ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">✅</span>
+    <h2>Testing</h2>
+    <span class="cat-en">ทดสอบโค้ด</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Vitest</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Test framework สำหรับ JavaScript/TypeScript ที่เร็วที่สุด API เหมือน Jest แต่เร็วกว่ามาก ฟรีถาวร</p>
+      <div class="tc-tags"><span class="ttag">Unit Test</span><span class="ttag">TypeScript</span><span class="ttag">เร็ว</span></div>
+      <a class="tc-link" href="https://vitest.dev" target="_blank">vitest.dev</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Playwright</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">E2E test framework จาก Microsoft ทดสอบ browser อัตโนมัติ ฟรีถาวร เหมาะกับ test หน้าจอ login, form, dashboard</p>
+      <div class="tc-tags"><span class="ttag">E2E Test</span><span class="ttag">Browser</span><span class="ttag">Automation</span></div>
+      <a class="tc-link" href="https://playwright.dev" target="_blank">playwright.dev</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">pytest</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Test framework สำหรับ Python ที่นิยมที่สุด ฟรีถาวร เขียน test ง่าย เหมาะกับ FastAPI backend</p>
+      <div class="tc-tags"><span class="ttag">Python</span><span class="ttag">Unit Test</span><span class="ttag">API Test</span></div>
+      <a class="tc-link" href="https://pytest.org" target="_blank">pytest.org</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ 13 COLLABORATION ═══════════ -->
+<section class="cat">
+  <div class="cat-head">
+    <span class="cat-icon">💬</span>
+    <h2>Collaboration & Project Management</h2>
+    <span class="cat-en">บริหารโปรเจ็คและทีม</span>
+  </div>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Linear (Free Tier)</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Issue tracker ที่สวยและเร็วที่สุด free tier: 250 issue ไม่จำกัด member เหมาะกับทีม developer เล็ก</p>
+      <div class="tc-tags"><span class="ttag">Issue Tracker</span><span class="ttag">Sprint</span></div>
+      <a class="tc-link" href="https://linear.app" target="_blank">linear.app</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Plane</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">Project management แบบ open source ทางเลือกแทน Jira/Linear self-host ได้ฟรี มี Kanban, Sprint, Gantt</p>
+      <div class="tc-tags"><span class="ttag">แทน Jira</span><span class="ttag">Self-host</span><span class="ttag">Kanban</span></div>
+      <a class="tc-link" href="https://plane.so" target="_blank">plane.so</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Notion (Free)</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">Wiki, doc, database ในที่เดียว free tier ใช้ได้ไม่จำกัดหน้า เหมาะกับจด requirement, spec, meeting notes</p>
+      <div class="tc-tags"><span class="ttag">Docs</span><span class="ttag">Wiki</span><span class="ttag">Requirement</span></div>
+      <a class="tc-link" href="https://notion.so" target="_blank">notion.so</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Discord (Free)</div>
+        <span class="badge forever">Free Forever</span>
+      </div>
+      <p class="tc-desc">สื่อสารทีมฟรี แยก channel ตาม topic ได้ มี bot, webhook เหมาะกับทีม developer ขนาดเล็ก-กลาง</p>
+      <div class="tc-tags"><span class="ttag">Team Chat</span><span class="ttag">Webhook</span></div>
+      <a class="tc-link" href="https://discord.com" target="_blank">discord.com</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ PROJECT MATRIX ═══════════ -->
+<div class="matrix-title">🗺 แนะนำ Stack ฟรีสำหรับแต่ละโปรเจ็ค</div>
+<div class="matrix-grid">
+
+  <div class="mx-card">
+    <div class="mx-proj">💰 Accounting / Finance</div>
+    <div class="mx-stack">
+      <div class="mx-row"><span class="mx-role">FE</span><span class="mx-tool">Next.js + shadcn/ui + Recharts</span></div>
+      <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Node.js + NestJS + Prisma</span></div>
+      <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Railway</span></div>
+      <div class="mx-row"><span class="mx-role">PDF</span><span class="mx-tool">pdfkit (npm) — open source</span></div>
+    </div>
+  </div>
+
+  <div class="mx-card">
+    <div class="mx-proj">👥 HRM / Payroll</div>
+    <div class="mx-stack">
+      <div class="mx-row"><span class="mx-role">FE</span><span class="mx-tool">React + Tailwind + shadcn</span></div>
+      <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Node.js + Prisma</span></div>
+      <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL</span></div>
+      <div class="mx-row"><span class="mx-role">Mobile</span><span class="mx-tool">Flutter (check-in/ลา)</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Railway / Coolify on VPS</span></div>
+    </div>
+  </div>
+
+  <div class="mx-card">
+    <div class="mx-proj">📦 WMS / คลังสินค้า</div>
+    <div class="mx-stack">
+      <div class="mx-row"><span class="mx-role">FE</span><span class="mx-tool">React + shadcn/ui</span></div>
+      <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">FastAPI (Python) + Prisma</span></div>
+      <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL</span></div>
+      <div class="mx-row"><span class="mx-role">Mobile</span><span class="mx-tool">Flutter + barcode scanner</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Coolify on VPS</span></div>
+    </div>
+  </div>
+
+  <div class="mx-card">
+    <div class="mx-proj">🚚 Logistics Tracking</div>
+    <div class="mx-stack">
+      <div class="mx-row"><span class="mx-role">FE</span><span class="mx-tool">Next.js + Mapbox GL (free tier)</span></div>
+      <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Go / Node.js + WebSocket</span></div>
+      <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL + PostGIS</span></div>
+      <div class="mx-row"><span class="mx-role">Mobile</span><span class="mx-tool">Flutter + GPS background</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">VPS (Coolify)</span></div>
+    </div>
+  </div>
+
+  <div class="mx-card">
+    <div class="mx-proj">🛒 E-commerce / POS</div>
+    <div class="mx-stack">
+      <div class="mx-row"><span class="mx-role">FE</span><span class="mx-tool">Next.js (SEO สำคัญ)</span></div>
+      <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Node.js + Prisma</span></div>
+      <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL + Redis (cart)</span></div>
+      <div class="mx-row"><span class="mx-role">Pay</span><span class="mx-tool">Omise / PromptPay (pay per use)</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Vercel (FE) + Railway (BE)</span></div>
+    </div>
+  </div>
+
+  <div class="mx-card">
+    <div class="mx-proj">📊 BI Dashboard</div>
+    <div class="mx-stack">
+      <div class="mx-row"><span class="mx-role">FE</span><span class="mx-tool">React + Recharts / D3.js</span></div>
+      <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Node.js / Python</span></div>
+      <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL + Redis (cache)</span></div>
+      <div class="mx-row"><span class="mx-role">Alt</span><span class="mx-tool">Metabase — open source BI tool</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Railway / Docker on VPS</span></div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- end wrap -->
+
+<footer class="wrap">
+  <span>// Zero Cost Stack · Developer Tools Reference</span>
+  <span>Open Source · Free Forever · No Credit Card</span>
+</footer>
+
+</body>
+</html>

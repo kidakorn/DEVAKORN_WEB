@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Developer Project Guide — โปรเจ็คแนะนำสำหรับ Developer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Sarabun:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2128;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --cyan: #00d4ff;
+  --orange: #ff6b35;
+  --green: #3fb950;
+  --yellow: #d29922;
+  --purple: #bc8cff;
+  --red: #f85149;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Sarabun', 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+.wrap { max-width: 1160px; margin: 0 auto; padding: 60px 28px 100px; }
+
+/* ── HERO ── */
+.hero {
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 56px;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: -28px; right: -28px;
+  height: 320px;
+  background: radial-gradient(ellipse 60% 50% at 20% 50%, rgba(0,212,255,.08) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 60% at 80% 30%, rgba(255,107,53,.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.mono { font-family: 'IBM Plex Mono', monospace; }
+.eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before { content: '//'; color: var(--border); }
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(34px, 4.5vw, 58px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -.02em;
+  margin-bottom: 20px;
+}
+h1 span { color: var(--cyan); }
+.hero-sub {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+/* ── FOUNDATION BAR ── */
+.foundation {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 28px 30px;
+  margin-bottom: 56px;
+}
+.foundation-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 20px;
+}
+.foundation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+.f-block h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.f-block h4 .icon { font-size: 15px; }
+.f-block ul {
+  list-style: none;
+  padding: 0;
+}
+.f-block li {
+  font-size: 12.5px;
+  color: var(--muted);
+  padding: 3px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  line-height: 1.5;
+}
+.f-block li::before { content: '›'; color: var(--border); flex-shrink: 0; margin-top: 1px; }
+
+/* ── CATEGORY ── */
+.cat-section { margin-bottom: 70px; }
+.cat-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.cat-index {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--bg);
+  background: var(--cyan);
+  padding: 2px 8px;
+  letter-spacing: .05em;
+}
+h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+}
+.cat-skills-inline {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ── PROJECT CARD ── */
+.proj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.proj-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 20px;
+  position: relative;
+  transition: border-color .2s, transform .15s;
+}
+.proj-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+.proj-card.beginner { border-top: 2px solid var(--green); }
+.proj-card.intermediate { border-top: 2px solid var(--yellow); }
+.proj-card.advanced { border-top: 2px solid var(--red); }
+
+.level-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+.beginner .level-badge { background: rgba(63,185,80,.15); color: var(--green); }
+.intermediate .level-badge { background: rgba(210,153,34,.15); color: var(--yellow); }
+.advanced .level-badge { background: rgba(248,81,73,.15); color: var(--red); }
+
+.proj-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  padding-right: 70px;
+}
+.proj-en {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.proj-desc {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.stack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.stack {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 3px;
+  background: var(--bg3);
+}
+.stack.fe { border-color: rgba(0,212,255,.3); color: var(--cyan); }
+.stack.be { border-color: rgba(255,107,53,.3); color: var(--orange); }
+.stack.db { border-color: rgba(188,140,255,.3); color: var(--purple); }
+.stack.infra { border-color: rgba(63,185,80,.3); color: var(--green); }
+
+.key-skills {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.key-skills-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--border);
+  margin-bottom: 7px;
+}
+.key-skills ul {
+  list-style: none;
+  padding: 0;
+}
+.key-skills li {
+  font-size: 12.5px;
+  color: #8b949e;
+  padding: 2px 0;
+  display: flex;
+  gap: 6px;
+}
+.key-skills li::before { content: '▸'; color: var(--cyan); opacity:.5; flex-shrink:0; }
+
+/* ── ROADMAP CALLOUT ── */
+.roadmap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--cyan);
+  padding: 22px 24px;
+  margin-top: 56px;
+}
+.roadmap-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 16px;
+}
+.roadmap-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.step-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--border);
+  line-height: 1;
+}
+.step-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+.step-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
+footer {
+  margin-top: 60px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media(max-width:640px) {
+  .cat-skills-inline { display: none; }
+  .proj-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow">Developer Project Guide</div>
+    <h1>โปรเจ็คแนะนำ<br>สำหรับ <span>Developer</span></h1>
+    <p class="hero-sub">คัดเลือกโปรเจ็คแต่ละหมวด พร้อม tech stack, ระดับความยาก และสกิลสำคัญที่ต้องฝึก ก่อนจะพัฒนาระบบองค์กรสร้างรายได้จริง</p>
+  </header>
+
+  <!-- FOUNDATION -->
+  <section class="foundation">
+    <div class="foundation-title">// พื้นฐานสำคัญที่ต้องมีก่อนทุกโปรเจ็ค</div>
+    <div class="foundation-grid">
+      <div class="f-block">
+        <h4><span class="icon">🧱</span> Core Programming</h4>
+        <ul>
+          <li>ภาษาใดก็ได้ให้ชำนาญ 1 ภาษา (JS/Python/Go)</li>
+          <li>Data structures & Algorithms พื้นฐาน</li>
+          <li>OOP และ functional programming concept</li>
+          <li>Git version control อย่างเป็นระบบ</li>
+        </ul>
+      </div>
+      <div class="f-block">
+        <h4><span class="icon">🗄️</span> Database</h4>
+        <ul>
+          <li>SQL พื้นฐาน (JOIN, GROUP BY, INDEX)</li>
+          <li>Database design & normalization</li>
+          <li>Transaction และ ACID properties</li>
+          <li>รู้จัก NoSQL และเลือกใช้เป็น</li>
+        </ul>
+      </div>
+      <div class="f-block">
+        <h4><span class="icon">🌐</span> Web & API</h4>
+        <ul>
+          <li>HTTP/HTTPS, REST API design</li>
+          <li>Authentication (JWT, Session, OAuth)</li>
+          <li>Frontend framework 1 ตัว (React/Vue)</li>
+          <li>Async programming (Promise/async-await)</li>
+        </ul>
+      </div>
+      <div class="f-block">
+        <h4><span class="icon">☁️</span> Deploy & DevOps</h4>
+        <ul>
+          <li>Linux command line พื้นฐาน</li>
+          <li>Docker (build, run, compose)</li>
+          <li>Deploy บน Cloud (VPS/PaaS อย่างน้อย 1 ตัว)</li>
+          <li>CI/CD พื้นฐาน (GitHub Actions)</li>
+        </ul>
+      </div>
+      <div class="f-block">
+        <h4><span class="icon">🔒</span> Security Mindset</h4>
+        <ul>
+          <li>OWASP Top 10 ต้องรู้จักทุกข้อ</li>
+          <li>Input validation & sanitization</li>
+          <li>RBAC — ระบบสิทธิ์ผู้ใช้</li>
+          <li>PDPA พื้นฐานสำหรับระบบที่มีข้อมูลส่วนบุคคล</li>
+        </ul>
+      </div>
+      <div class="f-block">
+        <h4><span class="icon">🧠</span> Soft Skills</h4>
+        <ul>
+          <li>อ่าน requirement แล้วแปลเป็น technical spec ได้</li>
+          <li>วางแผน scope และ estimate เวลาเป็น</li>
+          <li>เขียน documentation ให้คนอื่นเข้าใจได้</li>
+          <li>รับ feedback และ iterate เร็ว</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= 01 ERP ======= -->
+  <section class="cat-section">
+    <div class="cat-header">
+      <span class="cat-index">01</span>
+      <h2>ระบบบริหารทรัพยากรองค์กร</h2>
+    </div>
+    <div class="proj-grid">
+
+      <div class="proj-card beginner">
+        <span class="level-badge">Beginner</span>
+        <p class="proj-name">ระบบบัญชีครัวเรือน</p>
+        <p class="proj-en">Personal Finance Tracker</p>
+        <p class="proj-desc">บันทึกรายรับ-รายจ่าย แบ่งหมวดหมู่ แสดงกราฟสรุปรายเดือน — ฝึก CRUD + Chart พื้นฐาน</p>
+        <div class="stack-row">
+          <span class="stack fe">React</span>
+          <span class="stack be">Node.js</span>
+          <span class="stack db">SQLite</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>CRUD API ครบวงจร</li>
+            <li>Data visualization เบื้องต้น</li>
+            <li>User authentication</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card intermediate">
+        <span class="level-badge">Intermediate</span>
+        <p class="proj-name">ระบบบัญชีสำหรับร้านค้าเล็ก</p>
+        <p class="proj-en">Small Business Accounting</p>
+        <p class="proj-desc">ออกใบเสร็จ ติดตามลูกหนี้/เจ้าหนี้ สรุปงบกำไรขาดทุน — ฝึก business logic จริง</p>
+        <div class="stack-row">
+          <span class="stack fe">React/Vue</span>
+          <span class="stack be">Express/FastAPI</span>
+          <span class="stack db">PostgreSQL</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>หลักบัญชีคู่ในทางปฏิบัติ</li>
+            <li>PDF generation (ใบเสร็จ)</li>
+            <li>Complex SQL query & reporting</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card advanced">
+        <span class="level-badge">Advanced</span>
+        <p class="proj-name">Mini ERP — สำหรับ SME</p>
+        <p class="proj-en">Modular ERP System</p>
+        <p class="proj-desc">รวม Module: บัญชี, คลัง, จัดซื้อ, HR เบื้องต้น เชื่อมกันผ่าน API — ฝึก system integration จริง</p>
+        <div class="stack-row">
+          <span class="stack fe">Next.js</span>
+          <span class="stack be">NestJS/Go</span>
+          <span class="stack db">PostgreSQL</span>
+          <span class="stack infra">Docker</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Modular architecture design</li>
+            <li>Multi-tenant data isolation</li>
+            <li>Role-based access control (RBAC)</li>
+            <li>Audit log system</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======= 02 HRM ======= -->
+  <section class="cat-section">
+    <div class="cat-header">
+      <span class="cat-index">02</span>
+      <h2>ระบบบริหารทรัพยากรบุคคล</h2>
+    </div>
+    <div class="proj-grid">
+
+      <div class="proj-card beginner">
+        <span class="level-badge">Beginner</span>
+        <p class="proj-name">ระบบลงเวลาเข้า-ออก</p>
+        <p class="proj-en">Attendance Check-in App</p>
+        <p class="proj-desc">Check-in ผ่าน mobile หรือ QR code, บันทึกเวลา, สรุปชั่วโมงทำงานรายสัปดาห์</p>
+        <div class="stack-row">
+          <span class="stack fe">React Native / Flutter</span>
+          <span class="stack db">Firebase</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Mobile development พื้นฐาน</li>
+            <li>Real-time database (Firestore)</li>
+            <li>QR code generation & scanning</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card intermediate">
+        <span class="level-badge">Intermediate</span>
+        <p class="proj-name">ระบบจัดการการลา</p>
+        <p class="proj-en">Leave Management System</p>
+        <p class="proj-desc">ยื่นลา, อนุมัติหลายขั้น, ตรวจสอบโควตา, ส่ง email แจ้งเตือน — ฝึก workflow engine</p>
+        <div class="stack-row">
+          <span class="stack fe">React</span>
+          <span class="stack be">Node.js</span>
+          <span class="stack db">MySQL</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>State machine (Pending → Approved)</li>
+            <li>Email notification (Nodemailer/SendGrid)</li>
+            <li>Calendar integration</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card advanced">
+        <span class="level-badge">Advanced</span>
+        <p class="proj-name">ระบบ Payroll อัตโนมัติ</p>
+        <p class="proj-en">Payroll Calculation Engine</p>
+        <p class="proj-desc">คำนวณเงินเดือน ภาษี ประกันสังคม สร้างสลิปเงินเดือน PDF — ฝึก business rule ที่ซับซ้อน</p>
+        <div class="stack-row">
+          <span class="stack fe">Next.js</span>
+          <span class="stack be">Python/Node.js</span>
+          <span class="stack db">PostgreSQL</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Decimal arithmetic (ไม่ใช้ float)</li>
+            <li>Scheduled job (Cron)</li>
+            <li>PDF generation (สลิปเงินเดือน)</li>
+            <li>กฎหมายแรงงาน/ภาษีเงินได้</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======= 03 TRACKING ======= -->
+  <section class="cat-section">
+    <div class="cat-header">
+      <span class="cat-index">03</span>
+      <h2>ระบบติดตามและปฏิบัติการ</h2>
+    </div>
+    <div class="proj-grid">
+
+      <div class="proj-card beginner">
+        <span class="level-badge">Beginner</span>
+        <p class="proj-name">ระบบ To-Do / Task Board</p>
+        <p class="proj-en">Kanban Task Manager</p>
+        <p class="proj-desc">สร้าง Kanban board ลากวาง Card ระหว่างคอลัมน์ได้ แชร์ Board กับทีม</p>
+        <div class="stack-row">
+          <span class="stack fe">React + DnD Kit</span>
+          <span class="stack db">Supabase</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Drag-and-drop UI</li>
+            <li>Real-time sync (Supabase Realtime)</li>
+            <li>Shared state management</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card intermediate">
+        <span class="level-badge">Intermediate</span>
+        <p class="proj-name">ระบบติดตามพัสดุ</p>
+        <p class="proj-en">Parcel Tracking System</p>
+        <p class="proj-desc">สร้าง tracking number, อัปเดตสถานะ, แสดง timeline การจัดส่ง, แจ้งเตือนลูกค้า</p>
+        <div class="stack-row">
+          <span class="stack fe">React</span>
+          <span class="stack be">Express</span>
+          <span class="stack db">PostgreSQL</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Timeline/event log data model</li>
+            <li>SMS/Email webhook notification</li>
+            <li>Public tracking page (no login)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card advanced">
+        <span class="level-badge">Advanced</span>
+        <p class="proj-name">ระบบติดตามรถแบบ GPS</p>
+        <p class="proj-en">Real-time GPS Fleet Tracking</p>
+        <p class="proj-desc">รับ GPS ตำแหน่งรถแบบ real-time, แสดงบนแผนที่, แจ้ง geofence เข้า-ออกเขตพื้นที่</p>
+        <div class="stack-row">
+          <span class="stack fe">React + Mapbox</span>
+          <span class="stack be">Go/Node.js</span>
+          <span class="stack db">TimescaleDB</span>
+          <span class="stack infra">WebSocket/MQTT</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>WebSocket / MQTT protocol</li>
+            <li>Geospatial query (PostGIS)</li>
+            <li>Time-series data handling</li>
+            <li>Map rendering & geofencing</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======= 04 CRM/SALES ======= -->
+  <section class="cat-section">
+    <div class="cat-header">
+      <span class="cat-index">04</span>
+      <h2>ระบบลูกค้าและการขาย</h2>
+    </div>
+    <div class="proj-grid">
+
+      <div class="proj-card beginner">
+        <span class="level-badge">Beginner</span>
+        <p class="proj-name">สมุดผู้ติดต่อธุรกิจ</p>
+        <p class="proj-en">Business Contact Book</p>
+        <p class="proj-desc">บันทึกข้อมูลลูกค้า, ค้นหา, แท็ก, ส่งออก CSV — ฝึก search & filter</p>
+        <div class="stack-row">
+          <span class="stack fe">Vue/React</span>
+          <span class="stack db">SQLite / Supabase</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Full-text search</li>
+            <li>CSV import/export</li>
+            <li>Tag & filter system</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card intermediate">
+        <span class="level-badge">Intermediate</span>
+        <p class="proj-name">ระบบ Sales Pipeline</p>
+        <p class="proj-en">Deal Pipeline CRM</p>
+        <p class="proj-desc">ติดตาม Lead → Deal → Won/Lost, คำนวณ conversion rate, แดชบอร์ดยอดขาย</p>
+        <div class="stack-row">
+          <span class="stack fe">React</span>
+          <span class="stack be">NestJS</span>
+          <span class="stack db">PostgreSQL</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Pipeline state design</li>
+            <li>Aggregation queries (sum, avg, rate)</li>
+            <li>Dashboard & KPI calculation</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card intermediate">
+        <span class="level-badge">Intermediate</span>
+        <p class="proj-name">ระบบ POS มือถือ</p>
+        <p class="proj-en">Mobile Point of Sale</p>
+        <p class="proj-desc">สแกนสินค้า, เพิ่มลงตะกร้า, ชำระเงิน QR พร้อมเพย์, พิมพ์ใบเสร็จ</p>
+        <div class="stack-row">
+          <span class="stack fe">Flutter</span>
+          <span class="stack be">FastAPI</span>
+          <span class="stack db">PostgreSQL</span>
+          <span class="stack infra">PromptPay API</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Barcode scanning บน mobile</li>
+            <li>Offline-first + sync</li>
+            <li>Payment gateway integration</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card advanced">
+        <span class="level-badge">Advanced</span>
+        <p class="proj-name">แพลตฟอร์ม E-commerce</p>
+        <p class="proj-en">Multi-vendor Marketplace</p>
+        <p class="proj-desc">ร้านค้า, สินค้า, cart, checkout, payment, order management, seller dashboard</p>
+        <div class="stack-row">
+          <span class="stack fe">Next.js</span>
+          <span class="stack be">Go/Node.js</span>
+          <span class="stack db">PostgreSQL + Redis</span>
+          <span class="stack infra">AWS S3 + CDN</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Payment webhook handling</li>
+            <li>Inventory concurrency lock</li>
+            <li>Image CDN & optimization</li>
+            <li>Multi-tenant seller isolation</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======= 05 BI/DATA ======= -->
+  <section class="cat-section">
+    <div class="cat-header">
+      <span class="cat-index">05</span>
+      <h2>ระบบข้อมูลและการตัดสินใจ</h2>
+    </div>
+    <div class="proj-grid">
+
+      <div class="proj-card beginner">
+        <span class="level-badge">Beginner</span>
+        <p class="proj-name">Dashboard แสดงข้อมูล CSV</p>
+        <p class="proj-en">CSV Data Visualizer</p>
+        <p class="proj-desc">upload CSV แล้วแสดงผลเป็น กราฟ Bar/Line/Pie เลือก column ได้</p>
+        <div class="stack-row">
+          <span class="stack fe">React + Recharts</span>
+          <span class="stack db">ไม่ต้องใช้ DB</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>CSV parsing (PapaParse)</li>
+            <li>Chart library ต่างๆ</li>
+            <li>Dynamic data binding</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card intermediate">
+        <span class="level-badge">Intermediate</span>
+        <p class="proj-name">Business Dashboard แบบ real-time</p>
+        <p class="proj-en">Real-time BI Dashboard</p>
+        <p class="proj-desc">ดึงข้อมูลจากหลาย API แสดง KPI สด, กราฟ trend, แจ้งเตือนเมื่อค่าเกิน threshold</p>
+        <div class="stack-row">
+          <span class="stack fe">React + D3.js</span>
+          <span class="stack be">Node.js</span>
+          <span class="stack db">PostgreSQL + Redis</span>
+          <span class="stack infra">WebSocket</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Data aggregation pipeline</li>
+            <li>Caching strategy (Redis)</li>
+            <li>Alert/threshold system</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card intermediate">
+        <span class="level-badge">Intermediate</span>
+        <p class="proj-name">ระบบจัดการเอกสาร</p>
+        <p class="proj-en">Document Management System</p>
+        <p class="proj-desc">อัปโหลดไฟล์, กำหนดสิทธิ์, versioning, ค้นหาข้อความในเอกสาร</p>
+        <div class="stack-row">
+          <span class="stack fe">React</span>
+          <span class="stack be">Node.js</span>
+          <span class="stack db">PostgreSQL</span>
+          <span class="stack infra">S3 / MinIO</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>Object storage integration</li>
+            <li>File versioning design</li>
+            <li>Full-text search (Elasticsearch)</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======= 06 INFRA/SECURITY ======= -->
+  <section class="cat-section">
+    <div class="cat-header">
+      <span class="cat-index">06</span>
+      <h2>ระบบ Infrastructure และ Security</h2>
+    </div>
+    <div class="proj-grid">
+
+      <div class="proj-card beginner">
+        <span class="level-badge">Beginner</span>
+        <p class="proj-name">ระบบ Login พร้อม 2FA</p>
+        <p class="proj-en">Auth System with 2FA</p>
+        <p class="proj-desc">สมัคร, login, reset password, เปิด Two-Factor Authentication ด้วย TOTP (Google Authenticator)</p>
+        <div class="stack-row">
+          <span class="stack fe">React</span>
+          <span class="stack be">Node.js</span>
+          <span class="stack db">PostgreSQL</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>JWT + Refresh token</li>
+            <li>TOTP / OTP generation</li>
+            <li>Password hashing (bcrypt/argon2)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card intermediate">
+        <span class="level-badge">Intermediate</span>
+        <p class="proj-name">ระบบ RBAC Admin Panel</p>
+        <p class="proj-en">Role-Based Access Control</p>
+        <p class="proj-desc">สร้าง Role, กำหนด Permission, assign ให้ User, middleware ตรวจสิทธิ์ทุก route</p>
+        <div class="stack-row">
+          <span class="stack fe">React</span>
+          <span class="stack be">Node.js / NestJS</span>
+          <span class="stack db">PostgreSQL</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>RBAC pattern (Role-Permission-User)</li>
+            <li>Middleware / Guard pattern</li>
+            <li>Policy-based authorization</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="proj-card advanced">
+        <span class="level-badge">Advanced</span>
+        <p class="proj-name">ระบบ SSO สำหรับหลาย App</p>
+        <p class="proj-en">Single Sign-On System</p>
+        <p class="proj-desc">Login ครั้งเดียว ใช้ได้ทุก app ในองค์กร ด้วย OAuth2/OIDC</p>
+        <div class="stack-row">
+          <span class="stack fe">React</span>
+          <span class="stack be">Node.js / Keycloak</span>
+          <span class="stack db">PostgreSQL</span>
+          <span class="stack infra">Docker</span>
+        </div>
+        <div class="key-skills">
+          <div class="key-skills-label">สกิลที่จะได้</div>
+          <ul>
+            <li>OAuth2 Authorization Code Flow</li>
+            <li>OpenID Connect (OIDC) token</li>
+            <li>Session management across apps</li>
+            <li>หรือใช้ Keycloak/Auth0 self-hosted</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <div class="roadmap">
+    <div class="roadmap-title">// แนะนำลำดับการเริ่มต้น ถ้าอยากสร้างรายได้จากระบบองค์กร</div>
+    <div class="roadmap-steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">ฝึก Beginner Projects</div>
+        <div class="step-desc">สร้างให้ครบ 2–3 โปรเจ็ค ให้ชำนาญ CRUD, Auth, Database พื้นฐาน</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">เลือก Niche ที่ตัวเองรู้จัก</div>
+        <div class="step-desc">ร้านอาหาร? คลินิก? โรงงาน? ความรู้ domain เป็นข้อได้เปรียบ</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">สร้าง Intermediate Project จริง</div>
+        <div class="step-desc">ลองนำไปใช้จริงกับ 1 ธุรกิจก่อน (ฟรีหรือราคาต่ำ) เพื่อรับ feedback</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-title">ออกแบบ Multi-tenant</div>
+        <div class="step-desc">ปรับระบบให้รองรับลูกค้าหลายราย เตรียม SaaS model จริง</div>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-title">Productize & Price</div>
+        <div class="step-desc">กำหนด plan, onboarding flow, support process ก่อนขาย</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>// Developer Project Guide · Enterprise Systems</span>
+    <span>Beginner → Intermediate → Advanced</span>
+  </footer>
+
+</div>
+</body>
+</html>

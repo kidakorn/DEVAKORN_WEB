@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Company vs Personal — IBM i Integration</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ibm-blue:   #0f62fe;
+    --ibm-dark:   #001141;
+    --ibm-cyan:   #00b4d8;
+    --ibm-green:  #24a148;
+    --ibm-amber:  #f1c21b;
+    --ibm-red:    #da1e28;
+    --ibm-purple: #8a3ffc;
+    --gray:       #8d8d8d;
+    --bg:         #f4f7ff;
+    --surface:    #ffffff;
+    --border:     #dde3f0;
+    --text:       #161616;
+    --muted:      #525252;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans Thai', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    padding: 40px 20px 80px;
+  }
+
+  .page-header { text-align: center; margin-bottom: 48px; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ibm-blue); margin-bottom: 12px;
+  }
+  h1 { font-size: clamp(26px,5vw,44px); font-weight: 700; color: var(--ibm-dark); line-height: 1.2; }
+  h1 span.a { color: var(--ibm-green); }
+  h1 span.b { color: var(--ibm-purple); }
+  .subtitle { margin-top: 12px; color: var(--muted); font-size: 14px; font-weight: 300; }
+
+  .section-title {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--gray);
+    margin: 48px 0 18px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background: var(--border); }
+  .section-title:first-of-type { margin-top: 0; }
+
+  .compare-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .compare-head {
+    padding: 18px 24px;
+    display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #fafcff 0%, #f4f7ff 100%);
+  }
+  .compare-head .icon {
+    width: 38px; height: 38px; border-radius: 9px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 18px; flex-shrink:0;
+  }
+  .compare-head h3 { font-size: 16px; font-weight: 700; color: var(--ibm-dark); }
+  .compare-head .desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .compare-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 760px) { .compare-body { grid-template-columns: 1fr; } }
+
+  .env-col {
+    padding: 22px 24px;
+    position: relative;
+  }
+  .env-col.company { border-right: 1px solid var(--border); }
+  @media (max-width: 760px) {
+    .env-col.company { border-right:none; border-bottom: 1px solid var(--border); }
+  }
+
+  .env-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 14px; font-weight: 700;
+  }
+  .env-col.company .env-label { color: var(--ibm-green); }
+  .env-col.personal .env-label { color: var(--ibm-purple); }
+
+  .flow-line {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11.5px;
+    margin-bottom: 14px;
+  }
+  .flow-box {
+    padding: 5px 11px; border-radius: 5px; font-weight: 600; white-space: nowrap;
+  }
+  .env-col.company .flow-box { background: #e6f7ec; color: #0a5c2e; border:1px solid #b8e6c8; }
+  .env-col.personal .flow-box { background: #f3eaff; color: #5b21b6; border:1px solid #ddc8ff; }
+  .flow-sep { color: var(--gray); font-size: 12px; }
+
+  .verdict {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12.5px; line-height: 1.7; color: var(--muted);
+    padding-top: 10px; border-top: 1px dashed var(--border);
+  }
+  .verdict .vicon { font-size: 14px; flex-shrink:0; margin-top:1px; }
+  .verdict.ok   .vicon::before { content:'✅'; }
+  .verdict.no   .vicon::before { content:'🚫'; }
+  .verdict.warn .vicon::before { content:'⚠️'; }
+
+  .status-pill {
+    position: absolute; top: 22px; right: 24px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 20px; letter-spacing:.05em;
+  }
+  .pill-yes  { background:#d0f0e0; color:#0a5c2e; }
+  .pill-no   { background:#fde2e2; color:#a3171f; }
+  .pill-part { background:#fef3c7; color:#92400e; }
+
+  @media (max-width: 760px) { .status-pill { position:static; display:inline-block; margin-top:8px; } }
+
+  .matrix-wrap {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    overflow-x: auto;
+  }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px; }
+  table.matrix th, table.matrix td {
+    padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border);
+  }
+  table.matrix th {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--gray); background: #fafcff; font-weight: 600;
+  }
+  table.matrix th:not(:first-child), table.matrix td:not(:first-child) { text-align: center; }
+  table.matrix td:first-child { font-weight: 700; color: var(--ibm-dark); }
+  table.matrix td small { display:block; font-weight:400; color:var(--muted); font-family: var(--mono); font-size:10.5px; margin-top:2px; }
+  table.matrix tr:last-child td { border-bottom: none; }
+  .check-y { color: var(--ibm-green); font-weight: 700; font-size:16px; }
+  .check-n { color: var(--ibm-red); font-weight: 700; font-size:16px; }
+  .check-p { color: var(--ibm-amber); font-weight: 700; font-size:16px; }
+
+  .callout {
+    background: var(--ibm-dark);
+    border-radius: 14px;
+    padding: 32px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .callout::before {
+    content:''; position:absolute; top:-50px; right:-50px;
+    width:240px; height:240px; border-radius:50%;
+    background: radial-gradient(circle, rgba(36,161,72,.25) 0%, transparent 70%);
+  }
+  .callout h3 { font-size: 18px; margin-bottom: 14px; color:#fff; }
+  .callout-grid {
+    display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:16px;
+    position: relative; z-index:1;
+  }
+  .callout-item {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .callout-item .num {
+    font-family: var(--mono); font-size:11px; color: var(--ibm-cyan); letter-spacing:.1em;
+    margin-bottom: 6px;
+  }
+  .callout-item p { font-size: 13px; line-height:1.6; color: rgba(255,255,255,.85); }
+
+  .legend { font-size:11px; color:var(--gray); font-family:var(--mono); margin-top:8px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <p class="eyebrow">IBM i Integration · Environment Comparison</p>
+  <h1>ทำที่<span class="a"> บริษัท</span> vs ทำบน<span class="b"> PC ตัวเอง</span></h1>
+  <p class="subtitle">เทียบทุก solution ว่าวิธีไหนทำได้จริงในแต่ละสภาพแวดล้อม</p>
+</header>
+
+<!-- 1. ODBC/JDBC -->
+<p class="section-title">1 · ODBC / JDBC</p>
+<div class="compare-card">
+  <div class="compare-head">
+    <div class="icon" style="background:#e8f0fe">🔌</div>
+    <div>
+      <h3>ODBC / JDBC Driver</h3>
+      <div class="desc">Node.js query DB2 ตรงผ่าน driver</div>
+    </div>
+  </div>
+  <div class="compare-body">
+    <div class="env-col company">
+      <span class="status-pill pill-yes">ทำได้ ✓</span>
+      <div class="env-label">🏢 บริษัท (AS/400 จริง)</div>
+      <div class="flow-line">
+        <span class="flow-box">Node.js</span><span class="flow-sep">→</span>
+        <span class="flow-box">ODBC (LAN)</span><span class="flow-sep">→</span>
+        <span class="flow-box">DB2 บริษัท</span>
+      </div>
+      <div class="verdict ok"><span class="vicon"></span>Latency ต่ำมาก (LAN) — เร็วและเสถียรที่สุด ใช้ production ได้เต็มรูปแบบ</div>
+    </div>
+    <div class="env-col personal">
+      <span class="status-pill pill-yes">ทำได้ ✓</span>
+      <div class="env-label">💻 PC ตัวเอง (PUB400)</div>
+      <div class="flow-line">
+        <span class="flow-box">Node.js</span><span class="flow-sep">→</span>
+        <span class="flow-box">ODBC (Internet)</span><span class="flow-sep">→</span>
+        <span class="flow-box">PUB400</span>
+      </div>
+      <div class="verdict warn"><span class="vicon"></span>Latency สูงกว่า (ข้ามประเทศ) — ใช้ฝึกได้เต็มที่ แต่ไม่เหมาะ production</div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. IWS -->
+<p class="section-title">2 · IBM i Web Services (IWS)</p>
+<div class="compare-card">
+  <div class="compare-head">
+    <div class="icon" style="background:#fef3c7">🏭</div>
+    <div>
+      <h3>IWS — Expose RPG/CL เป็น REST อัตโนมัติ</h3>
+      <div class="desc">ต้องติดตั้ง + config โดย Admin ระดับ OS</div>
+    </div>
+  </div>
+  <div class="compare-body">
+    <div class="env-col company">
+      <span class="status-pill pill-part">ขึ้นกับ Admin</span>
+      <div class="env-label">🏢 บริษัท (AS/400 จริง)</div>
+      <div class="flow-line">
+        <span class="flow-box">RPG/CL</span><span class="flow-sep">→</span>
+        <span class="flow-box">IWS Service</span><span class="flow-sep">→</span>
+        <span class="flow-box">REST API</span>
+      </div>
+      <div class="verdict warn"><span class="vicon"></span>ทำได้ถ้า Admin เปิดสิทธิ์ติดตั้ง/start HTTP instance — เป็นเครื่องของบริษัทเองจึงมีโอกาสมากกว่า</div>
+    </div>
+    <div class="env-col personal">
+      <span class="status-pill pill-no">ทำไม่ได้ ✗</span>
+      <div class="env-label">💻 PC ตัวเอง (PUB400)</div>
+      <div class="flow-line">
+        <span class="flow-box" style="opacity:.4">RPG/CL</span><span class="flow-sep">✗</span>
+        <span class="flow-box" style="opacity:.4">IWS</span>
+      </div>
+      <div class="verdict no"><span class="vicon"></span>PUB400 เป็น shared server — user ทั่วไปไม่มีสิทธิ์ start/config HTTP Server หรือเปิด port</div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. itoolkit -->
+<p class="section-title">3 · itoolkit + Node.js (Call RPG ผ่าน SSH/XMLSERVICE)</p>
+<div class="compare-card">
+  <div class="compare-head">
+    <div class="icon" style="background:#f0fdf4">🛠</div>
+    <div>
+      <h3>itoolkit — เขียน REST เองทั้งหมด</h3>
+      <div class="desc">Node.js เรียก RPG/CL ผ่าน SSH + XMLSERVICE</div>
+    </div>
+  </div>
+  <div class="compare-body">
+    <div class="env-col company">
+      <span class="status-pill pill-yes">ทำได้ ✓</span>
+      <div class="env-label">🏢 บริษัท (AS/400 จริง)</div>
+      <div class="flow-line">
+        <span class="flow-box">Express</span><span class="flow-sep">→</span>
+        <span class="flow-box">SSH (LAN)</span><span class="flow-sep">→</span>
+        <span class="flow-box">XMLSERVICE</span><span class="flow-sep">→</span>
+        <span class="flow-box">RPG</span>
+      </div>
+      <div class="verdict ok"><span class="vicon"></span>SSH ภายใน LAN เร็ว overhead น้อย — ใช้งานจริงได้สบาย</div>
+    </div>
+    <div class="env-col personal">
+      <span class="status-pill pill-yes">ทำได้ ✓</span>
+      <div class="env-label">💻 PC ตัวเอง (PUB400)</div>
+      <div class="flow-line">
+        <span class="flow-box">Express</span><span class="flow-sep">→</span>
+        <span class="flow-box">SSH (Internet)</span><span class="flow-sep">→</span>
+        <span class="flow-box">XMLSERVICE</span><span class="flow-sep">→</span>
+        <span class="flow-box">RPG</span>
+      </div>
+      <div class="verdict warn"><span class="vicon"></span>ทำได้เต็มที่ — XMLSERVICE มีอยู่แล้วบน PUB400 แต่ SSH ข้ามประเทศจะมี latency เพิ่ม (~100-300ms/call)</div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. File-based -->
+<p class="section-title">4 · File-based (CL Download/Upload → CSV/Excel)</p>
+<div class="compare-card">
+  <div class="compare-head">
+    <div class="icon" style="background:#f3f0ff">📁</div>
+    <div>
+      <h3>File-based Workflow</h3>
+      <div class="desc">CL สร้างไฟล์ → Web อ่าน/เขียนไฟล์ → CL Upload กลับ</div>
+    </div>
+  </div>
+  <div class="compare-body">
+    <div class="env-col company">
+      <span class="status-pill pill-yes">ทำได้ ✓</span>
+      <div class="env-label">🏢 บริษัท (AS/400 จริง)</div>
+      <div class="flow-line">
+        <span class="flow-box">CL</span><span class="flow-sep">→</span>
+        <span class="flow-box">Shared Folder (LAN)</span><span class="flow-sep">→</span>
+        <span class="flow-box">Web App</span>
+      </div>
+      <div class="verdict ok"><span class="vicon"></span>Mount Shared Folder ผ่าน LAN ได้ตรง — Node.js FileWatcher ทำงานทันที</div>
+    </div>
+    <div class="env-col personal">
+      <span class="status-pill pill-yes">ทำได้ ✓</span>
+      <div class="env-label">💻 PC ตัวเอง (PUB400)</div>
+      <div class="flow-line">
+        <span class="flow-box">CL → IFS</span><span class="flow-sep">→</span>
+        <span class="flow-box">SFTP Download</span><span class="flow-sep">→</span>
+        <span class="flow-box">Web App</span>
+      </div>
+      <div class="verdict ok"><span class="vicon"></span>ใช้ SFTP/SSH ดึงไฟล์จาก IFS มาที่ local แทน Shared Folder — ทำงานเหมือนกัน แค่ผ่าน Internet</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Db2 REST -->
+<p class="section-title">5 · Db2 REST (5733-REST)</p>
+<div class="compare-card">
+  <div class="compare-head">
+    <div class="icon" style="background:#fff0f0">🔴</div>
+    <div>
+      <h3>Db2 REST — IBM Licensed Service</h3>
+      <div class="desc">Query รันบน IBM i เลย ผ่าน HTTP endpoint</div>
+    </div>
+  </div>
+  <div class="compare-body">
+    <div class="env-col company">
+      <span class="status-pill pill-part">ขึ้นกับ Admin + License</span>
+      <div class="env-label">🏢 บริษัท (AS/400 จริง)</div>
+      <div class="flow-line">
+        <span class="flow-box">Browser</span><span class="flow-sep">→</span>
+        <span class="flow-box">HTTP (LAN)</span><span class="flow-sep">→</span>
+        <span class="flow-box">Db2 REST Service</span>
+      </div>
+      <div class="verdict warn"><span class="vicon"></span>ต้องซื้อ/ติดตั้ง License 5733-REST + IBM i 7.3+ และให้ Admin ติดตั้ง — เป็นไปได้เพราะเป็นเครื่องบริษัท</div>
+    </div>
+    <div class="env-col personal">
+      <span class="status-pill pill-no">ทำไม่ได้ ✗</span>
+      <div class="env-label">💻 PC ตัวเอง (PUB400)</div>
+      <div class="flow-line">
+        <span class="flow-box" style="opacity:.4">Db2 REST</span><span class="flow-sep">✗</span>
+      </div>
+      <div class="verdict no"><span class="vicon"></span>เป็น Licensed Program ที่ user ทั่วไปติดตั้งเองไม่ได้ และ PUB400 ไม่อนุญาต</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Redis + ODBC -->
+<p class="section-title">6 · ODBC + Redis Cache</p>
+<div class="compare-card">
+  <div class="compare-head">
+    <div class="icon" style="background:#fff7ed">⚡</div>
+    <div>
+      <h3>Cache Layer เพิ่มทับ ODBC</h3>
+      <div class="desc">ลด round-trip ไป IBM i ด้วย in-memory/Redis cache</div>
+    </div>
+  </div>
+  <div class="compare-body">
+    <div class="env-col company">
+      <span class="status-pill pill-yes">ทำได้ ✓</span>
+      <div class="env-label">🏢 บริษัท (AS/400 จริง)</div>
+      <div class="flow-line">
+        <span class="flow-box">Request</span><span class="flow-sep">→</span>
+        <span class="flow-box">Redis</span><span class="flow-sep">→</span>
+        <span class="flow-box">ODBC (LAN)</span>
+      </div>
+      <div class="verdict ok"><span class="vicon"></span>ได้ผลดีมาก — ODBC เร็วอยู่แล้ว Cache ช่วยลด load DB2 ตอน peak hour</div>
+    </div>
+    <div class="env-col personal">
+      <span class="status-pill pill-yes">ทำได้ ✓</span>
+      <div class="env-label">💻 PC ตัวเอง (PUB400)</div>
+      <div class="flow-line">
+        <span class="flow-box">Request</span><span class="flow-sep">→</span>
+        <span class="flow-box">Redis</span><span class="flow-sep">→</span>
+        <span class="flow-box">ODBC (Internet)</span>
+      </div>
+      <div class="verdict ok"><span class="vicon"></span>ได้ผลดีมากเช่นกัน — ช่วยชดเชย latency ของ PUB400 ได้ดีเพราะ cache hit ไม่ต้องข้าม Internet</div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary Matrix -->
+<p class="section-title">Summary Matrix</p>
+<div class="matrix-wrap">
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th>Solution</th>
+        <th>บริษัท (LAN)</th>
+        <th>PC ตัวเอง (PUB400)</th>
+        <th>Call RPG ได้?</th>
+        <th>ความเร็ว</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ODBC / JDBC<small>Query ตรง / Call SP</small></td>
+        <td><span class="check-y">✓</span></td>
+        <td><span class="check-y">✓</span></td>
+        <td><span class="check-n">✗</span></td>
+        <td>⚡⚡⚡</td>
+      </tr>
+      <tr>
+        <td>IWS<small>REST อัตโนมัติ</small></td>
+        <td><span class="check-p">~</span></td>
+        <td><span class="check-n">✗</span></td>
+        <td><span class="check-y">✓</span></td>
+        <td>⚡⚡⚡⚡</td>
+      </tr>
+      <tr>
+        <td>itoolkit<small>SSH + XMLSERVICE</small></td>
+        <td><span class="check-y">✓</span></td>
+        <td><span class="check-y">✓</span></td>
+        <td><span class="check-y">✓</span></td>
+        <td>⚡⚡</td>
+      </tr>
+      <tr>
+        <td>File-based<small>CL ↔ CSV/Excel</small></td>
+        <td><span class="check-y">✓</span></td>
+        <td><span class="check-y">✓</span></td>
+        <td><span class="check-n">✗</span></td>
+        <td>⚡ (batch)</td>
+      </tr>
+      <tr>
+        <td>Db2 REST<small>5733-REST</small></td>
+        <td><span class="check-p">~</span></td>
+        <td><span class="check-n">✗</span></td>
+        <td><span class="check-n">✗</span></td>
+        <td>⚡⚡⚡⚡⚡</td>
+      </tr>
+      <tr>
+        <td>ODBC + Redis<small>Cache Layer</small></td>
+        <td><span class="check-y">✓</span></td>
+        <td><span class="check-y">✓</span></td>
+        <td><span class="check-n">✗</span></td>
+        <td>⚡⚡⚡⚡⚡</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p class="legend">
+  ✓ ทำได้เต็มรูปแบบ &nbsp;·&nbsp; ~ ทำได้แต่ขึ้นกับ Admin/License &nbsp;·&nbsp; ✗ ทำไม่ได้
+</p>
+
+<!-- Bottom Callout -->
+<p class="section-title">สรุปภาพรวม</p>
+<div class="callout">
+  <h3>🎯 ข้อแตกต่างหลักระหว่าง 2 สภาพแวดล้อม</h3>
+  <div class="callout-grid">
+    <div class="callout-item">
+      <div class="num">01 — LATENCY</div>
+      <p>บริษัท = LAN (ms เดียว) ส่วน PUB400 = ข้าม Internet/ต่างประเทศ (10-50x ช้ากว่า) ทุก solution ที่ "ทำได้ทั้งคู่" จะช้ากว่าบน PUB400 เสมอ</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">02 — ADMIN RIGHTS</div>
+      <p>IWS และ Db2 REST ต้องการ Admin ติดตั้ง licensed program — เป็นไปได้ที่บริษัท (เครื่องตัวเอง) แต่ปิดสนิทบน PUB400 (shared server)</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">03 — ตัวที่ใช้ฝึกได้เต็มที่</div>
+      <p>ODBC, itoolkit, File-based, และ Redis Cache ทำได้ "เหมือนกันทุกอย่าง" ทั้ง 2 ที่ — เหมาะที่สุดสำหรับ build skill ตอนนี้บน PUB400</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">04 — ย้ายไปบริษัทแล้วใช้ต่อได้</div>
+      <p>Code ที่เขียนบน PUB400 ด้วย ODBC/itoolkit/Redis ย้ายไปบริษัทได้ทันที — แค่เปลี่ยน connection string จาก PUB400 → AS/400 บริษัท</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

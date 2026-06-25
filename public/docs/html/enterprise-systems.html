@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบหลักขององค์กร — แผนผังระบบ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Sarabun:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#11161c;
+    --paper:#f6f4ee;
+    --panel:#ffffff;
+    --line:#d8d3c4;
+    --blue:#1d4fd8;
+    --rust:#b5481f;
+    --green:#3a6b35;
+    --muted:#6b6457;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Sarabun','Space Grotesk',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:56px 28px 90px;}
+
+  header.hero{
+    border-bottom:3px solid var(--ink);
+    padding-bottom:28px;
+    margin-bottom:46px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--rust);
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(32px,4.2vw,52px);
+    line-height:1.08;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .hero-sub{
+    font-size:15.5px;
+    color:var(--muted);
+    max-width:360px;
+    line-height:1.6;
+  }
+
+  .legend{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:44px;
+  }
+  .legend span{display:inline-flex;align-items:center;gap:7px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .dot.web{background:var(--blue);}
+  .dot.desktop{background:var(--ink);}
+  .dot.mobile{background:var(--rust);}
+
+  .category{
+    margin-bottom:54px;
+  }
+  .category-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:18px;
+    border-bottom:1.5px solid var(--line);
+    padding-bottom:10px;
+  }
+  .cat-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--rust);
+  }
+  .category-head h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:21px;
+    font-weight:600;
+    margin:0;
+  }
+  .cat-desc{
+    font-size:13.5px;
+    color:var(--muted);
+    margin-left:auto;
+    text-align:right;
+    max-width:340px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+    gap:14px;
+  }
+  .card{
+    background:var(--panel);
+    border:1.5px solid var(--ink);
+    padding:18px 18px 16px;
+    position:relative;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover{
+    transform:translate(-2px,-2px);
+    box-shadow:4px 4px 0 var(--ink);
+  }
+  .card-name{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:16.5px;
+    margin:0 0 6px;
+  }
+  .card-en{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--muted);
+    margin:0 0 10px;
+  }
+  .card-desc{
+    font-size:13.5px;
+    line-height:1.55;
+    color:#3a3530;
+    margin:0 0 14px;
+    min-height:62px;
+  }
+  .platforms{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.03em;
+    padding:3px 8px;
+    border-radius:3px;
+    color:#fff;
+  }
+  .tag.web{background:var(--blue);}
+  .tag.desktop{background:var(--ink);}
+  .tag.mobile{background:var(--rust);}
+
+  .priority{
+    position:absolute;
+    top:18px;
+    right:18px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--green);
+    border:1px solid var(--green);
+    padding:1px 6px;
+    border-radius:20px;
+  }
+  .priority.core{color:var(--rust);border-color:var(--rust);}
+
+  footer{
+    margin-top:60px;
+    padding-top:24px;
+    border-top:1.5px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  @media(max-width:640px){
+    .category-head{flex-direction:column;align-items:flex-start;}
+    .cat-desc{text-align:left;margin-left:0;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div>
+      <div class="eyebrow">System Inventory — Enterprise Architecture</div>
+      <h1>ระบบหลัก<br>ที่องค์กรควรมี</h1>
+    </div>
+    <p class="hero-sub">รายการระบบโปรเจ็คใหญ่ที่พบทั่วไปในองค์กร พร้อมแนวทางพัฒนาแยกตามแพลตฟอร์ม — Web / Desktop / Mobile</p>
+  </header>
+
+  <div class="legend">
+    <span><span class="dot web"></span>Web App</span>
+    <span><span class="dot desktop"></span>Desktop App</span>
+    <span><span class="dot mobile"></span>Mobile App</span>
+  </div>
+
+  <!-- 01 -->
+  <section class="category">
+    <div class="category-head">
+      <span class="cat-num">01</span>
+      <h2>ระบบบริหารทรัพยากรองค์กร</h2>
+      <span class="cat-desc">แกนหลักของการดำเนินธุรกิจ เชื่อมทุกแผนกเข้าด้วยกัน</span>
+    </div>
+    <div class="grid">
+
+      <div class="card">
+        <span class="priority core">core</span>
+        <p class="card-name">ระบบ ERP</p>
+        <p class="card-en">Enterprise Resource Planning</p>
+        <p class="card-desc">รวมข้อมูลบัญชี การเงิน คลังสินค้า จัดซื้อ และทรัพยากรบุคคลไว้ในที่เดียว ลดความซ้ำซ้อนของข้อมูล</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag desktop">Desktop</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบบัญชี-การเงิน</p>
+        <p class="card-en">Accounting &amp; Finance</p>
+        <p class="card-desc">บันทึกรายรับ-รายจ่าย ใบกำกับภาษี งบการเงิน และกระทบยอดธนาคารอัตโนมัติ</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag desktop">Desktop</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบจัดซื้อจัดจ้าง</p>
+        <p class="card-en">Procurement</p>
+        <p class="card-desc">ออกใบขอซื้อ ใบสั่งซื้อ เปรียบเทียบราคาผู้ขาย พร้อมขั้นตอนอนุมัติหลายระดับ</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบ HRM / HRIS</p>
+        <p class="card-en">Human Resource Management</p>
+        <p class="card-desc">ข้อมูลพนักงาน เงินเดือน สวัสดิการ ลา-มาสาย และประเมินผลงาน</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="category">
+    <div class="category-head">
+      <span class="cat-num">02</span>
+      <h2>ระบบติดตามและปฏิบัติการ</h2>
+      <span class="cat-desc">ตรวจสอบสถานะงาน สินค้า และทรัพยากรแบบเรียลไทม์</span>
+    </div>
+    <div class="grid">
+
+      <div class="card">
+        <span class="priority core">core</span>
+        <p class="card-name">ระบบติดตามงาน</p>
+        <p class="card-en">Task / Project Tracking</p>
+        <p class="card-desc">มอบหมายงาน ติดตามความคืบหน้า กำหนดเส้นตาย และแจ้งเตือนทีมงาน</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag desktop">Desktop</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบติดตามสินค้า/ขนส่ง</p>
+        <p class="card-en">Logistics Tracking</p>
+        <p class="card-desc">ติดตามสถานะการจัดส่ง ตำแหน่งยานพาหนะแบบ GPS และแจ้งเตือนลูกค้าปลายทาง</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบบริหารคลังสินค้า</p>
+        <p class="card-en">Warehouse Management (WMS)</p>
+        <p class="card-desc">รับ-เบิกสินค้า นับสต๊อก สแกนบาร์โค้ด และจัดวางตำแหน่งในคลัง</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบบำรุงรักษา</p>
+        <p class="card-en">Maintenance / CMMS</p>
+        <p class="card-desc">วางแผนซ่อมบำรุงเครื่องจักร แจ้งซ่อม และบันทึกประวัติการซ่อม</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="category">
+    <div class="category-head">
+      <span class="cat-num">03</span>
+      <h2>ระบบลูกค้าและการขาย</h2>
+      <span class="cat-desc">สร้างความสัมพันธ์และจัดการรายได้จากลูกค้า</span>
+    </div>
+    <div class="grid">
+
+      <div class="card">
+        <span class="priority core">core</span>
+        <p class="card-name">ระบบ CRM</p>
+        <p class="card-en">Customer Relationship Management</p>
+        <p class="card-desc">บันทึกข้อมูลลูกค้า ประวัติการติดต่อ โอกาสการขาย และวิเคราะห์พฤติกรรม</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบขายหน้าร้าน</p>
+        <p class="card-en">Point of Sale (POS)</p>
+        <p class="card-desc">บันทึกการขาย ออกใบเสร็จ จัดการส่วนลด และเชื่อมต่อกับสต๊อกสินค้า</p>
+        <div class="platforms">
+          <span class="tag desktop">Desktop</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบ E-commerce</p>
+        <p class="card-en">Online Store</p>
+        <p class="card-desc">หน้าร้านออนไลน์ ตะกร้าสินค้า ชำระเงิน และจัดการคำสั่งซื้อ</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบบริการลูกค้า</p>
+        <p class="card-en">Helpdesk / Ticketing</p>
+        <p class="card-desc">รับเรื่องร้องเรียน ติดตามสถานะ Ticket และวัดผล SLA การตอบกลับ</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="category">
+    <div class="category-head">
+      <span class="cat-num">04</span>
+      <h2>ระบบข้อมูลและการตัดสินใจ</h2>
+      <span class="cat-desc">เปลี่ยนข้อมูลดิบให้เป็นข้อมูลเชิงลึกสำหรับผู้บริหาร</span>
+    </div>
+    <div class="grid">
+
+      <div class="card">
+        <p class="card-name">ระบบรายงานผู้บริหาร</p>
+        <p class="card-en">Business Intelligence / Dashboard</p>
+        <p class="card-desc">รวบรวมข้อมูลจากหลายระบบ แสดงผลเป็นกราฟและ KPI แบบเรียลไทม์</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag desktop">Desktop</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบจัดการเอกสาร</p>
+        <p class="card-en">Document Management (DMS)</p>
+        <p class="card-desc">จัดเก็บ ค้นหา และควบคุมเวอร์ชันเอกสาร พร้อมสิทธิ์การเข้าถึง</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag desktop">Desktop</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ระบบควบคุมสิทธิ์การเข้าถึง</p>
+        <p class="card-en">Identity &amp; Access Management</p>
+        <p class="card-desc">บริหารบัญชีผู้ใช้ สิทธิ์การเข้าถึง และการยืนยันตัวตนแบบรวมศูนย์ (SSO)</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="category" style="margin-top:18px;">
+    <div class="category-head" style="border-bottom-color:var(--ink);">
+      <span class="cat-num">05</span>
+      <h2>พื้นฐานที่ต้องมี เพื่อสร้างรายได้จริง</h2>
+      <span class="cat-desc">3 ด้านที่ต้องมีควบคู่กัน ไม่ใช่แค่เขียนโค้ดเป็น</span>
+    </div>
+    <div class="grid">
+
+      <div class="card">
+        <p class="card-name">ด้านเทคนิค</p>
+        <p class="card-en">Technical Foundation</p>
+        <p class="card-desc">Frontend (React/Vue/Flutter), Backend (Node/Python/Java + API), Database design, Auth &amp; RBAC, Cloud deploy + CI/CD พื้นฐาน</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag desktop">Desktop</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">ความรู้เชิงธุรกิจ</p>
+        <p class="card-en">Domain Knowledge</p>
+        <p class="card-desc">เข้าใจ business process จริง เช่น หลักบัญชีสำหรับ ERP, flow คลังสินค้าสำหรับ WMS รวมถึงกฎหมาย/compliance ที่เกี่ยวข้อง เช่น PDPA</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag desktop">Desktop</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="card-name">โมเดลสร้างรายได้</p>
+        <p class="card-en">Monetization &amp; Business Model</p>
+        <p class="card-desc">SaaS pricing (subscription / per-seat / usage-based), Multi-tenant architecture สำหรับขายหลายลูกค้า และคำนวณต้นทุน onboarding/support</p>
+        <div class="platforms">
+          <span class="tag web">Web</span>
+          <span class="tag mobile">Mobile</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <span>System Inventory · Reference Document</span>
+    <span>Web · Desktop · Mobile — Cross-platform Development Reference</span>
+  </footer>
+
+</div>
+</body>
+</html>

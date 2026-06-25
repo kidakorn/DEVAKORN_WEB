@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBM HTTP Server — วิธีทำงาน</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&display=swap');
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --blue:#0f62fe;--dark:#001141;--cyan:#00b4d8;
+    --green:#24a148;--amber:#f1c21b;--red:#da1e28;
+    --purple:#8a3ffc;--gray:#8d8d8d;
+    --bg:#f4f7ff;--surface:#fff;--border:#dde3f0;
+    --text:#161616;--muted:#525252;
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'IBM Plex Sans Thai',sans-serif;
+  }
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);padding:40px 20px 80px;max-width:1100px;margin:0 auto}
+
+  /* Header */
+  .page-header{text-align:center;margin-bottom:52px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+  h1{font-size:clamp(24px,5vw,42px);font-weight:700;color:var(--dark);line-height:1.2}
+  h1 em{font-style:normal;color:var(--blue)}
+  .subtitle{margin-top:12px;color:var(--muted);font-size:14px;font-weight:300}
+
+  .section-title{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin:48px 0 18px;display:flex;align-items:center;gap:10px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+  /* Cards */
+  .card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px}
+  .card-head{padding:18px 24px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fafcff,#f4f7ff);display:flex;align-items:center;gap:14px}
+  .card-head .icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .card-head h3{font-size:16px;font-weight:700;color:var(--dark)}
+  .card-head .sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .card-body{padding:24px}
+
+  /* Flow diagram */
+  .flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:20px 0}
+  .flow-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;flex-wrap:wrap}
+  .flow-box{padding:10px 20px;border-radius:8px;font-family:var(--mono);font-size:12px;font-weight:700;text-align:center;white-space:nowrap;border:1.5px solid transparent}
+  .flow-arrow{color:var(--gray);font-size:20px;flex-shrink:0}
+  .flow-down{color:var(--gray);font-size:24px;margin:2px 0;text-align:center;width:100%}
+  .flow-note{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:4px;text-align:center}
+
+  /* Path tree */
+  .path-tree{background:#0d1117;border-radius:10px;padding:20px 24px;font-family:var(--mono);font-size:12.5px;line-height:2;overflow-x:auto}
+  .path-tree .dir{color:#79c0ff;font-weight:700}
+  .path-tree .file{color:#e6edf3}
+  .path-tree .comment{color:#8b949e}
+  .path-tree .active{color:#56d364;font-weight:700}
+  .path-tree .url{color:#ffa657}
+
+  /* Code block */
+  .code-block{background:#0d1117;border-radius:10px;padding:20px 24px;font-family:var(--mono);font-size:12px;line-height:1.9;overflow-x:auto;margin-top:12px}
+  .c-kw{color:#ff7b72}
+  .c-str{color:#a5d6ff}
+  .c-comment{color:#8b949e}
+  .c-tag{color:#7ee787}
+  .c-attr{color:#79c0ff}
+  .c-val{color:#ffa657}
+
+  /* Status pills */
+  .pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.04em}
+  .pill-yes{background:#d0f0e0;color:#0a5c2e}
+  .pill-no{background:#fde2e2;color:#a3171f}
+  .pill-maybe{background:#fef3c7;color:#92400e}
+
+  /* Steps */
+  .steps{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+  .step{display:flex;gap:12px;align-items:flex-start}
+  .step-num{width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .step p{font-size:13px;color:var(--muted);line-height:1.7}
+  .step p b{color:var(--text)}
+
+  /* Grid */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  @media(max-width:700px){.grid-2{grid-template-columns:1fr}}
+
+  /* Info box */
+  .info-box{border-radius:10px;padding:16px 20px;margin-top:12px}
+  .info-box.blue{background:#eff4ff;border:1.5px solid #c7d7ff}
+  .info-box.green{background:#f0faf4;border:1.5px solid #b8e6c8}
+  .info-box.amber{background:#fffbeb;border:1.5px solid #fde68a}
+  .info-box.red{background:#fff0f0;border:1.5px solid #fecaca}
+  .info-box h4{font-size:13px;font-weight:700;margin-bottom:8px}
+  .info-box.blue h4{color:var(--blue)}
+  .info-box.green h4{color:var(--green)}
+  .info-box.amber h4{color:#92400e}
+  .info-box.red h4{color:var(--red)}
+  .info-box ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+  .info-box ul li{font-size:12.5px;color:var(--muted);display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+  .info-box ul li::before{content:'›';font-weight:700;flex-shrink:0}
+  .info-box.blue ul li::before{color:var(--blue)}
+  .info-box.green ul li::before{color:var(--green)}
+  .info-box.amber ul li::before{color:#d97706}
+  .info-box.red ul li::before{color:var(--red)}
+
+  /* Table */
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray);background:#fafcff;padding:10px 16px;text-align:left;border-bottom:1px solid var(--border)}
+  .tbl td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td:first-child{font-weight:700;font-family:var(--mono);font-size:12px}
+
+  /* Question card */
+  .q-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:18px 20px}
+  .q-card .q{font-size:13.5px;font-weight:700;color:var(--dark);margin-bottom:10px;display:flex;gap:8px}
+  .q-card .q::before{content:'?';background:var(--blue);color:#fff;width:22px;height:22px;border-radius:50%;font-family:var(--mono);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .q-card .a{font-size:12.5px;color:var(--muted);line-height:1.7;padding-left:30px}
+
+  /* Callout dark */
+  .callout-dark{background:var(--dark);border-radius:14px;padding:32px;color:#fff;margin-top:0;position:relative;overflow:hidden}
+  .callout-dark::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(0,180,216,.2) 0%,transparent 70%)}
+  .callout-dark h3{font-size:18px;font-weight:700;margin-bottom:16px}
+  .callout-dark .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;position:relative;z-index:1}
+  .callout-dark .item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px}
+  .callout-dark .item .num{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.1em;margin-bottom:6px}
+  .callout-dark .item p{font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.7}
+  .callout-dark .item code{font-family:var(--mono);font-size:11px;background:rgba(255,255,255,.1);padding:1px 5px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <p class="eyebrow">IBM HTTP Server · Architecture Guide</p>
+  <h1>วิธีทำงานของ <em>IBM HTTP Server</em><br>บน IBM i</h1>
+  <p class="subtitle">จาก Shared Folder → HTTP Server → Browser · ละเอียดทุก layer</p>
+</header>
+
+<!-- ==================== OVERVIEW ==================== -->
+<p class="section-title">ภาพรวม — เกิดอะไรขึ้นตอนเปิด Browser</p>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#e8f0fe">🌐</div>
+    <div>
+      <h3>Request Flow ตั้งแต่ Browser → IBM i</h3>
+      <div class="sub">http://as400xxx/kidakorn/index.html</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="flow">
+      <div class="flow-row">
+        <div class="flow-box" style="background:#e8f0fe;color:var(--blue);border-color:#c7d7ff">
+          🖥 Browser<br><span style="font-size:10px;font-weight:400">PC คุณ</span>
+        </div>
+      </div>
+      <div class="flow-down">↓</div>
+      <div class="flow-note">HTTP Request: GET /kidakorn/index.html</div>
+      <div class="flow-down">↓</div>
+      <div class="flow-row">
+        <div class="flow-box" style="background:#fef3c7;color:#92400e;border-color:#fde68a">
+          🔴 IBM i (as400xxx)<br><span style="font-size:10px;font-weight:400">IBM HTTP Server (Apache on PASE)</span>
+        </div>
+      </div>
+      <div class="flow-down">↓</div>
+      <div class="flow-note">Apache หาไฟล์ใน IFS path ที่ map ไว้</div>
+      <div class="flow-down">↓</div>
+      <div class="flow-row">
+        <div class="flow-box" style="background:#f0fdf4;color:#15803d;border-color:#b8e6c8">
+          📁 IFS (IBM i File System)<br><span style="font-size:10px;font-weight:400">/www/kidakorn/htdocs/index.html</span>
+        </div>
+      </div>
+      <div class="flow-down">↓</div>
+      <div class="flow-note">ส่งไฟล์กลับไปให้ Browser</div>
+      <div class="flow-down">↓</div>
+      <div class="flow-row">
+        <div class="flow-box" style="background:#e8f0fe;color:var(--blue);border-color:#c7d7ff">
+          🖥 Browser แสดงผล
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box blue" style="margin-top:8px">
+      <h4>💡 Key Point</h4>
+      <ul>
+        <li>HTTP Server รันอยู่บน <b>IBM i เครื่องเดียวกับ AS/400</b> — ไม่ใช่ Windows Server แยก</li>
+        <li>IBM ใช้ <b>Apache HTTP Server บน PASE</b> (PASE = Unix-like environment บน IBM i)</li>
+        <li>ไฟล์ทั้งหมดอยู่ใน <b>IFS (Integrated File System)</b> ซึ่งก็คือ file system ของ IBM i</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== FOLDER STRUCTURE ==================== -->
+<p class="section-title">โครงสร้าง Folder — IFS บน IBM i</p>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#f0fdf4">📁</div>
+    <div>
+      <h3>IFS Path Structure</h3>
+      <div class="sub">ที่ Admin map กับ URL http://as400xxx/...</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="path-tree">
+<span class="comment"># IFS บน IBM i (ที่ Admin ตั้งค่าไว้)</span>
+<span class="dir">/www/</span>                              <span class="comment"># root ของ web server</span>
+  <span class="dir">kidakorn/</span>                          <span class="comment"># folder หลัก (as400xxx/kidakorn)</span>
+    <span class="dir">htdocs/</span>                          <span class="comment"># document root</span>
+      <span class="file">index.html</span>                     <span class="comment"># → http://as400xxx/kidakorn/</span>
+      <span class="active">dev/</span>                           <span class="comment"># ← folder ที่ให้คุณสร้าง</span>
+        <span class="active">index.html</span>                 <span class="comment"># → http://as400xxx/kidakorn/dev/</span>
+        <span class="active">css/</span>
+          <span class="active">style.css</span>
+        <span class="active">js/</span>
+          <span class="active">app.js</span>
+    <span class="dir">logs/</span>                            <span class="comment"># access log, error log</span>
+    <span class="dir">conf/</span>                            <span class="comment"># httpd.conf (Admin ดูแล)</span>
+
+<span class="comment"># URL mapping:</span>
+<span class="url">http://as400xxx/kidakorn/</span>          <span class="comment">→ /www/kidakorn/htdocs/</span>
+<span class="url">http://as400xxx/kidakorn/dev/</span>      <span class="comment">→ /www/kidakorn/htdocs/dev/</span>
+    </div>
+
+    <div class="info-box amber" style="margin-top:16px">
+      <h4>⚠ Path จริงอาจต่างกัน</h4>
+      <ul>
+        <li>Path ด้านบนเป็นตัวอย่าง — path จริงขึ้นอยู่กับที่ Admin config ใน httpd.conf</li>
+        <li>ให้ถาม Admin ว่า <b>"IFS path ที่ map กับ /kidakorn คืออะไร?"</b></li>
+        <li>หรือ login ACS → Tools → 5250 → พิมพ์ <code style="font-family:var(--mono);background:#fef3c7;padding:1px 5px;border-radius:3px">WRKLNK '/www/*'</code></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== WHAT YOU CAN DO ==================== -->
+<p class="section-title">ทำอะไรได้บ้าง — ใน Folder dev ของคุณ</p>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#f3e8ff">⚡</div>
+    <div>
+      <h3>สิ่งที่ทำได้ vs ทำไม่ได้</h3>
+      <div class="sub">ขึ้นอยู่กับ HTTP Server config ที่ Admin ตั้งไว้</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>สิ่งที่ต้องการ</th>
+            <th>ทำได้?</th>
+            <th>เงื่อนไข</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>HTML + CSS + JS<br><span style="font-weight:400;font-size:11.5px;color:var(--muted)">Static files</span></td>
+            <td><span class="pill pill-yes">✓ ได้เลย</span></td>
+            <td style="font-size:12.5px;color:var(--muted)">วางไฟล์ใน folder dev ได้เลย ไม่ต้องขอ Admin</td>
+          </tr>
+          <tr>
+            <td>Angular / React / Vue<br><span style="font-weight:400;font-size:11.5px;color:var(--muted)">หลัง build แล้ว</span></td>
+            <td><span class="pill pill-yes">✓ ได้เลย</span></td>
+            <td style="font-size:12.5px;color:var(--muted)">Build เป็น static files ก่อน แล้ว copy มาวาง</td>
+          </tr>
+          <tr>
+            <td>เรียก IWS REST API<br><span style="font-weight:400;font-size:11.5px;color:var(--muted)">fetch/axios จาก JS</span></td>
+            <td><span class="pill pill-maybe">~ ถ้า IWS เปิด</span></td>
+            <td style="font-size:12.5px;color:var(--muted)">Admin ต้องเปิด IWS บน HTTP instance นี้ก่อน</td>
+          </tr>
+          <tr>
+            <td>Node.js Backend<br><span style="font-weight:400;font-size:11.5px;color:var(--muted)">Express, Next.js</span></td>
+            <td><span class="pill pill-no">✗ ไม่ได้ตรงๆ</span></td>
+            <td style="font-size:12.5px;color:var(--muted)">ต้องให้ Admin ติดตั้ง Node.js บน PASE + config Reverse Proxy</td>
+          </tr>
+          <tr>
+            <td>PHP<br><span style="font-weight:400;font-size:11.5px;color:var(--muted)">.php files</span></td>
+            <td><span class="pill pill-maybe">~ ถ้า enable</span></td>
+            <td style="font-size:12.5px;color:var(--muted)">IBM i รองรับ PHP บน PASE แต่ Admin ต้อง enable module</td>
+          </tr>
+          <tr>
+            <td>ODBC / DB2 จาก Browser<br><span style="font-weight:400;font-size:11.5px;color:var(--muted)">ตรงจาก JS</span></td>
+            <td><span class="pill pill-no">✗ ไม่ได้</span></td>
+            <td style="font-size:12.5px;color:var(--muted)">Browser ไม่สามารถ connect DB โดยตรง ต้องผ่าน Backend เสมอ</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== HOW TO ACCESS IFS ==================== -->
+<p class="section-title">วิธีเข้าถึง IFS — วางไฟล์ยังไง</p>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fff3e0">🔗</div>
+    <div>
+      <h3>วิธีเข้าถึง IFS Folder จาก PC</h3>
+      <div class="sub">3 วิธีที่ใช้บ่อย</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="grid-3">
+
+      <div style="background:var(--bg);border-radius:10px;padding:16px;border:1.5px solid var(--border)">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;font-weight:700">วิธี 1 · Network Drive (SMB)</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px">Map Network Drive จาก Windows Explorer — ง่ายที่สุด drag & drop ได้เลย</div>
+        <div class="code-block" style="font-size:11px">
+<span class="c-comment"># Windows Explorer → Map Network Drive</span>
+\\as400xxx\ROOT\www\kidakorn\htdocs\dev
+<span class="c-comment"># หรือที่ Admin บอก path มา</span>
+        </div>
+        <span class="pill pill-yes" style="margin-top:10px;display:inline-flex">ง่ายที่สุด</span>
+      </div>
+
+      <div style="background:var(--bg);border-radius:10px;padding:16px;border:1.5px solid var(--border)">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;font-weight:700">วิธี 2 · ACS IFS Browser</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px">เปิด IBM ACS → IFS → browse ไปที่ folder แล้ว upload/download ไฟล์ได้</div>
+        <div class="code-block" style="font-size:11px">
+ACS → IFS
+  → Navigate to /www/kidakorn/htdocs/dev
+  → Right click → Upload file
+        </div>
+        <span class="pill pill-yes" style="margin-top:10px;display:inline-flex">ปลอดภัย</span>
+      </div>
+
+      <div style="background:var(--bg);border-radius:10px;padding:16px;border:1.5px solid var(--border)">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;font-weight:700">วิธี 3 · VS Code + SSH FS</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px">ติดตั้ง Extension "SSH FS" ใน VS Code แล้วเปิดแก้ไขไฟล์บน IFS ได้ตรงเลย</div>
+        <div class="code-block" style="font-size:11px">
+<span class="c-comment"># VS Code Extension: SSH FS</span>
+host: as400xxx
+path: /www/kidakorn/htdocs/dev
+<span class="c-comment"># แก้ไขไฟล์ได้เหมือน local</span>
+        </div>
+        <span class="pill pill-maybe" style="margin-top:10px;display:inline-flex">ต้องมี SSH access</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==================== IWS INTEGRATION ==================== -->
+<p class="section-title">เชื่อม IWS — ถ้า Admin เปิดให้</p>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fef3c7">🏭</div>
+    <div>
+      <h3>Flow เมื่อใช้ IWS ร่วมกับ Static Web</h3>
+      <div class="sub">Frontend ใน IFS + Backend เป็น IWS บน HTTP instance เดียวกัน</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="flow">
+      <div class="flow-row">
+        <div class="flow-box" style="background:#e8f0fe;color:var(--blue);border-color:#c7d7ff">
+          🖥 Browser<br><span style="font-size:10px;font-weight:400">Angular / HTML + JS</span>
+        </div>
+      </div>
+      <div class="flow-down">↓ ↑</div>
+      <div class="flow-row" style="gap:24px">
+        <div style="text-align:center">
+          <div class="flow-box" style="background:#f0fdf4;color:#15803d;border-color:#b8e6c8">
+            📁 Static Files<br><span style="font-size:10px;font-weight:400">GET /kidakorn/dev/index.html</span>
+          </div>
+          <div class="flow-note">วางไฟล์ใน IFS</div>
+        </div>
+        <div style="display:flex;align-items:center;color:var(--gray);font-size:20px">|</div>
+        <div style="text-align:center">
+          <div class="flow-box" style="background:#fef3c7;color:#92400e;border-color:#fde68a">
+            🏭 IWS REST API<br><span style="font-size:10px;font-weight:400">POST /kidakorn/web/services/PSS001R</span>
+          </div>
+          <div class="flow-note">IWS expose RPG เป็น API</div>
+        </div>
+      </div>
+      <div class="flow-down">↓</div>
+      <div class="flow-row">
+        <div class="flow-box" style="background:#fff0f0;color:var(--red);border-color:#fecaca">
+          🔴 IBM i HTTP Server (Apache on PASE)<br><span style="font-size:10px;font-weight:400">instance เดียวกัน — as400xxx</span>
+        </div>
+      </div>
+      <div class="flow-down">↓</div>
+      <div class="flow-row" style="gap:24px">
+        <div class="flow-box" style="background:#f3e8ff;color:#6d28d9;border-color:#ddd6fe">
+          📁 IFS Files<br><span style="font-size:10px;font-weight:400">/www/kidakorn/htdocs/</span>
+        </div>
+        <div style="display:flex;align-items:center;color:var(--gray);font-size:20px">|</div>
+        <div class="flow-box" style="background:#f3e8ff;color:#6d28d9;border-color:#ddd6fe">
+          ⚙️ RPG/CL Programs<br><span style="font-size:10px;font-weight:400">Library X0250661</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example code -->
+    <div style="margin-top:20px">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:10px;font-weight:700">💻 ตัวอย่าง JS เรียก IWS API จาก Browser</div>
+      <div class="code-block">
+<span class="c-comment">// JavaScript ใน index.html เรียก IWS REST API</span>
+<span class="c-kw">async function</span> <span style="color:#79c0ff">issueRequisition</span>(reqNo) {
+  <span class="c-kw">const</span> response = <span class="c-kw">await</span> fetch(<span class="c-str">`http://as400xxx/web/services/PSS001R`</span>, {
+    method:  <span class="c-str">'POST'</span>,
+    headers: { <span class="c-str">'Content-Type'</span>: <span class="c-str">'application/json'</span> },
+    body:    JSON.stringify({ P_REQNO: reqNo })
+  });
+  <span class="c-kw">const</span> data = <span class="c-kw">await</span> response.json();
+  <span class="c-comment">// data.P_RESULT = 'S' หรือ 'E'</span>
+  <span class="c-comment">// data.P_ERRMSG = error message</span>
+  <span class="c-kw">return</span> data;
+}
+
+<span class="c-comment">// ข้อดี: ไม่ต้องมี Backend เลย!</span>
+<span class="c-comment">// Browser → IBM HTTP Server → IWS → RPG → DB2</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== WHAT TO ASK ADMIN ==================== -->
+<p class="section-title">คำถามที่ต้องถาม Admin</p>
+
+<div class="grid-2">
+  <div class="card" style="margin-bottom:0">
+    <div class="card-head">
+      <div class="icon" style="background:#f0fdf4">❓</div>
+      <div>
+        <h3>ถามก่อนเริ่ม Dev</h3>
+        <div class="sub">ตอบได้ → วางแผนได้ทันที</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="q-card">
+          <div class="q">IFS path จริงๆ ของ /kidakorn คืออะไร?</div>
+          <div class="a">เพื่อวางไฟล์ถูก folder และ map Network Drive ได้ถูก</div>
+        </div>
+        <div class="q-card">
+          <div class="q">HTTP Server instance ชื่ออะไร?</div>
+          <div class="a">เช่น APACHEDFT, KIDAKORN — ใช้ตอน start/stop หรือ config</div>
+        </div>
+        <div class="q-card">
+          <div class="q">IWS เปิดอยู่บน instance นี้ไหม?</div>
+          <div class="a">ถ้าใช่ → ใช้ JS เรียก IWS ได้เลยโดยไม่ต้องมี Backend</div>
+        </div>
+        <div class="q-card">
+          <div class="q">วิธีวางไฟล์เข้า IFS — ใช้ Network Drive หรือ ACS?</div>
+          <div class="a">บางที่ให้ Map Drive บางที่ให้ใช้ ACS upload เท่านั้น</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:0">
+    <div class="card-head">
+      <div class="icon" style="background:#fff0f0">🗺</div>
+      <div>
+        <h3>Development Flow ที่แนะนำ</h3>
+        <div class="sub">ทำได้เลย ไม่ต้องรอ Admin</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <p><b>สร้าง folder dev</b> ใน IFS path ที่ Admin กำหนด<br>
+          ทดสอบ: เปิด <code style="font-family:var(--mono);font-size:11px;background:#f4f7ff;padding:1px 5px;border-radius:3px">http://as400xxx/kidakorn/dev/</code> ได้ไหม</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <p><b>พัฒนา Frontend บน PC ก่อน</b> ด้วย VS Code + Live Server<br>
+          ไม่ต้องอัปโหลดขึ้น IBM i ทุกครั้ง ทดสอบบน localhost ก่อน</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <p><b>ถาม Admin เรื่อง IWS</b> ถ้ามี → เรียก API จาก JS ได้เลย<br>
+          ถ้าไม่มี → ต้องขอให้ Admin ติดตั้ง Node.js หรือ .NET บน PASE</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <p><b>Build + Deploy</b> ขึ้น IFS เมื่อพร้อม<br>
+          Angular: <code style="font-family:var(--mono);font-size:11px;background:#f4f7ff;padding:1px 5px;border-radius:3px">ng build</code> แล้ว copy dist/ ขึ้น IFS</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SUMMARY ==================== -->
+<p class="section-title">สรุป</p>
+
+<div class="callout-dark">
+  <h3>🎯 สิ่งที่รู้แน่ๆ ตอนนี้</h3>
+  <div class="items">
+    <div class="item">
+      <div class="num">01 — HTTP SERVER</div>
+      <p>IBM HTTP Server (Apache on PASE) รันอยู่บน IBM i เครื่องเดียวกับ AS/400 — ไม่ใช่ Windows Server แยก</p>
+    </div>
+    <div class="item">
+      <div class="num">02 — STATIC FILES</div>
+      <p>วาง HTML/CSS/JS ใน <code>/www/kidakorn/htdocs/dev/</code> แล้วเปิดได้ที่ <code>http://as400xxx/kidakorn/dev/</code> ทันที</p>
+    </div>
+    <div class="item">
+      <div class="num">03 — IWS POSSIBLE</div>
+      <p>เพราะ HTTP Server รันบน IBM i อยู่แล้ว — IWS เปิดได้ง่ายกว่าเดิมมาก ถ้า Admin ยอม = ไม่ต้องมี Backend เลย</p>
+    </div>
+    <div class="item">
+      <div class="num">04 — NEXT STEP</div>
+      <p>ถาม Admin เรื่อง IWS + IFS path จริง แล้วเริ่ม develop Frontend บน PC ก่อน ค่อย deploy ขึ้น IFS</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C# .NET Roadmap — สำหรับคนมาจาก JS/TS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f0f13;
+    --bg2: #17171e;
+    --bg3: #1e1e28;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #e8e6f0;
+    --muted: #8a879e;
+    --hint: #55526a;
+    --purple: #a78bfa;
+    --purple-dim: #6d5fc7;
+    --teal: #34d399;
+    --teal-dim: #1a6b4a;
+    --amber: #fbbf24;
+    --amber-dim: #6b4f10;
+    --blue: #60a5fa;
+    --blue-dim: #1d3f6b;
+    --coral: #fb7185;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans Thai', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 3rem;
+    border-bottom: 0.5px solid var(--border2);
+    padding-bottom: 2rem;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--purple);
+    font-family: var(--mono);
+    margin-bottom: .75rem;
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 600;
+    line-height: 1.2;
+    color: #fff;
+    margin-bottom: .75rem;
+  }
+
+  h1 span { color: var(--purple); }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 520px;
+  }
+
+  /* Setup section */
+  .setup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: .75rem;
+    margin-bottom: 3rem;
+  }
+
+  .setup-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .setup-card .label {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .5rem;
+  }
+
+  .setup-card .name {
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: .35rem;
+  }
+
+  .setup-card .desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .badge-free { background: rgba(52,211,153,.12); color: var(--teal); }
+  .badge-lts  { background: rgba(167,139,250,.12); color: var(--purple); }
+
+  /* Section header */
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  .phase-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .p1 { background: rgba(167,139,250,.15); color: var(--purple); }
+  .p2 { background: rgba(52,211,153,.15); color: var(--teal); }
+  .p3 { background: rgba(251,191,36,.15); color: var(--amber); }
+  .p4 { background: rgba(96,165,250,.15); color: var(--blue); }
+
+  .phase-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .phase-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  /* Compare block */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem;
+    margin: .75rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .compare { grid-template-columns: 1fr; }
+  }
+
+  .code-box {
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    border: 0.5px solid transparent;
+  }
+
+  .code-box .lang {
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: .4rem;
+    font-weight: 500;
+  }
+
+  .box-cs  { background: rgba(167,139,250,.08); border-color: rgba(167,139,250,.2); color: #c4b8ff; }
+  .box-cs .lang { color: var(--purple); }
+
+  .box-js  { background: rgba(251,191,36,.07); border-color: rgba(251,191,36,.18); color: #f5d97a; }
+  .box-js .lang { color: var(--amber); }
+
+  .code-box code { white-space: pre-wrap; }
+
+  /* Topic card */
+  .topic {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: .65rem;
+  }
+
+  .topic-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: .4rem;
+  }
+
+  .topic-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: .6rem;
+  }
+
+  /* Tip / warn */
+  .tip {
+    background: rgba(96,165,250,.08);
+    border-left: 2px solid var(--blue);
+    border-radius: 0 6px 6px 0;
+    padding: .55rem .9rem;
+    font-size: 12px;
+    color: #93c5fd;
+    line-height: 1.6;
+    margin-top: .65rem;
+  }
+
+  .warn {
+    background: rgba(251,191,36,.08);
+    border-left: 2px solid var(--amber);
+    border-radius: 0 6px 6px 0;
+    padding: .55rem .9rem;
+    font-size: 12px;
+    color: #fcd34d;
+    line-height: 1.6;
+    margin-top: .65rem;
+  }
+
+  /* Tags */
+  .tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: .6rem; }
+  .tag {
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--bg3);
+    color: var(--hint);
+    border: 0.5px solid var(--border);
+  }
+
+  /* Roadmap path */
+  .path {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 1rem 0;
+  }
+
+  .path-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .path-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 24px;
+  }
+
+  .path-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  .path-connector {
+    width: 1px;
+    flex: 1;
+    min-height: 24px;
+    background: var(--border2);
+    margin: 3px 0;
+  }
+
+  .path-content {
+    padding-bottom: 1.25rem;
+    flex: 1;
+  }
+
+  .path-name { font-size: 14px; font-weight: 500; color: #fff; }
+  .path-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.6; }
+  .path-time { font-size: 11px; font-family: var(--mono); margin-top: 3px; }
+
+  /* Resources */
+  .res-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: .6rem;
+    margin-top: .75rem;
+  }
+
+  .res-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: .9rem 1rem;
+  }
+
+  .res-name { font-size: 13px; font-weight: 500; color: #fff; margin-bottom: 3px; }
+  .res-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .res-tag  { font-size: 10px; font-family: var(--mono); margin-top: .4rem; }
+
+  /* Divider */
+  hr { border: none; border-top: 0.5px solid var(--border); margin: 2.5rem 0; }
+
+  /* Scroll progress bar */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--purple);
+    width: 0%;
+    transition: width .1s;
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="eyebrow">Desktop Application · Phase 2</div>
+    <h1>เรียน <span>C# .NET</span><br>จาก JS/TS สู่ Desktop</h1>
+    <p class="subtitle">คู่มือนี้เทียบ syntax และ concept ระหว่าง JS/TS กับ C# โดยตรง ถ้าเขียน TypeScript อยู่แล้วจะปรับตัวได้เร็วมากครับ</p>
+  </div>
+
+  <!-- Setup -->
+  <div class="eyebrow" style="margin-bottom:.75rem">ติดตั้ง</div>
+  <div class="setup-grid">
+    <div class="setup-card">
+      <div class="label">IDE</div>
+      <div class="name">Visual Studio 2022 Community <span class="badge badge-free">ฟรี</span></div>
+      <div class="desc">จาก visualstudio.microsoft.com — เลือก workload <em>.NET desktop development</em> ตอนติดตั้ง</div>
+    </div>
+    <div class="setup-card">
+      <div class="label">Runtime</div>
+      <div class="name">.NET 8 SDK <span class="badge badge-lts">LTS</span></div>
+      <div class="desc">ติดมากับ Visual Studio อัตโนมัติ ตรวจสอบด้วย <code style="font-family:var(--mono);font-size:11px">dotnet --version</code></div>
+    </div>
+    <div class="setup-card">
+      <div class="label">ทดลองออนไลน์</div>
+      <div class="name">dotnetfiddle.net <span class="badge badge-free">ฟรี</span></div>
+      <div class="desc">เขียน C# ในเบราว์เซอร์ได้เลย ไม่ต้องติดตั้งอะไร เหมาะสำหรับทดสอบ concept</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Phase 1 -->
+  <div class="phase-header">
+    <div class="phase-num p1">01</div>
+    <div>
+      <div class="phase-title">C# พื้นฐาน</div>
+      <div class="phase-sub">1–2 เดือน · Console App ก่อน ยังไม่ต้องมี UI</div>
+    </div>
+  </div>
+
+  <div class="topic">
+    <div class="topic-title">Variables & Types</div>
+    <div class="topic-desc">C# เป็น strongly typed — ต้องระบุ type แต่ใช้ <code style="font-family:var(--mono);font-size:11px">var</code> ให้ compiler อนุมานได้ เหมือน TypeScript</div>
+    <div class="compare">
+      <div class="code-box box-cs">
+        <div class="lang">C#</div>
+        <code>int age = 25;
+string name = "Kid";
+bool isActive = true;
+var city = "Bangkok"; // อนุมาน type</code>
+      </div>
+      <div class="code-box box-js">
+        <div class="lang">TypeScript</div>
+        <code>let age: number = 25;
+let name: string = "Kid";
+let isActive: boolean = true;
+let city = "Bangkok";</code>
+      </div>
+    </div>
+    <div class="tags"><span class="tag">int</span><span class="tag">string</span><span class="tag">bool</span><span class="tag">double</span><span class="tag">var</span><span class="tag">decimal</span></div>
+  </div>
+
+  <div class="topic">
+    <div class="topic-title">Functions & Lambda</div>
+    <div class="compare">
+      <div class="code-box box-cs">
+        <div class="lang">C#</div>
+        <code>int Add(int a, int b) => a + b;
+
+var square = (int x) => x * x;
+
+async Task&lt;string&gt; Fetch() {
+  await Task.Delay(1000);
+  return "done";
+}</code>
+      </div>
+      <div class="code-box box-js">
+        <div class="lang">TypeScript</div>
+        <code>const add = (a: number, b: number) => a + b;
+
+const square = (x: number) => x * x;
+
+async function fetch(): Promise&lt;string&gt; {
+  await new Promise(r => setTimeout(r,1000));
+  return "done";
+}</code>
+      </div>
+    </div>
+    <div class="tip">async/await ใน C# เหมือน JS แทบทุกอย่าง แค่เปลี่ยน <code style="font-family:var(--mono)">Promise</code> เป็น <code style="font-family:var(--mono)">Task</code></div>
+  </div>
+
+  <div class="topic">
+    <div class="topic-title">Collections & LINQ</div>
+    <div class="topic-desc">LINQ คือ Array methods ของ C# — คล้าย .filter() .map() .find() ใน JS</div>
+    <div class="compare">
+      <div class="code-box box-cs">
+        <div class="lang">C# LINQ</div>
+        <code>var nums = new List&lt;int&gt; {1,2,3,4,5};
+
+var evens  = nums.Where(n => n % 2 == 0);
+var doubled = nums.Select(n => n * 2);
+var sum    = nums.Sum();
+var first  = nums.FirstOrDefault(n => n > 3);</code>
+      </div>
+      <div class="code-box box-js">
+        <div class="lang">JavaScript</div>
+        <code>const nums = [1,2,3,4,5];
+
+const evens   = nums.filter(n => n % 2 === 0);
+const doubled = nums.map(n => n * 2);
+const sum     = nums.reduce((a,b) => a+b, 0);
+const first   = nums.find(n => n > 3);</code>
+      </div>
+    </div>
+    <div class="tags"><span class="tag">List&lt;T&gt;</span><span class="tag">Dictionary&lt;K,V&gt;</span><span class="tag">Where</span><span class="tag">Select</span><span class="tag">FirstOrDefault</span></div>
+  </div>
+
+  <div class="topic">
+    <div class="topic-title">Null Handling</div>
+    <div class="compare">
+      <div class="code-box box-cs">
+        <div class="lang">C#</div>
+        <code>string? name = null; // nullable type
+var len = name?.Length ?? 0;
+// null-coalescing เหมือน JS!</code>
+      </div>
+      <div class="code-box box-js">
+        <div class="lang">TypeScript</div>
+        <code>let name: string | null = null;
+const len = name?.length ?? 0;
+// เหมือนกันเลย!</code>
+      </div>
+    </div>
+    <div class="tip">Optional chaining <code style="font-family:var(--mono)">?.</code> และ null-coalescing <code style="font-family:var(--mono)">??</code> ใช้ได้ใน C# เหมือนกันเลย</div>
+  </div>
+
+  <hr>
+
+  <!-- Phase 2 -->
+  <div class="phase-header">
+    <div class="phase-num p2">02</div>
+    <div>
+      <div class="phase-title">OOP & Design Patterns</div>
+      <div class="phase-sub">2–3 เดือน · Class, Interface, MVVM</div>
+    </div>
+  </div>
+
+  <div class="topic">
+    <div class="topic-title">Class & Object</div>
+    <div class="compare">
+      <div class="code-box box-cs">
+        <div class="lang">C#</div>
+        <code>public class Person {
+  public string Name { get; set; }
+  public int Age { get; set; }
+
+  public Person(string name, int age) {
+    Name = name; Age = age;
+  }
+
+  public string Greet() =>
+    $"สวัสดี ฉันชื่อ {Name}";
+}</code>
+      </div>
+      <div class="code-box box-js">
+        <div class="lang">TypeScript</div>
+        <code>class Person {
+  name: string;
+  age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+
+  greet(): string {
+    return `สวัสดี ฉันชื่อ ${this.name}`;
+  }
+}</code>
+      </div>
+    </div>
+    <div class="tip">แทบเหมือน TypeScript เลย ต่างแค่ Property syntax กับ <code style="font-family:var(--mono)">$"..."</code> แทน template literal</div>
+  </div>
+
+  <div class="topic">
+    <div class="topic-title">Interface & Inheritance</div>
+    <div class="compare">
+      <div class="code-box box-cs">
+        <div class="lang">C#</div>
+        <code>public interface IAnimal {
+  string Sound();
+}
+
+public class Dog : IAnimal {
+  public string Sound() => "โฮ่ง!";
+}
+
+public class Cat : IAnimal {
+  public string Sound() => "เมี้ยว!";
+}</code>
+      </div>
+      <div class="code-box box-js">
+        <div class="lang">TypeScript</div>
+        <code>interface IAnimal {
+  sound(): string;
+}
+
+class Dog implements IAnimal {
+  sound(): string { return "โฮ่ง!"; }
+}
+
+class Cat implements IAnimal {
+  sound(): string { return "เมี้ยว!"; }
+}</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic">
+    <div class="topic-title">Packages — NuGet vs npm</div>
+    <div class="compare">
+      <div class="code-box box-cs">
+        <div class="lang">C# (NuGet)</div>
+        <code>// ติดตั้ง package
+dotnet add package Newtonsoft.Json
+
+// ใช้งาน
+using Newtonsoft.Json;
+var json = JsonConvert.SerializeObject(obj);</code>
+      </div>
+      <div class="code-box box-js">
+        <div class="lang">JS (npm)</div>
+        <code>// ติดตั้ง package
+npm install axios
+
+// ใช้งาน
+import axios from 'axios';
+const res = await axios.get(url);</code>
+      </div>
+    </div>
+    <div class="tags"><span class="tag">NuGet</span><span class="tag">dotnet add package</span><span class="tag">using</span></div>
+  </div>
+
+  <hr>
+
+  <!-- Phase 3 -->
+  <div class="phase-header">
+    <div class="phase-num p3">03</div>
+    <div>
+      <div class="phase-title">Desktop App Development</div>
+      <div class="phase-sub">2–3 เดือน · WPF → WinUI 3 → MAUI</div>
+    </div>
+  </div>
+
+  <div class="topic">
+    <div class="topic-title">เส้นทางสู่ Desktop App</div>
+    <div class="path">
+      <div class="path-step">
+        <div class="path-line">
+          <div class="path-dot" style="background:var(--purple)"></div>
+          <div class="path-connector"></div>
+        </div>
+        <div class="path-content">
+          <div class="path-name">Console App</div>
+          <div class="path-desc">ฝึก C# syntax ล้วนๆ ก่อน ไม่มี UI ไม่งงสองเรื่องพร้อมกัน</div>
+          <div class="path-time" style="color:var(--purple)">1–2 เดือน</div>
+        </div>
+      </div>
+      <div class="path-step">
+        <div class="path-line">
+          <div class="path-dot" style="background:var(--teal)"></div>
+          <div class="path-connector"></div>
+        </div>
+        <div class="path-content">
+          <div class="path-name">WPF (Windows Presentation Foundation)</div>
+          <div class="path-desc">เขียน XAML คล้าย HTML + MVVM pattern คล้าย component-based framework</div>
+          <div class="path-time" style="color:var(--teal)">2–3 เดือน</div>
+        </div>
+      </div>
+      <div class="path-step">
+        <div class="path-line">
+          <div class="path-dot" style="background:var(--amber)"></div>
+          <div class="path-connector"></div>
+        </div>
+        <div class="path-content">
+          <div class="path-name">WinUI 3</div>
+          <div class="path-desc">Modern UI framework สำหรับ Windows 11 design language</div>
+          <div class="path-time" style="color:var(--amber)">ต่อจาก WPF</div>
+        </div>
+      </div>
+      <div class="path-step">
+        <div class="path-line">
+          <div class="path-dot" style="background:var(--blue)"></div>
+        </div>
+        <div class="path-content">
+          <div class="path-name">MAUI (ถ้าต้องการ cross-platform)</div>
+          <div class="path-desc">Windows + macOS + Android + iOS ในโปรเจกต์เดียว</div>
+          <div class="path-time" style="color:var(--blue)">optional</div>
+        </div>
+      </div>
+    </div>
+    <div class="warn">แนะนำทำ Console App 1 เดือนก่อน อย่ากระโดดไป WPF เลย จะงง C# และ XAML พร้อมกัน</div>
+  </div>
+
+  <div class="topic">
+    <div class="topic-title">Entity Framework Core — Database ORM</div>
+    <div class="topic-desc">เหมือน Prisma/TypeORM ใน Node.js เขียน class แล้วแปลงเป็น SQL ให้อัตโนมัติ</div>
+    <div class="code-box box-cs" style="margin:.5rem 0">
+      <div class="lang">C# — EF Core</div>
+      <code>public class Product {
+  public int Id { get; set; }
+  public string Name { get; set; }
+  public decimal Price { get; set; }
+}
+
+// Query ด้วย LINQ
+var cheap = await db.Products
+  .Where(p => p.Price &lt; 100)
+  .OrderBy(p => p.Name)
+  .ToListAsync();</code>
+    </div>
+    <div class="tags"><span class="tag">EF Core</span><span class="tag">SQLite</span><span class="tag">SQL Server</span><span class="tag">migrations</span><span class="tag">DbContext</span></div>
+  </div>
+
+  <hr>
+
+  <!-- Phase 4 Resources -->
+  <div class="phase-header">
+    <div class="phase-num p4">04</div>
+    <div>
+      <div class="phase-title">แหล่งเรียนฟรี</div>
+      <div class="phase-sub">ไม่ต้องจ่ายเงินเลยสำหรับ phase 1–3</div>
+    </div>
+  </div>
+
+  <div class="res-grid">
+    <div class="res-card">
+      <div class="res-name">Microsoft Learn</div>
+      <div class="res-desc">learn.microsoft.com/dotnet มี interactive lab ในเบราว์เซอร์ฟรี</div>
+      <div class="res-tag" style="color:var(--purple)">Official · ฟรี</div>
+    </div>
+    <div class="res-card">
+      <div class="res-name">C# Yellow Book</div>
+      <div class="res-desc">robmiles.com ebook ฟรี อ่านง่ายมากสำหรับมือใหม่</div>
+      <div class="res-tag" style="color:var(--teal)">eBook · ฟรี</div>
+    </div>
+    <div class="res-card">
+      <div class="res-name">IAmTimCorey</div>
+      <div class="res-desc">YouTube channel สอน C# .NET ละเอียดมาก free ทั้งหมด</div>
+      <div class="res-tag" style="color:var(--coral)">YouTube · ฟรี</div>
+    </div>
+    <div class="res-card">
+      <div class="res-name">dotnetfiddle.net</div>
+      <div class="res-desc">ทดลองเขียน C# ในเบราว์เซอร์ ไม่ต้องติดตั้ง</div>
+      <div class="res-tag" style="color:var(--amber)">Online IDE · ฟรี</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrolled = doc.scrollTop;
+    const total = doc.scrollHeight - doc.clientHeight;
+    document.getElementById('progress-bar').style.width = (scrolled / total * 100) + '%';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feature Spec — ฟีเจอร์หลักแต่ละโปรเจ็ค</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Sarabun:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #0f0f13;
+  --bg2: #16161d;
+  --bg3: #1e1e28;
+  --border: #2a2a38;
+  --border2: #353548;
+  --text: #e8e8f0;
+  --muted: #7878a0;
+  --dim: #45455a;
+
+  --c1: #ff6b9d; /* ERP / Accounting */
+  --c2: #ffa94d; /* HRM */
+  --c3: #69db7c; /* WMS */
+  --c4: #4dabf7; /* Tracking */
+  --c5: #da77f2; /* CRM */
+  --c6: #ffd43b; /* POS */
+  --c7: #ff8787; /* E-commerce */
+  --c8: #63e6be; /* Helpdesk */
+  --c9: #74c0fc; /* BI */
+  --c10: #a9e34b;/* DMS */
+  --c11: #f783ac;/* IAM */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Sarabun', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px 100px; }
+
+/* HERO */
+.hero {
+  padding: 68px 0 50px;
+  border-bottom: 1px solid var(--border2);
+  margin-bottom: 52px;
+}
+.kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.kicker::before { content: '//'; color: var(--dim); }
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -.025em;
+  margin-bottom: 18px;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(90deg, #ff6b9d, #da77f2, #4dabf7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 540px;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+/* NAV PILLS */
+.nav-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid var(--border2);
+  color: var(--dim);
+  text-decoration: none;
+  border-radius: 20px;
+  transition: all .15s;
+}
+.pill:hover { color: var(--text); border-color: var(--muted); }
+
+/* CATEGORY SECTION */
+.cat-section {
+  margin-bottom: 64px;
+}
+.cat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 16px;
+  padding-top: 52px;
+}
+
+/* PROJECT BLOCK */
+.proj-block {
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.proj-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.proj-color-bar {
+  width: 4px;
+  height: 44px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.proj-info { flex: 1; min-width: 0; }
+.proj-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 3px;
+}
+.proj-en {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.proj-platforms {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.ptag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 2px 7px;
+  border: 1px solid var(--border2);
+  color: var(--dim);
+  border-radius: 2px;
+}
+
+/* FEATURE LAYOUT */
+.feat-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 860px) { .feat-layout { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 540px) { .feat-layout { grid-template-columns: 1fr; } }
+
+.feat-col {
+  padding: 18px 20px;
+  border-right: 1px solid var(--border);
+}
+.feat-col:last-child { border-right: none; }
+
+.feat-col-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.feat-col-title .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot.must { background: #ff6b6b; }
+.dot.should { background: #ffd43b; }
+.dot.nice { background: #69db7c; }
+
+.feat-list {
+  list-style: none;
+  padding: 0;
+}
+.feat-list li {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #b0b0cc;
+  padding: 4px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+.feat-list li:last-child { border-bottom: none; }
+.feat-list li .ic {
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.feat-list li strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* BOTTOM ROW */
+.proj-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 14px 0;
+}
+@media (max-width: 860px) { .proj-bottom { grid-template-columns: 1fr; } }
+
+.pb-cell {
+  padding: 10px 20px;
+  border-right: 1px solid var(--border);
+}
+.pb-cell:last-child { border-right: none; }
+.pb-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 6px;
+}
+.pb-value { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.pb-value strong { color: var(--text); font-weight: 600; }
+
+/* LEGEND */
+.legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  margin-bottom: 44px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.lg { display: flex; align-items: center; gap: 7px; color: var(--muted); }
+
+footer {
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--dim);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 52px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="kicker">Feature Specification Guide</div>
+  <h1>ฟีเจอร์หลัก<br><em>แต่ละโปรเจ็ค</em></h1>
+  <p class="hero-sub">แจกแจงฟีเจอร์แบ่งเป็น 3 ระดับ: ต้องมีตั้งแต่วันแรก, ควรมีก่อน launch และ nice-to-have สำหรับ version ถัดไป</p>
+  <nav class="nav-pills">
+    <a class="pill" href="#erp">ERP</a>
+    <a class="pill" href="#acc">บัญชี</a>
+    <a class="pill" href="#proc">จัดซื้อ</a>
+    <a class="pill" href="#hrm">HRM</a>
+    <a class="pill" href="#task">Task Tracking</a>
+    <a class="pill" href="#logi">Logistics</a>
+    <a class="pill" href="#wms">WMS</a>
+    <a class="pill" href="#cmms">CMMS</a>
+    <a class="pill" href="#crm">CRM</a>
+    <a class="pill" href="#pos">POS</a>
+    <a class="pill" href="#ecom">E-commerce</a>
+    <a class="pill" href="#help">Helpdesk</a>
+    <a class="pill" href="#bi">BI Dashboard</a>
+    <a class="pill" href="#dms">DMS</a>
+    <a class="pill" href="#iam">IAM</a>
+  </nav>
+</header>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="lg"><span class="dot must" style="width:8px;height:8px;border-radius:50%;background:#ff6b6b;flex-shrink:0;"></span>Must Have — ต้องมีตั้งแต่ MVP</div>
+  <div class="lg"><span class="dot should" style="width:8px;height:8px;border-radius:50%;background:#ffd43b;flex-shrink:0;"></span>Should Have — ควรมีก่อน launch จริง</div>
+  <div class="lg"><span class="dot nice" style="width:8px;height:8px;border-radius:50%;background:#69db7c;flex-shrink:0;"></span>Nice to Have — v2.0 ขึ้นไป</div>
+</div>
+
+<!-- ═══════════ 01 ERP ═══════════ -->
+<div id="erp" class="cat-label">01 — ERP</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c1)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบ ERP</div>
+      <div class="proj-en">Enterprise Resource Planning</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Desktop</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🏢</span><span>ข้อมูลบริษัท สาขา แผนก</span></li>
+        <li><span class="ic">👤</span><span><strong>ระบบผู้ใช้และสิทธิ์</strong> แยกตาม role</span></li>
+        <li><span class="ic">📊</span><span>Dashboard ภาพรวมองค์กร</span></li>
+        <li><span class="ic">🔗</span><span>เชื่อม Module บัญชี + คลัง + HR</span></li>
+        <li><span class="ic">🗂️</span><span>Master Data: สินค้า, ลูกค้า, ผู้ขาย</span></li>
+        <li><span class="ic">📋</span><span>Audit log ทุก transaction</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🔔</span><span>ระบบแจ้งเตือน in-app และ email</span></li>
+        <li><span class="ic">📤</span><span>Export รายงานเป็น Excel / PDF</span></li>
+        <li><span class="ic">🔄</span><span>Approval workflow หลายระดับ</span></li>
+        <li><span class="ic">🌐</span><span>Multi-branch / Multi-currency</span></li>
+        <li><span class="ic">📱</span><span>Mobile app สำหรับ approve</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🤖</span><span>AI วิเคราะห์แนวโน้มธุรกิจ</span></li>
+        <li><span class="ic">🔌</span><span>API เชื่อมระบบภายนอก</span></li>
+        <li><span class="ic">📦</span><span>Marketplace plugin/module</span></li>
+        <li><span class="ic">🌍</span><span>Multi-language</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell">
+      <div class="pb-label">MVP Timeline</div>
+      <div class="pb-value"><strong>6–12 เดือน</strong> สำหรับ 1 developer</div>
+    </div>
+    <div class="pb-cell">
+      <div class="pb-label">ความซับซ้อน</div>
+      <div class="pb-value"><strong>สูงมาก</strong> — แนะนำสร้างทีละ module</div>
+    </div>
+    <div class="pb-cell">
+      <div class="pb-label">เริ่มจาก Module ไหน</div>
+      <div class="pb-value"><strong>บัญชี</strong> หรือ <strong>คลังสินค้า</strong> ก่อน</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 02 ACCOUNTING ═══════════ -->
+<div id="acc" class="cat-label">02 — Accounting & Finance</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c1)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบบัญชี-การเงิน</div>
+      <div class="proj-en">Accounting & Finance System</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Desktop</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📒</span><span><strong>ผังบัญชี</strong> (Chart of Accounts)</span></li>
+        <li><span class="ic">✏️</span><span><strong>บันทึกรายการทางบัญชี</strong> (Journal Entry)</span></li>
+        <li><span class="ic">🧾</span><span>ใบแจ้งหนี้ / ใบเสร็จรับเงิน</span></li>
+        <li><span class="ic">💳</span><span>บัญชีลูกหนี้ / เจ้าหนี้</span></li>
+        <li><span class="ic">📊</span><span>งบกำไรขาดทุน, งบดุล</span></li>
+        <li><span class="ic">🏦</span><span>กระทบยอดธนาคาร (Bank Reconciliation)</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🧮</span><span>คำนวณ VAT / ภาษีหัก ณ ที่จ่าย</span></li>
+        <li><span class="ic">📄</span><span>ใบกำกับภาษีอย่างย่อ / เต็มรูปแบบ</span></li>
+        <li><span class="ic">📅</span><span>งบกระแสเงินสด</span></li>
+        <li><span class="ic">📤</span><span>Export Excel / PDF ทุกรายงาน</span></li>
+        <li><span class="ic">🔔</span><span>แจ้งเตือนใบแจ้งหนี้ใกล้ครบกำหนด</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🏛️</span><span>ยื่น VAT ออนไลน์ (เชื่อม RD)</span></li>
+        <li><span class="ic">🏦</span><span>Import statement จากธนาคารอัตโนมัติ</span></li>
+        <li><span class="ic">📈</span><span>Financial forecast / Budget planning</span></li>
+        <li><span class="ic">🔄</span><span>Multi-period closing</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell">
+      <div class="pb-label">MVP Timeline</div>
+      <div class="pb-value"><strong>3–5 เดือน</strong></div>
+    </div>
+    <div class="pb-cell">
+      <div class="pb-label">ความรู้ที่ต้องมี</div>
+      <div class="pb-value"><strong>หลักบัญชีคู่</strong> ต้องเข้าใจดี</div>
+    </div>
+    <div class="pb-cell">
+      <div class="pb-label">โอกาสสร้างรายได้</div>
+      <div class="pb-value"><strong>สูง</strong> — SME ต้องการมาก</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 03 PROCUREMENT ═══════════ -->
+<div id="proc" class="cat-label">03 — Procurement</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c2)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบจัดซื้อจัดจ้าง</div>
+      <div class="proj-en">Procurement System</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📝</span><span><strong>ใบขอซื้อ (PR)</strong> พร้อม workflow</span></li>
+        <li><span class="ic">📋</span><span><strong>ใบสั่งซื้อ (PO)</strong> และติดตามสถานะ</span></li>
+        <li><span class="ic">✅</span><span>การรับสินค้า (Goods Receipt)</span></li>
+        <li><span class="ic">🏢</span><span>ทะเบียนผู้ขาย (Vendor Master)</span></li>
+        <li><span class="ic">🔐</span><span>Approval workflow หลายระดับ</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">⚖️</span><span>เปรียบเทียบใบเสนอราคา (RFQ)</span></li>
+        <li><span class="ic">📊</span><span>รายงานการจัดซื้อรายเดือน/ปี</span></li>
+        <li><span class="ic">🔔</span><span>แจ้งเตือน PO ค้างส่ง</span></li>
+        <li><span class="ic">📱</span><span>Approve ผ่าน mobile ได้</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📧</span><span>ส่ง PO ทาง email ให้ผู้ขายอัตโนมัติ</span></li>
+        <li><span class="ic">🤝</span><span>Vendor portal (ผู้ขาย login ดูออเดอร์ได้)</span></li>
+        <li><span class="ic">📈</span><span>Price history / spending analysis</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>2–3 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Core Pattern</div><div class="pb-value"><strong>State machine</strong> ของสถานะเอกสาร</div></div>
+    <div class="pb-cell"><div class="pb-label">ขายคู่กับ</div><div class="pb-value"><strong>ERP หรือ WMS</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 04 HRM ═══════════ -->
+<div id="hrm" class="cat-label">04 — Human Resource Management</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c2)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบ HRM / HRIS</div>
+      <div class="proj-en">Human Resource Management System</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">👤</span><span><strong>ข้อมูลพนักงาน</strong> ครบถ้วน</span></li>
+        <li><span class="ic">🕐</span><span><strong>ระบบลงเวลา</strong> เข้า-ออก</span></li>
+        <li><span class="ic">🏖️</span><span><strong>ระบบลา</strong> พร้อม approve</span></li>
+        <li><span class="ic">💰</span><span><strong>คำนวณเงินเดือน</strong> และสลิป</span></li>
+        <li><span class="ic">📄</span><span>โครงสร้างองค์กร (Org Chart)</span></li>
+        <li><span class="ic">🔒</span><span>สิทธิ์เข้าถึงข้อมูลตาม PDPA</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📊</span><span>ประเมินผลงาน (Performance Review)</span></li>
+        <li><span class="ic">🎓</span><span>บันทึกการฝึกอบรม</span></li>
+        <li><span class="ic">📅</span><span>ปฏิทินวันหยุดบริษัท</span></li>
+        <li><span class="ic">📱</span><span>Check-in ผ่าน GPS / Face recognition</span></li>
+        <li><span class="ic">📤</span><span>Export สลิปเงินเดือน PDF</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🤝</span><span>Recruitment / ATS module</span></li>
+        <li><span class="ic">🎯</span><span>OKR / Goal tracking</span></li>
+        <li><span class="ic">🏅</span><span>ระบบ reward และ recognition</span></li>
+        <li><span class="ic">📈</span><span>Turnover rate analytics</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>3–4 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">ระวัง</div><div class="pb-value"><strong>PDPA</strong> ข้อมูลอ่อนไหว</div></div>
+    <div class="pb-cell"><div class="pb-label">Pricing</div><div class="pb-value"><strong>per employee/เดือน</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 05 TASK TRACKING ═══════════ -->
+<div id="task" class="cat-label">05 — Task Tracking</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c3)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบติดตามงาน</div>
+      <div class="proj-en">Task / Project Tracking</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Desktop</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📋</span><span><strong>สร้าง/มอบหมาย Task</strong> ได้</span></li>
+        <li><span class="ic">🗂️</span><span><strong>Kanban Board</strong> drag & drop</span></li>
+        <li><span class="ic">📅</span><span>กำหนด due date และ priority</span></li>
+        <li><span class="ic">👥</span><span>ระบบ Project / Team</span></li>
+        <li><span class="ic">💬</span><span>Comment บน task</span></li>
+        <li><span class="ic">🔔</span><span>แจ้งเตือน task ที่ถูก assign</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📊</span><span>Dashboard ความคืบหน้า project</span></li>
+        <li><span class="ic">🏷️</span><span>Label / Tag สำหรับกรอง</span></li>
+        <li><span class="ic">📎</span><span>แนบไฟล์ใน task</span></li>
+        <li><span class="ic">📈</span><span>Burndown chart / velocity</span></li>
+        <li><span class="ic">🔄</span><span>Subtask (งานย่อย)</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📅</span><span>Gantt chart view</span></li>
+        <li><span class="ic">⏱️</span><span>Time tracking / logging</span></li>
+        <li><span class="ic">🤖</span><span>AI suggest ผู้รับผิดชอบ</span></li>
+        <li><span class="ic">🔌</span><span>Webhook / Slack integration</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>1–2 เดือน</strong> — เริ่มง่าย</div></div>
+    <div class="pb-cell"><div class="pb-label">Tech ต้องใช้</div><div class="pb-value"><strong>WebSocket</strong> real-time sync</div></div>
+    <div class="pb-cell"><div class="pb-label">Strategy</div><div class="pb-value"><strong>Niche อุตสาหกรรม</strong> เช่น โรงพยาบาล</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 06 LOGISTICS ═══════════ -->
+<div id="logi" class="cat-label">06 — Logistics Tracking</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c4)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบติดตามสินค้า/ขนส่ง</div>
+      <div class="proj-en">Logistics & Delivery Tracking</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📦</span><span><strong>สร้าง Job/พัสดุ</strong> พร้อม tracking no.</span></li>
+        <li><span class="ic">🗺️</span><span><strong>แสดงตำแหน่งบนแผนที่</strong> real-time</span></li>
+        <li><span class="ic">📍</span><span>อัปเดตสถานะการจัดส่ง</span></li>
+        <li><span class="ic">📱</span><span>แอปคนขับ — รับงาน/ยืนยันส่ง</span></li>
+        <li><span class="ic">🔍</span><span>หน้า tracking สาธารณะสำหรับลูกค้า</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📷</span><span>ถ่ายรูปยืนยันการส่ง (POD)</span></li>
+        <li><span class="ic">✍️</span><span>ลายเซ็นดิจิทัลบนมือถือ</span></li>
+        <li><span class="ic">🔔</span><span>SMS/LINE แจ้งลูกค้าเมื่อส่งแล้ว</span></li>
+        <li><span class="ic">📊</span><span>รายงานรอบการจัดส่งรายวัน</span></li>
+        <li><span class="ic">🌍</span><span>Geofence แจ้งเตือนเข้า-ออกพื้นที่</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🛣️</span><span>Route optimization อัตโนมัติ</span></li>
+        <li><span class="ic">⛽</span><span>ติดตามการใช้เชื้อเพลิง</span></li>
+        <li><span class="ic">📈</span><span>วิเคราะห์พฤติกรรมการขับ</span></li>
+        <li><span class="ic">🤖</span><span>AI วางแผนเส้นทางล่วงหน้า</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>2–3 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Tech หลัก</div><div class="pb-value"><strong>GPS + WebSocket + Maps API</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Pricing</div><div class="pb-value"><strong>per trip / per vehicle</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 07 WMS ═══════════ -->
+<div id="wms" class="cat-label">07 — Warehouse Management</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c3)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบบริหารคลังสินค้า</div>
+      <div class="proj-en">Warehouse Management System (WMS)</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📥</span><span><strong>รับสินค้าเข้า</strong> (Goods Receipt)</span></li>
+        <li><span class="ic">📤</span><span><strong>เบิกสินค้าออก</strong> (Goods Issue)</span></li>
+        <li><span class="ic">📊</span><span><strong>ดูยอดคงเหลือ</strong> real-time</span></li>
+        <li><span class="ic">📱</span><span>สแกน Barcode / QR code</span></li>
+        <li><span class="ic">🔢</span><span>นับสต๊อก (Stock Count)</span></li>
+        <li><span class="ic">⚠️</span><span>แจ้งเตือนสินค้าใกล้หมด</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📍</span><span>จัดการตำแหน่ง Location ในคลัง</span></li>
+        <li><span class="ic">📦</span><span>จัดการ Lot / Serial Number</span></li>
+        <li><span class="ic">📅</span><span>ติดตามวันหมดอายุสินค้า</span></li>
+        <li><span class="ic">🔄</span><span>โอนย้ายสินค้าระหว่างคลัง</span></li>
+        <li><span class="ic">📊</span><span>รายงานสต๊อกการ์ด</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🤖</span><span>Auto reorder เมื่อต่ำกว่า minimum</span></li>
+        <li><span class="ic">📈</span><span>Demand forecasting</span></li>
+        <li><span class="ic">🔌</span><span>เชื่อม E-commerce อัตโนมัติ</span></li>
+        <li><span class="ic">🗺️</span><span>Warehouse map layout</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>2–3 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">ระวัง</div><div class="pb-value"><strong>Concurrent update</strong> — หลายคนเบิกพร้อมกัน</div></div>
+    <div class="pb-cell"><div class="pb-label">Target</div><div class="pb-value"><strong>โรงงาน / 3PL / ร้านค้า</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 08 CMMS ═══════════ -->
+<div id="cmms" class="cat-label">08 — Maintenance (CMMS)</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c4)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบบำรุงรักษา</div>
+      <div class="proj-en">Computerized Maintenance Management System</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">⚙️</span><span><strong>ทะเบียนเครื่องจักร / อุปกรณ์</strong></span></li>
+        <li><span class="ic">🔧</span><span><strong>ใบแจ้งซ่อม</strong> (Work Order)</span></li>
+        <li><span class="ic">📅</span><span><strong>แผนบำรุงรักษาเชิงป้องกัน</strong> (PM)</span></li>
+        <li><span class="ic">📋</span><span>ประวัติการซ่อมแต่ละเครื่อง</span></li>
+        <li><span class="ic">📱</span><span>สแกน QR ติดเครื่องเพื่อดูประวัติ</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📦</span><span>จัดการอะไหล่ / spare parts</span></li>
+        <li><span class="ic">👨‍🔧</span><span>มอบหมายช่างและติดตามงาน</span></li>
+        <li><span class="ic">📊</span><span>รายงาน MTTR / MTBF</span></li>
+        <li><span class="ic">🔔</span><span>แจ้งเตือนถึงเวลาทำ PM</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📡</span><span>IoT sensor เชื่อมตรง</span></li>
+        <li><span class="ic">🤖</span><span>Predictive maintenance (AI)</span></li>
+        <li><span class="ic">💰</span><span>คำนวณต้นทุนการซ่อม</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>2–3 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Target</div><div class="pb-value"><strong>โรงงาน / รพ. / อาคาร</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Niche</div><div class="pb-value"><strong>ตลาดแข่งน้อย</strong> ในไทย</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 09 CRM ═══════════ -->
+<div id="crm" class="cat-label">09 — CRM</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c5)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบ CRM</div>
+      <div class="proj-en">Customer Relationship Management</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">👥</span><span><strong>ข้อมูลลูกค้า</strong> และประวัติติดต่อ</span></li>
+        <li><span class="ic">🎯</span><span><strong>Pipeline การขาย</strong> แบบ visual</span></li>
+        <li><span class="ic">📝</span><span>บันทึก Activity (โทร/นัด/อีเมล)</span></li>
+        <li><span class="ic">💼</span><span>จัดการ Deal / Opportunity</span></li>
+        <li><span class="ic">🔔</span><span>แจ้งเตือน follow-up</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📊</span><span>Dashboard ยอดขาย, conversion rate</span></li>
+        <li><span class="ic">🏷️</span><span>Tag / Segment ลูกค้า</span></li>
+        <li><span class="ic">📧</span><span>ส่ง email จากระบบได้</span></li>
+        <li><span class="ic">📈</span><span>Forecast รายได้</span></li>
+        <li><span class="ic">📱</span><span>Mobile app สำหรับ sales</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">💬</span><span>LINE / WhatsApp integration</span></li>
+        <li><span class="ic">🤖</span><span>AI score lead อัตโนมัติ</span></li>
+        <li><span class="ic">📋</span><span>ออกใบเสนอราคาจากระบบ</span></li>
+        <li><span class="ic">🔌</span><span>เชื่อม marketing automation</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>2–3 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Niche ที่ดี</div><div class="pb-value"><strong>อสังหาริมทรัพย์, ประกัน, B2B</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Pricing</div><div class="pb-value"><strong>per seat/เดือน</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 10 POS ═══════════ -->
+<div id="pos" class="cat-label">10 — Point of Sale</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c6)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบขายหน้าร้าน (POS)</div>
+      <div class="proj-en">Point of Sale System</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Desktop</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🛒</span><span><strong>หน้าขาย</strong> เพิ่ม/ลบสินค้า ราคาเร็ว</span></li>
+        <li><span class="ic">💳</span><span><strong>ชำระเงิน</strong> เงินสด / QR PromptPay</span></li>
+        <li><span class="ic">🖨️</span><span><strong>พิมพ์ใบเสร็จ</strong> thermal printer</span></li>
+        <li><span class="ic">📦</span><span>ตัดสต๊อกอัตโนมัติเมื่อขาย</span></li>
+        <li><span class="ic">📊</span><span>รายงานยอดขายรายวัน</span></li>
+        <li><span class="ic">🔌</span><span>ทำงานได้เมื่อ internet หลุด (offline)</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🎁</span><span>ส่วนลด / โปรโมชั่น / คูปอง</span></li>
+        <li><span class="ic">⭐</span><span>ระบบแต้มสะสม / membership</span></li>
+        <li><span class="ic">💳</span><span>รับบัตรเครดิต (EDC integration)</span></li>
+        <li><span class="ic">🔄</span><span>คืนสินค้า / Void รายการ</span></li>
+        <li><span class="ic">📱</span><span>จัดการสินค้าผ่าน tablet</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🪑</span><span>Table management (ร้านอาหาร)</span></li>
+        <li><span class="ic">🔢</span><span>Kitchen display system</span></li>
+        <li><span class="ic">📈</span><span>สินค้าขายดี / วิเคราะห์พฤติกรรม</span></li>
+        <li><span class="ic">🔌</span><span>เชื่อม e-commerce หน้าร้าน + ออนไลน์</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>2–3 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">ต้องแก้</div><div class="pb-value"><strong>Offline-first</strong> คือหัวใจหลัก</div></div>
+    <div class="pb-cell"><div class="pb-label">Pricing</div><div class="pb-value"><strong>รายเดือน + ค่า hardware</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 11 E-COMMERCE ═══════════ -->
+<div id="ecom" class="cat-label">11 — E-commerce</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c7)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบ E-commerce</div>
+      <div class="proj-en">Online Store / Marketplace</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🛍️</span><span><strong>หน้าแสดงสินค้า</strong> + รูปภาพ + ราคา</span></li>
+        <li><span class="ic">🛒</span><span><strong>ตะกร้าสินค้า</strong> และ checkout</span></li>
+        <li><span class="ic">💳</span><span><strong>ชำระเงิน</strong> (PromptPay / บัตร)</span></li>
+        <li><span class="ic">📦</span><span>จัดการออเดอร์และสถานะ</span></li>
+        <li><span class="ic">📧</span><span>ยืนยันออเดอร์ทาง email</span></li>
+        <li><span class="ic">🔒</span><span>ระบบสมาชิก / login</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🔍</span><span>ค้นหาและกรองสินค้า</span></li>
+        <li><span class="ic">⭐</span><span>รีวิวสินค้า</span></li>
+        <li><span class="ic">🎁</span><span>คูปอง / โปรโมชั่น</span></li>
+        <li><span class="ic">📦</span><span>เชื่อมขนส่ง / คำนวณค่าส่ง</span></li>
+        <li><span class="ic">📊</span><span>Admin dashboard ยอดขาย</span></li>
+        <li><span class="ic">🖼️</span><span>จัดการสินค้าผ่าน admin panel</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🤖</span><span>AI แนะนำสินค้า (Recommendation)</span></li>
+        <li><span class="ic">📱</span><span>Progressive Web App (PWA)</span></li>
+        <li><span class="ic">🏪</span><span>Multi-vendor marketplace</span></li>
+        <li><span class="ic">🌐</span><span>SEO-optimized product pages</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>3–4 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">ระวัง</div><div class="pb-value"><strong>Inventory lock</strong> ขณะชำระเงิน</div></div>
+    <div class="pb-cell"><div class="pb-label">SEO</div><div class="pb-value"><strong>Next.js SSR</strong> สำคัญมาก</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 12 HELPDESK ═══════════ -->
+<div id="help" class="cat-label">12 — Helpdesk</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c8)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบบริการลูกค้า</div>
+      <div class="proj-en">Helpdesk / Ticketing System</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Mobile</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🎫</span><span><strong>สร้าง Ticket</strong> และติดตามสถานะ</span></li>
+        <li><span class="ic">📨</span><span><strong>รับ Ticket ผ่าน email</strong> อัตโนมัติ</span></li>
+        <li><span class="ic">👤</span><span>มอบหมายให้เจ้าหน้าที่</span></li>
+        <li><span class="ic">💬</span><span>ตอบกลับภายใน ticket thread</span></li>
+        <li><span class="ic">⏱️</span><span><strong>SLA timer</strong> และแจ้งเตือนเกินเวลา</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🏷️</span><span>หมวดหมู่และ Tag ticket</span></li>
+        <li><span class="ic">📊</span><span>รายงาน CSAT, First response time</span></li>
+        <li><span class="ic">📚</span><span>Knowledge base / FAQ</span></li>
+        <li><span class="ic">🔔</span><span>แจ้งเตือนลูกค้าเมื่อมีการอัปเดต</span></li>
+        <li><span class="ic">⚡</span><span>Escalation อัตโนมัติเมื่อเกิน SLA</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">💬</span><span>Live chat real-time</span></li>
+        <li><span class="ic">🤖</span><span>AI draft คำตอบอัตโนมัติ</span></li>
+        <li><span class="ic">📱</span><span>LINE OA / WhatsApp integration</span></li>
+        <li><span class="ic">📞</span><span>Call center integration</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>1–2 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Core Pattern</div><div class="pb-value"><strong>State machine + SLA timer</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Pricing</div><div class="pb-value"><strong>per agent/เดือน</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 13 BI ═══════════ -->
+<div id="bi" class="cat-label">13 — Business Intelligence</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c9)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบรายงานผู้บริหาร</div>
+      <div class="proj-en">Business Intelligence / Dashboard</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Desktop</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📊</span><span><strong>กราฟ KPI หลัก</strong> ของธุรกิจ</span></li>
+        <li><span class="ic">📅</span><span>กรองข้อมูลตามช่วงเวลา</span></li>
+        <li><span class="ic">🔄</span><span>ดึงข้อมูลจากระบบหลัก (API/DB)</span></li>
+        <li><span class="ic">📤</span><span>Export รายงานเป็น Excel/PDF</span></li>
+        <li><span class="ic">👤</span><span>สิทธิ์ดูข้อมูลตาม role</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🔔</span><span>แจ้งเตือนเมื่อ KPI ต่ำกว่า target</span></li>
+        <li><span class="ic">📈</span><span>Trend / เปรียบเทียบกับช่วงก่อน</span></li>
+        <li><span class="ic">🗓️</span><span>Schedule ส่งรายงานอัตโนมัติ</span></li>
+        <li><span class="ic">🔍</span><span>Drill-down ลงรายละเอียดได้</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🎛️</span><span>Drag & drop สร้าง dashboard เอง</span></li>
+        <li><span class="ic">🤖</span><span>AI สรุป insight อัตโนมัติ</span></li>
+        <li><span class="ic">📡</span><span>Real-time streaming data</span></li>
+        <li><span class="ic">🔮</span><span>Predictive analytics</span></div>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>1–2 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">เหมาะสุด</div><div class="pb-value"><strong>Add-on premium tier</strong> ของระบบอื่น</div></div>
+    <div class="pb-cell"><div class="pb-label">Tech</div><div class="pb-value"><strong>Recharts + Redis cache</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 14 DMS ═══════════ -->
+<div id="dms" class="cat-label">14 — Document Management</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c10)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบจัดการเอกสาร</div>
+      <div class="proj-en">Document Management System (DMS)</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span><span class="ptag">Desktop</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📁</span><span><strong>โครงสร้าง folder</strong> แบบลำดับชั้น</span></li>
+        <li><span class="ic">⬆️</span><span><strong>อัปโหลดไฟล์</strong> ทุกประเภท</span></li>
+        <li><span class="ic">🔐</span><span><strong>กำหนดสิทธิ์</strong> ดู/แก้ไข/ลบ ต่อโฟลเดอร์</span></li>
+        <li><span class="ic">🔢</span><span><strong>Version control</strong> ไฟล์</span></li>
+        <li><span class="ic">🔍</span><span>ค้นหาชื่อไฟล์และ metadata</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🔤</span><span>Full-text search ในเนื้อหาเอกสาร</span></li>
+        <li><span class="ic">📋</span><span>Audit log ว่าใครเปิดไฟล์เมื่อไร</span></li>
+        <li><span class="ic">🔗</span><span>แชร์ลิงก์ชั่วคราว (expiry link)</span></li>
+        <li><span class="ic">🏷️</span><span>Tag และ metadata ไฟล์</span></li>
+        <li><span class="ic">📱</span><span>Preview PDF/รูปภาพในเบราว์เซอร์</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📝</span><span>OCR สำหรับเอกสารสแกน</span></li>
+        <li><span class="ic">✍️</span><span>E-signature integration</span></li>
+        <li><span class="ic">🤖</span><span>AI summarize เอกสาร</span></li>
+        <li><span class="ic">🔌</span><span>Sync กับ Google Drive / OneDrive</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>2–3 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Storage</div><div class="pb-value"><strong>S3 / MinIO</strong> (self-host ฟรี)</div></div>
+    <div class="pb-cell"><div class="pb-label">Pricing</div><div class="pb-value"><strong>per GB storage + users</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ 15 IAM ═══════════ -->
+<div id="iam" class="cat-label">15 — Identity & Access Management</div>
+<div class="proj-block">
+  <div class="proj-header">
+    <div class="proj-color-bar" style="background:var(--c11)"></div>
+    <div class="proj-info">
+      <div class="proj-name">ระบบควบคุมสิทธิ์การเข้าถึง</div>
+      <div class="proj-en">Identity & Access Management (IAM)</div>
+    </div>
+    <div class="proj-platforms">
+      <span class="ptag">Web</span>
+    </div>
+  </div>
+  <div class="feat-layout">
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot must"></span>Must Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🔐</span><span><strong>ระบบ login</strong> email/password</span></li>
+        <li><span class="ic">👤</span><span><strong>จัดการผู้ใช้</strong> สร้าง/แก้ไข/ระงับ</span></li>
+        <li><span class="ic">🛡️</span><span><strong>RBAC</strong> Role กำหนด Permission</span></li>
+        <li><span class="ic">🔑</span><span>Reset password / ลืมรหัสผ่าน</span></li>
+        <li><span class="ic">📋</span><span>Audit log การ login และ action</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot should"></span>Should Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">📱</span><span>Two-Factor Authentication (2FA)</span></li>
+        <li><span class="ic">🔗</span><span>SSO — Login ครั้งเดียวใช้ทุก app</span></li>
+        <li><span class="ic">🌐</span><span>Login ด้วย Google / LINE</span></li>
+        <li><span class="ic">⏱️</span><span>Session timeout และ force logout</span></li>
+        <li><span class="ic">🚫</span><span>Rate limiting ป้องกัน brute force</span></li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-title"><span class="dot nice"></span>Nice to Have</div>
+      <ul class="feat-list">
+        <li><span class="ic">🏢</span><span>Organization-level isolation</span></li>
+        <li><span class="ic">🔌</span><span>SAML / LDAP / Active Directory</span></li>
+        <li><span class="ic">🔒</span><span>Passwordless (magic link / passkey)</span></li>
+        <li><span class="ic">🌍</span><span>IP whitelist / geolocation lock</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-bottom">
+    <div class="pb-cell"><div class="pb-label">MVP Timeline</div><div class="pb-value"><strong>1–2 เดือน</strong></div></div>
+    <div class="pb-cell"><div class="pb-label">Alt</div><div class="pb-value"><strong>Keycloak / Authentik</strong> self-host ฟรี</div></div>
+    <div class="pb-cell"><div class="pb-label">หัวใจ</div><div class="pb-value"><strong>Security first</strong> ไม่มีข้อยกเว้น</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ ENTERPRISE SYSTEMS OVERVIEW ═══════════ -->
+<style>
+.ov-section { margin-top: 80px; margin-bottom: 64px; }
+.ov-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(26px, 3.5vw, 42px);
+  letter-spacing: -.02em;
+  margin-bottom: 10px;
+}
+.ov-title em { font-style: normal; background: linear-gradient(90deg,#a9e34b,#63e6be); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.ov-sub { font-size: 14px; color: var(--muted); margin-bottom: 36px; max-width: 520px; line-height: 1.7; }
+
+.ov-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+.ov-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color .15s, transform .15s;
+}
+.ov-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+
+.ov-card-top { display: flex; align-items: flex-start; gap: 12px; }
+.ov-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--dim);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.ov-card-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+.ov-card-en {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--dim);
+}
+.ov-card-desc { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.ov-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.ov-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  padding: 2px 7px;
+  border: 1px solid var(--border2);
+  color: var(--dim);
+  border-radius: 2px;
+}
+.ov-tag.web { border-color: rgba(77,171,247,.3); color: #4dabf7; }
+.ov-tag.mobile { border-color: rgba(255,212,59,.3); color: #ffd43b; }
+.ov-tag.desktop { border-color: rgba(169,227,75,.3); color: #a9e34b; }
+.ov-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ov-timeline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--dim);
+}
+.ov-timeline strong { color: var(--text); }
+.diff-bar { display: flex; gap: 3px; }
+.diff-dot { width: 8px; height: 8px; border-radius: 2px; }
+.diff-dot.on { background: var(--text); }
+.diff-dot.off { background: var(--border2); }
+
+/* category divider */
+.ov-cat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 28px 0 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ov-cat-label::before { content: '//'; }
+</style>
+
+<div class="ov-section">
+  <div class="kicker" style="margin-bottom:14px;">Enterprise Systems — Project Overview</div>
+  <div class="ov-title">หัวข้อโปรเจ็ค<br><em>Enterprise Systems</em></div>
+  <p class="ov-sub">ภาพรวมทุกโปรเจ็คในระบบองค์กร พร้อม platform, ระดับความยาก และ timeline สำหรับวางแผนก่อนเริ่มพัฒนา</p>
+
+  <!-- CAT 01 -->
+  <div class="ov-cat-label">01 — ระบบบริหารทรัพยากรองค์กร</div>
+  <div class="ov-grid">
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">01</span>
+        <div>
+          <div class="ov-card-name">ระบบ ERP</div>
+          <div class="ov-card-en">Enterprise Resource Planning</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">เชื่อมบัญชี คลังสินค้า จัดซื้อ และ HR ไว้ในที่เดียว ลดความซ้ำซ้อนของข้อมูลทั่วองค์กร</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag desktop">Desktop</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>6–12 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 5/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">02</span>
+        <div>
+          <div class="ov-card-name">ระบบบัญชี-การเงิน</div>
+          <div class="ov-card-en">Accounting & Finance</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">บันทึกรายรับ-รายจ่าย ออกใบกำกับภาษี สรุปงบการเงิน และกระทบยอดธนาคารอัตโนมัติ</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag desktop">Desktop</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>3–5 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 4/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">03</span>
+        <div>
+          <div class="ov-card-name">ระบบจัดซื้อจัดจ้าง</div>
+          <div class="ov-card-en">Procurement System</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">ออกใบขอซื้อ ใบสั่งซื้อ เปรียบเทียบราคาผู้ขาย พร้อม workflow อนุมัติหลายระดับ</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>2–3 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 3/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">04</span>
+        <div>
+          <div class="ov-card-name">ระบบ HRM / HRIS</div>
+          <div class="ov-card-en">Human Resource Management</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">ข้อมูลพนักงาน เงินเดือน สวัสดิการ ลา-มาสาย ประเมินผล ครอบคลุม PDPA</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>3–4 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 3/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CAT 02 -->
+  <div class="ov-cat-label">02 — ระบบติดตามและปฏิบัติการ</div>
+  <div class="ov-grid">
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">05</span>
+        <div>
+          <div class="ov-card-name">ระบบติดตามงาน</div>
+          <div class="ov-card-en">Task / Project Tracking</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">มอบหมายงาน Kanban board ติดตามความคืบหน้า กำหนดเส้นตาย แจ้งเตือนทีมงาน real-time</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag desktop">Desktop</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>1–2 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 2/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">06</span>
+        <div>
+          <div class="ov-card-name">ระบบติดตามสินค้า/ขนส่ง</div>
+          <div class="ov-card-en">Logistics Tracking</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">ติดตามสถานะการจัดส่ง ตำแหน่งยานพาหนะ GPS real-time แจ้งเตือนลูกค้าปลายทางอัตโนมัติ</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>2–3 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 4/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">07</span>
+        <div>
+          <div class="ov-card-name">ระบบบริหารคลังสินค้า</div>
+          <div class="ov-card-en">Warehouse Management (WMS)</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">รับ-เบิกสินค้า สแกน barcode นับสต๊อก จัดตำแหน่งในคลัง ติดตาม lot/serial number</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>2–3 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 3/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">08</span>
+        <div>
+          <div class="ov-card-name">ระบบบำรุงรักษา</div>
+          <div class="ov-card-en">Maintenance / CMMS</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">วางแผนซ่อมบำรุงเชิงป้องกัน แจ้งซ่อม ติดตามช่าง บันทึกประวัติและค่าใช้จ่าย</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>2–3 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 2/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CAT 03 -->
+  <div class="ov-cat-label">03 — ระบบลูกค้าและการขาย</div>
+  <div class="ov-grid">
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">09</span>
+        <div>
+          <div class="ov-card-name">ระบบ CRM</div>
+          <div class="ov-card-en">Customer Relationship Management</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">บันทึกข้อมูลลูกค้า ประวัติการติดต่อ sales pipeline โอกาสการขาย และวิเคราะห์พฤติกรรม</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>2–3 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 2/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">10</span>
+        <div>
+          <div class="ov-card-name">ระบบขายหน้าร้าน (POS)</div>
+          <div class="ov-card-en">Point of Sale</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">บันทึกการขาย ออกใบเสร็จ จัดการส่วนลด เชื่อมสต๊อก ทำงานได้แม้ไม่มีอินเทอร์เน็ต</p>
+      <div class="ov-tags">
+        <span class="ov-tag desktop">Desktop</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>2–3 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 3/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">11</span>
+        <div>
+          <div class="ov-card-name">ระบบ E-commerce</div>
+          <div class="ov-card-en">Online Store</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">หน้าร้านออนไลน์ ตะกร้าสินค้า ชำระเงิน จัดการออเดอร์ SEO-ready รองรับ multi-vendor</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>3–4 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 3/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">12</span>
+        <div>
+          <div class="ov-card-name">ระบบบริการลูกค้า</div>
+          <div class="ov-card-en">Helpdesk / Ticketing</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">รับเรื่องร้องเรียน ติดตาม ticket SLA timer มอบหมายเจ้าหน้าที่ วัดผล CSAT</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag mobile">Mobile</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>1–2 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 2/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CAT 04 -->
+  <div class="ov-cat-label">04 — ระบบข้อมูลและการตัดสินใจ</div>
+  <div class="ov-grid">
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">13</span>
+        <div>
+          <div class="ov-card-name">ระบบรายงานผู้บริหาร</div>
+          <div class="ov-card-en">BI / Dashboard</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">รวบรวมข้อมูลจากหลายระบบ แสดง KPI กราฟ trend เปรียบเทียบ แจ้งเตือนเมื่อต่ำกว่า target</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag desktop">Desktop</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>1–2 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 2/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">14</span>
+        <div>
+          <div class="ov-card-name">ระบบจัดการเอกสาร</div>
+          <div class="ov-card-en">Document Management (DMS)</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">จัดเก็บไฟล์ ค้นหา versioning กำหนดสิทธิ์ แชร์ลิงก์ชั่วคราว audit log การเข้าถึง</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+        <span class="ov-tag desktop">Desktop</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>2–3 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 3/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ov-card">
+      <div class="ov-card-top">
+        <span class="ov-num">15</span>
+        <div>
+          <div class="ov-card-name">ระบบควบคุมสิทธิ์</div>
+          <div class="ov-card-en">Identity & Access Management</div>
+        </div>
+      </div>
+      <p class="ov-card-desc">บริหารบัญชีผู้ใช้ RBAC SSO 2FA audit log ป้องกัน brute force เป็น foundation ของทุกระบบ</p>
+      <div class="ov-tags">
+        <span class="ov-tag web">Web</span>
+      </div>
+      <div class="ov-bottom">
+        <div class="ov-timeline">Timeline <strong>1–2 เดือน</strong></div>
+        <div class="diff-bar" title="ความยาก 3/5">
+          <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot off"></div><div class="diff-dot off"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  <span>// Feature Specification Guide · 15 Enterprise Projects</span>
+  <span>Must Have · Should Have · Nice to Have</span>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สกิลและความรู้ที่ต้องใช้ — รายโปรเจ็ค</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Sarabun:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#11161c;
+    --paper:#f6f4ee;
+    --panel:#ffffff;
+    --line:#d8d3c4;
+    --blue:#1d4fd8;
+    --rust:#b5481f;
+    --green:#3a6b35;
+    --gold:#9c7a1e;
+    --muted:#6b6457;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Sarabun',sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1180px;margin:0 auto;padding:56px 28px 90px;}
+
+  header.hero{border-bottom:3px solid var(--ink);padding-bottom:28px;margin-bottom:46px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--rust);margin-bottom:14px;}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,4vw,48px);line-height:1.1;margin:0 0 14px;letter-spacing:-.01em;}
+  .hero-sub{font-size:15.5px;color:var(--muted);max-width:560px;line-height:1.6;}
+
+  .toc{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 18px;
+    margin:24px 0 50px;
+    padding:16px 18px;
+    border:1px dashed var(--line);
+  }
+  .toc a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);}
+  .toc a:hover{border-color:var(--rust);color:var(--rust);}
+
+  .category{margin-bottom:62px;}
+  .category-head{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;border-bottom:1.5px solid var(--line);padding-bottom:10px;}
+  .cat-num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--rust);}
+  .category-head h2{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:600;margin:0;}
+
+  .proj{
+    background:var(--panel);
+    border:1.5px solid var(--ink);
+    margin-bottom:20px;
+    padding:22px 24px 24px;
+  }
+  .proj-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+    margin-bottom:6px;
+    flex-wrap:wrap;
+  }
+  .proj-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;margin:0;}
+  .proj-en{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin:2px 0 0;}
+  .proj-platforms{display:flex;gap:6px;}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;padding:3px 7px;border-radius:3px;color:#fff;white-space:nowrap;}
+  .tag.web{background:var(--blue);} .tag.desktop{background:var(--ink);} .tag.mobile{background:var(--rust);}
+
+  .skill-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:18px;
+    margin-top:18px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+  }
+  .skill-block h4{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin:0 0 8px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .skill-block h4::before{content:'';width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .skill-block.tech h4{color:var(--blue);}
+  .skill-block.tech h4::before{background:var(--blue);}
+  .skill-block.domain h4{color:var(--gold);}
+  .skill-block.domain h4::before{background:var(--gold);}
+  .skill-block.money h4{color:var(--green);}
+  .skill-block.money h4::before{background:var(--green);}
+
+  .skill-block ul{margin:0;padding-left:18px;font-size:13.3px;line-height:1.65;color:#2c2823;}
+  .skill-block li{margin-bottom:3px;}
+
+  footer{margin-top:50px;padding-top:24px;border-top:1.5px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  @media(max-width:640px){
+    .proj{padding:18px;}
+    .skill-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">System Inventory — Skill Requirement Detail</div>
+    <h1>สกิลและความรู้<br>ที่ต้องใช้ในแต่ละโปรเจ็ค</h1>
+    <p class="hero-sub">แจกแจงทักษะด้านเทคนิค ความรู้เชิงธุรกิจ และมุมมองด้านรายได้ สำหรับ 15 ระบบหลักที่องค์กรควรมี</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#erp">01 ERP</a>
+    <a href="#acc">02 บัญชี-การเงิน</a>
+    <a href="#proc">03 จัดซื้อ</a>
+    <a href="#hr">04 HRM</a>
+    <a href="#task">05 ติดตามงาน</a>
+    <a href="#logi">06 ติดตามขนส่ง</a>
+    <a href="#wms">07 คลังสินค้า</a>
+    <a href="#cmms">08 บำรุงรักษา</a>
+    <a href="#crm">09 CRM</a>
+    <a href="#pos">10 POS</a>
+    <a href="#ecom">11 E-commerce</a>
+    <a href="#help">12 Helpdesk</a>
+    <a href="#bi">13 BI Dashboard</a>
+    <a href="#dms">14 จัดการเอกสาร</a>
+    <a href="#iam">15 IAM</a>
+  </nav>
+
+  <!-- ================= 01 ระบบบริหารทรัพยากรองค์กร ================= -->
+  <section class="category">
+    <div class="category-head"><span class="cat-num">01</span><h2>ระบบบริหารทรัพยากรองค์กร</h2></div>
+
+    <article class="proj" id="erp">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบ ERP</p><p class="proj-en">Enterprise Resource Planning</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag desktop">Desktop</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Database design ระดับซับซ้อน (normalization, transaction integrity)</li>
+          <li>Backend: Node.js/Java/.NET + REST/GraphQL API</li>
+          <li>Module architecture — แยกระบบย่อยแต่เชื่อมข้อมูลกันได้ (microservices หรือ modular monolith)</li>
+          <li>Reporting engine (PDF/Excel export, pivot table)</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>หลักการบัญชีคู่ (double-entry bookkeeping)</li>
+          <li>Workflow อนุมัติเอกสาร (PR/PO/GR) ขององค์กรจริง</li>
+          <li>มาตรฐานภาษีและเอกสารทางการเงินในประเทศที่จะขาย</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>ขายแบบ License รายปี หรือ SaaS subscription ตามจำนวนผู้ใช้</li>
+          <li>คิดค่า implementation/customization แยกจากค่าซอฟต์แวร์</li>
+          <li>ต้นทุน support สูง ต้องคำนวณใน pricing</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="acc">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบบัญชี-การเงิน</p><p class="proj-en">Accounting &amp; Finance</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag desktop">Desktop</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>การคำนวณทางการเงินแม่นยำ (ใช้ Decimal ไม่ใช่ float)</li>
+          <li>Audit log / ห้ามแก้ไขข้อมูลย้อนหลังโดยไม่มีร่องรอย</li>
+          <li>เชื่อมต่อ Bank API หรือไฟล์ statement (CSV/MT940)</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>มาตรฐานบัญชี (TFRS/IFRS) และผังบัญชี</li>
+          <li>ภาษีมูลค่าเพิ่ม ภาษีหัก ณ ที่จ่าย</li>
+          <li>งบการเงิน 3 รูปแบบหลัก: งบดุล งบกำไรขาดทุน กระแสเงินสด</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>เหมาะกับขาย SaaS รายเดือนให้ SME</li>
+          <li>เพิ่มมูลค่าด้วยฟีเจอร์เชื่อมต่อระบบยื่นภาษีออนไลน์</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="proc">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบจัดซื้อจัดจ้าง</p><p class="proj-en">Procurement</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Approval workflow engine (multi-level, conditional routing)</li>
+          <li>Notification system (email/push) สำหรับขั้นตอนอนุมัติ</li>
+          <li>State machine ของสถานะเอกสาร</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>กระบวนการจัดซื้อ: PR → RFQ → PO → GR → Invoice</li>
+          <li>การเปรียบเทียบผู้ขายและเงื่อนไขสัญญา</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>ขายเป็น add-on module ผูกกับ ERP</li>
+          <li>คิดค่าบริการตามปริมาณธุรกรรม (transaction-based)</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="hr">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบ HRM / HRIS</p><p class="proj-en">Human Resource Management</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Cron job/scheduler สำหรับคำนวณเงินเดือนรอบบิล</li>
+          <li>Mobile: GPS/face recognition สำหรับลงเวลา</li>
+          <li>การจัดการไฟล์เอกสาร (สลิปเงินเดือน, สัญญาจ้าง)</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>กฎหมายแรงงาน, ประกันสังคม, กองทุนสำรองเลี้ยงชีพ</li>
+          <li>โครงสร้างเงินเดือนและสูตรคำนวณภาษี ณ ที่จ่าย</li>
+          <li><strong>PDPA</strong> — ข้อมูลพนักงานเป็นข้อมูลส่วนบุคคลอ่อนไหว</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>Pricing แบบ per-employee/เดือน เป็นมาตรฐานตลาด</li>
+        </div></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= 02 ระบบติดตามและปฏิบัติการ ================= -->
+  <section class="category">
+    <div class="category-head"><span class="cat-num">02</span><h2>ระบบติดตามและปฏิบัติการ</h2></div>
+
+    <article class="proj" id="task">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบติดตามงาน</p><p class="proj-en">Task / Project Tracking</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag desktop">Desktop</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Real-time sync (WebSocket) เพื่ออัปเดตสถานะงานทันที</li>
+          <li>Drag-and-drop UI (Kanban board)</li>
+          <li>Offline-first สำหรับ mobile</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>หลัก Agile/Scrum/Kanban</li>
+          <li>การวัดผลงานด้วย KPI/OKR</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>Freemium model — ฟรีสำหรับทีมเล็ก เก็บเงินทีมใหญ่/ฟีเจอร์ขั้นสูง</li>
+          <li>ตลาดแข่งขันสูง ต้องหา niche เฉพาะอุตสาหกรรม</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="logi">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบติดตามสินค้า/ขนส่ง</p><p class="proj-en">Logistics Tracking</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Google Maps/Mapbox API, geofencing</li>
+          <li>GPS tracking แบบ real-time, การจัดการ background location บน mobile</li>
+          <li>Route optimization algorithm พื้นฐาน</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>กระบวนการขนส่งและ last-mile delivery</li>
+          <li>เงื่อนไข SLA การจัดส่ง</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>คิดค่าบริการตามจำนวนพัสดุ/เที่ยววิ่ง (usage-based)</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="wms">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบบริหารคลังสินค้า</p><p class="proj-en">Warehouse Management (WMS)</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Barcode/QR scanning integration บน mobile</li>
+          <li>การจัดการ concurrency เมื่อหลายคนเบิก-รับพร้อมกัน</li>
+          <li>Inventory valuation method (FIFO/LIFO/Avg cost)</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>Flow คลังสินค้า: รับเข้า-จัดเก็บ-หยิบ-แพ็ค-ส่งออก</li>
+          <li>การจัดการ lot/serial number, วันหมดอายุ</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>ขายเป็น module เสริม ERP หรือแยกขาย SaaS ให้ 3PL</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="cmms">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบบำรุงรักษา</p><p class="proj-en">Maintenance / CMMS</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Scheduler สำหรับแผนบำรุงรักษาเชิงป้องกัน (Preventive Maintenance)</li>
+          <li>QR code ติดเครื่องจักร เชื่อมประวัติการซ่อม</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>หลัก Preventive vs Corrective Maintenance</li>
+          <li>พื้นฐานเครื่องจักร/อุปกรณ์ในอุตสาหกรรมเป้าหมาย</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>เหมาะกับขายเฉพาะกลุ่มโรงงาน/อุตสาหกรรม (vertical SaaS)</li>
+        </div></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= 03 ระบบลูกค้าและการขาย ================= -->
+  <section class="category">
+    <div class="category-head"><span class="cat-num">03</span><h2>ระบบลูกค้าและการขาย</h2></div>
+
+    <article class="proj" id="crm">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบ CRM</p><p class="proj-en">Customer Relationship Management</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Pipeline/funnel data model</li>
+          <li>Email/SMS integration (SendGrid, Twilio)</li>
+          <li>Tagging และ segmentation engine</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>Sales funnel และ lead scoring</li>
+          <li>กลยุทธ์ retention/upsell</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>SaaS per-seat pricing เป็นมาตรฐาน</li>
+          <li>เพิ่มรายได้ด้วย integration กับ marketing tools</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="pos">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบขายหน้าร้าน</p><p class="proj-en">Point of Sale (POS)</p></div>
+        <div class="proj-platforms"><span class="tag desktop">Desktop</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Offline-first — ต้องขายได้แม้เน็ตหลุด แล้ว sync ทีหลัง</li>
+          <li>เชื่อมต่อฮาร์ดแวร์: เครื่องพิมพ์ใบเสร็จ, เครื่องรูดบัตร, ลิ้นชักเงินสด</li>
+          <li>Payment gateway integration (พร้อมเพย์/บัตรเครดิต)</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>กฎหมายใบกำกับภาษีอย่างย่อ/เต็มรูป</li>
+          <li>การจัดการส่วนลด โปรโมชั่น แต้มสะสม</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>ขายฮาร์ดแวร์+ซอฟต์แวร์เป็นชุด หรือเก็บค่า transaction fee</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="ecom">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบ E-commerce</p><p class="proj-en">Online Store</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>Payment gateway + webhook handling (Omise, Stripe, 2C2P)</li>
+          <li>SEO และ performance optimization (Core Web Vitals)</li>
+          <li>Cart/checkout state management, inventory lock ขณะชำระเงิน</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>Digital marketing พื้นฐาน (conversion rate, cart abandonment)</li>
+          <li>กฎหมายคุ้มครองผู้บริโภคออนไลน์</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>ขายแพลตฟอร์มให้ร้านค้า (เก็บ % GMV หรือรายเดือน)</li>
+          <li>หรือสร้างร้านขายเองแล้วทำกำไรจากสินค้าโดยตรง</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="help">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบบริการลูกค้า</p><p class="proj-en">Helpdesk / Ticketing</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag mobile">Mobile</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>SLA timer/escalation logic</li>
+          <li>Live chat (WebSocket) และ omnichannel integration (LINE, email)</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>มาตรฐานการวัดผล CSAT/SLA</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>SaaS per-agent pricing</li>
+        </div></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= 04 ระบบข้อมูลและการตัดสินใจ ================= -->
+  <section class="category">
+    <div class="category-head"><span class="cat-num">04</span><h2>ระบบข้อมูลและการตัดสินใจ</h2></div>
+
+    <article class="proj" id="bi">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบรายงานผู้บริหาร</p><p class="proj-en">Business Intelligence / Dashboard</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag desktop">Desktop</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>ETL pipeline พื้นฐาน (ดึง-แปลง-โหลดข้อมูลจากหลายระบบ)</li>
+          <li>Data visualization library (Recharts, D3, Power BI embed)</li>
+          <li>Query optimization สำหรับข้อมูลปริมาณมาก</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>การออกแบบ KPI ที่ตรงกับเป้าหมายธุรกิจจริง</li>
+          <li>หลักสถิติพื้นฐานสำหรับตีความข้อมูล</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>ขายเป็น add-on premium tier ของระบบอื่น</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="dms">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบจัดการเอกสาร</p><p class="proj-en">Document Management (DMS)</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span><span class="tag desktop">Desktop</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>File storage (S3-compatible) + version control ของไฟล์</li>
+          <li>Full-text search (Elasticsearch/OpenSearch)</li>
+          <li>OCR สำหรับเอกสารสแกน</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>มาตรฐานการจัดเก็บเอกสารและระยะเวลาเก็บตามกฎหมาย</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>Pricing ตามพื้นที่จัดเก็บ (storage-based)</li>
+        </div></div>
+      </div>
+    </article>
+
+    <article class="proj" id="iam">
+      <div class="proj-head">
+        <div><p class="proj-name">ระบบควบคุมสิทธิ์การเข้าถึง</p><p class="proj-en">Identity &amp; Access Management</p></div>
+        <div class="proj-platforms"><span class="tag web">Web</span></div>
+      </div>
+      <div class="skill-grid">
+        <div class="skill-block tech"><h4>เทคนิค</h4><ul>
+          <li>OAuth2/OpenID Connect, SAML สำหรับ SSO</li>
+          <li>RBAC/ABAC design — โครงสร้างสิทธิ์ที่ยืดหยุ่น</li>
+          <li>Security hardening: rate limiting, encryption at rest</li>
+        </div></div>
+        <div class="skill-block domain"><h4>ความรู้ธุรกิจ</h4><ul>
+          <li>มาตรฐานความปลอดภัยข้อมูล (ISO 27001 พื้นฐาน)</li>
+        </div></div>
+        <div class="skill-block money"><h4>สร้างรายได้</h4><ul>
+          <li>ขายเป็น infrastructure service ให้ระบบอื่นเชื่อมต่อ (B2B API)</li>
+        </div></div>
+      </div>
+    </article>
+  </section>
+
+  <footer>
+    <span>System Inventory · Skill Requirement Detail</span>
+    <span>Technical · Domain Knowledge · Monetization</span>
+  </footer>
+
+</div>
+</body>
+</html>

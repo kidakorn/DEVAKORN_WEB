@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dev Flow — HTML/CSS/JS + IWS + AS400</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --blue:#0f62fe;--dark:#001141;--cyan:#00b4d8;
+    --green:#24a148;--amber:#f1c21b;--red:#da1e28;
+    --purple:#8a3ffc;--gray:#8d8d8d;
+    --bg:#f4f7ff;--surface:#fff;--border:#dde3f0;
+    --text:#161616;--muted:#525252;
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'IBM Plex Sans Thai',sans-serif;
+  }
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);padding:40px 20px 80px;max-width:1100px;margin:0 auto}
+
+  /* Header */
+  .page-header{text-align:center;margin-bottom:52px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+  h1{font-size:clamp(24px,5vw,42px);font-weight:700;color:var(--dark);line-height:1.2}
+  h1 em{font-style:normal;color:var(--blue)}
+  .subtitle{margin-top:12px;color:var(--muted);font-size:14px;font-weight:300}
+  .meta{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .meta-tag{font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px}
+
+  .section-title{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin:52px 0 20px;display:flex;align-items:center;gap:10px}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+  /* Phase banner */
+  .phase-banner{border-radius:12px;padding:16px 24px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+  .phase-num{font-family:var(--mono);font-size:28px;font-weight:700;opacity:.3;flex-shrink:0}
+  .phase-title{font-size:20px;font-weight:700}
+  .phase-sub{font-size:12.5px;margin-top:3px;opacity:.8}
+  .phase-role{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:auto;flex-shrink:0;white-space:nowrap}
+
+  /* Cards */
+  .card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px}
+  .card-head{padding:16px 22px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#fafcff,#f4f7ff);display:flex;align-items:center;gap:12px}
+  .card-head .icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .card-head h3{font-size:15px;font-weight:700;color:var(--dark)}
+  .card-head .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .card-body{padding:22px}
+
+  /* Steps */
+  .steps{display:flex;flex-direction:column;gap:14px}
+  .step{display:flex;gap:14px;align-items:flex-start}
+  .step-num{width:26px;height:26px;border-radius:50%;color:#fff;font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .step p{font-size:13px;color:var(--muted);line-height:1.8}
+  .step p b{color:var(--text)}
+  .step p code{font-family:var(--mono);font-size:11px;background:#f4f7ff;padding:1px 6px;border-radius:4px;color:var(--text)}
+
+  /* Code */
+  .code-block{background:#0d1117;border-radius:10px;padding:18px 22px;font-family:var(--mono);font-size:12px;line-height:2;overflow-x:auto;margin:12px 0}
+  .code-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin:14px 0 8px;font-weight:700}
+  .c-kw{color:#ff7b72}
+  .c-str{color:#a5d6ff}
+  .c-fn{color:#d2a8ff}
+  .c-tag{color:#7ee787}
+  .c-attr{color:#79c0ff}
+  .c-val{color:#ffa657}
+  .c-comment{color:#8b949e}
+  .c-sel{color:#7ee787}
+  .c-prop{color:#79c0ff}
+  .c-num{color:#f2cc60}
+
+  /* Path tree */
+  .path-tree{background:#0d1117;border-radius:10px;padding:18px 22px;font-family:var(--mono);font-size:12.5px;line-height:2.1;overflow-x:auto}
+  .pt-dir{color:#79c0ff;font-weight:700}
+  .pt-file{color:#e6edf3}
+  .pt-comment{color:#8b949e}
+  .pt-active{color:#56d364;font-weight:700}
+  .pt-url{color:#ffa657}
+
+  /* Flow */
+  .flow-wrap{background:var(--dark);border-radius:14px;padding:28px;margin:16px 0;overflow-x:auto}
+  .flow{display:flex;flex-direction:column;align-items:center;gap:0;min-width:600px}
+  .flow-row{display:flex;align-items:stretch;justify-content:center;gap:10px;width:100%}
+  .flow-box{padding:10px 16px;border-radius:8px;font-family:var(--mono);font-size:11.5px;font-weight:700;text-align:center;border:1.5px solid transparent;min-width:140px}
+  .flow-box small{display:block;font-weight:400;font-size:10px;margin-top:2px;opacity:.8}
+  .flow-arrow{color:rgba(255,255,255,.3);font-size:20px;display:flex;align-items:center;padding:0 4px}
+  .flow-down{color:rgba(255,255,255,.3);font-size:22px;text-align:center;width:100%;margin:2px 0;line-height:1}
+  .flow-label{font-size:10px;color:rgba(255,255,255,.4);font-family:var(--mono);text-align:center;width:100%;margin-bottom:4px}
+
+  /* Grid */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  @media(max-width:700px){.grid-2{grid-template-columns:1fr}}
+
+  /* Info box */
+  .info-box{border-radius:10px;padding:14px 18px;margin:12px 0}
+  .info-box.blue{background:#eff4ff;border:1.5px solid #c7d7ff}
+  .info-box.green{background:#f0faf4;border:1.5px solid #b8e6c8}
+  .info-box.amber{background:#fffbeb;border:1.5px solid #fde68a}
+  .info-box.red{background:#fff0f0;border:1.5px solid #fecaca}
+  .info-box h4{font-size:13px;font-weight:700;margin-bottom:8px}
+  .info-box.blue h4{color:var(--blue)}
+  .info-box.green h4{color:var(--green)}
+  .info-box.amber h4{color:#92400e}
+  .info-box.red h4{color:var(--red)}
+  .info-box ul{list-style:none;display:flex;flex-direction:column;gap:4px}
+  .info-box ul li{font-size:12.5px;color:var(--muted);display:flex;gap:8px;line-height:1.7}
+  .info-box ul li::before{content:'›';font-weight:700;flex-shrink:0}
+  .info-box.blue ul li::before{color:var(--blue)}
+  .info-box.green ul li::before{color:var(--green)}
+  .info-box.amber ul li::before{color:#d97706}
+  .info-box p{font-size:12.5px;color:var(--muted);line-height:1.7}
+
+  /* Checklist */
+  .cl-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:7px;border:1.5px solid var(--border);cursor:pointer;font-size:12.5px;color:var(--text);transition:background .15s;user-select:none;margin-bottom:6px}
+  .cl-item:hover{background:#f4f7ff}
+  .cl-item.done{background:#f0faf4;border-color:#b8e6c8;color:var(--muted);text-decoration:line-through}
+  .cl-cbox{width:16px;height:16px;border-radius:4px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;transition:all .15s}
+  .cl-item.done .cl-cbox{background:var(--green);border-color:var(--green);color:#fff}
+  .cl-tag{font-family:var(--mono);font-size:9px;padding:1px 7px;border-radius:10px;margin-left:auto;flex-shrink:0;font-weight:700}
+
+  /* Progress */
+  .progress-wrap{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fafcff;border-radius:10px;border:1.5px solid var(--border);margin-bottom:16px}
+  .progress-label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+  .progress-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--green);border-radius:4px;transition:width .4s}
+  .progress-pct{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--green);white-space:nowrap}
+
+  /* Callout */
+  .callout{background:var(--dark);border-radius:14px;padding:32px;color:#fff;position:relative;overflow:hidden}
+  .callout::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(0,180,216,.2) 0%,transparent 70%)}
+  .callout h3{font-size:20px;font-weight:700;margin-bottom:16px}
+  .callout-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;position:relative;z-index:1}
+  .callout-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px}
+  .callout-item .num{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.1em;margin-bottom:6px}
+  .callout-item p{font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.7}
+
+  /* File badge */
+  .file-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:6px;background:#0d1117;color:#7ee787;border:1px solid #30363d;margin:2px}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="page-header">
+  <p class="eyebrow">End-to-End Development Flow</p>
+  <h1>HTML/CSS/JS + IWS<br><em>ตั้งแต่เริ่มจนจบงาน</em></h1>
+  <p class="subtitle">มี RPG/SP อยู่แล้ว · Frontend เป็น Vanilla JS · Deploy บน IBM i HTTP Server</p>
+  <div class="meta">
+    <span class="meta-tag" style="background:#d0f0e0;color:#0a5c2e">✓ มี RPG/SP แล้ว</span>
+    <span class="meta-tag" style="background:#e0e7ff;color:#3730a3">HTML + CSS + Vanilla JS</span>
+    <span class="meta-tag" style="background:#fef3c7;color:#92400e">IBM HTTP Server + IWS</span>
+    <span class="meta-tag" style="background:#fde2e2;color:#a3171f">AS/400 · IBM i</span>
+  </div>
+</header>
+
+<!-- ── Big Picture Flow ── -->
+<p class="section-title">ภาพรวม — End-to-End Flow</p>
+<div class="flow-wrap">
+  <div class="flow">
+    <div class="flow-row">
+      <div class="flow-box" style="background:rgba(15,98,254,.15);color:#6ea6ff;border-color:rgba(15,98,254,.3)">
+        🖥 Browser<br><small>User เปิดเว็บ</small>
+      </div>
+    </div>
+    <div class="flow-down">↕</div>
+    <div class="flow-label">HTTP Request / Response (HTML, CSS, JS, JSON)</div>
+    <div class="flow-row">
+      <div class="flow-box" style="background:rgba(241,194,27,.12);color:#f1c21b;border-color:rgba(241,194,27,.3)">
+        📁 Static Files<br><small>HTML/CSS/JS ใน IFS</small>
+      </div>
+      <div class="flow-arrow">|</div>
+      <div class="flow-box" style="background:rgba(36,161,72,.15);color:#42be65;border-color:rgba(36,161,72,.3)">
+        🏭 IWS REST API<br><small>RPG expose เป็น JSON</small>
+      </div>
+    </div>
+    <div class="flow-down">↑↓</div>
+    <div class="flow-label">IBM HTTP Server (Apache on PASE) — instance เดียวกัน</div>
+    <div class="flow-row">
+      <div class="flow-box" style="background:rgba(218,30,40,.12);color:#ff8389;border-color:rgba(218,30,40,.3)">
+        🔴 IBM i (AS/400)<br><small>HTTP Server + DB2</small>
+      </div>
+    </div>
+    <div class="flow-down">↑↓</div>
+    <div class="flow-row">
+      <div class="flow-box" style="background:rgba(138,63,252,.15);color:#be95ff;border-color:rgba(138,63,252,.3)">
+        ⚙️ RPG Programs<br><small>Business Logic</small>
+      </div>
+      <div class="flow-arrow">+</div>
+      <div class="flow-box" style="background:rgba(138,63,252,.15);color:#be95ff;border-color:rgba(138,63,252,.3)">
+        🗄 DB2 Tables<br><small>ITEM_MASTER, REQ_HEADER…</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 0 ==================== -->
+<p class="section-title">Phase 0 — เตรียมตัวก่อนเริ่ม</p>
+
+<div class="phase-banner" style="background:#eff4ff;color:var(--blue)">
+  <div class="phase-num">00</div>
+  <div>
+    <div class="phase-title">เตรียม Environment</div>
+    <div class="phase-sub">ทำครั้งเดียว ก่อนเริ่ม Dev ทุกอย่าง</div>
+  </div>
+  <span class="phase-role" style="background:#e0e7ff;color:#3730a3">Admin + Dev</span>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#eff4ff">🔧</div>
+    <div><h3>Checklist ก่อนเริ่ม</h3><div class="sub">ต้องมีครบก่อนเขียน code แรก</div></div>
+  </div>
+  <div class="card-body">
+    <div class="progress-wrap">
+      <span class="progress-label">Readiness</span>
+      <div class="progress-track"><div class="progress-fill" id="pf0" style="width:0%"></div></div>
+      <span class="progress-pct" id="pp0">0 / 6</span>
+    </div>
+    <div id="pg0">
+      <div class="cl-item" onclick="tick(this,'pg0','pf0','pp0')"><div class="cl-cbox"></div>Admin สร้าง HTTP Server Instance แล้ว<span class="cl-tag" style="background:#fde2e2;color:#a3171f">Admin</span></div>
+      <div class="cl-item" onclick="tick(this,'pg0','pf0','pp0')"><div class="cl-cbox"></div>IWS เปิดอยู่บน instance นั้น<span class="cl-tag" style="background:#fde2e2;color:#a3171f">Admin</span></div>
+      <div class="cl-item" onclick="tick(this,'pg0','pf0','pp0')"><div class="cl-cbox"></div>Admin สร้าง IFS folder <code style="font-family:var(--mono);font-size:11px;background:#f4f7ff;padding:1px 5px;border-radius:3px">/htdocs/dev/</code> ให้แล้ว<span class="cl-tag" style="background:#fde2e2;color:#a3171f">Admin</span></div>
+      <div class="cl-item" onclick="tick(this,'pg0','pf0','pp0')"><div class="cl-cbox"></div>รู้ URL ของ IWS API เช่น <code style="font-family:var(--mono);font-size:11px;background:#f4f7ff;padding:1px 5px;border-radius:3px">http://as400xxx/web/services/</code><span class="cl-tag" style="background:#d0f0e0;color:#0a5c2e">Dev</span></div>
+      <div class="cl-item" onclick="tick(this,'pg0','pf0','pp0')"><div class="cl-cbox"></div>ติดตั้ง VS Code + Live Server extension<span class="cl-tag" style="background:#d0f0e0;color:#0a5c2e">Dev</span></div>
+      <div class="cl-item" onclick="tick(this,'pg0','pf0','pp0')"><div class="cl-cbox"></div>เข้าถึง IFS folder ได้ (Network Drive หรือ ACS)<span class="cl-tag" style="background:#d0f0e0;color:#0a5c2e">Dev</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 1 ==================== -->
+<p class="section-title">Phase 1 — วิเคราะห์และวางโครงสร้าง</p>
+
+<div class="phase-banner" style="background:#f0fdf4;color:var(--green)">
+  <div class="phase-num">01</div>
+  <div>
+    <div class="phase-title">ดู RPG/SP ที่มีอยู่ → ออกแบบ UI</div>
+    <div class="phase-sub">รู้ว่า API มีอะไรบ้าง → วางโครงสร้างหน้าเว็บ</div>
+  </div>
+  <span class="phase-role" style="background:#d0f0e0;color:#0a5c2e">Developer</span>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#f0fdf4">📋</div>
+    <div><h3>Step 1.1 — สำรวจ IWS Endpoint ที่มี</h3><div class="sub">ดูว่า RPG/SP ที่ Admin deploy ไว้มีอะไรบ้าง</div></div>
+  </div>
+  <div class="card-body">
+    <div class="code-label">IWS Endpoints ที่มีอยู่แล้ว (จาก RPG/SP)</div>
+    <div class="code-block">
+<span class="c-comment"># GET — ดึงข้อมูล</span>
+GET  /web/services/getStock          <span class="c-comment">→ ITEM_MASTER list</span>
+GET  /web/services/getReqList        <span class="c-comment">→ REQ_HEADER list</span>
+GET  /web/services/getReqDetail      <span class="c-comment">→ REQ_DETAIL by REQ_NO</span>
+GET  /web/services/getPoList         <span class="c-comment">→ PO_HEADER list</span>
+GET  /web/services/getVendorList     <span class="c-comment">→ VENDOR_MASTER list</span>
+
+<span class="c-comment"># POST — business logic</span>
+POST /web/services/issueReq          <span class="c-comment">→ ISSUE_REQ SP</span>
+POST /web/services/approveReq        <span class="c-comment">→ APPROVE_REQ SP</span>
+POST /web/services/returnReq         <span class="c-comment">→ RETURN_REQ SP</span>
+POST /web/services/receivePo         <span class="c-comment">→ RECEIVE_PO SP</span>
+    </div>
+    <div class="info-box blue">
+      <h4>💡 ทดสอบ Endpoint ก่อนเขียน UI</h4>
+      <ul>
+        <li>เปิด Browser พิมพ์ URL GET endpoint โดยตรง — ต้องเห็น JSON response</li>
+        <li>ใช้ Postman หรือ Thunder Client (VS Code) ทดสอบ POST endpoint</li>
+        <li>ถ้าเห็น JSON ได้ = IWS ทำงานปกติ พร้อมเขียน Frontend</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#f0fdf4">🗂</div>
+    <div><h3>Step 1.2 — วางโครงสร้าง Folder Project</h3><div class="sub">สร้างใน VS Code ก่อน ยังไม่ต้องขึ้น IFS</div></div>
+  </div>
+  <div class="card-body">
+    <div class="path-tree">
+<span class="pt-comment"># Project Folder บน PC (พัฒนาที่นี่)</span>
+<span class="pt-dir">pss-web/</span>
+  <span class="pt-active">index.html</span>               <span class="pt-comment">← หน้าหลัก / Dashboard</span>
+  <span class="pt-active">stock.html</span>               <span class="pt-comment">← หน้า Stock</span>
+  <span class="pt-active">requisition.html</span>         <span class="pt-comment">← หน้าใบเบิก</span>
+  <span class="pt-active">po.html</span>                  <span class="pt-comment">← หน้า Purchase Order</span>
+  <span class="pt-dir">css/</span>
+    <span class="pt-active">style.css</span>              <span class="pt-comment">← global styles</span>
+    <span class="pt-active">components.css</span>         <span class="pt-comment">← table, button, modal</span>
+  <span class="pt-dir">js/</span>
+    <span class="pt-active">config.js</span>              <span class="pt-comment">← BASE_URL, constants</span>
+    <span class="pt-active">api.js</span>                 <span class="pt-comment">← ฟังก์ชัน call IWS ทั้งหมด</span>
+    <span class="pt-active">utils.js</span>               <span class="pt-comment">← helper functions</span>
+    <span class="pt-active">stock.js</span>               <span class="pt-comment">← logic ของหน้า stock</span>
+    <span class="pt-active">requisition.js</span>         <span class="pt-comment">← logic ของหน้า req</span>
+    <span class="pt-active">po.js</span>                  <span class="pt-comment">← logic ของหน้า po</span>
+  <span class="pt-dir">components/</span>
+    <span class="pt-active">navbar.html</span>            <span class="pt-comment">← navigation bar (include ด้วย JS)</span>
+    <span class="pt-active">modal.html</span>             <span class="pt-comment">← modal template</span>
+
+<span class="pt-comment"># หลัง deploy → copy ทุกไฟล์ไปที่</span>
+<span class="pt-url">/www/KIDAKORN/htdocs/dev/</span>       <span class="pt-comment">← IFS บน IBM i</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 2 ==================== -->
+<p class="section-title">Phase 2 — เขียน Core Files</p>
+
+<div class="phase-banner" style="background:#fffbeb;color:#92400e">
+  <div class="phase-num">02</div>
+  <div>
+    <div class="phase-title">config.js + api.js + style.css</div>
+    <div class="phase-sub">ไฟล์กลางที่ทุกหน้าใช้ร่วมกัน — เขียนก่อนสุด</div>
+  </div>
+  <span class="phase-role" style="background:#fef3c7;color:#92400e">Developer</span>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fffbeb">⚙️</div>
+    <div><h3>config.js — ตั้งค่ากลาง</h3><div class="sub">เปลี่ยน URL ที่เดียว ทุกหน้าเปลี่ยนตาม</div></div>
+  </div>
+  <div class="card-body">
+    <div class="code-block">
+<span class="c-comment">// js/config.js</span>
+<span class="c-kw">const</span> CONFIG = {
+  <span class="c-comment">// เปลี่ยน URL ตรงนี้ที่เดียว</span>
+  API_BASE:  <span class="c-str">'http://as400xxx/web/services'</span>,
+  TIMEOUT:   <span class="c-num">10000</span>,   <span class="c-comment">// 10 วินาที</span>
+
+  <span class="c-comment">// Status labels</span>
+  REQ_STATUS: {
+    PENDING:  <span class="c-str">'รอดำเนินการ'</span>,
+    APPROVED: <span class="c-str">'อนุมัติแล้ว'</span>,
+    ISSUED:   <span class="c-str">'จ่ายแล้ว'</span>,
+    RETURNED: <span class="c-str">'คืนแล้ว'</span>,
+  },
+  PO_STATUS: {
+    DRAFT:    <span class="c-str">'ร่าง'</span>,
+    APPROVED: <span class="c-str">'อนุมัติแล้ว'</span>,
+    RECEIVED: <span class="c-str">'รับของแล้ว'</span>,
+  }
+};
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fffbeb">🌐</div>
+    <div><h3>api.js — ฟังก์ชัน call IWS ทั้งหมด</h3><div class="sub">ทุกหน้าเรียกผ่านไฟล์นี้ ไม่ fetch ตรงในหน้า</div></div>
+  </div>
+  <div class="card-body">
+    <div class="code-block">
+<span class="c-comment">// js/api.js</span>
+
+<span class="c-comment">// ── Core fetch wrapper ──────────────────────────</span>
+<span class="c-kw">async function</span> <span class="c-fn">iwsGet</span>(service, params = {}) {
+  <span class="c-kw">const</span> qs  = <span class="c-kw">new</span> URLSearchParams(params).toString();
+  <span class="c-kw">const</span> url = `${CONFIG.API_BASE}/${service}${qs ? <span class="c-str">'?'</span>+qs : <span class="c-str">''</span>}`;
+  <span class="c-kw">const</span> res = <span class="c-kw">await</span> fetch(url);
+  <span class="c-kw">if</span> (!res.ok) <span class="c-kw">throw new</span> Error(`HTTP ${res.status}`);
+  <span class="c-kw">return</span> res.json();
+}
+
+<span class="c-kw">async function</span> <span class="c-fn">iwsPost</span>(service, body = {}) {
+  <span class="c-kw">const</span> res = <span class="c-kw">await</span> fetch(`${CONFIG.API_BASE}/${service}`, {
+    method:  <span class="c-str">'POST'</span>,
+    headers: { <span class="c-str">'Content-Type'</span>: <span class="c-str">'application/json'</span> },
+    body:    JSON.stringify(body)
+  });
+  <span class="c-kw">if</span> (!res.ok) <span class="c-kw">throw new</span> Error(`HTTP ${res.status}`);
+  <span class="c-kw">return</span> res.json();
+}
+
+<span class="c-comment">// ── Stock ────────────────────────────────────────</span>
+<span class="c-kw">const</span> API = {
+  stock: {
+    getAll:  ()           => <span class="c-fn">iwsGet</span>(<span class="c-str">'getStock'</span>),
+    getById: (code)       => <span class="c-fn">iwsGet</span>(<span class="c-str">'getStock'</span>, { CDITEM: code }),
+  },
+
+<span class="c-comment">// ── Requisition ──────────────────────────────────</span>
+  req: {
+    getList:   (status)   => <span class="c-fn">iwsGet</span>(<span class="c-str">'getReqList'</span>, { STATUS: status || <span class="c-str">''</span> }),
+    getDetail: (reqNo)    => <span class="c-fn">iwsGet</span>(<span class="c-str">'getReqDetail'</span>, { P_REQNO: reqNo }),
+    issue:     (reqNo)    => <span class="c-fn">iwsPost</span>(<span class="c-str">'issueReq'</span>,   { P_REQNO: reqNo }),
+    approve:   (reqNo, by)=> <span class="c-fn">iwsPost</span>(<span class="c-str">'approveReq'</span>, { P_REQNO: reqNo, P_APPROVED_BY: by }),
+    return_:   (reqNo)    => <span class="c-fn">iwsPost</span>(<span class="c-str">'returnReq'</span>,  { P_REQNO: reqNo }),
+  },
+
+<span class="c-comment">// ── Purchase Order ───────────────────────────────</span>
+  po: {
+    getList:   (status)   => <span class="c-fn">iwsGet</span>(<span class="c-str">'getPoList'</span>,    { STATUS: status || <span class="c-str">''</span> }),
+    receive:   (poNo, itemCode, qty) =>
+                             <span class="c-fn">iwsPost</span>(<span class="c-str">'receivePo'</span>, {
+                               P_PO_NO:    poNo,
+                               P_ITEM_CODE: itemCode,
+                               P_QTY:      qty
+                             }),
+  },
+
+<span class="c-comment">// ── Vendor ───────────────────────────────────────</span>
+  vendor: {
+    getAll:  ()           => <span class="c-fn">iwsGet</span>(<span class="c-str">'getVendorList'</span>),
+  }
+};
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fffbeb">🎨</div>
+    <div><h3>style.css — Design System</h3><div class="sub">CSS Variables + Component styles ที่ใช้ทุกหน้า</div></div>
+  </div>
+  <div class="card-body">
+    <div class="code-block">
+<span class="c-comment">/* css/style.css */</span>
+
+<span class="c-comment">/* ── Design Tokens ─────────────────────────────── */</span>
+<span class="c-sel">:root</span> {
+  <span class="c-prop">--primary</span>:    <span class="c-val">#0f62fe</span>;
+  <span class="c-prop">--success</span>:    <span class="c-val">#24a148</span>;
+  <span class="c-prop">--warning</span>:    <span class="c-val">#f1c21b</span>;
+  <span class="c-prop">--danger</span>:     <span class="c-val">#da1e28</span>;
+  <span class="c-prop">--bg</span>:         <span class="c-val">#f4f7ff</span>;
+  <span class="c-prop">--surface</span>:    <span class="c-val">#ffffff</span>;
+  <span class="c-prop">--border</span>:     <span class="c-val">#dde3f0</span>;
+  <span class="c-prop">--text</span>:       <span class="c-val">#161616</span>;
+  <span class="c-prop">--muted</span>:      <span class="c-val">#525252</span>;
+  <span class="c-prop">--radius</span>:     <span class="c-val">8px</span>;
+  <span class="c-prop">--shadow</span>:     <span class="c-val">0 2px 12px rgba(0,0,0,.06)</span>;
+}
+
+<span class="c-comment">/* ── Reset ─────────────────────────────────────── */</span>
+<span class="c-sel">*</span> { <span class="c-prop">box-sizing</span>:<span class="c-val">border-box</span>; <span class="c-prop">margin</span>:<span class="c-val">0</span>; <span class="c-prop">padding</span>:<span class="c-val">0</span>; }
+<span class="c-sel">body</span> { <span class="c-prop">font-family</span>:<span class="c-val">sans-serif</span>; <span class="c-prop">background</span>:<span class="c-val">var(--bg)</span>; <span class="c-prop">color</span>:<span class="c-val">var(--text)</span>; }
+
+<span class="c-comment">/* ── Navbar ─────────────────────────────────────── */</span>
+<span class="c-sel">.navbar</span> {
+  <span class="c-prop">background</span>: <span class="c-val">var(--text)</span>;
+  <span class="c-prop">color</span>: <span class="c-val">#fff</span>;
+  <span class="c-prop">padding</span>: <span class="c-val">0 24px</span>;
+  <span class="c-prop">display</span>: <span class="c-val">flex</span>;
+  <span class="c-prop">align-items</span>: <span class="c-val">center</span>;
+  <span class="c-prop">height</span>: <span class="c-val">52px</span>;
+  <span class="c-prop">gap</span>: <span class="c-val">24px</span>;
+}
+<span class="c-sel">.navbar a</span> { <span class="c-prop">color</span>:<span class="c-val">rgba(255,255,255,.7)</span>; <span class="c-prop">text-decoration</span>:<span class="c-val">none</span>; <span class="c-prop">font-size</span>:<span class="c-val">14px</span>; }
+<span class="c-sel">.navbar a.active, .navbar a:hover</span> { <span class="c-prop">color</span>:<span class="c-val">#fff</span>; }
+<span class="c-sel">.navbar .brand</span> { <span class="c-prop">font-weight</span>:<span class="c-val">700</span>; <span class="c-prop">margin-right</span>:<span class="c-val">auto</span>; }
+
+<span class="c-comment">/* ── Container ──────────────────────────────────── */</span>
+<span class="c-sel">.container</span> { <span class="c-prop">max-width</span>:<span class="c-val">1200px</span>; <span class="c-prop">margin</span>:<span class="c-val">0 auto</span>; <span class="c-prop">padding</span>:<span class="c-val">24px</span>; }
+
+<span class="c-comment">/* ── Card ───────────────────────────────────────── */</span>
+<span class="c-sel">.card</span> {
+  <span class="c-prop">background</span>: <span class="c-val">var(--surface)</span>;
+  <span class="c-prop">border</span>:     <span class="c-val">1.5px solid var(--border)</span>;
+  <span class="c-prop">border-radius</span>: <span class="c-val">var(--radius)</span>;
+  <span class="c-prop">box-shadow</span>: <span class="c-val">var(--shadow)</span>;
+  <span class="c-prop">padding</span>: <span class="c-val">20px</span>;
+  <span class="c-prop">margin-bottom</span>: <span class="c-val">16px</span>;
+}
+
+<span class="c-comment">/* ── Table ──────────────────────────────────────── */</span>
+<span class="c-sel">.table</span> { <span class="c-prop">width</span>:<span class="c-val">100%</span>; <span class="c-prop">border-collapse</span>:<span class="c-val">collapse</span>; <span class="c-prop">font-size</span>:<span class="c-val">13.5px</span>; }
+<span class="c-sel">.table th</span> { <span class="c-prop">background</span>:<span class="c-val">#f4f7ff</span>; <span class="c-prop">padding</span>:<span class="c-val">10px 14px</span>; <span class="c-prop">text-align</span>:<span class="c-val">left</span>; <span class="c-prop">font-size</span>:<span class="c-val">12px</span>; <span class="c-prop">color</span>:<span class="c-val">var(--muted)</span>; }
+<span class="c-sel">.table td</span> { <span class="c-prop">padding</span>:<span class="c-val">10px 14px</span>; <span class="c-prop">border-bottom</span>:<span class="c-val">1px solid var(--border)</span>; }
+<span class="c-sel">.table tr:hover td</span> { <span class="c-prop">background</span>:<span class="c-val">#f9fafe</span>; }
+
+<span class="c-comment">/* ── Buttons ─────────────────────────────────────── */</span>
+<span class="c-sel">.btn</span> { <span class="c-prop">padding</span>:<span class="c-val">8px 18px</span>; <span class="c-prop">border-radius</span>:<span class="c-val">6px</span>; <span class="c-prop">font-size</span>:<span class="c-val">13px</span>; <span class="c-prop">font-weight</span>:<span class="c-val">600</span>; <span class="c-prop">cursor</span>:<span class="c-val">pointer</span>; <span class="c-prop">border</span>:<span class="c-val">none</span>; }
+<span class="c-sel">.btn-primary</span>  { <span class="c-prop">background</span>:<span class="c-val">var(--primary)</span>;  <span class="c-prop">color</span>:<span class="c-val">#fff</span>; }
+<span class="c-sel">.btn-success</span>  { <span class="c-prop">background</span>:<span class="c-val">var(--success)</span>;  <span class="c-prop">color</span>:<span class="c-val">#fff</span>; }
+<span class="c-sel">.btn-danger</span>   { <span class="c-prop">background</span>:<span class="c-val">var(--danger)</span>;   <span class="c-prop">color</span>:<span class="c-val">#fff</span>; }
+<span class="c-sel">.btn-outline</span>  { <span class="c-prop">background</span>:<span class="c-val">transparent</span>; <span class="c-prop">border</span>:<span class="c-val">1.5px solid var(--border)</span>; <span class="c-prop">color</span>:<span class="c-val">var(--text)</span>; }
+
+<span class="c-comment">/* ── Status Badges ──────────────────────────────── */</span>
+<span class="c-sel">.badge</span>           { <span class="c-prop">display</span>:<span class="c-val">inline-block</span>; <span class="c-prop">padding</span>:<span class="c-val">2px 10px</span>; <span class="c-prop">border-radius</span>:<span class="c-val">20px</span>; <span class="c-prop">font-size</span>:<span class="c-val">11px</span>; <span class="c-prop">font-weight</span>:<span class="c-val">700</span>; }
+<span class="c-sel">.badge-pending</span>   { <span class="c-prop">background</span>:<span class="c-val">#fef3c7</span>; <span class="c-prop">color</span>:<span class="c-val">#92400e</span>; }
+<span class="c-sel">.badge-approved</span>  { <span class="c-prop">background</span>:<span class="c-val">#d0f0e0</span>; <span class="c-prop">color</span>:<span class="c-val">#0a5c2e</span>; }
+<span class="c-sel">.badge-issued</span>    { <span class="c-prop">background</span>:<span class="c-val">#e0e7ff</span>; <span class="c-prop">color</span>:<span class="c-val">#3730a3</span>; }
+<span class="c-sel">.badge-low</span>       { <span class="c-prop">background</span>:<span class="c-val">#fde2e2</span>; <span class="c-prop">color</span>:<span class="c-val">#a3171f</span>; }
+
+<span class="c-comment">/* ── Loading ─────────────────────────────────────── */</span>
+<span class="c-sel">.loading</span> { <span class="c-prop">text-align</span>:<span class="c-val">center</span>; <span class="c-prop">padding</span>:<span class="c-val">40px</span>; <span class="c-prop">color</span>:<span class="c-val">var(--muted)</span>; }
+<span class="c-sel">.error-msg</span> { <span class="c-prop">background</span>:<span class="c-val">#fff0f0</span>; <span class="c-prop">border</span>:<span class="c-val">1px solid #fecaca</span>; <span class="c-prop">border-radius</span>:<span class="c-val">8px</span>; <span class="c-prop">padding</span>:<span class="c-val">12px 16px</span>; <span class="c-prop">color</span>:<span class="c-val">#a3171f</span>; <span class="c-prop">font-size</span>:<span class="c-val">13px</span>; }
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 3 ==================== -->
+<p class="section-title">Phase 3 — เขียนหน้าเว็บ (HTML + JS)</p>
+
+<div class="phase-banner" style="background:#faf5ff;color:var(--purple)">
+  <div class="phase-num">03</div>
+  <div>
+    <div class="phase-title">สร้าง HTML + JS แต่ละหน้า</div>
+    <div class="phase-sub">ทดสอบบน localhost ก่อน — ยังไม่ต้องขึ้น IFS</div>
+  </div>
+  <span class="phase-role" style="background:#f3e8ff;color:#6d28d9">Developer</span>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#faf5ff">📄</div>
+    <div><h3>ตัวอย่าง stock.html + stock.js</h3><div class="sub">Pattern นี้ใช้กับทุกหน้า</div></div>
+  </div>
+  <div class="card-body">
+    <div class="code-label">stock.html</div>
+    <div class="code-block">
+<span class="c-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="c-tag">&lt;html</span> <span class="c-attr">lang</span>=<span class="c-val">"th"</span><span class="c-tag">&gt;</span>
+<span class="c-tag">&lt;head&gt;</span>
+  <span class="c-tag">&lt;meta</span> <span class="c-attr">charset</span>=<span class="c-val">"UTF-8"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;title&gt;</span>Stock — PSS System<span class="c-tag">&lt;/title&gt;</span>
+  <span class="c-tag">&lt;link</span> <span class="c-attr">rel</span>=<span class="c-val">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-val">"css/style.css"</span><span class="c-tag">&gt;</span>
+<span class="c-tag">&lt;/head&gt;</span>
+<span class="c-tag">&lt;body&gt;</span>
+
+  <span class="c-comment">&lt;!-- Navbar --&gt;</span>
+  <span class="c-tag">&lt;nav</span> <span class="c-attr">class</span>=<span class="c-val">"navbar"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-val">"brand"</span><span class="c-tag">&gt;</span>PSS System<span class="c-tag">&lt;/span&gt;</span>
+    <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-val">"index.html"</span><span class="c-tag">&gt;</span>Dashboard<span class="c-tag">&lt;/a&gt;</span>
+    <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-val">"stock.html"</span> <span class="c-attr">class</span>=<span class="c-val">"active"</span><span class="c-tag">&gt;</span>Stock<span class="c-tag">&lt;/a&gt;</span>
+    <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-val">"requisition.html"</span><span class="c-tag">&gt;</span>ใบเบิก<span class="c-tag">&lt;/a&gt;</span>
+    <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-val">"po.html"</span><span class="c-tag">&gt;</span>PO<span class="c-tag">&lt;/a&gt;</span>
+  <span class="c-tag">&lt;/nav&gt;</span>
+
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-val">"container"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;h2&gt;</span>รายการ Stock<span class="c-tag">&lt;/h2&gt;</span>
+
+    <span class="c-comment">&lt;!-- Search --&gt;</span>
+    <span class="c-tag">&lt;input</span> <span class="c-attr">id</span>=<span class="c-val">"search"</span> <span class="c-attr">type</span>=<span class="c-val">"text"</span> <span class="c-attr">placeholder</span>=<span class="c-val">"ค้นหา..."</span>
+           <span class="c-attr">oninput</span>=<span class="c-val">"filterTable()"</span><span class="c-tag">&gt;</span>
+
+    <span class="c-comment">&lt;!-- Table --&gt;</span>
+    <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-val">"card"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;div</span> <span class="c-attr">id</span>=<span class="c-val">"loading"</span> <span class="c-attr">class</span>=<span class="c-val">"loading"</span><span class="c-tag">&gt;</span>กำลังโหลด...<span class="c-tag">&lt;/div&gt;</span>
+      <span class="c-tag">&lt;div</span> <span class="c-attr">id</span>=<span class="c-val">"error"</span>   <span class="c-attr">class</span>=<span class="c-val">"error-msg"</span> <span class="c-attr">style</span>=<span class="c-val">"display:none"</span><span class="c-tag">&gt;&lt;/div&gt;</span>
+      <span class="c-tag">&lt;table</span> <span class="c-attr">id</span>=<span class="c-val">"stock-table"</span> <span class="c-attr">class</span>=<span class="c-val">"table"</span> <span class="c-attr">style</span>=<span class="c-val">"display:none"</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;thead&gt;&lt;tr&gt;</span>
+          <span class="c-tag">&lt;th&gt;</span>รหัส<span class="c-tag">&lt;/th&gt;&lt;th&gt;</span>ชื่อสินค้า<span class="c-tag">&lt;/th&gt;&lt;th&gt;</span>หน่วย<span class="c-tag">&lt;/th&gt;</span>
+          <span class="c-tag">&lt;th&gt;</span>คงเหลือ<span class="c-tag">&lt;/th&gt;&lt;th&gt;</span>ขั้นต่ำ<span class="c-tag">&lt;/th&gt;&lt;th&gt;</span>สถานะ<span class="c-tag">&lt;/th&gt;</span>
+        <span class="c-tag">&lt;/tr&gt;&lt;/thead&gt;</span>
+        <span class="c-tag">&lt;tbody</span> <span class="c-attr">id</span>=<span class="c-val">"stock-body"</span><span class="c-tag">&gt;&lt;/tbody&gt;</span>
+      <span class="c-tag">&lt;/table&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+
+  <span class="c-tag">&lt;script</span> <span class="c-attr">src</span>=<span class="c-val">"js/config.js"</span><span class="c-tag">&gt;&lt;/script&gt;</span>   <span class="c-comment">&lt;!-- โหลดก่อน --&gt;</span>
+  <span class="c-tag">&lt;script</span> <span class="c-attr">src</span>=<span class="c-val">"js/api.js"</span><span class="c-tag">&gt;&lt;/script&gt;</span>      <span class="c-comment">&lt;!-- โหลดก่อน --&gt;</span>
+  <span class="c-tag">&lt;script</span> <span class="c-attr">src</span>=<span class="c-val">"js/stock.js"</span><span class="c-tag">&gt;&lt;/script&gt;</span>    <span class="c-comment">&lt;!-- โหลดหลังสุด --&gt;</span>
+<span class="c-tag">&lt;/body&gt;&lt;/html&gt;</span>
+    </div>
+
+    <div class="code-label">stock.js</div>
+    <div class="code-block">
+<span class="c-comment">// js/stock.js</span>
+<span class="c-kw">let</span> allItems = [];
+
+<span class="c-comment">// ── โหลดข้อมูลตอนเปิดหน้า ──────────────────────</span>
+document.addEventListener(<span class="c-str">'DOMContentLoaded'</span>, loadStock);
+
+<span class="c-kw">async function</span> <span class="c-fn">loadStock</span>() {
+  show(<span class="c-str">'loading'</span>); hide(<span class="c-str">'stock-table'</span>); hide(<span class="c-str">'error'</span>);
+  <span class="c-kw">try</span> {
+    allItems = <span class="c-kw">await</span> API.stock.<span class="c-fn">getAll</span>();
+    <span class="c-fn">renderTable</span>(allItems);
+    show(<span class="c-str">'stock-table'</span>); hide(<span class="c-str">'loading'</span>);
+  } <span class="c-kw">catch</span> (err) {
+    <span class="c-fn">showError</span>(<span class="c-str">'โหลดข้อมูลไม่ได้: '</span> + err.message);
+  }
+}
+
+<span class="c-comment">// ── Render ──────────────────────────────────────</span>
+<span class="c-kw">function</span> <span class="c-fn">renderTable</span>(items) {
+  document.getElementById(<span class="c-str">'stock-body'</span>).innerHTML =
+    items.map(i => <span class="c-str">`
+      &lt;tr&gt;
+        &lt;td&gt;${i.CDITEM}&lt;/td&gt;
+        &lt;td&gt;${i.NMITEM}&lt;/td&gt;
+        &lt;td&gt;${i.TXUNIT}&lt;/td&gt;
+        &lt;td&gt;${i.QTONHAND.toLocaleString()}&lt;/td&gt;
+        &lt;td&gt;${i.QTMIN.toLocaleString()}&lt;/td&gt;
+        &lt;td&gt;&lt;span class="badge ${i.QTONHAND &lt;= i.QTMIN
+          ? 'badge-low' : 'badge-approved'}"&gt;
+          ${i.QTONHAND &lt;= i.QTMIN ? '⚠ ต่ำ' : 'ปกติ'}
+        &lt;/span&gt;&lt;/td&gt;
+      &lt;/tr&gt;`</span>).join(<span class="c-str">''</span>);
+}
+
+<span class="c-comment">// ── Search filter ───────────────────────────────</span>
+<span class="c-kw">function</span> <span class="c-fn">filterTable</span>() {
+  <span class="c-kw">const</span> q = document.getElementById(<span class="c-str">'search'</span>).value.toLowerCase();
+  <span class="c-fn">renderTable</span>(allItems.filter(i =>
+    i.CDITEM.toLowerCase().includes(q) ||
+    i.NMITEM.toLowerCase().includes(q)
+  ));
+}
+
+<span class="c-comment">// ── Helpers ─────────────────────────────────────</span>
+<span class="c-kw">const</span> show = id => document.getElementById(id).style.display = <span class="c-str">''</span>;
+<span class="c-kw">const</span> hide = id => document.getElementById(id).style.display = <span class="c-str">'none'</span>;
+<span class="c-kw">function</span> <span class="c-fn">showError</span>(msg) {
+  <span class="c-kw">const</span> el = document.getElementById(<span class="c-str">'error'</span>);
+  el.textContent = msg; el.style.display = <span class="c-str">''</span>;
+  hide(<span class="c-str">'loading'</span>);
+}
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 4 ==================== -->
+<p class="section-title">Phase 4 — ทดสอบบน Localhost</p>
+
+<div class="phase-banner" style="background:#f0fdf4;color:var(--green)">
+  <div class="phase-num">04</div>
+  <div>
+    <div class="phase-title">Test บน PC ก่อน Deploy</div>
+    <div class="phase-sub">แก้ bug ทุกอย่างให้เสร็จก่อน ค่อยขึ้น IFS</div>
+  </div>
+  <span class="phase-role" style="background:#d0f0e0;color:#0a5c2e">Developer</span>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#f0fdf4">🧪</div>
+    <div><h3>Testing Checklist ก่อน Deploy</h3></div>
+  </div>
+  <div class="card-body">
+    <div class="progress-wrap">
+      <span class="progress-label">Test Progress</span>
+      <div class="progress-track"><div class="progress-fill" id="pf4" style="width:0%"></div></div>
+      <span class="progress-pct" id="pp4">0 / 10</span>
+    </div>
+    <div id="pg4">
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>เปิด Live Server ใน VS Code ได้ (port 5500)</div>
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>ทุกหน้าเปิดได้ไม่มี 404</div>
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>ทดสอบ GET API ทุก endpoint แสดงข้อมูลถูกต้อง</div>
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>ทดสอบ POST IssueReq — ได้ P_RESULT = 'S'</div>
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>ทดสอบ POST ApproveReq</div>
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>Search/Filter ทำงานถูกต้อง</div>
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>Status badge แสดงสีถูก</div>
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>Error handling แสดง message เมื่อ API fail</div>
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>ทดสอบบน Mobile / responsive</div>
+      <div class="cl-item" onclick="tick(this,'pg4','pf4','pp4')"><div class="cl-cbox"></div>Console ไม่มี error</div>
+    </div>
+
+    <div class="info-box amber" style="margin-top:16px">
+      <h4>⚠ ปัญหาที่เจอบ่อยตอนทดสอบ</h4>
+      <ul>
+        <li><b>CORS Error</b> — ตอน localhost fetch ไป IWS บน IBM i จะโดน block ให้ใช้ Postman ทดสอบ API ก่อน แล้วให้ Admin เพิ่ม CORS header ใน httpd.conf</li>
+        <li><b>API ยังไม่พร้อม</b> — Mock data ใน JS ไว้ก่อนเพื่อพัฒนา UI ต่อได้</li>
+        <li><b>Field name ผิด</b> — ตรวจสอบชื่อ field จาก JSON response ของ IWS ให้ตรงกับที่ใช้ใน JS</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 5 ==================== -->
+<p class="section-title">Phase 5 — Deploy ขึ้น IFS (IBM i)</p>
+
+<div class="phase-banner" style="background:#fff0f0;color:var(--red)">
+  <div class="phase-num">05</div>
+  <div>
+    <div class="phase-title">Copy ไฟล์ขึ้น IFS</div>
+    <div class="phase-sub">ทดสอบบน PC ผ่านแล้ว → ขึ้น IBM i เพื่อให้คนอื่นใช้</div>
+  </div>
+  <span class="phase-role" style="background:#fde2e2;color:#a3171f">Developer</span>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#fff0f0">🚀</div>
+    <div><h3>วิธี Deploy ไฟล์ขึ้น IFS</h3><div class="sub">3 วิธี เลือกตามที่ Admin กำหนดให้</div></div>
+  </div>
+  <div class="card-body">
+    <div class="grid-3">
+
+      <div style="background:var(--bg);border-radius:10px;padding:16px;border:1.5px solid var(--border)">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;font-weight:700">วิธี 1 · Network Drive</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px">Map Network Drive แล้ว copy ไฟล์ผ่าน Windows Explorer</div>
+        <div class="code-block" style="font-size:11px;padding:12px">
+<span class="c-comment"># Windows Explorer</span>
+\\as400xxx\ROOT\www\KIDAKORN\htdocs\dev
+
+<span class="c-comment"># Copy ทุกไฟล์จาก project</span>
+<span class="c-comment"># ไปวางที่ dev\ ได้เลย</span>
+        </div>
+      </div>
+
+      <div style="background:var(--bg);border-radius:10px;padding:16px;border:1.5px solid var(--border)">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;font-weight:700">วิธี 2 · ACS IFS Browser</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px">เปิด ACS → IFS → navigate → upload ทีละไฟล์</div>
+        <div class="code-block" style="font-size:11px;padding:12px">
+ACS → IBM i Access
+  → IFS
+  → /www/KIDAKORN/htdocs/dev
+  → Right click
+  → Upload Files
+        </div>
+      </div>
+
+      <div style="background:var(--bg);border-radius:10px;padding:16px;border:1.5px solid var(--border)">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;font-weight:700">วิธี 3 · FTP / SFTP</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:10px">ใช้ FileZilla หรือ WinSCP upload ทีเดียวทั้ง folder</div>
+        <div class="code-block" style="font-size:11px;padding:12px">
+<span class="c-comment"># FileZilla</span>
+Host:     as400xxx
+Username: X0250661
+Protocol: SFTP
+Port:     22
+
+Remote: /www/KIDAKORN/htdocs/dev
+        </div>
+      </div>
+
+    </div>
+
+    <div class="info-box green" style="margin-top:16px">
+      <h4>✅ ตรวจสอบหลัง Deploy</h4>
+      <ul>
+        <li>เปิด Browser: <code style="font-family:var(--mono);font-size:11px">http://as400xxx/kidakorn/dev/</code> — ต้องเห็นหน้าเว็บทันที</li>
+        <li>ทดสอบ IWS API call จากหน้าเว็บจริง (ไม่ใช่ localhost) — ไม่ควรมี CORS error เพราะอยู่ domain เดียวกัน</li>
+        <li>ทดสอบทุก feature อีกรอบบน IBM i จริง</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 6 ==================== -->
+<p class="section-title">Phase 6 — Maintain & Update</p>
+
+<div class="phase-banner" style="background:#f3e8ff;color:var(--purple)">
+  <div class="phase-num">06</div>
+  <div>
+    <div class="phase-title">แก้ไขและ Update</div>
+    <div class="phase-sub">Workflow ที่ใช้ทุกครั้งที่มีการเปลี่ยนแปลง</div>
+  </div>
+  <span class="phase-role" style="background:#f3e8ff;color:#6d28d9">Developer</span>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="icon" style="background:#f3e8ff">🔄</div>
+    <div><h3>Update Cycle</h3><div class="sub">ทำซ้ำทุกครั้งที่มี feature ใหม่หรือแก้ bug</div></div>
+  </div>
+  <div class="card-body">
+    <div class="flow-wrap">
+      <div class="flow" style="min-width:400px">
+        <div class="flow-row">
+          <div class="flow-box" style="background:rgba(15,98,254,.15);color:#6ea6ff;border-color:rgba(15,98,254,.3)">
+            📝 แก้ไขบน PC<br><small>VS Code + Live Server</small>
+          </div>
+        </div>
+        <div class="flow-down">↓</div>
+        <div class="flow-label">ทดสอบบน localhost จนผ่าน</div>
+        <div class="flow-row">
+          <div class="flow-box" style="background:rgba(36,161,72,.15);color:#42be65;border-color:rgba(36,161,72,.3)">
+            🧪 Test บน localhost<br><small>http://localhost:5500</small>
+          </div>
+        </div>
+        <div class="flow-down">↓</div>
+        <div class="flow-label">Copy เฉพาะไฟล์ที่แก้ไปทับ IFS</div>
+        <div class="flow-row">
+          <div class="flow-box" style="background:rgba(218,30,40,.12);color:#ff8389;border-color:rgba(218,30,40,.3)">
+            🚀 Deploy ขึ้น IFS<br><small>เฉพาะไฟล์ที่เปลี่ยน</small>
+          </div>
+        </div>
+        <div class="flow-down">↓</div>
+        <div class="flow-row">
+          <div class="flow-box" style="background:rgba(241,194,27,.12);color:#f1c21b;border-color:rgba(241,194,27,.3)">
+            ✅ ทดสอบบน IBM i จริง<br><small>http://as400xxx/kidakorn/dev/</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box blue">
+      <h4>💡 Tips การ Maintain</h4>
+      <ul>
+        <li>ถ้า RPG/SP มีการเปลี่ยน parameter → ต้องแก้ api.js ด้วย</li>
+        <li>ถ้าเพิ่ม IWS service ใหม่ → Admin deploy ก่อน แล้วเพิ่มใน api.js</li>
+        <li>ใช้ Browser DevTools (F12) → Network tab ดู request/response จริงๆ</li>
+        <li>เก็บ backup ไฟล์เดิมไว้ก่อน deploy ทุกครั้ง</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== FILES SUMMARY ==================== -->
+<p class="section-title">สรุปไฟล์ทั้งหมดที่ต้องสร้าง</p>
+
+<div class="card">
+  <div class="card-body">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+      <span class="file-badge">📄 index.html</span>
+      <span class="file-badge">📄 stock.html</span>
+      <span class="file-badge">📄 requisition.html</span>
+      <span class="file-badge">📄 po.html</span>
+      <span class="file-badge" style="color:#79c0ff">🎨 css/style.css</span>
+      <span class="file-badge" style="color:#79c0ff">🎨 css/components.css</span>
+      <span class="file-badge" style="color:#ffa657">⚙️ js/config.js</span>
+      <span class="file-badge" style="color:#ffa657">🌐 js/api.js</span>
+      <span class="file-badge" style="color:#ffa657">🔧 js/utils.js</span>
+      <span class="file-badge" style="color:#d2a8ff">📦 js/stock.js</span>
+      <span class="file-badge" style="color:#d2a8ff">📦 js/requisition.js</span>
+      <span class="file-badge" style="color:#d2a8ff">📦 js/po.js</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="background:#fafcff">
+          <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--gray)">ไฟล์</th>
+          <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--gray)">หน้าที่</th>
+          <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--gray)">เขียนเมื่อไหร่</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11.5px;font-weight:700">js/config.js</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">URL, constants กลาง</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">เขียนก่อนสุด</td></tr>
+          <tr><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11.5px;font-weight:700">js/api.js</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">ฟังก์ชัน call IWS ทั้งหมด</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">เขียนที่ 2</td></tr>
+          <tr><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11.5px;font-weight:700">css/style.css</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">Design system กลาง</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">เขียนที่ 3</td></tr>
+          <tr><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11.5px;font-weight:700">stock.html + stock.js</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">หน้า Stock — เขียนเป็น prototype หน้าแรก</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">Phase 3 เริ่มตรงนี้</td></tr>
+          <tr><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11.5px;font-weight:700">requisition.html + .js</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">หน้าใบเบิก + Issue/Approve</td><td style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)">หลัง stock ผ่าน</td></tr>
+          <tr><td style="padding:10px 14px;font-family:var(--mono);font-size:11.5px;font-weight:700">po.html + po.js</td><td style="padding:10px 14px;font-size:12.5px;color:var(--muted)">หน้า PO + Receive</td><td style="padding:10px 14px;font-size:12.5px;color:var(--muted)">หลัง req ผ่าน</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<p class="section-title">สรุป End-to-End</p>
+<div class="callout">
+  <h3>🎯 ทั้ง 6 Phase ในหน้าเดียว</h3>
+  <div class="callout-grid">
+    <div class="callout-item">
+      <div class="num">PHASE 0 — เตรียม</div>
+      <p>Admin setup HTTP Server + IWS + IFS folder · Dev ติดตั้ง VS Code + เข้าถึง IFS ได้</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">PHASE 1 — วิเคราะห์</div>
+      <p>ดู IWS endpoint ที่มี → ทดสอบด้วย Postman → วางโครงสร้าง folder project</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">PHASE 2 — Core Files</div>
+      <p>เขียน <code>config.js</code> → <code>api.js</code> → <code>style.css</code> ก่อนสุด ทุกหน้าใช้ร่วมกัน</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">PHASE 3 — หน้าเว็บ</div>
+      <p>HTML โครงสร้าง + JS ดึงข้อมูลจาก IWS + render ตาราง + action buttons</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">PHASE 4 — Test</div>
+      <p>Live Server localhost → ทดสอบทุก feature → แก้ bug → ตรวจ console error</p>
+    </div>
+    <div class="callout-item">
+      <div class="num">PHASE 5+6 — Deploy</div>
+      <p>Copy ไฟล์ขึ้น IFS → เปิด <code>http://as400xxx/kidakorn/dev/</code> → ทดสอบซ้ำบน IBM i จริง</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function tick(el, groupId, fillId, pctId) {
+  el.classList.toggle('done');
+  el.querySelector('.cl-cbox').textContent = el.classList.contains('done') ? '✓' : '';
+  const all  = document.querySelectorAll(`#${groupId} .cl-item`).length;
+  const done = document.querySelectorAll(`#${groupId} .cl-item.done`).length;
+  document.getElementById(fillId).style.width = Math.round(done/all*100) + '%';
+  document.getElementById(pctId).textContent  = `${done} / ${all}`;
+}
+</script>
+</body>
+</html>
