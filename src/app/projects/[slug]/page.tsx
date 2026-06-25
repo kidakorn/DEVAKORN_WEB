@@ -91,10 +91,14 @@ export default async function ProjectDetailPage({
 
   // Fetch docs for this project
   let docs: any[] = [];
+  let localOverrides: any = {};
   if (redis) {
     try {
       const cloudDocs = await redis.get<any[]>(`devakorn_docs:${slug}`);
       if (cloudDocs) docs = [...cloudDocs];
+      
+      const overrides = await redis.get<any>(`devakorn_local_docs:${slug}`);
+      if (overrides) localOverrides = overrides;
     } catch {}
   }
 
@@ -107,10 +111,25 @@ export default async function ProjectDetailPage({
       
       const localDocs = htmlFiles.map((filename) => {
         const stats = fs.statSync(path.join(localDirPath, filename));
+        
+        let category = undefined;
+        let rawTitle = filename.replace(/\.html?$/, "");
+        
+        // Match naming convention: "[Category] filename.html"
+        const match = rawTitle.match(/^\[(.*?)\]\s*(.*)$/);
+        if (match) {
+          category = match[1];
+          rawTitle = match[2];
+        }
+
+        const docId = `local-${filename}`;
+        const override = localOverrides[docId] || {};
+
         return {
-          id: `local-${filename}`,
-          title: filename.replace(/\.html?$/, "").replace(/[-_]/g, " "),
-          description: "Local File",
+          id: docId,
+          title: override.title || rawTitle.replace(/[-_]/g, " "),
+          description: override.description || "Local File",
+          category: override.category || category,
           blobUrl: `/docs/${slug}/${filename}`,
           createdAt: stats.mtime.toISOString(),
           isLocal: true,
