@@ -117,6 +117,7 @@ export async function PATCH(
         title: body.title,
         description: body.description,
         category: body.category,
+        createdAt: body.createdAt,
       };
       await redis.set(`devakorn_local_docs:${slug}`, existingLocalOverrides);
       return NextResponse.json({ success: true });
@@ -130,6 +131,7 @@ export async function PATCH(
             title: body.title ?? doc.title,
             description: body.description ?? doc.description,
             category: body.category !== undefined ? body.category : doc.category,
+            createdAt: body.createdAt ?? doc.createdAt,
           }
         : doc
     );

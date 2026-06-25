@@ -131,7 +131,7 @@ export default async function ProjectDetailPage({
           description: override.description || "Local File",
           category: override.category || category,
           blobUrl: `/docs/${slug}/${filename}`,
-          createdAt: stats.mtime.toISOString(),
+          createdAt: override.createdAt || stats.mtime.toISOString(),
           isLocal: true,
           isAdminOnly: true,
         };
@@ -142,6 +142,8 @@ export default async function ProjectDetailPage({
   } catch (fsError) {
     console.warn("Failed to read local docs directory:", fsError);
   }
+
+  console.log("DEBUG PAGE.TSX DOCS:", JSON.stringify(docs, null, 2));
 
   return (
     <>

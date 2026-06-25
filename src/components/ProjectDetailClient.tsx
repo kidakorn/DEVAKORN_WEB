@@ -89,6 +89,7 @@ export default function ProjectDetailClient({
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
   const [editCategory, setEditCategory] = useState("");
+  const [editDate, setEditDate] = useState("");
   const [editSaving, setEditSaving] = useState(false);
 
   const projectName = t(project.nameKey) || project.nameKey;
@@ -157,20 +158,53 @@ export default function ProjectDetailClient({
     setEditTitle(doc.title);
     setEditDesc(doc.description);
     setEditCategory(doc.category || "");
+    
+    // Convert ISO string to YYYY-MM-DD for the input[type="date"]
+    try {
+      const dateObj = new Date(doc.createdAt);
+      if (!isNaN(dateObj.getTime())) {
+        setEditDate(dateObj.toISOString().split("T")[0]);
+      } else {
+        setEditDate("");
+      }
+    } catch {
+      setEditDate("");
+    }
   };
 
   const handleEditSave = async () => {
     if (!editDoc) return;
     setEditSaving(true);
     try {
+      // Convert YYYY-MM-DD back to ISO string or use existing if unchanged/empty
+      let finalDate = editDoc.createdAt;
+      if (editDate) {
+        try {
+          const parsed = new Date(editDate);
+          if (!isNaN(parsed.getTime())) {
+            // Keep the original time, just change the date
+            const original = new Date(editDoc.createdAt);
+            if (!isNaN(original.getTime())) {
+              parsed.setHours(original.getHours(), original.getMinutes(), original.getSeconds(), original.getMilliseconds());
+            }
+            finalDate = parsed.toISOString();
+          }
+        } catch {}
+      }
+
       await fetch(`/api/docs/${editDoc.id}?slug=${project.slug}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: editTitle, description: editDesc, category: editCategory }),
+        body: JSON.stringify({ 
+          title: editTitle, 
+          description: editDesc, 
+          category: editCategory,
+          createdAt: finalDate
+        }),
       });
       setDocs((prev) =>
         prev.map((d) =>
-          d.id === editDoc.id ? { ...d, title: editTitle, description: editDesc, category: editCategory } : d
+          d.id === editDoc.id ? { ...d, title: editTitle, description: editDesc, category: editCategory, createdAt: finalDate } : d
         )
       );
       setEditDoc(null);
@@ -692,6 +726,20 @@ export default function ProjectDetailClient({
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
                   placeholder="e.g. Documentation, Guide, Setup"
+                  className="input input-bordered w-full focus:outline-none"
+                  style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold" style={{ color: "var(--text-strong)" }}>
+                    Date
+                  </span>
+                </label>
+                <input
+                  type="date"
+                  value={editDate}
+                  onChange={(e) => setEditDate(e.target.value)}
                   className="input input-bordered w-full focus:outline-none"
                   style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
                 />

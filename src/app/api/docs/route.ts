@@ -81,7 +81,7 @@ export async function GET(req: Request) {
             description: override.description || "Local File",
             category: override.category || category,
             blobUrl: `/docs/${slug}/${filename}`,
-            createdAt: stats.mtime.toISOString(),
+            createdAt: override.createdAt || stats.mtime.toISOString(),
             isLocal: true,
           };
         });
