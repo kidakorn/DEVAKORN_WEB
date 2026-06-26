@@ -52,6 +52,17 @@ export async function GET(req: Request) {
       if (overrides) localOverrides = overrides;
     }
 
+    // Load auto-generated git metadata for local files
+    let autoMeta: any = {};
+    try {
+      const metaPath = path.join(process.cwd(), "public", "docs", "meta.json");
+      if (fs.existsSync(metaPath)) {
+        autoMeta = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
+      }
+    } catch (err) {
+      console.warn("Failed to load local docs auto metadata:", err);
+    }
+
     // -- Read local files from public/docs/[slug] --
     try {
       const localDirPath = path.join(process.cwd(), "public", "docs", slug);
@@ -75,13 +86,16 @@ export async function GET(req: Request) {
           const docId = `local-${filename}`;
           const override = localOverrides[docId] || {};
 
+          const relPath = `${slug}/${filename}`;
+          const autoCreatedAt = autoMeta[relPath]?.createdAt || stats.mtime.toISOString();
+
           return {
             id: docId,
             title: override.title || rawTitle.replace(/[-_]/g, " "),
             description: override.description || "Local File",
             category: override.category || category,
             blobUrl: `/docs/${slug}/${filename}`,
-            createdAt: override.createdAt || stats.mtime.toISOString(),
+            createdAt: override.createdAt || autoCreatedAt,
             isLocal: true,
           };
         });
