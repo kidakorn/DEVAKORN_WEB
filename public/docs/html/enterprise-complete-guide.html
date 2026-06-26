@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Systems — Complete Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Sarabun:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:    #f8f7f4;
+  --bg2:   #ffffff;
+  --bg3:   #f2f0ec;
+  --bg4:   #eae8e2;
+  --border:#e0dbd0;
+  --border2:#ccc8bc;
+  --text:  #1a1814;
+  --muted: #5a5650;
+  --dim:   #9a9488;
+
+  --s1: #0369a1; /* systems */
+  --s2: #c2410c; /* skills   */
+  --s3: #166534; /* projects */
+  --s4: #7c3aed; /* roadmap  */
+  --s5: #92400e; /* tools    */
+  --s6: #be185d; /* features */
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;-webkit-font-smoothing:antialiased;display:flex;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:220px;min-width:220px;height:100vh;
+  position:sticky;top:0;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+  z-index:100;
+  flex-shrink:0;
+}
+.sb-logo{
+  padding:22px 18px 16px;
+  border-bottom:1px solid var(--border);
+}
+.sb-logo .brand{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:-.01em;line-height:1.3;
+}
+.sb-logo .ver{
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);margin-top:3px;letter-spacing:.06em;
+}
+.sb-nav{padding:10px 0 20px;flex:1;}
+.sb-group{margin-bottom:4px;}
+.sb-group-label{
+  font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);padding:10px 18px 5px;
+}
+.sb-link{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 18px;font-size:12px;color:var(--muted);
+  text-decoration:none;transition:color .15s,background .15s;
+  border-left:2px solid transparent;
+}
+.sb-link:hover{color:var(--text);background:var(--bg3);}
+.sb-link.active{color:var(--text);border-left-color:var(--s1);background:rgba(3,105,161,.07);}
+.sb-link .sb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* ── MAIN ── */
+.main{flex:1;min-width:0;overflow-x:hidden;}
+
+/* ── HERO ── */
+.hero{
+  padding:72px 52px 60px;
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 50%,rgba(3,105,161,.06) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 60% at 85% 20%,rgba(124,58,237,.05) 0%,transparent 70%);
+}
+.hero-tag{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--s1);
+  margin-bottom:20px;display:flex;align-items:center;gap:8px;
+}
+.hero-tag::before{content:'//';color:var(--dim);}
+.hero h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(38px,5vw,70px);line-height:1.05;
+  letter-spacing:-.025em;margin-bottom:18px;
+}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#0369a1,#7c3aed,#be185d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:15px;color:var(--muted);max-width:560px;line-height:1.75;margin-bottom:32px;}
+.hero-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;
+  padding:5px 12px;border:1px solid var(--border2);color:var(--dim);
+  border-radius:20px;cursor:pointer;transition:all .15s;text-decoration:none;
+}
+.chip:hover{color:var(--text);border-color:#b8b0a0;background:var(--bg3);}
+
+/* ── SECTION BASE ── */
+.section{padding:56px 52px 64px;border-bottom:1px solid var(--border);}
+.section:last-child{border-bottom:none;}
+.sec-kicker{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.sec-kicker::before{content:'//';color:var(--dim);}
+.sec-h2{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(26px,3.5vw,40px);letter-spacing:-.02em;
+  line-height:1.1;margin-bottom:12px;
+}
+.sec-sub{font-size:14px;color:var(--muted);max-width:560px;line-height:1.7;margin-bottom:36px;}
+
+/* ── SYSTEM CARDS ── */
+.sys-category{margin-bottom:44px;}
+.sys-cat-head{
+  display:flex;align-items:center;gap:12px;
+  padding-bottom:12px;border-bottom:1px solid var(--border2);margin-bottom:16px;
+}
+.sys-cat-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);}
+.sys-cat-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;}
+.sys-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+.sys-card{
+  background:var(--bg3);border:1px solid var(--border);
+  padding:16px 18px;transition:border-color .15s,transform .15s;
+}
+.sys-card:hover{border-color:var(--s1);transform:translateY(-2px);box-shadow:0 4px 16px rgba(3,105,161,.08);}
+.sys-card .sc-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;margin-bottom:3px;}
+.sys-card .sc-en{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim);margin-bottom:8px;}
+.sys-card .sc-desc{font-size:12.5px;color:var(--muted);line-height:1.55;margin-bottom:10px;}
+.sc-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.ptags{display:flex;gap:4px;}
+.ptag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 6px;border-radius:2px;border:1px solid;}
+.ptag.web{border-color:rgba(3,105,161,.35);color:#0369a1;}
+.ptag.mobile{border-color:rgba(194,65,12,.35);color:#c2410c;}
+.ptag.desktop{border-color:rgba(22,101,52,.35);color:#166534;}
+.core-badge{font-family:'JetBrains Mono',monospace;font-size:8.5px;padding:1px 6px;border-radius:10px;background:rgba(194,65,12,.08);border:1px solid rgba(194,65,12,.3);color:#c2410c;}
+
+/* ── SKILL TABLE ── */
+.skill-proj{background:var(--bg3);border:1px solid var(--border);margin-bottom:14px;}
+.sp-head{
+  display:flex;align-items:center;gap:12px;padding:14px 18px;
+  border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.sp-bar{width:4px;height:36px;border-radius:2px;flex-shrink:0;}
+.sp-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+.sp-en{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim);}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;}
+.sp-col{padding:14px 16px;border-right:1px solid var(--border);}
+.sp-col:last-child{border-right:none;}
+.sp-col-title{
+  font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:5px;
+}
+.sp-col-title .cd{width:6px;height:6px;border-radius:50%;}
+.sp-col ul{list-style:none;padding:0;}
+.sp-col li{font-size:12px;color:var(--muted);padding:3px 0;display:flex;gap:6px;line-height:1.45;}
+.sp-col li::before{content:'›';color:var(--dim);flex-shrink:0;}
+
+/* ── DEV PROJECT CARDS ── */
+.dev-section-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:32px;}
+.dev-card{
+  background:var(--bg3);border:1px solid var(--border);
+  padding:18px;position:relative;transition:border-color .15s,transform .15s;
+}
+.dev-card:hover{transform:translateY(-2px);}
+.dev-card.beg{border-top:2px solid #166534;}
+.dev-card.int{border-top:2px solid #92400e;}
+.dev-card.adv{border-top:2px solid #b91c1c;}
+.lv-badge{
+  position:absolute;top:16px;right:16px;
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:2px;
+}
+.beg .lv-badge{background:rgba(22,101,52,.1);color:#166534;}
+.int .lv-badge{background:rgba(146,64,14,.1);color:#92400e;}
+.adv .lv-badge{background:rgba(185,28,28,.1);color:#b91c1c;}
+.dc-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;padding-right:60px;}
+.dc-en{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim);margin-bottom:8px;}
+.dc-desc{font-size:12.5px;color:var(--muted);line-height:1.55;margin-bottom:12px;}
+.stack-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+.stk{font-family:'JetBrains Mono',monospace;font-size:9.5px;padding:2px 6px;border:1px solid var(--border2);color:var(--dim);border-radius:2px;}
+.stk.fe{border-color:rgba(3,105,161,.35);color:#0369a1;}
+.stk.be{border-color:rgba(194,65,12,.35);color:#c2410c;}
+.stk.db{border-color:rgba(124,58,237,.35);color:#7c3aed;}
+.stk.infra{border-color:rgba(22,101,52,.35);color:#166534;}
+.dc-skills{border-top:1px solid var(--border);padding-top:10px;}
+.dc-skills-lbl{font-family:'JetBrains Mono',monospace;font-size:8.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:6px;}
+.dc-skills ul{list-style:none;padding:0;}
+.dc-skills li{font-size:12px;color:var(--muted);padding:2px 0;display:flex;gap:5px;}
+.dc-skills li::before{content:'▸';color:rgba(3,105,161,.5);flex-shrink:0;}
+
+/* ── ROADMAP TREE ── */
+.tree-branch{background:var(--bg3);border:1px solid var(--border);margin-bottom:12px;}
+.tb-head{
+  display:flex;align-items:center;gap:12px;padding:14px 18px;
+  border-bottom:1px solid var(--border);
+}
+.tb-icon{font-size:18px;}
+.tb-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+.tb-en{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim);}
+.tb-leaves{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;}
+.tb-leaf{padding:14px 18px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.tb-leaf:last-child{border-right:none;}
+.tl-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:6px;}
+.tl-projs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.tl-proj{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  padding:2px 7px;border-radius:2px;
+}
+.tl-resources{display:flex;flex-direction:column;gap:2px;}
+.tl-res{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  color:var(--dim);text-decoration:none;display:flex;align-items:center;gap:5px;
+  transition:color .15s;
+}
+.tl-res:hover{color:var(--s1);}
+.res-b{
+  font-size:8px;padding:1px 4px;border-radius:2px;
+  background:var(--bg2);border:1px solid var(--border);flex-shrink:0;
+}
+.res-b.free{color:#166534;border-color:rgba(22,101,52,.35);}
+.res-b.paid{color:#92400e;border-color:rgba(146,64,14,.35);}
+.res-b.th{color:#7c3aed;border-color:rgba(124,58,237,.35);}
+
+/* ── TOOLS ── */
+.tools-cat{margin-bottom:40px;}
+.tc-head{
+  display:flex;align-items:center;gap:10px;
+  padding-bottom:12px;border-bottom:1px solid var(--border2);margin-bottom:14px;
+}
+.tc-icon{font-size:17px;}
+.tc-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+.tc-en{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim);margin-left:auto;}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
+.tool-card{
+  background:var(--bg3);border:1px solid var(--border);
+  padding:14px 16px;transition:border-color .15s,transform .15s;
+}
+.tool-card:hover{border-color:var(--s5);transform:translateY(-2px);}
+.tool-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.tool-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;}
+.tbadge{
+  font-family:'JetBrains Mono',monospace;font-size:8.5px;
+  padding:2px 6px;border-radius:2px;white-space:nowrap;
+}
+.tbadge.oss{background:rgba(22,101,52,.08);border:1px solid rgba(22,101,52,.3);color:#166534;}
+.tbadge.forever{background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.25);color:#0369a1;}
+.tbadge.edu{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);color:#7c3aed;}
+.tbadge.warn{background:rgba(194,65,12,.08);border:1px solid rgba(194,65,12,.25);color:#c2410c;}
+.tool-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:8px;}
+.tool-link{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  color:var(--dim);text-decoration:none;transition:color .15s;
+  display:flex;align-items:center;gap:4px;
+}
+.tool-link::before{content:'↗';font-size:10px;}
+.tool-link:hover{color:var(--s5);}
+
+/* ── FEATURE SPEC ── */
+.feat-block{
+  background:var(--bg3);border:1px solid var(--border);
+  margin-bottom:14px;overflow:hidden;
+}
+.fb-head{
+  display:flex;align-items:center;gap:12px;padding:14px 18px;
+  border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.fb-bar{width:4px;height:36px;border-radius:2px;flex-shrink:0;}
+.fb-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+.fb-en{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim);}
+.fb-cols{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);}
+.fb-col{padding:14px 16px;border-right:1px solid var(--border);}
+.fb-col:last-child{border-right:none;}
+.fb-col-title{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px;
+  display:flex;align-items:center;gap:5px;
+}
+.fcd{width:6px;height:6px;border-radius:50%;}
+.fcd.must{background:#b91c1c;}
+.fcd.should{background:#92400e;}
+.fcd.nice{background:#166534;}
+.fb-col ul{list-style:none;padding:0;}
+.fb-col li{font-size:12px;color:var(--muted);padding:3.5px 0;display:flex;gap:6px;line-height:1.45;border-bottom:1px solid rgba(0,0,0,.04);}
+.fb-col li:last-child{border-bottom:none;}
+.fb-col li .lic{font-size:11px;flex-shrink:0;margin-top:1px;}
+.fb-foot{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  font-size:12px;
+}
+.ff-cell{padding:9px 16px;border-right:1px solid var(--border);}
+.ff-cell:last-child{border-right:none;}
+.ff-lbl{font-family:'JetBrains Mono',monospace;font-size:8.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);margin-bottom:3px;}
+.ff-val{color:var(--muted);line-height:1.4;}
+.ff-val strong{color:var(--text);}
+
+/* ── FOUNDATION ── */
+.foundation-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:36px;}
+.f-block{background:var(--bg3);border:1px solid var(--border);padding:16px;}
+.f-block h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.f-block ul{list-style:none;padding:0;}
+.f-block li{font-size:12px;color:var(--muted);padding:3px 0;display:flex;gap:6px;line-height:1.45;}
+.f-block li::before{content:'›';color:var(--dim);flex-shrink:0;}
+
+/* ── MILESTONE ── */
+.ms-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:32px;}
+.ms-card{background:var(--bg3);border:1px solid var(--border);padding:16px;position:relative;overflow:hidden;}
+.ms-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.ms-card.m1::before{background:#166534;}
+.ms-card.m2::before{background:#92400e;}
+.ms-card.m3::before{background:#c2410c;}
+.ms-card.m4::before{background:#b91c1c;}
+.ms-card.m5::before{background:#7c3aed;}
+.ms-num{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;color:#ccc8bc;line-height:1;margin-bottom:6px;}
+.ms-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;}
+.ms-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.ms-time{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim);margin-top:8px;}
+
+/* ── SECTION DIVIDER ── */
+.sec-div{height:1px;background:linear-gradient(to right,transparent,var(--border2),transparent);margin:0;}
+
+/* ── UTILITY ── */
+.row{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px;}
+.note-box{
+  background:rgba(194,65,12,.06);border-left:3px solid #c2410c;
+  padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#c2410c;line-height:1.55;
+  display:flex;gap:8px;
+}
+.note-box::before{content:'⚠';flex-shrink:0;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .section,.hero{padding:40px 24px 48px;}
+  .sp-grid,.fb-cols,.fb-foot{grid-template-columns:1fr;}
+  .sp-col,.fb-col,.ff-cell{border-right:none;border-bottom:1px solid var(--border);}
+  .sp-col:last-child,.fb-col:last-child,.ff-cell:last-child{border-bottom:none;}
+  .tb-leaves{grid-template-columns:1fr;}
+  .tb-leaf{border-right:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="brand">Enterprise<br>Systems Guide</div>
+    <div class="ver">Complete Reference v1.0</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-group">
+      <div class="sb-group-label">Overview</div>
+      <a class="sb-link" href="#s1"><span class="sb-dot" style="background:var(--s1)"></span>ระบบทั้งหมด</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-group-label">Skills</div>
+      <a class="sb-link" href="#s2"><span class="sb-dot" style="background:var(--s2)"></span>สกิลที่ต้องมี</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-group-label">Projects</div>
+      <a class="sb-link" href="#s3"><span class="sb-dot" style="background:var(--s3)"></span>โปรเจ็คแนะนำ</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-group-label">Learning</div>
+      <a class="sb-link" href="#s4"><span class="sb-dot" style="background:var(--s4)"></span>Roadmap + แหล่งเรียน</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-group-label">Tools</div>
+      <a class="sb-link" href="#s5"><span class="sb-dot" style="background:var(--s5)"></span>เครื่องมือฟรี</a>
+    </div>
+    <div class="sb-group">
+      <div class="sb-group-label">Features</div>
+      <a class="sb-link" href="#s6"><span class="sb-dot" style="background:var(--s6)"></span>Feature Spec</a>
+    </div>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Complete Guide — Enterprise System Developer</div>
+  <h1>คู่มือรวม<br><em>Enterprise Systems</em></h1>
+  <p class="hero-sub">รวบรวมทุกสิ่งที่ Developer ต้องรู้ ตั้งแต่ภาพรวมระบบ, สกิลที่ต้องมี, โปรเจ็คแนะนำ, Roadmap การเรียนรู้, เครื่องมือฟรี ไปจนถึง Feature Specification ของแต่ละระบบ</p>
+  <div class="hero-chips">
+    <a class="chip" href="#s1">01 ระบบทั้งหมด</a>
+    <a class="chip" href="#s2">02 สกิลที่ต้องมี</a>
+    <a class="chip" href="#s3">03 โปรเจ็คแนะนำ</a>
+    <a class="chip" href="#s4">04 Roadmap</a>
+    <a class="chip" href="#s5">05 เครื่องมือฟรี</a>
+    <a class="chip" href="#s6">06 Feature Spec</a>
+  </div>
+</section>
+
+<!-- ═══════════════════ S1: SYSTEMS ═══════════════════ -->
+<section class="section" id="s1">
+  <div class="sec-kicker" style="color:var(--s1)">01 — System Inventory</div>
+  <h2 class="sec-h2" style="color:var(--text)">ระบบหลักที่องค์กรควรมี</h2>
+  <p class="sec-sub">15 ระบบหลักที่พบในองค์กร แบ่งตาม Platform ที่เหมาะสม</p>
+
+  <div class="sys-category">
+    <div class="sys-cat-head"><span class="sys-cat-num">01</span><span class="sys-cat-title">ระบบบริหารทรัพยากรองค์กร</span></div>
+    <div class="sys-grid">
+      <div class="sys-card"><div class="sc-name">ระบบ ERP</div><div class="sc-en">Enterprise Resource Planning</div><div class="sc-desc">รวมบัญชี การเงิน คลังสินค้า จัดซื้อ HR ไว้ที่เดียว ลดความซ้ำซ้อน</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag desktop">Desktop</span></div><span class="core-badge">core</span></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบบัญชี-การเงิน</div><div class="sc-en">Accounting &amp; Finance</div><div class="sc-desc">บันทึกรายรับ-รายจ่าย ใบกำกับภาษี งบการเงิน กระทบยอดธนาคารอัตโนมัติ</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag desktop">Desktop</span></div></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบจัดซื้อจัดจ้าง</div><div class="sc-en">Procurement</div><div class="sc-desc">ออกใบขอซื้อ ใบสั่งซื้อ เปรียบเทียบราคา approval workflow หลายระดับ</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบ HRM / HRIS</div><div class="sc-en">Human Resource Management</div><div class="sc-desc">ข้อมูลพนักงาน เงินเดือน สวัสดิการ ลา-มาสาย ประเมินผลงาน</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div></div>
+    </div>
+  </div>
+
+  <div class="sys-category">
+    <div class="sys-cat-head"><span class="sys-cat-num">02</span><span class="sys-cat-title">ระบบติดตามและปฏิบัติการ</span></div>
+    <div class="sys-grid">
+      <div class="sys-card"><div class="sc-name">ระบบติดตามงาน</div><div class="sc-en">Task / Project Tracking</div><div class="sc-desc">มอบหมายงาน Kanban ติดตามความคืบหน้า กำหนดเส้นตาย แจ้งเตือนทีม</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag desktop">Desktop</span><span class="ptag mobile">Mobile</span></div><span class="core-badge">core</span></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบติดตามสินค้า/ขนส่ง</div><div class="sc-en">Logistics Tracking</div><div class="sc-desc">ติดตามการจัดส่ง ตำแหน่งยานพาหนะ GPS real-time แจ้งเตือนลูกค้า</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบบริหารคลังสินค้า</div><div class="sc-en">Warehouse Management (WMS)</div><div class="sc-desc">รับ-เบิกสินค้า สแกน barcode นับสต๊อก จัดตำแหน่งในคลัง</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบบำรุงรักษา</div><div class="sc-en">Maintenance / CMMS</div><div class="sc-desc">วางแผนซ่อมบำรุงเชิงป้องกัน แจ้งซ่อม บันทึกประวัติ ติดตามช่าง</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div></div>
+    </div>
+  </div>
+
+  <div class="sys-category">
+    <div class="sys-cat-head"><span class="sys-cat-num">03</span><span class="sys-cat-title">ระบบลูกค้าและการขาย</span></div>
+    <div class="sys-grid">
+      <div class="sys-card"><div class="sc-name">ระบบ CRM</div><div class="sc-en">Customer Relationship Management</div><div class="sc-desc">บันทึกข้อมูลลูกค้า ประวัติการติดต่อ sales pipeline โอกาสการขาย</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div><span class="core-badge">core</span></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบขายหน้าร้าน (POS)</div><div class="sc-en">Point of Sale</div><div class="sc-desc">บันทึกการขาย ออกใบเสร็จ จัดการส่วนลด เชื่อมสต๊อก offline-first</div><div class="sc-bottom"><div class="ptags"><span class="ptag desktop">Desktop</span><span class="ptag mobile">Mobile</span></div></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบ E-commerce</div><div class="sc-en">Online Store</div><div class="sc-desc">หน้าร้านออนไลน์ ตะกร้าสินค้า ชำระเงิน จัดการออเดอร์ SEO-ready</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบบริการลูกค้า</div><div class="sc-en">Helpdesk / Ticketing</div><div class="sc-desc">รับเรื่องร้องเรียน ติดตาม Ticket SLA timer วัดผล CSAT</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div></div>
+    </div>
+  </div>
+
+  <div class="sys-category">
+    <div class="sys-cat-head"><span class="sys-cat-num">04</span><span class="sys-cat-title">ระบบข้อมูลและการตัดสินใจ</span></div>
+    <div class="sys-grid">
+      <div class="sys-card"><div class="sc-name">BI / Dashboard</div><div class="sc-en">Business Intelligence</div><div class="sc-desc">รวบรวมข้อมูลหลายระบบ แสดง KPI กราฟ real-time แจ้งเตือนเมื่อต่ำกว่า target</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag desktop">Desktop</span></div></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบจัดการเอกสาร</div><div class="sc-en">Document Management (DMS)</div><div class="sc-desc">จัดเก็บไฟล์ ค้นหา versioning กำหนดสิทธิ์ audit log การเข้าถึง</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span><span class="ptag desktop">Desktop</span></div></div></div>
+      <div class="sys-card"><div class="sc-name">ระบบควบคุมสิทธิ์</div><div class="sc-en">Identity &amp; Access Management</div><div class="sc-desc">บริหารบัญชีผู้ใช้ RBAC SSO 2FA เป็น foundation ของทุกระบบ</div><div class="sc-bottom"><div class="ptags"><span class="ptag web">Web</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ S2: SKILLS ═══════════════════ -->
+<section class="section" id="s2">
+  <div class="sec-kicker" style="color:var(--s2)">02 — Skill Requirements</div>
+  <h2 class="sec-h2">สกิลและความรู้<br>ที่ต้องใช้แต่ละโปรเจ็ค</h2>
+  <p class="sec-sub">แต่ละโปรเจ็คต้องการสกิลเทคนิค ความรู้เชิงธุรกิจ และแนวทางสร้างรายได้ที่แตกต่างกัน</p>
+
+  <!-- ERP -->
+  <div class="skill-proj">
+    <div class="sp-head"><div class="sp-bar" style="background:#ff6b9d"></div><div><div class="sp-name">ERP + บัญชี-การเงิน</div><div class="sp-en">Enterprise Resource Planning / Accounting</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag desktop">Desktop</span></div></div>
+    <div class="sp-grid">
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#0369a1"></span>เทคนิค</div><ul><li>Database design ซับซ้อน (transaction integrity)</li><li>Modular architecture, REST/GraphQL API</li><li>Reporting engine (PDF/Excel export)</li><li>Audit log ห้ามแก้ไขย้อนหลัง</li><li>Decimal arithmetic (ไม่ใช้ float)</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#92400e"></span>ความรู้ธุรกิจ</div><ul><li>หลักบัญชีคู่ (double-entry bookkeeping)</li><li>ผังบัญชี มาตรฐาน TFRS/IFRS</li><li>ภาษีมูลค่าเพิ่ม ภาษีหัก ณ ที่จ่าย</li><li>Workflow PR → PO → GR → Invoice</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#166534"></span>สร้างรายได้</div><ul><li>License รายปี หรือ SaaS subscription</li><li>คิดค่า implementation/customization แยก</li><li>ต้นทุน support สูง ต้องคำนวณใน pricing</li></ul></div>
+    </div>
+  </div>
+
+  <!-- HRM -->
+  <div class="skill-proj">
+    <div class="sp-head"><div class="sp-bar" style="background:#ffa94d"></div><div><div class="sp-name">HRM / Payroll</div><div class="sp-en">Human Resource Management</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div>
+    <div class="sp-grid">
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#0369a1"></span>เทคนิค</div><ul><li>Cron job สำหรับคำนวณเงินเดือนรอบบิล</li><li>Mobile: GPS / face recognition ลงเวลา</li><li>PDF generation สลิปเงินเดือน</li><li>State machine (ลา: Pending → Approved)</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#92400e"></span>ความรู้ธุรกิจ</div><ul><li>กฎหมายแรงงาน ประกันสังคม กองทุน</li><li>สูตรคำนวณภาษีเงินได้บุคคลธรรมดา</li><li>PDPA — ข้อมูลพนักงานอ่อนไหวมาก</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#166534"></span>สร้างรายได้</div><ul><li>per employee/เดือน เป็นมาตรฐานตลาด</li><li>เพิ่มมูลค่าด้วย mobile check-in app</li></ul></div>
+    </div>
+  </div>
+
+  <!-- LOGISTICS + WMS -->
+  <div class="skill-proj">
+    <div class="sp-head"><div class="sp-bar" style="background:#4dabf7"></div><div><div class="sp-name">Logistics + WMS</div><div class="sp-en">Tracking / Warehouse Management</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div>
+    <div class="sp-grid">
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#0369a1"></span>เทคนิค</div><ul><li>GPS tracking, WebSocket real-time</li><li>Google Maps / Mapbox API, geofencing</li><li>Barcode/QR scanning บน mobile</li><li>Concurrency control เมื่อหลายคนเบิกพร้อมกัน</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#92400e"></span>ความรู้ธุรกิจ</div><ul><li>Flow คลัง: รับ-จัดเก็บ-หยิบ-แพ็ค-ส่ง</li><li>Lot/Serial number, วันหมดอายุ</li><li>SLA การจัดส่ง, last-mile delivery</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#166534"></span>สร้างรายได้</div><ul><li>per vehicle หรือ per trip (usage-based)</li><li>ขาย module เสริม ERP หรือแยกให้ 3PL</li></ul></div>
+    </div>
+  </div>
+
+  <!-- CRM + POS + ECOM -->
+  <div class="skill-proj">
+    <div class="sp-head"><div class="sp-bar" style="background:#da77f2"></div><div><div class="sp-name">CRM + POS + E-commerce</div><div class="sp-en">Sales & Customer Systems</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span><span class="ptag desktop">Desktop</span></div></div>
+    <div class="sp-grid">
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#0369a1"></span>เทคนิค</div><ul><li>Pipeline/funnel data model</li><li>Offline-first POS + sync strategy</li><li>Payment gateway + webhook (Omise/Stripe)</li><li>SEO + Core Web Vitals (E-commerce)</li><li>Inventory lock ขณะชำระเงิน</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#92400e"></span>ความรู้ธุรกิจ</div><ul><li>Sales funnel, lead scoring</li><li>กฎหมายใบกำกับภาษีอย่างย่อ/เต็ม</li><li>Digital marketing พื้นฐาน</li><li>ส่วนลด โปรโมชั่น แต้มสะสม</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#166534"></span>สร้างรายได้</div><ul><li>CRM: per seat/เดือน</li><li>POS: hardware bundle + subscription</li><li>E-commerce: % GMV หรือรายเดือน</li></ul></div>
+    </div>
+  </div>
+
+  <!-- BI + DMS + IAM -->
+  <div class="skill-proj">
+    <div class="sp-head"><div class="sp-bar" style="background:#63e6be"></div><div><div class="sp-name">BI + DMS + IAM</div><div class="sp-en">Data / Document / Security Systems</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span></div></div>
+    <div class="sp-grid">
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#0369a1"></span>เทคนิค</div><ul><li>ETL pipeline ดึงข้อมูลหลายระบบ</li><li>S3/MinIO file storage, versioning</li><li>OAuth2/OIDC/SAML สำหรับ SSO</li><li>RBAC/ABAC, rate limiting, encryption</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#92400e"></span>ความรู้ธุรกิจ</div><ul><li>KPI design ตรงเป้าหมายธุรกิจ</li><li>มาตรฐานการจัดเก็บเอกสารตามกฎหมาย</li><li>ISO 27001 พื้นฐาน, PDPA</li></ul></div>
+      <div class="sp-col"><div class="sp-col-title"><span class="cd" style="background:#166534"></span>สร้างรายได้</div><ul><li>BI: add-on premium tier</li><li>DMS: per GB storage</li><li>IAM: B2B API infrastructure service</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ S3: DEV PROJECTS ═══════════════════ -->
+<section class="section" id="s3">
+  <div class="sec-kicker" style="color:var(--s3)">03 — Developer Projects</div>
+  <h2 class="sec-h2">โปรเจ็คแนะนำ<br>สำหรับ Developer</h2>
+  <p class="sec-sub">เลือกฝึกตามระดับ แต่ละโปรเจ็คมี tech stack และสกิลที่จะได้รับ</p>
+
+  <!-- Foundation -->
+  <div class="foundation-grid">
+    <div class="f-block"><h4>⚙️ Core Programming</h4><ul><li>ชำนาญ 1 ภาษา (JS/Python/Go)</li><li>OOP + functional concept</li><li>Git version control</li></ul></div>
+    <div class="f-block"><h4>🗄️ Database</h4><ul><li>SQL: JOIN, INDEX, Transaction</li><li>Database design, normalization</li><li>รู้จัก NoSQL เลือกใช้เป็น</li></ul></div>
+    <div class="f-block"><h4>🌐 Web & API</h4><ul><li>HTTP, REST API design</li><li>Auth: JWT, OAuth, RBAC</li><li>Frontend framework 1 ตัว</li></ul></div>
+    <div class="f-block"><h4>☁️ Deploy</h4><ul><li>Linux command line</li><li>Docker basics</li><li>Cloud deploy อย่างน้อย 1 ตัว</li></ul></div>
+    <div class="f-block"><h4>🔒 Security</h4><ul><li>OWASP Top 10</li><li>Input validation, sanitization</li><li>PDPA พื้นฐาน</li></ul></div>
+    <div class="f-block"><h4>🧠 Soft Skills</h4><ul><li>แปล requirement เป็น tech spec</li><li>วางแผน scope + estimate</li><li>เขียน documentation</li></ul></div>
+  </div>
+
+  <!-- Beginner -->
+  <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--s3);margin:24px 0 12px;display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;background:var(--s3);border-radius:50%;display:inline-block;"></span>Beginner Projects</div>
+  <div class="dev-section-grid">
+    <div class="dev-card beg"><span class="lv-badge">Beginner</span><div class="dc-name">Budget Tracker</div><div class="dc-en">Personal Finance App</div><div class="dc-desc">บันทึกรายรับ-รายจ่าย แบ่งหมวดหมู่ กราฟสรุปรายเดือน</div><div class="stack-row"><span class="stk fe">React</span><span class="stk be">Node.js</span><span class="stk db">SQLite</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>CRUD API ครบวงจร</li><li>Data visualization เบื้องต้น</li><li>User authentication</li></ul></div></div>
+    <div class="dev-card beg"><span class="lv-badge">Beginner</span><div class="dc-name">ระบบลงเวลาเข้า-ออก</div><div class="dc-en">Attendance Check-in App</div><div class="dc-desc">Check-in ผ่าน mobile หรือ QR code สรุปชั่วโมงทำงาน</div><div class="stack-row"><span class="stk fe">Flutter</span><span class="stk db">Firebase</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>Mobile development เบื้องต้น</li><li>QR code generation & scanning</li><li>Realtime database</li></ul></div></div>
+    <div class="dev-card beg"><span class="lv-badge">Beginner</span><div class="dc-name">Kanban Task Board</div><div class="dc-en">Task Manager</div><div class="dc-desc">สร้าง board ลาก Card ระหว่างคอลัมน์ แชร์กับทีม</div><div class="stack-row"><span class="stk fe">React + DnD</span><span class="stk db">Supabase</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>Drag-and-drop UI</li><li>Real-time sync</li><li>Shared state management</li></ul></div></div>
+    <div class="dev-card beg"><span class="lv-badge">Beginner</span><div class="dc-name">CSV Data Visualizer</div><div class="dc-en">Dashboard Tool</div><div class="dc-desc">Upload CSV แสดงผลเป็น Bar/Line/Pie chart เลือก column ได้</div><div class="stack-row"><span class="stk fe">React + Recharts</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>CSV parsing (PapaParse)</li><li>Dynamic data binding</li><li>Chart library</li></ul></div></div>
+  </div>
+
+  <!-- Intermediate -->
+  <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--s5);margin:24px 0 12px;display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;background:var(--s5);border-radius:50%;display:inline-block;"></span>Intermediate Projects</div>
+  <div class="dev-section-grid">
+    <div class="dev-card int"><span class="lv-badge">Intermediate</span><div class="dc-name">ระบบบัญชีร้านค้าเล็ก</div><div class="dc-en">Small Business Accounting</div><div class="dc-desc">ออกใบเสร็จ ติดตามลูกหนี้/เจ้าหนี้ สรุปงบกำไรขาดทุน</div><div class="stack-row"><span class="stk fe">React</span><span class="stk be">Express</span><span class="stk db">PostgreSQL</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>หลักบัญชีคู่ในทางปฏิบัติ</li><li>PDF generation (ใบเสร็จ)</li><li>Complex SQL & reporting</li></ul></div></div>
+    <div class="dev-card int"><span class="lv-badge">Intermediate</span><div class="dc-name">ระบบจัดการการลา</div><div class="dc-en">Leave Management System</div><div class="dc-desc">ยื่นลา อนุมัติหลายขั้น ตรวจสอบโควตา ส่ง email แจ้งเตือน</div><div class="stack-row"><span class="stk fe">React</span><span class="stk be">Node.js</span><span class="stk db">MySQL</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>State machine (Pending→Approved)</li><li>Email notification</li><li>Calendar integration</li></ul></div></div>
+    <div class="dev-card int"><span class="lv-badge">Intermediate</span><div class="dc-name">ระบบ Sales Pipeline CRM</div><div class="dc-en">Deal Pipeline</div><div class="dc-desc">Lead → Deal → Won/Lost conversion rate dashboard ยอดขาย</div><div class="stack-row"><span class="stk fe">React</span><span class="stk be">NestJS</span><span class="stk db">PostgreSQL</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>Pipeline state design</li><li>Aggregation queries</li><li>KPI calculation</li></ul></div></div>
+    <div class="dev-card int"><span class="lv-badge">Intermediate</span><div class="dc-name">Mobile POS</div><div class="dc-en">Point of Sale Mobile</div><div class="dc-desc">สแกนสินค้า ชำระเงิน QR พร้อมเพย์ offline-first</div><div class="stack-row"><span class="stk fe">Flutter</span><span class="stk be">FastAPI</span><span class="stk db">PostgreSQL</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>Barcode scanning mobile</li><li>Offline + sync</li><li>Payment gateway</li></ul></div></div>
+    <div class="dev-card int"><span class="lv-badge">Intermediate</span><div class="dc-name">ระบบติดตามพัสดุ</div><div class="dc-en">Parcel Tracking</div><div class="dc-desc">สร้าง tracking number อัปเดตสถานะ timeline แจ้งลูกค้า</div><div class="stack-row"><span class="stk fe">React</span><span class="stk be">Express</span><span class="stk db">PostgreSQL</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>Event log data model</li><li>SMS/Email webhook</li><li>Public tracking page</li></ul></div></div>
+    <div class="dev-card int"><span class="lv-badge">Intermediate</span><div class="dc-name">Auth System + RBAC</div><div class="dc-en">Role-Based Access Control</div><div class="dc-desc">สมัคร login 2FA กำหนด Role-Permission middleware ทุก route</div><div class="stack-row"><span class="stk fe">React</span><span class="stk be">NestJS</span><span class="stk db">PostgreSQL</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>JWT + Refresh token</li><li>TOTP 2FA</li><li>Policy-based authorization</li></ul></div></div>
+  </div>
+
+  <!-- Advanced -->
+  <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:#f85149;margin:24px 0 12px;display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;background:#b91c1c;border-radius:50%;display:inline-block;"></span>Advanced Projects</div>
+  <div class="dev-section-grid">
+    <div class="dev-card adv"><span class="lv-badge">Advanced</span><div class="dc-name">Mini ERP — SME</div><div class="dc-en">Modular ERP System</div><div class="dc-desc">รวม module บัญชี คลัง จัดซื้อ HR เบื้องต้น เชื่อมกันผ่าน API</div><div class="stack-row"><span class="stk fe">Next.js</span><span class="stk be">NestJS</span><span class="stk db">PostgreSQL</span><span class="stk infra">Docker</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>Modular architecture design</li><li>Multi-tenant isolation</li><li>Audit log system</li></ul></div></div>
+    <div class="dev-card adv"><span class="lv-badge">Advanced</span><div class="dc-name">GPS Fleet Tracker</div><div class="dc-en">Real-time Tracking</div><div class="dc-desc">รับ GPS real-time แสดงแผนที่ แจ้ง geofence เข้า-ออกพื้นที่</div><div class="stack-row"><span class="stk fe">React+Mapbox</span><span class="stk be">Go</span><span class="stk db">TimescaleDB</span><span class="stk infra">MQTT</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>WebSocket / MQTT</li><li>Geospatial query (PostGIS)</li><li>Time-series data</li></ul></div></div>
+    <div class="dev-card adv"><span class="lv-badge">Advanced</span><div class="dc-name">E-commerce Platform</div><div class="dc-en">Multi-vendor Marketplace</div><div class="dc-desc">ร้านค้า cart checkout payment order management seller dashboard</div><div class="stack-row"><span class="stk fe">Next.js</span><span class="stk be">Node.js</span><span class="stk db">PG+Redis</span><span class="stk infra">S3+CDN</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>Payment webhook handling</li><li>Inventory concurrency lock</li><li>Multi-tenant seller isolation</li></ul></div></div>
+    <div class="dev-card adv"><span class="lv-badge">Advanced</span><div class="dc-name">Payroll Engine</div><div class="dc-en">Automated Payroll</div><div class="dc-desc">คำนวณเงินเดือน ภาษี ประกันสังคม สร้างสลิป PDF รอบบิลอัตโนมัติ</div><div class="stack-row"><span class="stk fe">Next.js</span><span class="stk be">Python</span><span class="stk db">PostgreSQL</span></div><div class="dc-skills"><div class="dc-skills-lbl">สกิลที่จะได้</div><ul><li>Decimal arithmetic</li><li>Cron scheduled jobs</li><li>กฎหมายแรงงาน/ภาษี</li></ul></div></div>
+  </div>
+
+  <!-- Milestones -->
+  <div class="ms-grid">
+    <div class="ms-card m1"><div class="ms-num">01</div><div class="ms-name">Hello World Project</div><div class="ms-desc">Full-stack app แรก: CRUD + Auth + DB deploy ขึ้น cloud</div><div class="ms-time">⏱ ภายใน 3 เดือนแรก</div></div>
+    <div class="ms-card m2"><div class="ms-num">02</div><div class="ms-name">First Real User</div><div class="ms-desc">นำไปให้ธุรกิจจริง 1 แห่งใช้งาน รับ feedback จริง</div><div class="ms-time">⏱ เดือนที่ 4–6</div></div>
+    <div class="ms-card m3"><div class="ms-num">03</div><div class="ms-name">First Paid Customer</div><div class="ms-desc">ลูกค้าแรกที่จ่ายเงิน แม้ 500 บาท/เดือน = validate แล้ว</div><div class="ms-time">⏱ เดือนที่ 6–12</div></div>
+    <div class="ms-card m4"><div class="ms-num">04</div><div class="ms-name">Multi-tenant System</div><div class="ms-desc">รองรับลูกค้าหลายราย แยกข้อมูล มี onboarding flow</div><div class="ms-time">⏱ ปีที่ 1–2</div></div>
+    <div class="ms-card m5"><div class="ms-num">05</div><div class="ms-name">Recurring Revenue</div><div class="ms-desc">รายได้ subscription สม่ำเสมอ ระบบดูแลตัวเองได้</div><div class="ms-time">⏱ ปีที่ 2+</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ S4: ROADMAP ═══════════════════ -->
+<section class="section" id="s4">
+  <div class="sec-kicker" style="color:var(--s4)">04 — Skill Roadmap</div>
+  <h2 class="sec-h2">Roadmap ทักษะ<br>+ แหล่งเรียนรู้</h2>
+  <p class="sec-sub">7 กิ่งทักษะหลักที่ Developer ระบบองค์กรต้องมี พร้อมโปรเจ็คฝึกและแหล่งเรียนรู้ฟรี</p>
+
+  <!-- Core Programming -->
+  <div class="tree-branch">
+    <div class="tb-head"><span class="tb-icon">⚙️</span><div><div class="tb-name">Core Programming</div><div class="tb-en">รากฐานการเขียนโค้ด</div></div></div>
+    <div class="tb-leaves">
+      <div class="tb-leaf">
+        <div class="tl-title">JavaScript / TypeScript</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.25);color:#0369a1;">Budget Tracker</span><span class="tl-proj" style="background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.25);color:#0369a1;">URL Shortener</span><span class="tl-proj" style="background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.25);color:#0369a1;">Quiz App</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://javascript.info" target="_blank"><span class="res-b free">FREE</span>javascript.info</a><a class="tl-res" href="https://www.typescriptlang.org/docs" target="_blank"><span class="res-b free">FREE</span>TypeScript Official Docs</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">Python</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.25);color:#0369a1;">Sales Report Automation</span><span class="tl-proj" style="background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.25);color:#0369a1;">REST API Starter</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://docs.python.org/3/tutorial" target="_blank"><span class="res-b free">FREE</span>Python Official Tutorial</a><a class="tl-res" href="https://fastapi.tiangolo.com" target="_blank"><span class="res-b free">FREE</span>FastAPI Docs</a><a class="tl-res" href="https://www.youtube.com/@KongRuksiang" target="_blank"><span class="res-b th">TH</span>Kong Ruksiang YouTube</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">Data Structures & Algorithms</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.25);color:#0369a1;">Sorting Visualizer</span><span class="tl-proj" style="background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.25);color:#0369a1;">Pathfinding Visualizer</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://neetcode.io" target="_blank"><span class="res-b free">FREE</span>NeetCode.io</a><a class="tl-res" href="https://cs50.harvard.edu" target="_blank"><span class="res-b free">FREE</span>CS50 Harvard</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Database -->
+  <div class="tree-branch">
+    <div class="tb-head"><span class="tb-icon">🗄️</span><div><div class="tb-name">Database</div><div class="tb-en">ฐานข้อมูล</div></div></div>
+    <div class="tb-leaves">
+      <div class="tb-leaf">
+        <div class="tl-title">SQL & Relational DB</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);color:#7c3aed;">Library Management DB</span><span class="tl-proj" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);color:#7c3aed;">Inventory Schema</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://sqlbolt.com" target="_blank"><span class="res-b free">FREE</span>SQLBolt Interactive</a><a class="tl-res" href="https://pgexercises.com" target="_blank"><span class="res-b free">FREE</span>PostgreSQL Exercises</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">ORM (Prisma/Drizzle)</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);color:#7c3aed;">Blog API with Comments</span><span class="tl-proj" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);color:#7c3aed;">Todo App with Tags</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://prisma.io/docs" target="_blank"><span class="res-b free">FREE</span>Prisma Official Docs</a><a class="tl-res" href="https://orm.drizzle.team" target="_blank"><span class="res-b free">FREE</span>Drizzle ORM Docs</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">NoSQL & Cache (Redis/MongoDB)</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);color:#7c3aed;">Chat Message Store</span><span class="tl-proj" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);color:#7c3aed;">Rate Limiter API</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://university.mongodb.com" target="_blank"><span class="res-b free">FREE</span>MongoDB University</a><a class="tl-res" href="https://redis.io/learn" target="_blank"><span class="res-b free">FREE</span>Redis Official Learn</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backend -->
+  <div class="tree-branch">
+    <div class="tb-head"><span class="tb-icon">🔌</span><div><div class="tb-name">Backend & API</div><div class="tb-en">เซิร์ฟเวอร์และ API</div></div></div>
+    <div class="tb-leaves">
+      <div class="tb-leaf">
+        <div class="tl-title">REST API Design</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(194,65,12,.08);border:1px solid rgba(194,65,12,.25);color:#c2410c;">Expense Tracker API</span><span class="tl-proj" style="background:rgba(194,65,12,.08);border:1px solid rgba(194,65,12,.25);color:#c2410c;">Employee Directory API</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://theodinproject.com" target="_blank"><span class="res-b free">FREE</span>The Odin Project</a><a class="tl-res" href="https://docs.nestjs.com" target="_blank"><span class="res-b free">FREE</span>NestJS Official Docs</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">Authentication & Security</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(194,65,12,.08);border:1px solid rgba(194,65,12,.25);color:#c2410c;">Auth System + 2FA</span><span class="tl-proj" style="background:rgba(194,65,12,.08);border:1px solid rgba(194,65,12,.25);color:#c2410c;">RBAC Admin Panel</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://owasp.org/www-project-top-ten" target="_blank"><span class="res-b free">FREE</span>OWASP Top 10</a><a class="tl-res" href="https://jwt.io/introduction" target="_blank"><span class="res-b free">FREE</span>JWT.io Introduction</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">Workflow & Background Jobs</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(194,65,12,.08);border:1px solid rgba(194,65,12,.25);color:#c2410c;">Leave Approval System</span><span class="tl-proj" style="background:rgba(194,65,12,.08);border:1px solid rgba(194,65,12,.25);color:#c2410c;">Scheduled Emailer</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://docs.bullmq.io" target="_blank"><span class="res-b free">FREE</span>BullMQ Docs</a><a class="tl-res" href="https://stately.ai/docs" target="_blank"><span class="res-b free">FREE</span>XState / Stately</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Frontend -->
+  <div class="tree-branch">
+    <div class="tb-head"><span class="tb-icon">🖥️</span><div><div class="tb-name">Frontend</div><div class="tb-en">ส่วนหน้าของแอป</div></div></div>
+    <div class="tb-leaves">
+      <div class="tb-leaf">
+        <div class="tl-title">React & Next.js</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(22,101,52,.08);border:1px solid rgba(22,101,52,.25);color:#166534;">Admin Dashboard</span><span class="tl-proj" style="background:rgba(22,101,52,.08);border:1px solid rgba(22,101,52,.25);color:#166534;">CRM Web App</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://react.dev" target="_blank"><span class="res-b free">FREE</span>React Official Docs</a><a class="tl-res" href="https://nextjs.org/learn" target="_blank"><span class="res-b free">FREE</span>Next.js Learn</a><a class="tl-res" href="https://www.youtube.com/@PattaradetBoonma" target="_blank"><span class="res-b th">TH</span>Pattaradet YouTube</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">UI & Tailwind CSS</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(22,101,52,.08);border:1px solid rgba(22,101,52,.25);color:#166534;">Component Library</span><span class="tl-proj" style="background:rgba(22,101,52,.08);border:1px solid rgba(22,101,52,.25);color:#166534;">SaaS Landing Page</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://tailwindcss.com/docs" target="_blank"><span class="res-b free">FREE</span>Tailwind CSS Docs</a><a class="tl-res" href="https://ui.shadcn.com" target="_blank"><span class="res-b free">FREE</span>shadcn/ui</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">Data Visualization</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(22,101,52,.08);border:1px solid rgba(22,101,52,.25);color:#166534;">Sales KPI Dashboard</span><span class="tl-proj" style="background:rgba(22,101,52,.08);border:1px solid rgba(22,101,52,.25);color:#166534;">Stock Price Chart</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://recharts.org" target="_blank"><span class="res-b free">FREE</span>Recharts Docs</a><a class="tl-res" href="https://d3js.org" target="_blank"><span class="res-b free">FREE</span>D3.js Official</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile -->
+  <div class="tree-branch">
+    <div class="tb-head"><span class="tb-icon">📱</span><div><div class="tb-name">Mobile App</div><div class="tb-en">แอปมือถือ</div></div></div>
+    <div class="tb-leaves">
+      <div class="tb-leaf">
+        <div class="tl-title">Flutter (แนะนำ)</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(146,64,14,.08);border:1px solid rgba(146,64,14,.25);color:#92400e;">Attendance App</span><span class="tl-proj" style="background:rgba(146,64,14,.08);border:1px solid rgba(146,64,14,.25);color:#92400e;">Mobile POS</span><span class="tl-proj" style="background:rgba(146,64,14,.08);border:1px solid rgba(146,64,14,.25);color:#92400e;">Delivery App</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://flutter.dev/docs" target="_blank"><span class="res-b free">FREE</span>Flutter Official</a><a class="tl-res" href="https://www.udemy.com/course/learn-flutter-dart-to-build-ios-android-apps" target="_blank"><span class="res-b paid">PAID</span>Flutter Bootcamp Udemy</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">React Native / Expo</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(146,64,14,.08);border:1px solid rgba(146,64,14,.25);color:#92400e;">Field Inspection App</span><span class="tl-proj" style="background:rgba(146,64,14,.08);border:1px solid rgba(146,64,14,.25);color:#92400e;">Expense Claim Mobile</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://docs.expo.dev" target="_blank"><span class="res-b free">FREE</span>Expo Docs</a><a class="tl-res" href="https://reactnative.dev/docs/getting-started" target="_blank"><span class="res-b free">FREE</span>React Native Docs</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">Mobile-specific Skills</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(146,64,14,.08);border:1px solid rgba(146,64,14,.25);color:#92400e;">GPS Fleet Tracker App</span><span class="tl-proj" style="background:rgba(146,64,14,.08);border:1px solid rgba(146,64,14,.25);color:#92400e;">Offline Stock Counter</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://firebase.google.com/docs/cloud-messaging" target="_blank"><span class="res-b free">FREE</span>Firebase Cloud Messaging</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Infra -->
+  <div class="tree-branch">
+    <div class="tb-head"><span class="tb-icon">☁️</span><div><div class="tb-name">Infra & DevOps</div><div class="tb-en">โครงสร้างพื้นฐาน</div></div></div>
+    <div class="tb-leaves">
+      <div class="tb-leaf">
+        <div class="tl-title">Docker & Containers</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(185,28,28,.08);border:1px solid rgba(185,28,28,.25);color:#b91c1c;">Containerize Existing App</span><span class="tl-proj" style="background:rgba(185,28,28,.08);border:1px solid rgba(185,28,28,.25);color:#b91c1c;">Full-stack Compose</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://docs.docker.com/get-started" target="_blank"><span class="res-b free">FREE</span>Docker Get Started</a><a class="tl-res" href="https://www.youtube.com/@TechWorldwithNana" target="_blank"><span class="res-b free">FREE</span>TechWorld with Nana</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">Cloud & Deploy</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(185,28,28,.08);border:1px solid rgba(185,28,28,.25);color:#b91c1c;">Deploy Full-stack VPS</span><span class="tl-proj" style="background:rgba(185,28,28,.08);border:1px solid rgba(185,28,28,.25);color:#b91c1c;">S3 File Upload Service</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://aws.amazon.com/training/free" target="_blank"><span class="res-b free">FREE</span>AWS Free Training</a><a class="tl-res" href="https://railway.com/docs" target="_blank"><span class="res-b free">FREE</span>Railway Docs</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">CI/CD & Git</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(185,28,28,.08);border:1px solid rgba(185,28,28,.25);color:#b91c1c;">Auto-deploy Pipeline</span><span class="tl-proj" style="background:rgba(185,28,28,.08);border:1px solid rgba(185,28,28,.25);color:#b91c1c;">Test + Lint on PR</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://docs.github.com/actions" target="_blank"><span class="res-b free">FREE</span>GitHub Actions Docs</a><a class="tl-res" href="https://learngitbranching.js.org" target="_blank"><span class="res-b free">FREE</span>Learn Git Branching</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Business -->
+  <div class="tree-branch">
+    <div class="tb-head"><span class="tb-icon">🧠</span><div><div class="tb-name">Business Domain</div><div class="tb-en">ความรู้เชิงธุรกิจ</div></div></div>
+    <div class="tb-leaves">
+      <div class="tb-leaf">
+        <div class="tl-title">บัญชี & การเงินพื้นฐาน</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(190,24,93,.08);border:1px solid rgba(190,24,93,.25);color:#be185d;">Invoice Generator</span><span class="tl-proj" style="background:rgba(190,24,93,.08);border:1px solid rgba(190,24,93,.25);color:#be185d;">VAT Calculator</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://www.youtube.com/@krunueng_acc" target="_blank"><span class="res-b th">TH</span>ครูหนึ่ง บัญชี YouTube</a><a class="tl-res" href="https://www.coursera.org/learn/financial-accounting" target="_blank"><span class="res-b free">FREE</span>Financial Accounting Coursera</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">กฎหมาย Developer ควรรู้</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(190,24,93,.08);border:1px solid rgba(190,24,93,.25);color:#be185d;">PDPA Consent Manager</span><span class="tl-proj" style="background:rgba(190,24,93,.08);border:1px solid rgba(190,24,93,.25);color:#be185d;">Data Deletion Portal</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://www.pdpc.or.th" target="_blank"><span class="res-b th">TH</span>PDPC.or.th Official</a><a class="tl-res" href="https://www.etda.or.th" target="_blank"><span class="res-b th">TH</span>ETDA กฎหมาย Digital</a></div>
+      </div>
+      <div class="tb-leaf">
+        <div class="tl-title">SaaS & Product Thinking</div>
+        <div class="tl-projs"><span class="tl-proj" style="background:rgba(190,24,93,.08);border:1px solid rgba(190,24,93,.25);color:#be185d;">Multi-tenant SaaS Starter</span><span class="tl-proj" style="background:rgba(190,24,93,.08);border:1px solid rgba(190,24,93,.25);color:#be185d;">Subscription Billing</span></div>
+        <div class="tl-resources"><a class="tl-res" href="https://www.lennysnewsletter.com" target="_blank"><span class="res-b free">FREE</span>Lenny's Newsletter</a><a class="tl-res" href="https://stripe.com/guides/atlas" target="_blank"><span class="res-b free">FREE</span>Stripe Atlas Guide</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ S5: FREE TOOLS ═══════════════════ -->
+<section class="section" id="s5">
+  <div class="sec-kicker" style="color:var(--s5)">05 — Zero Cost Stack</div>
+  <h2 class="sec-h2">เครื่องมือฟรีจริง<br>สำหรับ Developer</h2>
+  <p class="sec-sub">ฟรีถาวร ไม่มีกำหนดหมดอายุ ไม่ต้องกรอกบัตรเครดิต</p>
+
+  <div class="note-box">ระวัง Platform ที่มี free tier แบบ "หลับ" หลัง 15–30 นาที (cold start) เหมาะสำหรับ prototype ไม่ใช่ production จริง</div>
+
+  <div class="tools-cat">
+    <div class="tc-head"><span class="tc-icon">✏️</span><span class="tc-name">Code Editor</span></div>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">VS Code</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">Editor มาตรฐาน extension ครบ รองรับ AI tools</div><a class="tool-link" href="https://code.visualstudio.com" target="_blank">code.visualstudio.com</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Zed</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">Editor ใหม่เขียนด้วย Rust เปิดเร็วมาก AI built-in ฟรี</div><a class="tool-link" href="https://zed.dev" target="_blank">zed.dev</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">IntelliJ IDEA Community</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">IDE สำหรับ Java/Kotlin รุ่น Community ฟรีถาวร</div><a class="tool-link" href="https://www.jetbrains.com/idea/download" target="_blank">jetbrains.com/idea</a></div>
+    </div>
+  </div>
+
+  <div class="tools-cat">
+    <div class="tc-head"><span class="tc-icon">🗄️</span><span class="tc-name">Database & GUI</span></div>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">PostgreSQL</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">แนะนำเป็นอันดับ 1 รองรับ JSON, Full-text, Geo</div><a class="tool-link" href="https://postgresql.org" target="_blank">postgresql.org</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Redis (Community)</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">Cache, session, queue, pub/sub ฟรีถาวร</div><a class="tool-link" href="https://redis.io" target="_blank">redis.io</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">SQLite</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">File-based ไม่ต้องติดตั้ง server เหมาะ prototype/mobile</div><a class="tool-link" href="https://sqlite.org" target="_blank">sqlite.org</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">DBeaver Community</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">GUI ฟรีที่ดีที่สุด รองรับ PostgreSQL MySQL SQLite MongoDB</div><a class="tool-link" href="https://dbeaver.io" target="_blank">dbeaver.io</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Prisma ORM</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">Type-safe ORM + migration + Studio GUI ฟรีถาวร</div><a class="tool-link" href="https://prisma.io" target="_blank">prisma.io</a></div>
+    </div>
+  </div>
+
+  <div class="tools-cat">
+    <div class="tc-head"><span class="tc-icon">☁️</span><span class="tc-name">Deploy & Hosting</span></div>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Railway</div><span class="tbadge forever">Free Forever</span></div><div class="tool-desc">Deploy Node/Python/Go + PostgreSQL ฟรี $5/เดือน ไม่หลับ</div><a class="tool-link" href="https://railway.com" target="_blank">railway.com</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Vercel</div><span class="tbadge forever">Free Forever</span></div><div class="tool-desc">Deploy Next.js/React ฟรี bandwidth ไม่จำกัด</div><a class="tool-link" href="https://vercel.com" target="_blank">vercel.com</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Cloudflare Pages/Workers</div><span class="tbadge forever">Free Forever</span></div><div class="tool-desc">Edge function ฟรี 100,000 req/วัน ไม่มี cold start</div><a class="tool-link" href="https://pages.cloudflare.com" target="_blank">pages.cloudflare.com</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Coolify</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">Self-hosted PaaS deploy app+DB บน VPS ตัวเอง UI สวย</div><a class="tool-link" href="https://coolify.io" target="_blank">coolify.io</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">GitHub Pages</div><span class="tbadge forever">Free Forever</span></div><div class="tool-desc">Host static site จาก GitHub repo ฟรีถาวร</div><a class="tool-link" href="https://pages.github.com" target="_blank">pages.github.com</a></div>
+    </div>
+  </div>
+
+  <div class="tools-cat">
+    <div class="tc-head"><span class="tc-icon">🧪</span><span class="tc-name">API Testing</span></div>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Hoppscotch</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">ใช้แทน Postman ได้ บน browser ฟรีถาวร รองรับ REST/GraphQL/WS</div><a class="tool-link" href="https://hoppscotch.io" target="_blank">hoppscotch.io</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Bruno</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">API client desktop เก็บ collection เป็นไฟล์ใน Git ไม่ต้องสมัคร</div><a class="tool-link" href="https://usebruno.com" target="_blank">usebruno.com</a></div>
+    </div>
+  </div>
+
+  <div class="tools-cat">
+    <div class="tc-head"><span class="tc-icon">🤖</span><span class="tc-name">AI Coding Tools</span></div>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Claude (claude.ai)</div><span class="tbadge forever">Free Forever</span></div><div class="tool-desc">AI ช่วยเขียนโค้ด debug อธิบาย architecture free tier ใช้ได้ทุกวัน</div><a class="tool-link" href="https://claude.ai" target="_blank">claude.ai</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Codeium</div><span class="tbadge forever">Free Forever</span></div><div class="tool-desc">AI autocomplete ฟรีถาวรไม่จำกัด รองรับ VS Code Neovim JetBrains</div><a class="tool-link" href="https://codeium.com" target="_blank">codeium.com</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Ollama</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">รัน LLM บนเครื่องตัวเองฟรี offline ได้ เหมาะงานข้อมูล sensitive</div><a class="tool-link" href="https://ollama.com" target="_blank">ollama.com</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">GitHub Copilot</div><span class="tbadge edu">Student/OSS</span></div><div class="tool-desc">ฟรีสำหรับนักศึกษาผ่าน GitHub Education Pack</div><a class="tool-link" href="https://education.github.com/pack" target="_blank">education.github.com/pack</a></div>
+    </div>
+  </div>
+
+  <div class="tools-cat">
+    <div class="tc-head"><span class="tc-icon">🎨</span><span class="tc-name">Design & Diagram</span></div>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Penpot</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">Design tool แทน Figma ฟรี 100% self-host ได้</div><a class="tool-link" href="https://penpot.app" target="_blank">penpot.app</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Excalidraw</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">Whiteboard วาด diagram wireframe system design บน browser</div><a class="tool-link" href="https://excalidraw.com" target="_blank">excalidraw.com</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">draw.io / diagrams.net</div><span class="tbadge oss">Open Source</span></div><div class="tool-desc">วาด ER diagram flowchart architecture ฟรีถาวร บันทึกใน Google Drive</div><a class="tool-link" href="https://diagrams.net" target="_blank">diagrams.net</a></div>
+      <div class="tool-card"><div class="tool-top"><div class="tool-name">Figma (Starter)</div><span class="tbadge forever">Free Forever</span></div><div class="tool-desc">free tier 3 project ไม่จำกัด viewer เหมาะทีมเล็ก</div><a class="tool-link" href="https://figma.com/pricing" target="_blank">figma.com/pricing</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ S6: FEATURES ═══════════════════ -->
+<section class="section" id="s6">
+  <div class="sec-kicker" style="color:var(--s6)">06 — Feature Specification</div>
+  <h2 class="sec-h2">ฟีเจอร์หลัก<br>แต่ละโปรเจ็ค</h2>
+  <p class="sec-sub">Must Have = ต้องมีตั้งแต่ MVP &nbsp;·&nbsp; Should Have = ควรมีก่อน launch &nbsp;·&nbsp; Nice to Have = v2.0+</p>
+
+  <!-- ERP -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#ff6b9d"></div><div><div class="fb-name">ระบบ ERP</div><div class="fb-en">Enterprise Resource Planning</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag desktop">Desktop</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">🏢</span>ข้อมูลบริษัท สาขา แผนก</li><li><span class="lic">👤</span>ระบบผู้ใช้และสิทธิ์ตาม role</li><li><span class="lic">📊</span>Dashboard ภาพรวมองค์กร</li><li><span class="lic">🔗</span>เชื่อม Module บัญชี + คลัง + HR</li><li><span class="lic">📋</span>Audit log ทุก transaction</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">🔔</span>ระบบแจ้งเตือน in-app และ email</li><li><span class="lic">📤</span>Export Excel / PDF</li><li><span class="lic">🔄</span>Approval workflow หลายระดับ</li><li><span class="lic">🌐</span>Multi-branch / Multi-currency</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">🤖</span>AI วิเคราะห์แนวโน้มธุรกิจ</li><li><span class="lic">🔌</span>API เชื่อมระบบภายนอก</li><li><span class="lic">🌍</span>Multi-language</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>6–12 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">ความซับซ้อน</div><div class="ff-val"><strong>สูงมาก</strong> — ทำทีละ module</div></div><div class="ff-cell"><div class="ff-lbl">เริ่มจาก</div><div class="ff-val"><strong>บัญชี</strong> หรือ <strong>คลัง</strong> ก่อน</div></div></div>
+  </div>
+
+  <!-- Accounting -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#ff6b9d"></div><div><div class="fb-name">ระบบบัญชี-การเงิน</div><div class="fb-en">Accounting & Finance</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag desktop">Desktop</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">📒</span>ผังบัญชี (Chart of Accounts)</li><li><span class="lic">✏️</span>Journal Entry บันทึกรายการ</li><li><span class="lic">🧾</span>ใบแจ้งหนี้ / ใบเสร็จรับเงิน</li><li><span class="lic">💳</span>บัญชีลูกหนี้ / เจ้าหนี้</li><li><span class="lic">📊</span>งบกำไรขาดทุน, งบดุล</li><li><span class="lic">🏦</span>Bank Reconciliation</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">🧮</span>คำนวณ VAT / ภาษีหัก ณ ที่จ่าย</li><li><span class="lic">📄</span>ใบกำกับภาษีอย่างย่อ/เต็มรูป</li><li><span class="lic">📤</span>Export Excel / PDF ทุกรายงาน</li><li><span class="lic">🔔</span>แจ้งเตือนใบแจ้งหนี้ใกล้ครบกำหนด</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">🏛️</span>ยื่น VAT ออนไลน์ (เชื่อม RD)</li><li><span class="lic">🏦</span>Import statement ธนาคารอัตโนมัติ</li><li><span class="lic">📈</span>Financial forecast / Budget</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>3–5 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">ต้องรู้</div><div class="ff-val"><strong>หลักบัญชีคู่</strong></div></div><div class="ff-cell"><div class="ff-lbl">โอกาส</div><div class="ff-val"><strong>สูง</strong> — SME ต้องการมาก</div></div></div>
+  </div>
+
+  <!-- HRM -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#ffa94d"></div><div><div class="fb-name">ระบบ HRM / HRIS</div><div class="fb-en">Human Resource Management</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">👤</span>ข้อมูลพนักงานครบถ้วน</li><li><span class="lic">🕐</span>ระบบลงเวลาเข้า-ออก</li><li><span class="lic">🏖️</span>ระบบลาพร้อม approve</li><li><span class="lic">💰</span>คำนวณเงินเดือนและสลิป</li><li><span class="lic">📄</span>โครงสร้างองค์กร Org Chart</li><li><span class="lic">🔒</span>สิทธิ์เข้าถึงตาม PDPA</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">📊</span>ประเมินผลงาน Performance Review</li><li><span class="lic">📅</span>ปฏิทินวันหยุดบริษัท</li><li><span class="lic">📱</span>Check-in GPS / Face recognition</li><li><span class="lic">📤</span>Export สลิป PDF</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">🤝</span>Recruitment / ATS module</li><li><span class="lic">🎯</span>OKR / Goal tracking</li><li><span class="lic">📈</span>Turnover rate analytics</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>3–4 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">ระวัง</div><div class="ff-val"><strong>PDPA</strong> — ข้อมูลอ่อนไหว</div></div><div class="ff-cell"><div class="ff-lbl">Pricing</div><div class="ff-val"><strong>per employee/เดือน</strong></div></div></div>
+  </div>
+
+  <!-- WMS -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#69db7c"></div><div><div class="fb-name">ระบบบริหารคลังสินค้า (WMS)</div><div class="fb-en">Warehouse Management System</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">📥</span>รับสินค้าเข้า (Goods Receipt)</li><li><span class="lic">📤</span>เบิกสินค้าออก (Goods Issue)</li><li><span class="lic">📊</span>ดูยอดคงเหลือ real-time</li><li><span class="lic">📱</span>สแกน Barcode / QR code</li><li><span class="lic">🔢</span>นับสต๊อก (Stock Count)</li><li><span class="lic">⚠️</span>แจ้งเตือนสินค้าใกล้หมด</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">📍</span>จัดการตำแหน่ง Location ในคลัง</li><li><span class="lic">📦</span>จัดการ Lot / Serial Number</li><li><span class="lic">📅</span>ติดตามวันหมดอายุ</li><li><span class="lic">📊</span>รายงานสต๊อกการ์ด</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">🤖</span>Auto reorder ต่ำกว่า minimum</li><li><span class="lic">📈</span>Demand forecasting</li><li><span class="lic">🔌</span>เชื่อม E-commerce อัตโนมัติ</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>2–3 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">ระวัง</div><div class="ff-val"><strong>Concurrent update</strong></div></div><div class="ff-cell"><div class="ff-lbl">Target</div><div class="ff-val"><strong>โรงงาน / 3PL / ร้านค้า</strong></div></div></div>
+  </div>
+
+  <!-- CRM -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#da77f2"></div><div><div class="fb-name">ระบบ CRM</div><div class="fb-en">Customer Relationship Management</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">👥</span>ข้อมูลลูกค้าและประวัติติดต่อ</li><li><span class="lic">🎯</span>Pipeline การขาย visual</li><li><span class="lic">📝</span>บันทึก Activity (โทร/นัด/email)</li><li><span class="lic">💼</span>จัดการ Deal / Opportunity</li><li><span class="lic">🔔</span>แจ้งเตือน follow-up</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">📊</span>Dashboard ยอดขาย conversion rate</li><li><span class="lic">🏷️</span>Tag / Segment ลูกค้า</li><li><span class="lic">📧</span>ส่ง email จากระบบได้</li><li><span class="lic">📱</span>Mobile app สำหรับ sales</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">💬</span>LINE / WhatsApp integration</li><li><span class="lic">🤖</span>AI score lead อัตโนมัติ</li><li><span class="lic">📋</span>ออกใบเสนอราคาจากระบบ</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>2–3 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">Niche ที่ดี</div><div class="ff-val"><strong>อสังหา, ประกัน, B2B</strong></div></div><div class="ff-cell"><div class="ff-lbl">Pricing</div><div class="ff-val"><strong>per seat/เดือน</strong></div></div></div>
+  </div>
+
+  <!-- POS -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#ffd43b"></div><div><div class="fb-name">ระบบ POS</div><div class="fb-en">Point of Sale</div></div><div class="ptags" style="margin-left:auto"><span class="ptag desktop">Desktop</span><span class="ptag mobile">Mobile</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">🛒</span>หน้าขายเพิ่ม/ลบสินค้าเร็ว</li><li><span class="lic">💳</span>เงินสด / QR PromptPay</li><li><span class="lic">🖨️</span>พิมพ์ใบเสร็จ thermal</li><li><span class="lic">📦</span>ตัดสต๊อกอัตโนมัติ</li><li><span class="lic">📊</span>รายงานยอดขายรายวัน</li><li><span class="lic">🔌</span>Offline-first ต้องขายได้แม้เน็ตหลุด</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">🎁</span>ส่วนลด โปรโมชั่น คูปอง</li><li><span class="lic">⭐</span>แต้มสะสม / membership</li><li><span class="lic">💳</span>บัตรเครดิต EDC</li><li><span class="lic">🔄</span>คืนสินค้า / Void</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">🪑</span>Table management ร้านอาหาร</li><li><span class="lic">🔢</span>Kitchen display system</li><li><span class="lic">🔌</span>เชื่อม e-commerce</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>2–3 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">หัวใจ</div><div class="ff-val"><strong>Offline-first</strong></div></div><div class="ff-cell"><div class="ff-lbl">Pricing</div><div class="ff-val"><strong>รายเดือน + hardware</strong></div></div></div>
+  </div>
+
+  <!-- E-commerce -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#ff8787"></div><div><div class="fb-name">ระบบ E-commerce</div><div class="fb-en">Online Store / Marketplace</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">🛍️</span>หน้าแสดงสินค้า + รูป + ราคา</li><li><span class="lic">🛒</span>ตะกร้าสินค้าและ checkout</li><li><span class="lic">💳</span>ชำระเงิน PromptPay / บัตร</li><li><span class="lic">📦</span>จัดการออเดอร์และสถานะ</li><li><span class="lic">📧</span>ยืนยันออเดอร์ทาง email</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">🔍</span>ค้นหาและกรองสินค้า</li><li><span class="lic">⭐</span>รีวิวสินค้า</li><li><span class="lic">🎁</span>คูปอง / โปรโมชั่น</li><li><span class="lic">📊</span>Admin dashboard ยอดขาย</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">🤖</span>AI แนะนำสินค้า</li><li><span class="lic">📱</span>Progressive Web App</li><li><span class="lic">🏪</span>Multi-vendor marketplace</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>3–4 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">ระวัง</div><div class="ff-val"><strong>Inventory lock</strong> ขณะชำระ</div></div><div class="ff-cell"><div class="ff-lbl">SEO</div><div class="ff-val"><strong>Next.js SSR</strong> สำคัญ</div></div></div>
+  </div>
+
+  <!-- Helpdesk -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#63e6be"></div><div><div class="fb-name">ระบบ Helpdesk / Ticketing</div><div class="fb-en">Customer Support</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag mobile">Mobile</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">🎫</span>สร้าง Ticket และติดตามสถานะ</li><li><span class="lic">📨</span>รับ Ticket ผ่าน email อัตโนมัติ</li><li><span class="lic">👤</span>มอบหมายให้เจ้าหน้าที่</li><li><span class="lic">⏱️</span>SLA timer แจ้งเตือนเกินเวลา</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">🏷️</span>หมวดหมู่และ Tag ticket</li><li><span class="lic">📊</span>รายงาน CSAT, response time</li><li><span class="lic">📚</span>Knowledge base / FAQ</li><li><span class="lic">⚡</span>Escalation เกิน SLA อัตโนมัติ</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">💬</span>Live chat real-time</li><li><span class="lic">🤖</span>AI draft คำตอบ</li><li><span class="lic">📱</span>LINE OA integration</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>1–2 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">Core</div><div class="ff-val"><strong>State machine + SLA timer</strong></div></div><div class="ff-cell"><div class="ff-lbl">Pricing</div><div class="ff-val"><strong>per agent/เดือน</strong></div></div></div>
+  </div>
+
+  <!-- BI -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#74c0fc"></div><div><div class="fb-name">BI Dashboard</div><div class="fb-en">Business Intelligence</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span><span class="ptag desktop">Desktop</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">📊</span>กราฟ KPI หลักของธุรกิจ</li><li><span class="lic">📅</span>กรองข้อมูลตามช่วงเวลา</li><li><span class="lic">🔄</span>ดึงข้อมูลจากระบบหลัก</li><li><span class="lic">📤</span>Export Excel/PDF</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">🔔</span>แจ้งเตือนเมื่อ KPI ต่ำกว่า target</li><li><span class="lic">📈</span>Trend เปรียบเทียบช่วงก่อน</li><li><span class="lic">🗓️</span>Schedule ส่งรายงานอัตโนมัติ</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">🎛️</span>Drag & drop สร้าง dashboard เอง</li><li><span class="lic">🤖</span>AI สรุป insight อัตโนมัติ</li><li><span class="lic">🔮</span>Predictive analytics</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>1–2 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">เหมาะสุด</div><div class="ff-val"><strong>Add-on premium tier</strong></div></div><div class="ff-cell"><div class="ff-lbl">Tech</div><div class="ff-val"><strong>Recharts + Redis cache</strong></div></div></div>
+  </div>
+
+  <!-- IAM -->
+  <div class="feat-block">
+    <div class="fb-head"><div class="fb-bar" style="background:#f783ac"></div><div><div class="fb-name">ระบบ IAM</div><div class="fb-en">Identity & Access Management</div></div><div class="ptags" style="margin-left:auto"><span class="ptag web">Web</span></div></div>
+    <div class="fb-cols">
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd must"></span>Must Have</div><ul><li><span class="lic">🔐</span>Login email/password</li><li><span class="lic">👤</span>จัดการผู้ใช้ สร้าง/แก้ไข/ระงับ</li><li><span class="lic">🛡️</span>RBAC Role-Permission</li><li><span class="lic">🔑</span>Reset password</li><li><span class="lic">📋</span>Audit log การ login</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd should"></span>Should Have</div><ul><li><span class="lic">📱</span>Two-Factor Authentication</li><li><span class="lic">🔗</span>SSO login ครั้งเดียวทุก app</li><li><span class="lic">🌐</span>Login ด้วย Google / LINE</li><li><span class="lic">🚫</span>Rate limiting brute force</li></ul></div>
+      <div class="fb-col"><div class="fb-col-title"><span class="fcd nice"></span>Nice to Have</div><ul><li><span class="lic">🔌</span>SAML / LDAP / Active Directory</li><li><span class="lic">🔒</span>Passwordless (magic link)</li><li><span class="lic">🌍</span>IP whitelist / geo lock</li></ul></div>
+    </div>
+    <div class="fb-foot"><div class="ff-cell"><div class="ff-lbl">Timeline</div><div class="ff-val"><strong>1–2 เดือน</strong></div></div><div class="ff-cell"><div class="ff-lbl">Alt</div><div class="ff-val"><strong>Keycloak</strong> self-host ฟรี</div></div><div class="ff-cell"><div class="ff-lbl">หัวใจ</div><div class="ff-val"><strong>Security first</strong></div></div></div>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer style="padding:24px 52px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+  <span>// Enterprise Systems Complete Guide — All Sections Combined</span>
+  <span>Systems · Skills · Projects · Roadmap · Tools · Features</span>
+</footer>
+
+</div><!-- end main -->
+</body>
+</html>
