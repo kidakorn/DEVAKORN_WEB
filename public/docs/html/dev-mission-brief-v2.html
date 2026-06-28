@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Developer Mission Brief — AI-Assisted Development Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Sarabun:wght@300;400;500;600&display=swap');
+
+:root {
+  --paper:   #f0ede6;
+  --paper2:  #e8e4db;
+  --paper3:  #dedad0;
+  --white:   #faf9f7;
+  --ink:     #1a1410;
+  --ink2:    #3a3028;
+  --muted:   #6a5f50;
+  --faint:   #a89880;
+  --line:    #d4cfc5;
+
+  --green:   #2d5a27;
+  --green2:  #3d7a35;
+  --green-bg:#e8f2e6;
+  --amber:   #c17f24;
+  --amber-bg:#fdf3e0;
+  --navy:    #1b3a6b;
+  --navy-bg: #e8edf5;
+  --red:     #8b2a1a;
+  --red-bg:  #f5e8e6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Sarabun', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page { max-width: 1100px; margin: 0 auto; padding: 0 32px 100px; }
+
+/* ── HERO / COVER ── */
+.cover {
+  padding: 72px 0 60px;
+  border-bottom: 3px solid var(--ink);
+  margin-bottom: 64px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: end;
+}
+.cover-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cover-badge::before { content: '▶'; font-size: 9px; }
+.cover h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(40px, 5.5vw, 72px);
+  line-height: 1.0;
+  letter-spacing: -.025em;
+  margin-bottom: 20px;
+}
+.cover h1 .hl {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2px 10px 6px;
+  transform: rotate(-.3deg);
+  line-height: 1.1;
+}
+.cover-meta {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.75;
+  max-width: 520px;
+  margin-bottom: 28px;
+}
+.cover-stats {
+  display: flex;
+  gap: 28px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--faint);
+}
+.cover-stats .stat strong {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+/* IDENTITY CARD */
+.id-card {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 24px 22px;
+  min-width: 220px;
+  align-self: flex-start;
+  margin-top: 8px;
+}
+.id-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 12px;
+}
+.id-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.id-row {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin-bottom: 7px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.id-key {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--amber);
+  flex-shrink: 0;
+  margin-top: 1px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.id-val { color: rgba(240,237,230,.8); }
+
+/* ── SECTION HEADER ── */
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--ink);
+}
+.sec-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--faint);
+  letter-spacing: .06em;
+}
+.sec-head h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(22px, 3vw, 32px);
+  letter-spacing: -.015em;
+}
+.sec-sub {
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+section.block { margin-bottom: 72px; }
+
+/* ── AI COMMAND BOX (SIGNATURE ELEMENT) ── */
+.ai-box {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0;
+  margin: 14px 0;
+  font-family: 'JetBrains Mono', monospace;
+  position: relative;
+  border-left: 4px solid var(--amber);
+}
+.ai-box-head {
+  background: rgba(255,255,255,.06);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.ai-box-head .dot-row { display: flex; gap: 5px; margin-right: 4px; }
+.ai-box-head .dot-row span {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,.15); display: inline-block;
+}
+.ai-box-body { padding: 16px 18px; }
+.ai-prompt {
+  color: var(--amber);
+  font-size: 12px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.ai-prompt::before { content: '>'; color: var(--green2); flex-shrink: 0; font-size: 14px; margin-top: -1px; }
+.ai-response {
+  font-size: 11.5px;
+  color: rgba(240,237,230,.7);
+  line-height: 1.65;
+  padding-left: 18px;
+  border-left: 2px solid rgba(255,255,255,.1);
+}
+.ai-response .tag {
+  display: inline-block;
+  background: rgba(193,127,36,.2);
+  color: var(--amber);
+  padding: 0 5px;
+  border-radius: 2px;
+  font-size: 10px;
+  margin: 2px 2px 2px 0;
+}
+.ai-response .gtag {
+  display: inline-block;
+  background: rgba(45,90,39,.3);
+  color: #7fc97a;
+  padding: 0 5px;
+  border-radius: 2px;
+  font-size: 10px;
+  margin: 2px 2px 2px 0;
+}
+.ai-note {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(193,127,36,.1);
+  border-left: 2px solid var(--amber);
+  font-size: 11px;
+  color: rgba(240,237,230,.6);
+  line-height: 1.5;
+}
+
+/* ── PHASE ROADMAP ── */
+.phases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: 2px solid var(--ink);
+  margin-bottom: 16px;
+}
+.phase {
+  padding: 22px 20px;
+  border-right: 2px solid var(--ink);
+  position: relative;
+}
+.phase:last-child { border-right: none; }
+.phase-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 8px;
+}
+.phase-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.phase-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--amber);
+  margin-bottom: 12px;
+}
+.phase-items { list-style: none; padding: 0; }
+.phase-items li {
+  font-size: 12.5px;
+  color: var(--muted);
+  padding: 3px 0;
+  display: flex;
+  gap: 7px;
+  line-height: 1.5;
+}
+.phase-items li::before { content: '—'; color: var(--line); flex-shrink: 0; }
+.phase.active { background: var(--ink); color: var(--paper); }
+.phase.active .phase-num { color: var(--amber); }
+.phase.active .phase-title { color: var(--paper); }
+.phase.active .phase-time { color: var(--amber); }
+.phase.active .phase-items li { color: rgba(240,237,230,.7); }
+.phase.active .phase-items li::before { color: rgba(255,255,255,.2); }
+
+/* ── SKILL COMMAND TABLE ── */
+.cmd-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+.cmd-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--paper);
+  text-align: left;
+}
+.cmd-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+  vertical-align: top;
+  line-height: 1.5;
+}
+.cmd-table tr:last-child td { border-bottom: none; }
+.cmd-table tr:hover td { background: var(--paper2); }
+.cmd-table .cmd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: var(--green);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cmd-table .purpose { color: var(--ink2); }
+.cmd-table .example { color: var(--muted); font-size: 11.5px; font-family: 'JetBrains Mono', monospace; }
+
+/* ── PROJECT CARD ── */
+.proj-card {
+  border: 2px solid var(--ink);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.proj-card-head {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.proj-card-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.35);
+  letter-spacing: .06em;
+}
+.proj-card-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+}
+.proj-card-en {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: rgba(255,255,255,.4);
+}
+.proj-card-time {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--amber);
+  background: rgba(193,127,36,.15);
+  padding: 3px 9px;
+  border: 1px solid rgba(193,127,36,.3);
+  border-radius: 2px;
+}
+
+.proj-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--line);
+}
+.proj-col { padding: 16px 18px; border-right: 1px solid var(--line); }
+.proj-col:last-child { border-right: none; }
+.proj-col-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--faint);
+  margin-bottom: 10px;
+}
+.proj-col ul { list-style: none; padding: 0; }
+.proj-col li {
+  font-size: 12.5px;
+  color: var(--muted);
+  padding: 3px 0;
+  display: flex;
+  gap: 7px;
+  line-height: 1.5;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.proj-col li:last-child { border-bottom: none; }
+.proj-col li strong { color: var(--ink); font-weight: 600; }
+.proj-col li .ick { flex-shrink: 0; font-size: 12px; margin-top: 1px; }
+
+.proj-stack { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.stk {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.stk.fe  { background: var(--navy-bg);  border-color: #9bafd0; color: var(--navy);  }
+.stk.be  { background: var(--green-bg); border-color: #8fba8a; color: var(--green); }
+.stk.db  { background: var(--amber-bg); border-color: #d4a050; color: var(--amber); }
+.stk.inf { background: var(--red-bg);   border-color: #c08070; color: var(--red);   }
+
+.proj-deploy {
+  background: var(--paper2);
+  padding: 14px 18px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.deploy-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--green);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.deploy-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+}
+.deploy-step {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.deploy-step::after { content: '→'; color: var(--line); }
+.deploy-step:last-child::after { content: '✓'; color: var(--green); }
+
+/* ── DAILY WORKFLOW ── */
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.wf-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  padding: 16px;
+}
+.wf-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--amber);
+  margin-bottom: 6px;
+}
+.wf-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.wf-steps { list-style: none; padding: 0; }
+.wf-steps li {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 2.5px 0;
+  display: flex;
+  gap: 6px;
+  line-height: 1.4;
+}
+.wf-steps li::before { content: '·'; color: var(--line); flex-shrink: 0; font-size: 16px; line-height: 1; }
+
+/* ── CALLOUT ── */
+.callout {
+  padding: 16px 20px;
+  margin: 14px 0;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.callout.green { background: var(--green-bg); border-left: 3px solid var(--green); color: var(--green); }
+.callout.amber { background: var(--amber-bg); border-left: 3px solid var(--amber); color: #7a4f10; }
+.callout.navy  { background: var(--navy-bg);  border-left: 3px solid var(--navy);  color: var(--navy);  }
+.callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; padding: 0; columns: 2; gap: 20px; }
+.checklist li {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 5px 0;
+  display: flex;
+  gap: 8px;
+  line-height: 1.5;
+  break-inside: avoid;
+}
+.checklist li .box {
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--line);
+  flex-shrink: 0;
+  margin-top: 2px;
+  border-radius: 2px;
+}
+
+/* ── TOOL LIST ── */
+.tool-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  margin: 10px 0;
+}
+.tool-pill {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+}
+.tool-pill .tk {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--green);
+  flex-shrink: 0;
+}
+.tool-pill .td { color: var(--muted); font-size: 11.5px; }
+
+/* ── DIVIDER ── */
+.div-line { border: none; border-top: 1px solid var(--line); margin: 48px 0; }
+
+footer {
+  padding-top: 24px;
+  border-top: 2px solid var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--faint);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 760px) {
+  .cover { grid-template-columns: 1fr; }
+  .id-card { display: none; }
+  .phases { grid-template-columns: 1fr; }
+  .phase { border-right: none; border-bottom: 2px solid var(--ink); }
+  .proj-body { grid-template-columns: 1fr; }
+  .proj-col { border-right: none; border-bottom: 1px solid var(--line); }
+  .checklist { columns: 1; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══════════ COVER ══════════ -->
+<header class="cover">
+  <div>
+    <div class="cover-badge">Developer Mission Brief — AI-Assisted</div>
+    <h1>คู่มือพัฒนา<br><span class="hl">ตัวคุณเอง</span><br>ด้วย AI Agent</h1>
+    <p class="cover-meta">แนวทางพัฒนาแบบชัดเจนตั้งแต่วันแรก — วิธีใช้ Claude Code ร่วมพัฒนาใน VS Code, prompt ที่ต้องรู้, โปรเจ็คที่ต้องสร้าง ไปจนถึง deployment จริง</p>
+    <div class="cover-stats">
+      <div class="stat"><strong>15</strong>โปรเจ็ค Enterprise</div>
+      <div class="stat"><strong>3</strong>Phase หลัก</div>
+      <div class="stat"><strong>∞</strong>AI-assisted</div>
+    </div>
+  </div>
+  <div class="id-card">
+    <div class="id-label">// Developer Profile</div>
+    <div class="id-name">Solo Developer</div>
+    <div class="id-row"><span class="id-key">Level</span><span class="id-val">Intermediate → Full-stack</span></div>
+    <div class="id-row"><span class="id-key">Goal</span><span class="id-val">SaaS + AI Agent products</span></div>
+    <div class="id-row"><span class="id-key">Domain</span><span class="id-val">ทุก Enterprise System</span></div>
+    <div class="id-row"><span class="id-key">AI Tool</span><span class="id-val">Claude Code (VS Code)</span></div>
+    <div class="id-row"><span class="id-key">Timeline</span><span class="id-val">1st product ใน 6 เดือน</span></div>
+  </div>
+</header>
+
+<!-- ══════════ S1: MINDSET ══════════ -->
+<section class="block" id="s1">
+  <div class="sec-head">
+    <span class="sec-num">01</span>
+    <h2>Mindset: Developer + AI Agent</h2>
+  </div>
+  <p class="sec-sub">การทำงานกับ AI ไม่ใช่แค่ถาม-ตอบ แต่คือการทำงานเป็นทีมกับ AI ที่รู้ทุกอย่าง แต่ไม่รู้ context ของคุณ — หน้าที่คุณคือ brief ให้ชัด ตัดสินใจเอง และ verify ทุกอย่าง</p>
+
+  <div class="phases">
+    <div class="phase active">
+      <div class="phase-num">// Phase 01 — ตอนนี้</div>
+      <div class="phase-title">Foundation</div>
+      <div class="phase-time">เดือน 1–3</div>
+      <ul class="phase-items">
+        <li>เรียนรู้ full-stack ด้วยการทำจริง</li>
+        <li>สร้าง 2–3 โปรเจ็คเล็กให้ deploy ได้</li>
+        <li>ฝึก brief AI ให้ถูกต้อง</li>
+        <li>เรียนรู้ error จากการแก้จริง</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="phase-num">// Phase 02</div>
+      <div class="phase-title">First Product</div>
+      <div class="phase-time">เดือน 3–6</div>
+      <ul class="phase-items">
+        <li>เลือก 1 niche สร้าง MVP จริง</li>
+        <li>หาลูกค้าแรกก่อน launch</li>
+        <li>Deploy + support จริง</li>
+        <li>เพิ่ม AI feature แรก</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="phase-num">// Phase 03</div>
+      <div class="phase-title">SaaS + AI Scale</div>
+      <div class="phase-time">เดือน 6+</div>
+      <ul class="phase-items">
+        <li>Multi-tenant รองรับหลาย org</li>
+        <li>AI Agent ทำงานแทนพนักงาน</li>
+        <li>Recurring revenue สม่ำเสมอ</li>
+        <li>พัฒนาโปรเจ็คถัดไปคู่กัน</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout amber">
+    <span class="callout-icon">⚡</span>
+    <span><strong>กฎทอง:</strong> อย่าวางแผนนานเกิน 1 สัปดาห์ก่อนลงมือ ทุกสิ่งที่คุณไม่รู้จะเจอได้แค่ตอนทำจริงเท่านั้น ใช้ AI ช่วยแก้ปัญหาที่เจอจริง ไม่ใช่วางแผนปัญหาที่ยังไม่เจอ</span>
+  </div>
+</section>
+
+<!-- ══════════ S2: AI AGENT COMMANDS ══════════ -->
+<section class="block" id="s2">
+  <div class="sec-head">
+    <span class="sec-num">02</span>
+    <h2>วิธีใช้ AI Agent ร่วมพัฒนา</h2>
+  </div>
+  <p class="sec-sub">Claude Code ใน VS Code อ่านไฟล์ .ai/*.md ในโปรเจ็คโดยตรง ไม่ต้อง copy-paste ไปมา — prompt เหล่านี้คือตัวอย่างที่พิมพ์ใน Claude Code Chat ได้เลย</p>
+
+  <!-- .skills -->
+  <div class="ai-box">
+    <div class="ai-box-head">
+      <div class="dot-row"><span></span><span></span><span></span></div>
+      CLAUDE CODE — เริ่ม session ใหม่ (พิมพ์ใน Claude Code Chat)
+    </div>
+    <div class="ai-box-body">
+      <div class="ai-prompt">
+        .skills<br>
+        Stack ที่ฉันรู้: JavaScript พื้นฐาน, HTML/CSS, React เบื้องต้น<br>
+        ยังไม่รู้: Backend, Database, Deployment, Auth<br>
+        เป้าหมาย: สร้าง Leave Management System ใน 6 สัปดาห์<br>
+        เวลาต่อวัน: 3–4 ชั่วโมง
+      </div>
+      <div class="ai-response">
+        <span class="tag">SKILL GAP ANALYSIS</span><br>
+        Priority 1 → Node.js + Express API basics (สัปดาห์ 1–2)<br>
+        Priority 2 → PostgreSQL + Prisma schema design (สัปดาห์ 2–3)<br>
+        Priority 3 → JWT Auth + middleware (สัปดาห์ 3–4)<br>
+        Priority 4 → Deploy Railway + domain (สัปดาห์ 5–6)<br><br>
+        <span class="tag">SKIP FOR NOW</span> TypeScript, Testing, Docker — เพิ่มทีหลัง<br>
+        <span class="gtag">NEXT ACTION</span> สร้าง Hello World API ที่มี /health endpoint ก่อนเลย
+        <div class="ai-note">💡 ทำทุกครั้งที่เปิด VS Code ใหม่ — Claude Code จะอ่าน .ai/ folder แล้วเข้าใจ context ของโปรเจ็คคุณทันที</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- .plan -->
+  <div class="ai-box">
+    <div class="ai-box-head">
+      <div class="dot-row"><span></span><span></span><span></span></div>
+      CLAUDE CODE — วางแผนก่อนเริ่ม build
+    </div>
+    <div class="ai-box-body">
+      <div class="ai-prompt">
+        .plan<br>
+        โปรเจ็ค: Leave Management System<br>
+        ผู้ใช้: พนักงาน 50 คน + HR 2 คน<br>
+        Must have: ยื่นลา, อนุมัติ, ดูโควตา, สลิปลา<br>
+        Stack: Next.js, PostgreSQL, Prisma, Railway<br>
+        Deadline: 6 สัปดาห์
+      </div>
+      <div class="ai-response">
+        <span class="tag">WEEK 1</span> Setup project, Auth (login/register), DB schema<br>
+        <span class="tag">WEEK 2</span> Leave request CRUD, status machine (Pending→Approved)<br>
+        <span class="tag">WEEK 3</span> HR approval dashboard, email notification<br>
+        <span class="tag">WEEK 4</span> Leave quota system, calendar view<br>
+        <span class="tag">WEEK 5</span> PDF export, mobile-responsive polish<br>
+        <span class="tag">WEEK 6</span> Deploy Railway, domain, user testing<br><br>
+        <span class="gtag">SKIP v1</span> Analytics, Multi-company, Mobile app — ทำ v2
+        <div class="ai-note">💡 Claude Code อ่าน PLAN.md แล้วรู้ทันทีว่าโปรเจ็คนี้ต้องทำอะไร ไม่ต้องอธิบายซ้ำทุกครั้ง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- .build -->
+  <div class="ai-box">
+    <div class="ai-box-head">
+      <div class="dot-row"><span></span><span></span><span></span></div>
+      CLAUDE CODE — ระหว่างพัฒนา ติดปัญหา
+    </div>
+    <div class="ai-box-body">
+      <div class="ai-prompt">
+        .build<br>
+        Task: สร้าง API endpoint POST /api/leave-requests<br>
+        Context: ใช้ Next.js App Router, Prisma, user login ด้วย NextAuth<br>
+        Schema มีแล้ว: LeaveRequest { id, userId, type, startDate, endDate, status }<br>
+        ปัญหา: ไม่รู้จะ validate date range ยังไง และ deduct quota ยังไง
+      </div>
+      <div class="ai-response">
+        <span class="gtag">SOLUTION</span> ช่วยเขียน API route พร้อม validation + quota check<br>
+        → validate: endDate > startDate, ไม่ซ้อน leave เดิม<br>
+        → quota: นับวันใน DB ก่อน เช็คว่าเกิน annual_leave_days ไหม<br>
+        → transaction: create leave + update quota ใน DB transaction เดียว
+        <div class="ai-note">💡 บอก context ให้ครบ: framework, schema, และปัญหาที่ติด — อย่าถามแค่ "สร้าง API ยังไง"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- .debug -->
+  <div class="ai-box">
+    <div class="ai-box-head">
+      <div class="dot-row"><span></span><span></span><span></span></div>
+      CLAUDE CODE — มี error แก้ไม่ออก
+    </div>
+    <div class="ai-box-body">
+      <div class="ai-prompt">
+        .debug<br>
+        Error: PrismaClientKnownRequestError: Foreign key constraint failed<br>
+        เกิดตอน: create LeaveRequest<br>
+        Code: [วาง code ที่ error]<br>
+        Schema: [วาง schema ที่เกี่ยวข้อง]
+      </div>
+      <div class="ai-response">
+        <span class="tag">ROOT CAUSE</span> userId ที่ส่งมาไม่มีใน User table<br>
+        <span class="gtag">FIX</span> ดึง session.user.id จาก NextAuth ก่อน create<br>
+        → อย่าเชื่อ userId จาก request body โดยตรง (security issue ด้วย)
+        <div class="ai-note">💡 ส่ง error message + code + schema ครบ — อย่าแค่ถามว่า "ทำไม error"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- .review -->
+  <div class="ai-box">
+    <div class="ai-box-head">
+      <div class="dot-row"><span></span><span></span><span></span></div>
+      CLAUDE CODE — ก่อน deploy ทุกครั้ง
+    </div>
+    <div class="ai-box-body">
+      <div class="ai-prompt">
+        .review<br>
+        ช่วย review code นี้ก่อน deploy<br>
+        โฟกัส: Security, Performance, Error handling<br>
+        [วาง code ทั้ง file หรือ PR diff]
+      </div>
+      <div class="ai-response">
+        <span class="tag">SECURITY</span> ❌ ไม่มี rate limiting บน auth endpoints<br>
+        <span class="tag">SECURITY</span> ❌ error message บอก "user not found" — ควรบอกแค่ "invalid credentials"<br>
+        <span class="tag">PERF</span> ⚠️ query ใน loop — ควร batch query แทน<br>
+        <span class="gtag">OK</span> Input validation, Auth middleware, Error handling ผ่าน
+        <div class="ai-note">💡 ใช้ .review ก่อน deploy ทุกครั้ง — AI จะจับ security issue ที่คุณอาจมองข้าม</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- .deploy -->
+  <div class="ai-box">
+    <div class="ai-box-head">
+      <div class="dot-row"><span></span><span></span><span></span></div>
+      CLAUDE CODE — เตรียม production
+    </div>
+    <div class="ai-box-body">
+      <div class="ai-prompt">
+        .deploy<br>
+        Stack: Next.js + PostgreSQL บน Railway<br>
+        ช่วยทำ checklist ก่อน deploy production
+      </div>
+      <div class="ai-response">
+        <span class="tag">ENV</span> ✓ ตั้ง DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL ใน Railway<br>
+        <span class="tag">DB</span> ✓ รัน prisma migrate deploy ก่อน start<br>
+        <span class="tag">BUILD</span> ✓ next build ไม่มี error<br>
+        <span class="tag">SECURITY</span> ✓ ไม่มี .env ใน git, ตั้ง CORS ถูก<br>
+        <span class="tag">TEST</span> ✓ ทดสอบ login, create, approve ครบ flow<br>
+        <span class="gtag">DONE</span> push to main → Railway auto-deploy
+        <div class="ai-note">💡 สร้าง .deploy checklist เฉพาะของแต่ละโปรเจ็ค แล้ว save ไว้ใน repo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Command Reference Table -->
+  <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin:28px 0 12px;">Prompt Reference — สิ่งที่พิมพ์ใน Claude Code Chat</h3>
+  <table class="cmd-table">
+    <thead>
+      <tr><th>Prompt Pattern</th><th>ใช้เมื่อไร</th><th>ต้องบอก Claude ว่าอะไร</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="cmd">Read .ai/ folder</td><td class="purpose">เปิด session ใหม่ทุกครั้ง</td><td class="example">บอกว่าวันนี้จะทำอะไร</td></tr>
+      <tr><td class="cmd">Read PLAN.md, help me start Phase X</td><td class="purpose">เริ่ม phase ใหม่</td><td class="example">บอกว่า phase ไหน ต้องการอะไร</td></tr>
+      <tr><td class="cmd">I need to build [feature]</td><td class="purpose">ต้องการสร้าง feature</td><td class="example">feature ที่ต้องการ, ปัญหาที่ติด</td></tr>
+      <tr><td class="cmd">I got this error: [paste error]</td><td class="purpose">มี error แก้ไม่ออก</td><td class="example">error + code + schema ที่เกี่ยวข้อง</td></tr>
+      <tr><td class="cmd">Review this code before I deploy</td><td class="purpose">ก่อน deploy ทุกครั้ง</td><td class="example">เปิดไฟล์ใน Claude Code หรือ paste code</td></tr>
+      <tr><td class="cmd">Help me deploy to Railway + Vercel</td><td class="purpose">พร้อม deploy</td><td class="example">stack ที่ใช้, บอกว่า deploy ครั้งแรกหรือ update</td></tr>
+      <tr><td class="cmd">Explain [concept] in simple terms</td><td class="purpose">ไม่เข้าใจ concept</td><td class="example">concept ที่งง บอก context ว่าเจอตอนไหน</td></tr>
+      <tr><td class="cmd">Refactor this code to be cleaner</td><td class="purpose">ปรับโค้ดให้ดีขึ้น</td><td class="example">เปิดไฟล์ใน Claude Code แล้วบอกว่าอยากปรับอะไร</td></tr>
+      <tr><td class="cmd">Design database schema for [feature]</td><td class="purpose">ออกแบบ database</td><td class="example">feature ที่ต้องการ ความสัมพันธ์ของข้อมูล</td></tr>
+      <tr><td class="cmd">Do this task for me: [task]</td><td class="purpose">ให้ Claude ทำงานแทนเลย</td><td class="example">บอก task ให้ชัด Claude จะเขียนโค้ดและแก้ไฟล์ให้เลย</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════════ S3: TOOLS ══════════ -->
+<section class="block" id="s3">
+  <div class="sec-head">
+    <span class="sec-num">03</span>
+    <h2>เครื่องมือที่ต้องติดตั้งวันแรก</h2>
+  </div>
+  <p class="sec-sub">Stack นี้ใช้ได้กับทุกโปรเจ็ค Enterprise ทั้งหมด ฟรีทุกตัว ติดตั้งครั้งเดียว ใช้ได้ตลอด</p>
+
+  <h4 style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:10px;">CODE & EDITOR</h4>
+  <div class="tool-row">
+    <div class="tool-pill"><span class="tk">VS Code</span><span class="td">Editor หลัก + extensions</span></div>
+    <div class="tool-pill"><span class="tk">Git</span><span class="td">Version control ทุกโปรเจ็ค</span></div>
+    <div class="tool-pill"><span class="tk">Node.js 20+</span><span class="td">Runtime JavaScript</span></div>
+    <div class="tool-pill"><span class="tk">Bun</span><span class="td">Package manager เร็วกว่า npm</span></div>
+  </div>
+
+  <h4 style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:16px 0 10px;">AI TOOLS</h4>
+  <div class="tool-row">
+    <div class="tool-pill"><span class="tk">Claude</span><span class="td">AI pair programmer หลัก</span></div>
+    <div class="tool-pill"><span class="tk">Codeium</span><span class="td">AI autocomplete ใน VS Code ฟรี</span></div>
+    <div class="tool-pill"><span class="tk">Cursor</span><span class="td">ทางเลือกแทน VS Code (ดีกว่าแต่ $20/เดือน)</span></div>
+    <div class="tool-pill"><span class="tk">Ollama</span><span class="td">AI local สำหรับงาน private</span></div>
+  </div>
+
+  <h4 style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:16px 0 10px;">DATABASE & API</h4>
+  <div class="tool-row">
+    <div class="tool-pill"><span class="tk">PostgreSQL</span><span class="td">Database หลักทุกโปรเจ็ค</span></div>
+    <div class="tool-pill"><span class="tk">Prisma</span><span class="td">ORM + migration + Studio</span></div>
+    <div class="tool-pill"><span class="tk">Redis</span><span class="td">Cache, session, queue</span></div>
+    <div class="tool-pill"><span class="tk">DBeaver</span><span class="td">GUI จัดการ DB ฟรี</span></div>
+    <div class="tool-pill"><span class="tk">Bruno</span><span class="td">API testing แทน Postman</span></div>
+  </div>
+
+  <h4 style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:16px 0 10px;">DEPLOY & INFRA</h4>
+  <div class="tool-row">
+    <div class="tool-pill"><span class="tk">GitHub</span><span class="td">Repository + CI/CD Actions</span></div>
+    <div class="tool-pill"><span class="tk">Railway</span><span class="td">Deploy backend + DB ฟรี</span></div>
+    <div class="tool-pill"><span class="tk">Vercel</span><span class="td">Deploy Next.js frontend ฟรี</span></div>
+    <div class="tool-pill"><span class="tk">Coolify</span><span class="td">Self-host บน VPS (ขยายใหญ่)</span></div>
+  </div>
+
+  <h4 style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:16px 0 10px;">DESIGN & DIAGRAM</h4>
+  <div class="tool-row">
+    <div class="tool-pill"><span class="tk">Excalidraw</span><span class="td">วาด flow, system design</span></div>
+    <div class="tool-pill"><span class="tk">Figma</span><span class="td">UI mockup (free 3 projects)</span></div>
+    <div class="tool-pill"><span class="tk">draw.io</span><span class="td">ER diagram, flowchart</span></div>
+  </div>
+
+  <div class="callout green" style="margin-top:20px;">
+    <span class="callout-icon">🛠</span>
+    <span><strong>VS Code Extensions ที่ต้องติดตั้ง:</strong> Prisma, ESLint, Prettier, GitLens, Thunder Client, Tailwind CSS IntelliSense, Auto Rename Tag, Error Lens, Codeium</span>
+  </div>
+</section>
+
+<!-- ══════════ S4: PROJECTS ══════════ -->
+<section class="block" id="s4">
+  <div class="sec-head">
+    <span class="sec-num">04</span>
+    <h2>แผนพัฒนา — ทุกโปรเจ็ค Enterprise</h2>
+  </div>
+  <p class="sec-sub">แต่ละโปรเจ็คมี AI command เริ่มต้น, tech stack, สิ่งที่ต้องมีใน MVP, และขั้นตอน deploy ครบ</p>
+
+  <div class="callout navy">
+    <span class="callout-icon">📋</span>
+    <span><strong>วิธีใช้:</strong> เลือกโปรเจ็คที่จะทำ → copy AI command ด้านล่าง → วาง Claude → ได้แผนสัปดาห์ต่อสัปดาห์ทันที</span>
+  </div>
+
+  <!-- PROJECT 01: Task Tracking -->
+  <div class="proj-card" id="p01">
+    <div class="proj-card-head">
+      <span class="proj-card-num">P01</span>
+      <div>
+        <div class="proj-card-name">ระบบติดตามงาน (Task Tracking)</div>
+        <div class="proj-card-en">Kanban / Project Management — เริ่มที่นี่ก่อน!</div>
+      </div>
+      <span class="proj-card-time">4–6 สัปดาห์</span>
+    </div>
+    <div class="ai-box" style="border-left-color:var(--green);margin:0;border:none;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div class="ai-box-head" style="border-left:4px solid var(--green);">
+        <div class="dot-row"><span></span><span></span><span></span></div>
+        AI KICK-OFF PROMPT — copy แล้ววาง Claude เลย
+      </div>
+      <div class="ai-box-body">
+        <div class="ai-prompt">
+          .plan Task Tracking System<br>
+          Stack: Next.js 14 App Router, PostgreSQL, Prisma, NextAuth, Railway<br>
+          Must: สร้าง project, สร้าง task, assign คน, drag Kanban, แจ้งเตือน<br>
+          Level: มือใหม่ full-stack, เคยทำ React แต่ไม่เคยทำ backend<br>
+          Timeline: 6 สัปดาห์ วันละ 3 ชั่วโมง<br>
+          ช่วยทำ week-by-week plan และ database schema
+        </div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-col">
+        <div class="proj-col-title">Tech Stack</div>
+        <div class="proj-stack">
+          <span class="stk fe">Next.js 14</span>
+          <span class="stk fe">Tailwind CSS</span>
+          <span class="stk fe">shadcn/ui</span>
+          <span class="stk be">NextAuth.js</span>
+          <span class="stk db">PostgreSQL</span>
+          <span class="stk db">Prisma ORM</span>
+          <span class="stk inf">Railway</span>
+          <span class="stk inf">Vercel</span>
+        </div>
+        <div class="proj-col-title" style="margin-top:12px;">Must Have (MVP)</div>
+        <ul>
+          <li><span class="ick">✅</span><strong>Auth</strong> — Login, Register, Session</li>
+          <li><span class="ick">✅</span><strong>Project</strong> — สร้าง/แก้ไข/ลบ Project</li>
+          <li><span class="ick">✅</span><strong>Task CRUD</strong> — สร้าง, มอบหมาย, due date</li>
+          <li><span class="ick">✅</span><strong>Kanban</strong> — drag & drop สถานะ</li>
+          <li><span class="ick">✅</span><strong>Member</strong> — เพิ่มสมาชิกใน project</li>
+          <li><span class="ick">✅</span><strong>Notification</strong> — แจ้งเตือนเมื่อถูก assign</li>
+        </ul>
+      </div>
+      <div class="proj-col">
+        <div class="proj-col-title">สิ่งสำคัญที่ต้องรู้</div>
+        <ul>
+          <li><span class="ick">🔑</span>Next.js App Router (ใหม่ เรียนเลย)</li>
+          <li><span class="ick">🔑</span>Prisma schema relations (User → Project → Task)</li>
+          <li><span class="ick">🔑</span>NextAuth session handling</li>
+          <li><span class="ick">🔑</span>React DnD Kit สำหรับ drag & drop</li>
+          <li><span class="ick">🔑</span>Optimistic UI update (UX ดีขึ้นมาก)</li>
+          <li><span class="ick">⚠️</span>WebSocket สำหรับ real-time (v2 ก็ได้)</li>
+        </ul>
+        <div class="proj-col-title" style="margin-top:12px;">AI Features (Phase 3)</div>
+        <ul>
+          <li><span class="ick">🤖</span>AI สรุปงานค้างรายสัปดาห์</li>
+          <li><span class="ick">🤖</span>AI estimate เวลาจาก task description</li>
+          <li><span class="ick">🤖</span>AI suggest ผู้รับผิดชอบที่เหมาะสม</li>
+        </ul>
+      </div>
+    </div>
+    <div class="proj-deploy">
+      <span class="deploy-label">DEPLOY →</span>
+      <div class="deploy-steps">
+        <span class="deploy-step">push GitHub</span>
+        <span class="deploy-step">Railway: PostgreSQL + App</span>
+        <span class="deploy-step">Vercel: Frontend</span>
+        <span class="deploy-step">ตั้ง ENV vars</span>
+        <span class="deploy-step">prisma migrate deploy</span>
+        <span class="deploy-step">Custom domain</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT 02: Leave Management -->
+  <div class="proj-card" id="p02">
+    <div class="proj-card-head">
+      <span class="proj-card-num">P02</span>
+      <div>
+        <div class="proj-card-name">ระบบจัดการการลา (Leave Management)</div>
+        <div class="proj-card-en">HR Module — ฝึก workflow + approval</div>
+      </div>
+      <span class="proj-card-time">4–6 สัปดาห์</span>
+    </div>
+    <div class="ai-box" style="border-left-color:var(--green);margin:0;border:none;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div class="ai-box-head"><div class="dot-row"><span></span><span></span><span></span></div>AI KICK-OFF PROMPT</div>
+      <div class="ai-box-body">
+        <div class="ai-prompt">
+          .plan Leave Management System<br>
+          Must: ยื่นลา, อนุมัติ/ปฏิเสธ, โควตาลา, ปฏิทิน, แจ้งเตือน email<br>
+          Role: พนักงาน (ยื่นลา), หัวหน้า (อนุมัติ), HR (ดูภาพรวม)<br>
+          Stack: Next.js, PostgreSQL, Prisma, Resend (email), Railway<br>
+          ช่วยออกแบบ state machine: Draft→Pending→Approved/Rejected
+        </div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-col">
+        <div class="proj-col-title">Tech Stack</div>
+        <div class="proj-stack">
+          <span class="stk fe">Next.js 14</span>
+          <span class="stk fe">shadcn/ui</span>
+          <span class="stk be">NextAuth</span>
+          <span class="stk be">Resend API</span>
+          <span class="stk db">PostgreSQL</span>
+          <span class="stk db">Prisma</span>
+          <span class="stk inf">Railway</span>
+        </div>
+        <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
+        <ul>
+          <li><span class="ick">✅</span><strong>Multi-role</strong> — พนักงาน, หัวหน้า, HR</li>
+          <li><span class="ick">✅</span><strong>Leave types</strong> — ลาป่วย/พักร้อน/กิจ</li>
+          <li><span class="ick">✅</span><strong>Approval flow</strong> — Pending → Approved</li>
+          <li><span class="ick">✅</span><strong>Quota tracking</strong> — วันลาคงเหลือ</li>
+          <li><span class="ick">✅</span><strong>Email notify</strong> — แจ้งหัวหน้าทุกคำขอ</li>
+          <li><span class="ick">✅</span><strong>Calendar view</strong> — ดูลาทีมรายเดือน</li>
+        </ul>
+      </div>
+      <div class="proj-col">
+        <div class="proj-col-title">สิ่งสำคัญที่ต้องรู้</div>
+        <ul>
+          <li><span class="ick">🔑</span>State machine (สถานะเอกสาร)</li>
+          <li><span class="ick">🔑</span>RBAC — แต่ละ role เห็นอะไรต่างกัน</li>
+          <li><span class="ick">🔑</span>Date validation (ซ้อนกัน, วันหยุด)</li>
+          <li><span class="ick">🔑</span>Email transactional (Resend ง่ายสุด)</li>
+          <li><span class="ick">🔑</span>PDPA — ข้อมูลพนักงานต้องระวัง</li>
+        </ul>
+        <div class="proj-col-title" style="margin-top:12px;">AI Features</div>
+        <ul>
+          <li><span class="ick">🤖</span>AI คาดการณ์วันลายอดนิยม</li>
+          <li><span class="ick">🤖</span>AI สรุปรายงาน HR รายเดือน</li>
+        </ul>
+      </div>
+    </div>
+    <div class="proj-deploy">
+      <span class="deploy-label">DEPLOY →</span>
+      <div class="deploy-steps">
+        <span class="deploy-step">GitHub repo</span>
+        <span class="deploy-step">Railway (DB + App)</span>
+        <span class="deploy-step">Resend API key</span>
+        <span class="deploy-step">ENV: DATABASE_URL, RESEND_KEY, NEXTAUTH_SECRET</span>
+        <span class="deploy-step">migrate deploy</span>
+        <span class="deploy-step">Test email flow</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT 03: POS -->
+  <div class="proj-card" id="p03">
+    <div class="proj-card-head">
+      <span class="proj-card-num">P03</span>
+      <div>
+        <div class="proj-card-name">ระบบขายหน้าร้าน (POS)</div>
+        <div class="proj-card-en">Point of Sale — ฝึก offline-first + payment</div>
+      </div>
+      <span class="proj-card-time">6–8 สัปดาห์</span>
+    </div>
+    <div class="ai-box" style="border-left-color:var(--green);margin:0;border:none;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div class="ai-box-head"><div class="dot-row"><span></span><span></span><span></span></div>AI KICK-OFF PROMPT</div>
+      <div class="ai-box-body">
+        <div class="ai-prompt">
+          .plan POS System — Mobile First<br>
+          Stack: Next.js PWA หรือ Flutter, PostgreSQL, Omise payment, Railway<br>
+          Must: เพิ่มสินค้า, คิดเงิน, PromptPay QR, พิมพ์ใบเสร็จ, ตัดสต๊อกอัตโนมัติ<br>
+          Critical: ต้องใช้งานได้เมื่อ internet หลุด (offline-first)<br>
+          ช่วยอธิบาย offline sync strategy ด้วย
+        </div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-col">
+        <div class="proj-col-title">Tech Stack</div>
+        <div class="proj-stack">
+          <span class="stk fe">Next.js PWA</span>
+          <span class="stk fe">Tailwind</span>
+          <span class="stk be">Node.js API</span>
+          <span class="stk be">Omise / PromptPay</span>
+          <span class="stk db">PostgreSQL</span>
+          <span class="stk db">SQLite (offline)</span>
+          <span class="stk inf">Railway</span>
+        </div>
+        <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
+        <ul>
+          <li><span class="ick">✅</span><strong>Product list</strong> — เพิ่ม/ค้นหาสินค้าเร็ว</li>
+          <li><span class="ick">✅</span><strong>Cart</strong> — เพิ่ม/ลบ ปรับจำนวน</li>
+          <li><span class="ick">✅</span><strong>Payment</strong> — เงินสด + QR PromptPay</li>
+          <li><span class="ick">✅</span><strong>Receipt</strong> — พิมพ์ / ส่ง SMS</li>
+          <li><span class="ick">✅</span><strong>Stock cut</strong> — ตัดสต๊อกอัตโนมัติ</li>
+          <li><span class="ick">✅</span><strong>Offline</strong> — ขายได้แม้เน็ตหลุด</li>
+          <li><span class="ick">✅</span><strong>Daily report</strong> — ยอดขายรายวัน</li>
+        </ul>
+      </div>
+      <div class="proj-col">
+        <div class="proj-col-title">สิ่งสำคัญที่ต้องรู้</div>
+        <ul>
+          <li><span class="ick">🔑</span>PWA Service Worker (offline)</li>
+          <li><span class="ick">🔑</span>IndexedDB (local storage mobile)</li>
+          <li><span class="ick">🔑</span>Sync queue เมื่อเน็ตกลับมา</li>
+          <li><span class="ick">🔑</span>Payment webhook handling</li>
+          <li><span class="ick">🔑</span>Thermal printer integration</li>
+          <li><span class="ick">⚠️</span>Concurrent stock (ขายพร้อมกัน 2 เครื่อง)</li>
+        </ul>
+        <div class="proj-col-title" style="margin-top:12px;">AI Features</div>
+        <ul>
+          <li><span class="ick">🤖</span>AI วิเคราะห์สินค้าขายดี</li>
+          <li><span class="ick">🤖</span>AI แนะนำ reorder เมื่อสต๊อกต่ำ</li>
+        </ul>
+      </div>
+    </div>
+    <div class="proj-deploy">
+      <span class="deploy-label">DEPLOY →</span>
+      <div class="deploy-steps">
+        <span class="deploy-step">Railway (Backend + DB)</span>
+        <span class="deploy-step">Vercel (PWA Frontend)</span>
+        <span class="deploy-step">Omise live key</span>
+        <span class="deploy-step">Test offline mode</span>
+        <span class="deploy-step">Test payment webhook</span>
+        <span class="deploy-step">Printer test</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT 04: CRM -->
+  <div class="proj-card" id="p04">
+    <div class="proj-card-head">
+      <span class="proj-card-num">P04</span>
+      <div>
+        <div class="proj-card-name">ระบบ CRM</div>
+        <div class="proj-card-en">Customer Relationship Management — ฝึก pipeline + analytics</div>
+      </div>
+      <span class="proj-card-time">5–7 สัปดาห์</span>
+    </div>
+    <div class="ai-box" style="border-left-color:var(--green);margin:0;border:none;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div class="ai-box-head"><div class="dot-row"><span></span><span></span><span></span></div>AI KICK-OFF PROMPT</div>
+      <div class="ai-box-body">
+        <div class="ai-prompt">
+          .plan CRM System — B2B Sales Focus<br>
+          Stack: Next.js, PostgreSQL, Prisma, Recharts, Railway<br>
+          Must: ข้อมูลลูกค้า, Sales pipeline Kanban, บันทึก activity, forecast รายได้<br>
+          ช่วยออกแบบ data model สำหรับ Contact → Company → Deal → Activity
+        </div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-col">
+        <div class="proj-col-title">Tech Stack</div>
+        <div class="proj-stack">
+          <span class="stk fe">Next.js</span>
+          <span class="stk fe">Recharts</span>
+          <span class="stk be">Node.js</span>
+          <span class="stk be">SendGrid</span>
+          <span class="stk db">PostgreSQL</span>
+          <span class="stk db">Prisma</span>
+          <span class="stk inf">Railway</span>
+        </div>
+        <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
+        <ul>
+          <li><span class="ick">✅</span><strong>Contact</strong> — ข้อมูลลูกค้า + บริษัท</li>
+          <li><span class="ick">✅</span><strong>Pipeline</strong> — Lead→Proposal→Won/Lost</li>
+          <li><span class="ick">✅</span><strong>Activity log</strong> — โทร, นัด, email</li>
+          <li><span class="ick">✅</span><strong>Follow-up</strong> — แจ้งเตือนวันนัด</li>
+          <li><span class="ick">✅</span><strong>Dashboard</strong> — KPI, conversion rate</li>
+          <li><span class="ick">✅</span><strong>Tag & search</strong> — กรองลูกค้า</li>
+        </ul>
+      </div>
+      <div class="proj-col">
+        <div class="proj-col-title">สิ่งสำคัญที่ต้องรู้</div>
+        <ul>
+          <li><span class="ick">🔑</span>Pipeline data model (stage, probability)</li>
+          <li><span class="ick">🔑</span>Aggregation queries (SUM, AVG, GROUP BY)</li>
+          <li><span class="ick">🔑</span>Full-text search (PostgreSQL FTS)</li>
+          <li><span class="ick">🔑</span>Date-based reminder system</li>
+          <li><span class="ick">🔑</span>Chart library (Recharts)</li>
+        </ul>
+        <div class="proj-col-title" style="margin-top:12px;">AI Features</div>
+        <ul>
+          <li><span class="ick">🤖</span>AI สรุปประวัติลูกค้าก่อนโทร</li>
+          <li><span class="ick">🤖</span>AI วิเคราะห์ deal ไหนน่าปิดก่อน</li>
+          <li><span class="ick">🤖</span>AI draft email ติดตามลูกค้า</li>
+        </ul>
+      </div>
+    </div>
+    <div class="proj-deploy">
+      <span class="deploy-label">DEPLOY →</span>
+      <div class="deploy-steps">
+        <span class="deploy-step">Railway (DB + App)</span>
+        <span class="deploy-step">SendGrid API</span>
+        <span class="deploy-step">Cron job (reminder)</span>
+        <span class="deploy-step">Custom domain</span>
+        <span class="deploy-step">SSL cert</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT 05: WMS -->
+  <div class="proj-card" id="p05">
+    <div class="proj-card-head">
+      <span class="proj-card-num">P05</span>
+      <div>
+        <div class="proj-card-name">ระบบบริหารคลังสินค้า (WMS)</div>
+        <div class="proj-card-en">Warehouse Management — ฝึก barcode + concurrency</div>
+      </div>
+      <span class="proj-card-time">6–8 สัปดาห์</span>
+    </div>
+    <div class="ai-box" style="border-left-color:var(--green);margin:0;border:none;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div class="ai-box-head"><div class="dot-row"><span></span><span></span><span></span></div>AI KICK-OFF PROMPT</div>
+      <div class="ai-box-body">
+        <div class="ai-prompt">
+          .plan Warehouse Management System<br>
+          Stack: Next.js, Flutter (mobile scan), PostgreSQL, Prisma, Railway<br>
+          Must: รับสินค้า, เบิกสินค้า, นับสต๊อก, สแกน barcode, แจ้งเตือนสินค้าหมด<br>
+          Challenge: หลายคนเบิกสินค้าพร้อมกัน — ช่วยออกแบบ concurrency control
+        </div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-col">
+        <div class="proj-col-title">Tech Stack</div>
+        <div class="proj-stack">
+          <span class="stk fe">Next.js (admin)</span>
+          <span class="stk fe">Flutter (mobile)</span>
+          <span class="stk be">Node.js API</span>
+          <span class="stk db">PostgreSQL</span>
+          <span class="stk db">Prisma + Row Lock</span>
+          <span class="stk inf">Railway</span>
+        </div>
+        <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
+        <ul>
+          <li><span class="ick">✅</span><strong>Goods Receipt</strong> — รับสินค้าเข้าคลัง</li>
+          <li><span class="ick">✅</span><strong>Goods Issue</strong> — เบิกสินค้าออก</li>
+          <li><span class="ick">✅</span><strong>Stock level</strong> — ยอดคงเหลือ real-time</li>
+          <li><span class="ick">✅</span><strong>Barcode scan</strong> — ผ่าน mobile app</li>
+          <li><span class="ick">✅</span><strong>Low stock alert</strong> — แจ้งเตือนใกล้หมด</li>
+          <li><span class="ick">✅</span><strong>Stock report</strong> — รายงานสต๊อกการ์ด</li>
+        </ul>
+      </div>
+      <div class="proj-col">
+        <div class="proj-col-title">สิ่งสำคัญที่ต้องรู้</div>
+        <ul>
+          <li><span class="ick">🔑</span>SELECT FOR UPDATE (row-level lock)</li>
+          <li><span class="ick">🔑</span>DB Transaction (เบิกพร้อมกันปลอดภัย)</li>
+          <li><span class="ick">🔑</span>Barcode/QR scan บน Flutter</li>
+          <li><span class="ick">🔑</span>FIFO/FEFO สำหรับสินค้ามีวันหมดอายุ</li>
+          <li><span class="ick">⚠️</span>Stock เป็นลบไม่ได้ — ต้อง validate</li>
+        </ul>
+        <div class="proj-col-title" style="margin-top:12px;">AI Features</div>
+        <ul>
+          <li><span class="ick">🤖</span>AI คาดการณ์ demand รายเดือน</li>
+          <li><span class="ick">🤖</span>AI แนะนำ reorder quantity</li>
+        </ul>
+      </div>
+    </div>
+    <div class="proj-deploy">
+      <span class="deploy-label">DEPLOY →</span>
+      <div class="deploy-steps">
+        <span class="deploy-step">Railway (API + DB)</span>
+        <span class="deploy-step">Vercel (Admin web)</span>
+        <span class="deploy-step">Flutter build APK</span>
+        <span class="deploy-step">Test concurrent เบิก</span>
+        <span class="deploy-step">Barcode test จริง</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT 06: Accounting -->
+  <div class="proj-card" id="p06">
+    <div class="proj-card-head">
+      <span class="proj-card-num">P06</span>
+      <div>
+        <div class="proj-card-name">ระบบบัญชี-การเงิน</div>
+        <div class="proj-card-en">Accounting System — ต้องเรียนหลักบัญชีก่อน</div>
+      </div>
+      <span class="proj-card-time">8–12 สัปดาห์</span>
+    </div>
+    <div class="ai-box" style="border-left-color:var(--green);margin:0;border:none;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div class="ai-box-head"><div class="dot-row"><span></span><span></span><span></span></div>AI KICK-OFF PROMPT</div>
+      <div class="ai-box-body">
+        <div class="ai-prompt">
+          .plan Accounting System — SME Level<br>
+          ฉันไม่มีความรู้บัญชีมาก่อน — ช่วยอธิบาย double-entry bookkeeping ก่อน<br>
+          Stack: Next.js, PostgreSQL, Prisma, PDFKit, Railway<br>
+          Must: Journal entry, ใบแจ้งหนี้, งบกำไรขาดทุน, VAT, Bank reconcile<br>
+          ช่วยออกแบบ Chart of Accounts และ schema สำหรับ SME ไทย
+        </div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-col">
+        <div class="proj-col-title">Tech Stack</div>
+        <div class="proj-stack">
+          <span class="stk fe">Next.js</span>
+          <span class="stk fe">Recharts</span>
+          <span class="stk be">Node.js</span>
+          <span class="stk be">PDFKit</span>
+          <span class="stk db">PostgreSQL</span>
+          <span class="stk db">Prisma (Decimal)</span>
+          <span class="stk inf">Railway</span>
+        </div>
+        <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
+        <ul>
+          <li><span class="ick">✅</span><strong>Chart of Accounts</strong> — ผังบัญชี</li>
+          <li><span class="ick">✅</span><strong>Journal Entry</strong> — บันทึกรายการ</li>
+          <li><span class="ick">✅</span><strong>Invoice / Receipt</strong> — ออกเอกสาร PDF</li>
+          <li><span class="ick">✅</span><strong>AR/AP</strong> — ลูกหนี้/เจ้าหนี้</li>
+          <li><span class="ick">✅</span><strong>P&L / Balance Sheet</strong></li>
+          <li><span class="ick">✅</span><strong>VAT</strong> — คำนวณภาษีอัตโนมัติ</li>
+        </ul>
+      </div>
+      <div class="proj-col">
+        <div class="proj-col-title">สิ่งสำคัญที่ต้องรู้</div>
+        <ul>
+          <li><span class="ick">🔑</span>Decimal type (ห้ามใช้ float กับเงิน)</li>
+          <li><span class="ick">🔑</span>Double-entry: Debit = Credit เสมอ</li>
+          <li><span class="ick">🔑</span>Immutable records (แก้ไม่ได้ ต้อง reverse)</li>
+          <li><span class="ick">🔑</span>Audit log ทุก transaction</li>
+          <li><span class="ick">⚠️</span>เรียนหลักบัญชีก่อน 2 สัปดาห์</li>
+        </ul>
+        <div class="proj-col-title" style="margin-top:12px;">AI Features</div>
+        <ul>
+          <li><span class="ick">🤖</span>AI อ่าน statement → Journal auto</li>
+          <li><span class="ick">🤖</span>AI สรุปงบให้เจ้าของอ่านง่าย</li>
+        </ul>
+      </div>
+    </div>
+    <div class="proj-deploy">
+      <span class="deploy-label">DEPLOY →</span>
+      <div class="deploy-steps">
+        <span class="deploy-step">Railway (DB + App)</span>
+        <span class="deploy-step">ตั้ง Decimal precision</span>
+        <span class="deploy-step">PDF generation test</span>
+        <span class="deploy-step">VAT calculation verify</span>
+        <span class="deploy-step">Audit log check</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT 07–15: Summary Cards -->
+  <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin:36px 0 16px;padding-top:8px;border-top:2px solid var(--line);">โปรเจ็คที่เหลือ — AI Command สำเร็จรูป</h3>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">
+
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">P07 — Logistics GPS Tracking</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">Real-time tracking • WebSocket • Maps API</div>
+      <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
+        .plan GPS Logistics Tracker<br>
+        Stack: Next.js, Go backend, PostgreSQL+PostGIS,<br>
+        Mapbox, MQTT, Railway<br>
+        Must: GPS real-time, geofence, POD photo,<br>
+        driver mobile app (Flutter)
+      </div>
+    </div>
+
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">P08 — Helpdesk / Ticketing</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">SLA timer • State machine • Email inbox</div>
+      <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
+        .plan Helpdesk System<br>
+        Stack: Next.js, PostgreSQL, Prisma, Resend<br>
+        Must: Ticket CRUD, email-to-ticket,<br>
+        SLA countdown, CSAT survey<br>
+        AI: auto-tag, draft reply
+      </div>
+    </div>
+
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">P09 — E-commerce Platform</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">SEO • Payment • Inventory lock</div>
+      <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
+        .plan E-commerce Store<br>
+        Stack: Next.js (SSR สำคัญ), PostgreSQL,<br>
+        Redis (cart), Omise, S3/Cloudflare R2<br>
+        Must: Product catalog, cart, checkout,<br>
+        order management, admin dashboard
+      </div>
+    </div>
+
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">P10 — Maintenance CMMS</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">QR asset • PM schedule • Work order</div>
+      <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
+        .plan CMMS Maintenance System<br>
+        Stack: Next.js, Flutter, PostgreSQL, Railway<br>
+        Must: Asset register, Work order,<br>
+        PM schedule (cron), QR scan history<br>
+        Niche: โรงงาน / อาคาร / โรงพยาบาล
+      </div>
+    </div>
+
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">P11 — BI Dashboard</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">Data viz • ETL • Redis cache</div>
+      <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
+        .plan Business Intelligence Dashboard<br>
+        Stack: Next.js, Recharts/D3, PostgreSQL,<br>
+        Redis (cache), Railway<br>
+        Must: KPI cards, trend charts,<br>
+        drill-down, scheduled email report
+      </div>
+    </div>
+
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">P12 — Document Management</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">File storage • Versioning • Search</div>
+      <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
+        .plan Document Management System<br>
+        Stack: Next.js, Cloudflare R2 (S3),<br>
+        PostgreSQL, Prisma, Railway<br>
+        Must: Upload, version, permission,<br>
+        full-text search, share link
+      </div>
+    </div>
+
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">P13 — Procurement System</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">PR → PO → GR • Multi-level approval</div>
+      <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
+        .plan Procurement System<br>
+        Stack: Next.js, PostgreSQL, Prisma,<br>
+        Resend, Railway<br>
+        Must: PR/PO workflow, vendor list,<br>
+        multi-level approve, GR matching
+      </div>
+    </div>
+
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">P14 — Payroll System</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">Decimal arithmetic • Tax • PDF slip</div>
+      <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
+        .plan Payroll Calculation Engine<br>
+        Stack: Next.js, PostgreSQL (Decimal),<br>
+        PDFKit, Cron job, Railway<br>
+        Must: เงินเดือน+OT, หักภาษี/ประกันสังคม,<br>
+        สลิป PDF, monthly auto-run
+      </div>
+    </div>
+
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">P15 — Mini ERP (Final Boss)</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">รวมทุก module • Multi-tenant • SaaS</div>
+      <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
+        .plan Mini ERP — SaaS Multi-tenant<br>
+        Stack: Next.js, NestJS, PostgreSQL,<br>
+        Redis, Docker, Coolify VPS<br>
+        รวม: บัญชี + คลัง + HR + จัดซื้อ<br>
+        ทำหลังจาก P06–P14 เสร็จแล้ว
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ S5: DAILY WORKFLOW ══════════ -->
+<section class="block" id="s5">
+  <div class="sec-head">
+    <span class="sec-num">05</span>
+    <h2>Daily Developer Workflow</h2>
+  </div>
+  <p class="sec-sub">ตารางการทำงานต่อวันที่ทำให้คุณก้าวหน้าอย่างสม่ำเสมอ ไม่ติดขัด ไม่หมดไฟ</p>
+
+  <div class="workflow-grid">
+    <div class="wf-card">
+      <div class="wf-time">🌅 เช้า — 30 นาที</div>
+      <div class="wf-title">Review & Plan</div>
+      <ul class="wf-steps">
+        <li>เปิด GitHub ดู issue / TODO ที่ค้างไว้</li>
+        <li>เขียน 3 task ที่จะทำวันนี้ใน Notion</li>
+        <li>ถาม Claude: task ที่ยากที่สุดควรเริ่มยังไง</li>
+      </ul>
+    </div>
+    <div class="wf-card">
+      <div class="wf-time">🔨 กลางวัน — 2–3 ชั่วโมง</div>
+      <div class="wf-title">Deep Build</div>
+      <ul class="wf-steps">
+        <li>ปิด notification ทุกอย่าง</li>
+        <li>Build → error → paste error ใน Claude Code → แก้ → commit</li>
+        <li>1 commit ต่อ 1 feature เล็กๆ</li>
+        <li>อย่าทำหลาย task พร้อมกัน</li>
+      </ul>
+    </div>
+    <div class="wf-card">
+      <div class="wf-time">🔍 เย็น — 30 นาที</div>
+      <div class="wf-title">Review & Learn</div>
+      <ul class="wf-steps">
+        <li>Push code ขึ้น GitHub</li>
+        <li>บอก Claude Code: "Review what I wrote today" — ดู code ที่เขียนวันนี้</li>
+        <li>จดสิ่งที่เรียนรู้ใหม่ในวันนี้ (1 บรรทัด)</li>
+        <li>ตั้ง task พรุ่งนี้ไว้</li>
+      </ul>
+    </div>
+    <div class="wf-card">
+      <div class="wf-time">📅 ทุกสัปดาห์</div>
+      <div class="wf-title">Weekly Sync</div>
+      <ul class="wf-steps">
+        <li>ทบทวนว่า week goal ทำได้แค่ไหน</li>
+        <li>Demo ให้คนอื่นดูอย่างน้อย 1 คน</li>
+        <li>ถาม Claude: week ถัดไปควรโฟกัสอะไร</li>
+        <li>Deploy version ใหม่ทุกสัปดาห์</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <span class="callout-icon">💡</span>
+    <span><strong>หลักการสำคัญ:</strong> "Ship something every week" แม้จะเล็กมาก การ deploy จริงสม่ำเสมอสร้าง momentum และบังคับให้คุณแก้ปัญหาจริง ไม่ใช่แค่ฝึกในเครื่อง</span>
+  </div>
+</section>
+
+<!-- ══════════ S6: AI AGENT LAYER ══════════ -->
+<section class="block" id="s6">
+  <div class="sec-head">
+    <span class="sec-num">06</span>
+    <h2>เพิ่ม AI Agent Layer</h2>
+  </div>
+  <p class="sec-sub">เมื่อระบบพร้อม — นี่คือวิธีเพิ่ม AI เข้าไปในแต่ละโปรเจ็คที่ผ่านมา ให้มันทำงานแทนมนุษย์จริงๆ</p>
+
+  <div class="ai-box">
+    <div class="ai-box-head">
+      <div class="dot-row"><span></span><span></span><span></span></div>
+      AI AGENT PATTERN — ใช้กับทุกโปรเจ็ค
+    </div>
+    <div class="ai-box-body">
+      <div class="ai-prompt">
+        .agent สรุปรายงานธุรกิจประจำวัน<br>
+        ดึงข้อมูล: ยอดขาย, task ค้าง, stock ใกล้หมด, ticket รอตอบ<br>
+        ส่ง: LINE Notify ทุก 8:00 น.<br>
+        Format: สรุปสั้น 5 บรรทัด อ่านใน 30 วินาที
+      </div>
+      <div class="ai-response">
+        <span class="tag">STACK</span> Cron job (node-cron) → Query DB → Claude API → LINE Notify<br><br>
+        <span class="gtag">PATTERN</span><br>
+        1. Cron รัน 08:00 ทุกวัน<br>
+        2. Query: ยอดขายเมื่อวาน, task ค้าง 3 วัน, stock &lt; reorder point<br>
+        3. ส่งข้อมูลให้ Claude API: "สรุปข้อมูลนี้เป็นรายงานผู้บริหาร 5 บรรทัด"<br>
+        4. ส่ง response → LINE Notify / Email<br><br>
+        <span class="tag">Claude API</span> model: claude-sonnet-4-6, max_tokens: 500
+        <div class="ai-note">💡 AI Agent ที่ดีที่สุดคือตัวที่ "ทำงานเงียบๆ แล้วแจ้งเมื่อต้องการคน" ไม่ใช่ตัวที่ถามทุกอย่าง</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:16px;">
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:14px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:6px;">🤖 Agent: Auto Report</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;">Cron → Query DB → Claude API → สรุป → LINE/Email ทุกเช้า ใช้กับ CRM, WMS, POS</div>
+    </div>
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:14px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:6px;">🤖 Agent: Smart Reply</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;">Ticket เข้า → Claude draft คำตอบ → เจ้าหน้าที่ approve 1 click → ส่ง ใช้กับ Helpdesk</div>
+    </div>
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:14px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:6px;">🤖 Agent: Data Entry</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;">Upload ใบเสร็จ/เอกสาร → Claude OCR + extract → กรอก form อัตโนมัติ ใช้กับ Accounting</div>
+    </div>
+    <div style="background:var(--white);border:1.5px solid var(--line);padding:14px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:6px;">🤖 Agent: Forecast</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;">ดึงข้อมูลย้อนหลัง → Claude วิเคราะห์แนวโน้ม → alert ล่วงหน้า ใช้กับ WMS, CRM</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ S7: FIRST WEEK ══════════ -->
+<section class="block" id="s7">
+  <div class="sec-head">
+    <span class="sec-num">07</span>
+    <h2>สัปดาห์แรก — ทำวันนี้เลย</h2>
+  </div>
+
+  <ul class="checklist">
+    <li><div class="box"></div>ติดตั้ง VS Code + Node.js + Git + DBeaver</li>
+    <li><div class="box"></div>สมัคร GitHub, Railway, Vercel (ฟรีทุกอัน)</li>
+    <li><div class="box"></div>รัน <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--paper2);padding:1px 4px;">npx create-next-app@latest my-first-app</code></li>
+    <li><div class="box"></div>ติดตั้ง Prisma + เชื่อม PostgreSQL local</li>
+    <li><div class="box"></div>สร้าง User model แรก + migrate</li>
+    <li><div class="box"></div>ทำ Login ง่ายๆ ด้วย NextAuth</li>
+    <li><div class="box"></div>Deploy ขึ้น Railway + Vercel ให้ได้</li>
+    <li><div class="box"></div>Login Claude Code ใน VS Code แล้วลองพิมพ์ "Read .ai/ folder"</li>
+    <li><div class="box"></div>สร้าง repo บน GitHub push code แรก</li>
+    <li><div class="box"></div>แชร์ link ให้คนอื่น 1 คนดู — สำคัญมาก</li>
+  </ul>
+
+  <div class="callout amber" style="margin-top:20px;">
+    <span class="callout-icon">🎯</span>
+    <span><strong>เป้าหมายสัปดาห์แรก:</strong> มี Next.js app ที่ login ได้ deploy อยู่บน internet จริง แค่นี้พอ ไม่ต้องสวย ไม่ต้องครบฟีเจอร์ แต่ต้องอยู่บน internet และใช้งานได้จริง</span>
+  </div>
+</section>
+
+<footer>
+  <span>// Developer Mission Brief — AI-Assisted Enterprise Development</span>
+  <span>Foundation → First Product → SaaS + AI Scale</span>
+</footer>
+
+</div>
+</body>
+</html>
