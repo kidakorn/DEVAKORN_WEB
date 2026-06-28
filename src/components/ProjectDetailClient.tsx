@@ -67,9 +67,10 @@ export default function ProjectDetailClient({
   const [docs, setDocs] = useState<ProjectDoc[]>(initialDocs);
   const [mounted, setMounted] = useState(false);
 
-  // Search & Filter state
+  // Search, Filter & Sort state
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
     setMounted(true);
@@ -342,26 +343,37 @@ export default function ProjectDetailClient({
           )}
         </div>
 
-        {/* Search & Filter Controls */}
+        {/* Search, Filter & Sort Controls */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <input
             type="text"
             placeholder="Search documents by title or description..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="input input-bordered w-full sm:max-w-xs focus:outline-none"
+            className="input input-bordered w-full sm:flex-1 focus:outline-none"
             style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
           />
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="select select-bordered w-full sm:max-w-xs focus:outline-none"
+            className="select select-bordered w-full sm:w-auto focus:outline-none"
             style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
           >
             <option value="All">All Categories</option>
             {Array.from(new Set(docs.flatMap((d) => d.category ? d.category.split(',').map(c => c.trim()).filter(Boolean) : ["Uncategorized"]))).sort().map((cat) => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="select select-bordered w-full sm:w-auto focus:outline-none"
+            style={{ background: "var(--bg-main)", color: "var(--text-strong)", borderColor: "var(--border-main)" }}
+          >
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="a-z">Title (A-Z)</option>
+            <option value="z-a">Title (Z-A)</option>
           </select>
         </div>
 
@@ -405,6 +417,18 @@ export default function ProjectDetailClient({
                 const docCategories = doc.category ? doc.category.split(',').map(c => c.trim()).filter(Boolean) : ["Uncategorized"];
                 const categoryMatch = selectedCategory === "All" || docCategories.includes(selectedCategory);
                 return searchMatch && categoryMatch;
+              })
+              .sort((a, b) => {
+                if (sortBy === "newest") {
+                  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                } else if (sortBy === "oldest") {
+                  return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+                } else if (sortBy === "a-z") {
+                  return a.title.localeCompare(b.title);
+                } else if (sortBy === "z-a") {
+                  return b.title.localeCompare(a.title);
+                }
+                return 0;
               })
               .map((doc) => (
               <motion.div

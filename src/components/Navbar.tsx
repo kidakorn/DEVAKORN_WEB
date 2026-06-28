@@ -136,16 +136,17 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
       }`}
     >
       <nav
-        className="max-w-6xl mx-auto px-6 flex items-center justify-between h-[70px] w-full"
+        className="max-w-[1400px] mx-auto px-4 md:px-6 flex items-center justify-between gap-4 h-[70px] w-full"
         aria-label="Main navigation"
       >
         {/* ── Logo ───────────────────────────────────────────────── */}
-        <a
-          href="/"
-          onClick={(e) => handleNavClick(e, "/")}
-          className="flex items-center gap-2.5 focus-visible:rounded group"
-          aria-label="Devakorn — back to top"
-        >
+        <div className="flex flex-1 justify-start">
+          <a
+            href="/"
+            onClick={(e) => handleNavClick(e, "/")}
+            className="flex items-center gap-2.5 focus-visible:rounded group shrink-0"
+            aria-label="Devakorn — back to top"
+          >
           <div className="relative w-9 h-9 flex-shrink-0 transition-transform duration-300 group-hover:scale-110 rounded-full overflow-hidden">
             <Image
               src="/logo.png"
@@ -161,10 +162,11 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
           >
             Devakorn
           </span>
-        </a>
+          </a>
+        </div>
 
         {/* ── Desktop Nav Links ───────────────────────────────────── */}
-        <ul className="hidden md:flex items-center gap-1" role="list">
+        <ul className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1" role="list">
           {NAV_LINKS.map(({ key, href }) => {
             const sectionId = href.replace("#", "");
             const isActive = activeSection === sectionId;
@@ -208,7 +210,7 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
         </ul>
 
         {/* ── Toggles ─────────────────────────────────────────────── */}
-        <div className="flex items-center gap-1">
+        <div className="flex flex-1 items-center justify-end gap-1">
           {/* Language toggle */}
           <button
             onClick={toggleLang}
