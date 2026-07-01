@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P01 Walkthrough — Task Tracking System</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --bg:      #f9f8f6;
+  --white:   #ffffff;
+  --ink:     #1a1714;
+  --ink2:    #3d3a36;
+  --muted:   #6b6560;
+  --faint:   #a8a39c;
+  --line:    #e8e4de;
+  --line2:   #d4cfc8;
+
+  --green:   #1a5c2a;
+  --green-l: #e8f5ec;
+  --green-b: #a3d4ae;
+  --blue:    #1a3a6b;
+  --blue-l:  #e8eef8;
+  --blue-b:  #9ab0d4;
+  --amber:   #8a5a00;
+  --amber-l: #fdf3dc;
+  --amber-b: #d4a840;
+  --red:     #7a2020;
+  --red-l:   #fce8e8;
+  --red-b:   #d49090;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── LAYOUT ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--ink);
+  color: #e8e4dc;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.sb-top {
+  padding: 24px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sb-proj {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--amber-b);
+  margin-bottom: 6px;
+}
+.sb-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.sb-nav { padding: 12px 0 24px; flex: 1; }
+.sb-phase-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  padding: 10px 20px 5px;
+}
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 20px;
+  font-size: 12.5px;
+  color: rgba(255,255,255,.55);
+  text-decoration: none;
+  transition: color .15s, background .15s;
+  border-left: 2px solid transparent;
+}
+.sb-link:hover { color: #fff; background: rgba(255,255,255,.05); }
+.sb-link .sn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,.2);
+  flex-shrink: 0;
+  width: 20px;
+}
+.sb-link.done { color: var(--green-b); }
+.sb-link.done .sn { color: var(--green-b); }
+
+/* ── MAIN ── */
+.main { flex: 1; min-width: 0; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--ink);
+  color: #e8e4dc;
+  padding: 52px 52px 44px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: 'P01';
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 120px;
+  color: rgba(255,255,255,.04);
+  line-height: 1;
+  pointer-events: none;
+}
+.hero-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--amber-b);
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  margin-bottom: 14px;
+}
+.hero-sub {
+  font-size: 14px;
+  color: rgba(232,228,220,.6);
+  max-width: 480px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.hero-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.hchip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.5);
+  border-radius: 3px;
+}
+
+/* ── CONTENT ── */
+.content { padding: 0 52px 80px; max-width: 860px; }
+
+/* ── PHASE HEADER ── */
+.phase-head {
+  padding: 44px 0 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 28px;
+}
+.phase-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--faint);
+  letter-spacing: .06em;
+}
+.phase-head h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -.01em;
+}
+.phase-goal {
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--white);
+  border: 1px solid var(--line);
+  padding: 10px 14px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.phase-goal::before { content: '🎯'; flex-shrink: 0; }
+
+/* ── STEP ── */
+.step {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 28px;
+  align-items: flex-start;
+}
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  width: 28px;
+  height: 28px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-body { flex: 1; }
+.step-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+.step-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+/* ── TERMINAL BLOCK ── */
+.terminal {
+  background: #1a1714;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+.term-head {
+  background: #2a2724;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.term-dots { display: flex; gap: 5px; }
+.term-dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,.12);
+}
+.term-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.term-body {
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.8;
+}
+.term-body .prompt { color: #69db7c; }
+.term-body .cmd { color: #e8e4dc; }
+.term-body .comment { color: rgba(255,255,255,.25); }
+.term-body .out { color: rgba(255,255,255,.4); font-size: 11.5px; }
+
+/* ── CLAUDE PROMPT BOX ── */
+.claude-box {
+  border: 1.5px solid var(--line2);
+  margin: 10px 0;
+  overflow: hidden;
+}
+.claude-head {
+  background: var(--amber-l);
+  border-bottom: 1.5px solid var(--amber-b);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--amber);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.claude-body {
+  background: var(--white);
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--ink2);
+  white-space: pre-wrap;
+}
+.claude-note {
+  background: var(--amber-l);
+  border-top: 1px solid var(--amber-b);
+  padding: 8px 14px;
+  font-size: 11.5px;
+  color: var(--amber);
+  line-height: 1.5;
+}
+
+/* ── CALLOUT ── */
+.callout {
+  padding: 12px 16px;
+  margin: 10px 0;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.6;
+  border-radius: 2px;
+}
+.callout.green { background: var(--green-l); border-left: 3px solid var(--green); color: var(--green); }
+.callout.blue  { background: var(--blue-l);  border-left: 3px solid var(--blue);  color: var(--blue);  }
+.callout.amber { background: var(--amber-l); border-left: 3px solid var(--amber); color: var(--amber); }
+.callout.red   { background: var(--red-l);   border-left: 3px solid var(--red);   color: var(--red);   }
+.callout-icon { flex-shrink: 0; font-size: 15px; margin-top: 1px; }
+
+/* ── FILE CARD ── */
+.file-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  padding: 14px 16px;
+  margin: 8px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--ink2);
+}
+.file-card .file-name {
+  font-size: 11px;
+  color: var(--blue);
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.file-card .file-name::before { content: '📄'; }
+
+/* ── COLLAPSIBLE FILE VIEWER ── */
+.file-viewer {
+  border: 1.5px solid var(--line2);
+  margin: 10px 0;
+  overflow: hidden;
+}
+.file-viewer summary {
+  background: var(--blue-l);
+  border-bottom: 1.5px solid var(--blue-b);
+  padding: 10px 14px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--blue);
+}
+.file-viewer summary::-webkit-details-marker { display: none; }
+.file-viewer summary::before { content: '▸'; transition: transform .15s; flex-shrink: 0; }
+.file-viewer[open] summary::before { transform: rotate(90deg); }
+.file-viewer summary .fv-meta {
+  margin-left: auto;
+  font-weight: 400;
+  color: rgba(26,58,107,.55);
+  font-size: 10px;
+}
+.file-viewer-body {
+  background: var(--white);
+  padding: 16px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--ink2);
+  max-height: 480px;
+  overflow-y: auto;
+}
+.file-viewer-body h1, .file-viewer-body h2 { color: var(--ink); font-family: 'Syne', sans-serif; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; padding: 0; margin: 10px 0; }
+.checklist li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist li .box {
+  width: 15px; height: 15px;
+  border: 1.5px solid var(--line2);
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── DIVIDER ── */
+.div { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+
+/* ── WHAT YOU'LL SEE ── */
+.preview {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  padding: 16px 18px;
+  margin: 10px 0;
+}
+.preview-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--faint);
+  margin-bottom: 10px;
+}
+.preview-item {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 4px 0;
+  display: flex;
+  gap: 8px;
+}
+.preview-item::before { content: '→'; color: var(--green); flex-shrink: 0; }
+
+/* ── SCHEMA ── */
+.schema {
+  background: #1a1714;
+  color: #e8e4dc;
+  padding: 16px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 10px 0;
+}
+.schema .kw { color: #74c0fc; }
+.schema .type { color: #69db7c; }
+.schema .comment { color: rgba(255,255,255,.3); }
+
+/* ── PHASE DONE BANNER ── */
+.phase-done {
+  background: var(--green);
+  color: #fff;
+  padding: 16px 20px;
+  margin: 28px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+.phase-done::before { content: '✓'; font-size: 18px; }
+
+footer {
+  padding: 24px 52px;
+  border-top: 2px solid var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--faint);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media(max-width:760px) {
+  .sidebar { display: none; }
+  .content, .hero { padding-left: 24px; padding-right: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-top">
+    <div class="sb-proj">P01 Walkthrough</div>
+    <div class="sb-title">Task Tracking System</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-phase-label">Before you start</div>
+    <a class="sb-link" href="#setup"><span class="sn">00</span>Setup</a>
+
+    <div class="sb-phase-label">Phase 1</div>
+    <a class="sb-link" href="#p1-1"><span class="sn">1.1</span>Create Project</a>
+    <a class="sb-link" href="#p1-2"><span class="sn">1.2</span>Setup Database</a>
+    <a class="sb-link" href="#p1-2a"><span class="sn">1.2a</span>.ai/ File Contents</a>
+    <a class="sb-link" href="#p1-2d"><span class="sn">1.2b</span>i18n Setup (EN/TH)</a>
+    <a class="sb-link" href="#p1-3"><span class="sn">1.3</span>Add Auth</a>
+    <a class="sb-link" href="#p1-4"><span class="sn">1.4</span>First Commit</a>
+
+    <div class="sb-phase-label">Phase 2</div>
+    <a class="sb-link" href="#p2-1"><span class="sn">2.1</span>Project CRUD</a>
+    <a class="sb-link" href="#p2-2"><span class="sn">2.2</span>Task CRUD</a>
+    <a class="sb-link" href="#p2-3"><span class="sn">2.3</span>API Routes</a>
+
+    <div class="sb-phase-label">Phase 3</div>
+    <a class="sb-link" href="#p3-1"><span class="sn">3.1</span>Kanban Board</a>
+    <a class="sb-link" href="#p3-2"><span class="sn">3.2</span>Drag & Drop</a>
+
+    <div class="sb-phase-label">Phase 4</div>
+    <a class="sb-link" href="#p4-1"><span class="sn">4.1</span>Team Members</a>
+    <a class="sb-link" href="#p4-2"><span class="sn">4.2</span>Notifications</a>
+
+    <div class="sb-phase-label">Phase 5</div>
+    <a class="sb-link" href="#p5-1"><span class="sn">5.1</span>Polish UI</a>
+    <a class="sb-link" href="#p5-2"><span class="sn">5.2</span>Due Dates</a>
+
+    <div class="sb-phase-label">Phase 6</div>
+    <a class="sb-link" href="#p6-1"><span class="sn">6.1</span>Deploy Railway</a>
+    <a class="sb-link" href="#p6-2"><span class="sn">6.2</span>Deploy Vercel</a>
+    <a class="sb-link" href="#p6-3"><span class="sn">6.3</span>MVP Live ✓</a>
+
+    <div class="sb-phase-label">Phase 7 — Enterprise</div>
+    <a class="sb-link" href="#p7-1"><span class="sn">7.1</span>Rate Limit + 2FA</a>
+    <a class="sb-link" href="#p7-2"><span class="sn">7.2</span>Audit Log</a>
+    <a class="sb-link" href="#p7-3"><span class="sn">7.3</span>Error Monitoring</a>
+    <a class="sb-link" href="#p7-4"><span class="sn">7.4</span>DB Backup</a>
+    <a class="sb-link" href="#p7-5"><span class="sn">7.5</span>Pagination + Search</a>
+    <a class="sb-link" href="#p7-6"><span class="sn">7.6</span>PDPA Compliance</a>
+    <a class="sb-link" href="#p7-7"><span class="sn">7.7</span>Admin Panel</a>
+    <a class="sb-link" href="#p7-8"><span class="sn">7.8</span>Billing / SaaS</a>
+    <a class="sb-link" href="#p7-9"><span class="sn">7.9</span>Onboarding + Support</a>
+    <a class="sb-link" href="#p7-10"><span class="sn">7.10</span>Enterprise Done ✓</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">// Complete Walkthrough — Zero to Deployed</div>
+  <h1>P01 Task Tracking<br>System</h1>
+  <p class="hero-sub">A complete walkthrough from empty folder to a genuinely enterprise-ready app — MVP first (Phase 1-6), then security, compliance, and scale hardening (Phase 7). Use this as a template for every project after this.</p>
+  <div class="hero-chips">
+    <span class="hchip">Next.js 16</span>
+    <span class="hchip">Turbopack</span>
+    <span class="hchip">PostgreSQL</span>
+    <span class="hchip">Prisma 7</span>
+    <span class="hchip">NextAuth</span>
+    <span class="hchip">Railway</span>
+    <span class="hchip">Vercel</span>
+    <span class="hchip">Sentry</span>
+    <span class="hchip">Stripe</span>
+  </div>
+</div>
+
+<div class="content">
+
+<div class="callout amber" style="margin-bottom:24px;">
+  <span class="callout-icon">🔄</span>
+  <span><strong>Versions move fast.</strong> This guide reflects Next.js 16.x (Turbopack default), Prisma 7.x (Rust-free), and the current <code>shadcn</code> CLI as of mid-2026. Before each phase, you can ask Claude Code: <em>"Check the current stable version of [tool] before giving me commands"</em> — it can verify via web search if needed.</span>
+</div>
+
+<!-- ═══════════ PHASE 0: SETUP ═══════════ -->
+<div class="phase-head" id="setup">
+  <span class="phase-num">00</span>
+  <h2>Before You Start</h2>
+</div>
+<div class="phase-goal">Make sure these are installed and ready before touching any code.</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Install Node.js</div>
+    <div class="step-desc">Download from nodejs.org — choose the LTS version (the one that says "Recommended for most users"). Minimum required: Node.js 20.9+</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal — verify install</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">node --version</span><br>
+        <span class="out">v20.x.x  ← should show v18 or higher</span><br>
+        <span class="prompt">$ </span><span class="cmd">npm --version</span><br>
+        <span class="out">10.x.x</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Install Git + Create GitHub Account</div>
+    <div class="step-desc">git-scm.com to download Git. Then create a free account at github.com if you don't have one.</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal — verify + setup</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">git --version</span><br>
+        <span class="out">git version 2.x.x</span><br>
+        <span class="prompt">$ </span><span class="cmd">git config --global user.name "Your Name"</span><br>
+        <span class="prompt">$ </span><span class="cmd">git config --global user.email "your@email.com"</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Login Claude Code in VS Code</div>
+    <div class="step-desc">Open VS Code → Click the Claude Code icon on the left sidebar → Click "Claude.ai Subscription" → Login with your account.</div>
+    <div class="callout green"><span class="callout-icon">✓</span><span><strong>Ready when:</strong> You can see the Claude Code chat panel open inside VS Code.</span></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Create GitHub Repository</div>
+    <div class="step-desc">Go to github.com → Click "New" → Name it <strong>task-tracking-system</strong> → Set to Public → Do NOT add README → Click "Create repository" → Copy the repo URL.</div>
+  </div>
+</div>
+
+<!-- ═══════════ PHASE 1 ═══════════ -->
+<div class="phase-head" id="p1-1">
+  <span class="phase-num">PHASE 1</span>
+  <h2>Project Setup + Auth</h2>
+</div>
+<div class="phase-goal">By the end of Phase 1 — app runs locally, users can register and login, code is on GitHub.</div>
+
+<!-- STEP 1.1 -->
+<div class="step" id="p1-1">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Create the Next.js Project</div>
+    <div class="step-desc">Open VS Code → Open Terminal (Ctrl + `) → Run these commands:</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npx create-next-app@latest task-tracking-system</span><br>
+        <span class="out"><br>
+What is your project named? → task-tracking-system<br>
+Would you like to use the recommended Next.js defaults?<br>
+  → <strong style="color:#69db7c;">Yes, use recommended defaults</strong><br>
+  &nbsp;&nbsp;(TypeScript, ESLint, Tailwind CSS, App Router, AGENTS.md)<br><br></span>
+        <span class="prompt">$ </span><span class="cmd">cd task-tracking-system</span><br>
+        <span class="prompt">$ </span><span class="cmd">code .</span><span class="comment">  ← opens project in VS Code</span>
+      </div>
+    </div>
+    <div class="callout blue"><span class="callout-icon">ℹ️</span><span><strong>New since 2026:</strong> Next.js now auto-generates an <strong>AGENTS.md</strong> + <strong>CLAUDE.md</strong> file in your project root. This tells Claude Code to read the bundled, version-matched Next.js docs in <code>node_modules/next/dist/docs/</code> before writing code — so it never uses outdated patterns. Don't delete these files. Turbopack is also the default bundler now, no toggle needed.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.2 -->
+<div class="step" id="p1-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Copy .ai/ folder into the project</div>
+    <div class="step-desc">Copy your SKILLS.md, PLAN.md, CONTEXT.md into a folder called <strong>.ai/</strong> inside the project. Next.js already generated <strong>AGENTS.md</strong> and <strong>CLAUDE.md</strong> for you — leave those where they are. Your structure should look like this:</div>
+    <div class="file-card">
+      <div class="file-name">Project Structure</div>
+      task-tracking-system/<br>
+      ├── <strong>.ai/</strong> <span style="color:#a8a39c;">← your own context</span><br>
+      │   ├── CONTEXT.md<br>
+      │   ├── PLAN.md<br>
+      │   └── SKILLS.md<br>
+      ├── AGENTS.md <span style="color:#a8a39c;">← auto-generated by Next.js</span><br>
+      ├── CLAUDE.md <span style="color:#a8a39c;">← points Claude Code to AGENTS.md</span><br>
+      ├── src/<br>
+      ├── package.json<br>
+      └── ...
+    </div>
+    <div class="callout green"><span class="callout-icon">✓</span><span>These two systems work together: <strong>AGENTS.md</strong> keeps Claude up to date on Next.js itself, while your <strong>.ai/</strong> folder tells Claude about your specific project. No conflict — just tell Claude to read both at the start of a session.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.2a: Full .ai/ file contents -->
+<div class="step" id="p1-2a">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Create the .ai/ files with this content</div>
+    <div class="step-desc">Click each file below to expand it, then copy the full content into the matching file inside your <strong>.ai/</strong> folder.</div>
+
+    <details class="file-viewer">
+      <summary>.ai/SKILLS.md <span class="fv-meta">click to expand</span></summary>
+      <div class="file-viewer-body"># Developer Skills Profile<br>
+<br>
+## Who I Am<br>
+- Solo developer learning full-stack development<br>
+- Goal: Build SaaS products + AI Agent systems for businesses<br>
+- Daily time available: flexible, no fixed schedule<br>
+<br>
+---<br>
+<br>
+## What I Already Know<br>
+- JavaScript basics (variables, functions, loops, arrays)<br>
+- HTML &amp; CSS fundamentals<br>
+- React basics (components, props, useState)<br>
+<br>
+## What I Don&#x27;t Know Yet<br>
+- Backend / server-side development<br>
+- Database design and queries<br>
+- Authentication (login systems)<br>
+- API design (REST)<br>
+- Deployment (how to put app on the internet)<br>
+- Internationalization (i18n) — first time doing EN/TH support<br>
+<br>
+---<br>
+<br>
+## My Stack for This Project<br>
+- **Frontend**: Next.js (App Router, current stable version)<br>
+- **Styling**: Tailwind CSS + shadcn/ui — enterprise-clean style<br>
+- **i18n**: next-intl (English + Thai)<br>
+- **Backend**: Next.js API Routes<br>
+- **Auth**: NextAuth.js<br>
+- **Database**: PostgreSQL + Prisma ORM (current version)<br>
+- **Deploy**: Railway (backend + DB) + Vercel (frontend)<br>
+- **Monitoring**: Sentry (added in Phase 7)<br>
+- **AI Tool**: Claude Code (VS Code) — this session&#x27;s Claude Sonnet/Opus model<br>
+<br>
+---<br>
+<br>
+## How to Help Me<br>
+- Explain concepts simply before showing code<br>
+- Break tasks into small steps (1 step at a time)<br>
+- Tell me which file to open and what to type<br>
+- If I get an error, ask me to paste it so you can help debug<br>
+- Remind me to commit to GitHub after each feature<br>
+- Verify current library/framework versions before giving install commands —<br>
+&nbsp;&nbsp;don&#x27;t assume my training data or your training data is current<br>
+- Follow all rules in AGENTS.md and CLAUDE.md automatically — don&#x27;t make me<br>
+&nbsp;&nbsp;repeat &quot;add comments&quot; or &quot;add both languages&quot; in every prompt<br>
+</div>
+    </details>
+
+    <details class="file-viewer">
+      <summary>.ai/PLAN.md <span class="fv-meta">click to expand — 7 phases</span></summary>
+      <div class="file-viewer-body"># Project Plan — P01 Task Tracking System<br>
+<br>
+## Overview<br>
+A simple Kanban-style task management app for small teams.<br>
+Users can create projects, assign tasks, and track progress visually.<br>
+Supports English and Thai. Built to be genuinely enterprise-ready by the end.<br>
+<br>
+## Timeline: Flexible, no fixed deadline<br>
+<br>
+---<br>
+<br>
+## Phase 1 — Project Setup + Auth<br>
+**Goal**: App runs locally, users can register and login, supports EN/TH<br>
+<br>
+- [ ] Install Node.js, VS Code, Git<br>
+- [ ] Create Next.js project (`npx create-next-app@latest`)<br>
+- [ ] Copy `.ai/` folder into project<br>
+- [ ] Fill in AGENTS.md and CLAUDE.md (project rules, i18n rule, code comment rule)<br>
+- [ ] Setup internationalization (next-intl) — EN/TH — **before building more pages**<br>
+- [ ] Setup PostgreSQL + Prisma<br>
+- [ ] Create User model in database<br>
+- [ ] Add NextAuth.js (Google login or email/password)<br>
+- [ ] Build Login and Register pages (with EN/TH translations)<br>
+- [ ] Push first commit to GitHub<br>
+<br>
+**Done when**: You can open the app in either language and log in<br>
+<br>
+---<br>
+<br>
+## Phase 2 — Projects &amp; Tasks (CRUD)<br>
+**Goal**: Users can create projects and add tasks<br>
+<br>
+- [ ] Create Project model (id, name, description, userId)<br>
+- [ ] Create Task model (id, title, status, projectId, assignedTo)<br>
+- [ ] Build API routes: GET/POST/PUT/DELETE for tasks<br>
+- [ ] Build project list page<br>
+- [ ] Build task creation form<br>
+<br>
+**Done when**: You can create a project and add tasks to it, in both languages<br>
+<br>
+---<br>
+<br>
+## Phase 3 — Kanban Board<br>
+**Goal**: Drag and drop tasks between columns<br>
+<br>
+- [ ] Install `@dnd-kit/core` library<br>
+- [ ] Build Kanban board UI (Todo / In Progress / Done columns)<br>
+- [ ] Add drag-and-drop to move tasks between columns<br>
+- [ ] Save new status to database when task is moved<br>
+<br>
+**Done when**: You can drag a task from Todo to Done<br>
+<br>
+---<br>
+<br>
+## Phase 4 — Team Features<br>
+**Goal**: Multiple users can work on the same project<br>
+<br>
+- [ ] Invite members to a project<br>
+- [ ] Assign tasks to specific team members<br>
+- [ ] Show who is assigned to each task<br>
+- [ ] Add email notification when task is assigned (Resend API)<br>
+<br>
+**Done when**: Two accounts can collaborate on one project<br>
+<br>
+---<br>
+<br>
+## Phase 5 — Polish &amp; Details<br>
+**Goal**: App feels complete and professional<br>
+<br>
+- [ ] Add task due dates and priority levels<br>
+- [ ] Add task comments / notes<br>
+- [ ] Build project dashboard (task count, completion %)<br>
+- [ ] Mobile responsive design<br>
+- [ ] Loading states and error messages<br>
+- [ ] Security review with Claude Code before deploying<br>
+<br>
+**Done when**: App looks and feels ready for real users<br>
+<br>
+---<br>
+<br>
+## Phase 6 — Deploy to Production<br>
+**Goal**: App is live on the internet (MVP-live)<br>
+<br>
+- [ ] Setup Railway account and deploy PostgreSQL<br>
+- [ ] Deploy backend to Railway<br>
+- [ ] Deploy frontend to Vercel<br>
+- [ ] Set all environment variables<br>
+- [ ] Run `prisma migrate deploy`<br>
+- [ ] Test full flow on live URL, both languages<br>
+- [ ] Share link with at least 1 real person<br>
+<br>
+**Done when**: Someone else can use your app from their phone — MVP is live,<br>
+but not yet enterprise-ready. Move to Phase 7 once you have real user feedback.<br>
+<br>
+---<br>
+<br>
+## Phase 7 — Enterprise Hardening<br>
+**Goal**: App meets what a real organization expects before paying for it<br>
+<br>
+- [ ] Rate limiting + optional 2FA<br>
+- [ ] Audit log system<br>
+- [ ] Error monitoring (Sentry)<br>
+- [ ] Database backups + uptime monitoring<br>
+- [ ] Pagination, search, and database indexing<br>
+- [ ] PDPA compliance (consent, data export, account deletion)<br>
+- [ ] Admin panel (separate from regular users)<br>
+- [ ] Billing / subscription (Stripe or Omise) — only if selling as SaaS<br>
+- [ ] Onboarding flow + support channel<br>
+- [ ] Final enterprise readiness review with Claude Code<br>
+<br>
+**Done when**: You&#x27;d feel comfortable selling this to a real company.<br>
+<br>
+---<br>
+<br>
+## Must Have (MVP — Phases 1-6)<br>
+- User registration and login (EN/TH)<br>
+- Create / edit / delete projects<br>
+- Create / edit / delete tasks<br>
+- Kanban board with drag-and-drop<br>
+- Assign tasks to team members<br>
+- Basic email notification<br>
+<br>
+## Enterprise Must Have (Phase 7)<br>
+- Security hardening (rate limit, 2FA, audit log)<br>
+- Monitoring (errors, uptime, backups)<br>
+- Compliance (PDPA)<br>
+- Admin controls<br>
+- Billing (if monetizing)<br>
+<br>
+## Not in v1 (Save for Later)<br>
+- Real-time updates (WebSocket)<br>
+- Native mobile app<br>
+- AI features / AI agents<br>
+- Advanced analytics dashboard<br>
+- File attachments<br>
+<br>
+---<br>
+<br>
+## Database Schema (Simple Version)<br>
+<br>
+```<br>
+User<br>
+- id, name, email, password, role (USER/ADMIN), createdAt<br>
+<br>
+Project<br>
+- id, name, description, ownerId (→ User), createdAt<br>
+<br>
+ProjectMember<br>
+- id, projectId (→ Project), userId (→ User)<br>
+<br>
+Task<br>
+- id, title, description, status (todo/inprogress/done)<br>
+- priority (low/medium/high), dueDate<br>
+- projectId (→ Project), assignedTo (→ User), createdAt<br>
+<br>
+AuditLog (Phase 7)<br>
+- id, userId, action, entityType, entityId, metadata (JSON), createdAt<br>
+```<br>
+<br>
+## i18n Structure<br>
+<br>
+```<br>
+messages/<br>
+├── en.json   ← English translation strings<br>
+└── th.json   ← Thai translation strings<br>
+<br>
+app/[locale]/...   ← all pages live under a locale segment<br>
+```<br>
+</div>
+    </details>
+
+    <details class="file-viewer">
+      <summary>.ai/CONTEXT.md <span class="fv-meta">click to expand</span></summary>
+      <div class="file-viewer-body"># Project Context — Rules &amp; Conventions<br>
+<br>
+## How to Use This File<br>
+Paste this file into Claude Code at the start of every session,<br>
+alongside AGENTS.md and CLAUDE.md (Claude Code reads those automatically<br>
+if they&#x27;re in the project root — this file is extra project detail).<br>
+<br>
+---<br>
+<br>
+## Project Info<br>
+- **Name**: Task Tracking System (P01)<br>
+- **Type**: Full-stack web app, EN/TH, enterprise-ready by Phase 7<br>
+- **Status**: Phase [X] of 7 — currently working on: [describe what you&#x27;re doing]<br>
+<br>
+---<br>
+<br>
+## Tech Stack<br>
+| Layer      | Technology                          |<br>
+|------------|--------------------------------------|<br>
+| Frontend   | Next.js (App Router, current stable) |<br>
+| Styling    | Tailwind CSS + shadcn/ui (enterprise clean) |<br>
+| i18n       | next-intl (en / th)                 |<br>
+| Auth       | NextAuth.js                         |<br>
+| Backend    | Next.js API Routes                  |<br>
+| Database   | PostgreSQL                          |<br>
+| ORM        | Prisma (current version)            |<br>
+| Email      | Resend                              |<br>
+| Monitoring | Sentry (Phase 7)                    |<br>
+| Billing    | Stripe or Omise (Phase 7, if selling)|<br>
+| Deploy     | Railway + Vercel                    |<br>
+<br>
+---<br>
+<br>
+## Folder Structure<br>
+```<br>
+src/<br>
+├── app/<br>
+│   └── [locale]/           ← en / th routing (next-intl)<br>
+│       ├── (auth)/          ← login, register pages<br>
+│       ├── (dashboard)/     ← protected pages after login<br>
+│       │   ├── projects/    ← project list and detail<br>
+│       │   └── tasks/       ← task pages<br>
+│       └── admin/           ← admin-only pages (Phase 7)<br>
+├── app/api/                 ← API routes (backend, not localized)<br>
+├── components/              ← reusable UI components<br>
+├── messages/<br>
+│   ├── en.json              ← English translation strings<br>
+│   └── th.json              ← Thai translation strings<br>
+├── lib/<br>
+│   ├── prisma.ts            ← database client<br>
+│   ├── auth.ts               ← NextAuth config<br>
+│   └── email.ts              ← Resend helper<br>
+└── middleware.ts             ← locale routing + auth guards<br>
+```<br>
+<br>
+---<br>
+<br>
+## Coding Rules<br>
+- Use **TypeScript** for all files<br>
+- Use **async/await** (not .then().catch())<br>
+- Always validate input before saving to database<br>
+- Never trust data from the frontend — verify on the server<br>
+- Use Prisma for ALL database queries (no raw SQL)<br>
+- Commit to GitHub after every completed feature<br>
+- **Never hardcode user-facing text** — always use next-intl translation keys<br>
+- **Comment every new or changed piece of code** — see AGENTS.md &quot;Code Comments&quot;<br>
+<br>
+---<br>
+<br>
+## Naming Conventions<br>
+- Files: `kebab-case.ts` (e.g. `task-card.tsx`)<br>
+- Components: `PascalCase` (e.g. `TaskCard`)<br>
+- Functions: `camelCase` (e.g. `createTask`)<br>
+- Database tables: `PascalCase` in schema (e.g. `Task`)<br>
+- API routes: `/api/projects`, `/api/tasks`<br>
+- Translation keys: `namespace.key` (e.g. `tasks.createButton`)<br>
+<br>
+---<br>
+<br>
+## Environment Variables Needed<br>
+```<br>
+DATABASE_URL=postgresql://...<br>
+NEXTAUTH_SECRET=random-secret-string<br>
+NEXTAUTH_URL=http://localhost:3000<br>
+RESEND_API_KEY=re_...<br>
+SENTRY_DSN=...              # Phase 7<br>
+STRIPE_SECRET_KEY=...       # Phase 7, if selling<br>
+```<br>
+<br>
+---<br>
+<br>
+## How to Ask Claude Code for Help<br>
+<br>
+**When starting a session:**<br>
+&gt; &quot;Read AGENTS.md, CLAUDE.md, and all files in .ai/ folder. I&#x27;m on Phase [X], working on [task]. Help me [what you need].&quot;<br>
+<br>
+**When stuck on code:**<br>
+&gt; &quot;I&#x27;m trying to [what you&#x27;re doing]. Here&#x27;s my code: [paste code]. The problem is: [describe issue].&quot;<br>
+<br>
+**When there&#x27;s an error:**<br>
+&gt; &quot;I got this error: [paste error]. Here&#x27;s the relevant code: [paste code].&quot;<br>
+<br>
+**Before deploying:**<br>
+&gt; &quot;Please review this code before I deploy. Focus on security and errors: [paste code].&quot;<br>
+<br>
+**These are always active automatically (from AGENTS.md), so you don&#x27;t need<br>
+to repeat them in every prompt:**<br>
+- Enterprise-clean UI style<br>
+- Both EN and TH translations on every page<br>
+- Code comments on every change<br>
+- Verify current versions before giving install commands<br>
+<br>
+---<br>
+<br>
+## Current Progress<br>
+- [ ] Phase 1: Setup + i18n + Auth<br>
+- [ ] Phase 2: Projects &amp; Tasks CRUD<br>
+- [ ] Phase 3: Kanban Board<br>
+- [ ] Phase 4: Team Features<br>
+- [ ] Phase 5: Polish<br>
+- [ ] Phase 6: Deploy (MVP Live)<br>
+- [ ] Phase 7: Enterprise Hardening<br>
+<br>
+&gt; Update this checklist as you complete each phase.<br>
+</div>
+    </details>
+
+    <div class="callout amber"><span class="callout-icon">📌</span><span><strong>For P02 and beyond:</strong> copy these three files as a starting template, then update the project name, stack details, and Phase 2/3 content to match the new project's features. SKILLS.md and the "Working Rules" style rules barely change between projects.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.2b: AGENTS.md + CLAUDE.md -->
+<div class="step" id="p1-2c">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Fill in AGENTS.md and CLAUDE.md</div>
+    <div class="step-desc">Next.js already created empty-ish <strong>AGENTS.md</strong> and <strong>CLAUDE.md</strong> files with just the Next.js-managed section. Open each file and add the content below <em>underneath</em> what's already there — never touch the part between the <code>&lt;!-- BEGIN:nextjs-agent-rules --&gt;</code> markers.</div>
+
+    <div class="file-card">
+      <div class="file-name">AGENTS.md — add below the existing Next.js block</div>
+# Project-Specific Instructions
+
+> Everything below this line is yours. Next.js will never overwrite it.
+
+## My Project Context
+
+This project also has a `.ai/` folder with more detailed context.
+Always read these files at the start of a session, in this order:
+
+1. `.ai/SKILLS.md` — what I know and don't know
+2. `.ai/PLAN.md` — the current phase and roadmap
+3. `.ai/CONTEXT.md` — tech stack, conventions, and rules
+
+## Style Direction
+
+- Clean, enterprise-style UI — neutral colors, generous whitespace, clear hierarchy
+- Use shadcn/ui components (Card, Table, Badge) instead of custom-styled divs
+- No heavy shadows, no flashy gradients, no unnecessary animation
+
+## Internationalization
+
+- This app supports English (en) and Thai (th) via next-intl
+- Never hardcode user-facing text — always add it to /messages/en.json and /messages/th.json
+- If I ask you to build a new page or component, add both translations automatically
+  even if I only wrote the prompt in English or Thai
+
+## Working Rules
+
+- Always check `node_modules/next/dist/docs/` before suggesting Next.js patterns
+- Always verify current versions of Prisma, shadcn, etc. before giving install commands
+- Give terminal commands one at a time, not as a giant block
+- Explain *why*, briefly, not just *what* — I'm still learning
+
+## Code Comments
+
+- Every time you add or change code, add a short comment explaining what it does and why
+- Comment above functions, non-obvious logic, and any workaround or edge-case handling
+- Keep comments brief — one line is usually enough, don't over-explain simple code
+- When you edit existing code, update or add a comment if the change isn't self-explanatory
+    </div>
+
+    <div class="file-card">
+      <div class="file-name">CLAUDE.md — replace contents with this</div>
+# Claude Code Instructions
+
+@AGENTS.md
+
+> Imports everything from AGENTS.md so Claude Code gets full context.
+
+## Session Start Checklist
+
+1. Read AGENTS.md (imported above)
+2. Read .ai/SKILLS.md, .ai/PLAN.md, .ai/CONTEXT.md
+3. Check .ai/PLAN.md for which Phase I'm currently on
+4. Ask what I want to work on today if I haven't said yet
+
+## How I Want to Work With You
+
+- One step at a time — build incrementally, don't dump 10 files at once
+- Show me commands before running them
+- Paste-ready full file contents, not partial snippets
+- Flag risky changes — anything touching auth, payments, or deleting data
+- Use Plan Mode for big features — outline before writing code if it touches 3+ files
+- Comment every new or changed piece of code — see AGENTS.md "Code Comments" section
+
+## Project Snapshot
+
+- Name: Task Tracking System (P01)
+- Stack: Next.js (App Router) + PostgreSQL + Prisma ORM + NextAuth.js + Tailwind + shadcn/ui
+- Deploy target: Railway (backend + DB) + Vercel (frontend)
+    </div>
+
+    <div class="callout amber"><span class="callout-icon">📌</span><span><strong>Do this once per project.</strong> When you start P02, copy this same AGENTS.md/CLAUDE.md pattern — just update the "Project Snapshot" section with the new project's name and stack.</span></div>
+    <div class="callout green"><span class="callout-icon">✓</span><span>Because "Code Comments" is now in AGENTS.md, every prompt from here on — Phase 2 through Phase 7 — will produce commented code automatically. You don't need to ask for comments in each individual prompt.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.2d: i18n Setup -->
+<div class="step" id="p1-2d">
+  <div class="step-num">5</div>
+  <div class="step-body">
+    <div class="step-title">Setup Internationalization (EN / TH)</div>
+    <div class="step-desc">Do this <strong>before</strong> building any more pages. Adding i18n later means moving every existing page into a new folder structure — much more painful than setting it up now.</div>
+
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npm install next-intl</span>
+      </div>
+    </div>
+
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Read AGENTS.md and .ai/ folder.
+
+Set up internationalization for my Next.js app using next-intl.
+
+Requirements:
+1. Support two locales: "en" (default) and "th"
+2. Restructure routing to app/[locale]/... as required by next-intl
+3. Create /messages/en.json and /messages/th.json for translation strings
+4. Add a language switcher component (EN / TH toggle) in the header
+5. Set up middleware.ts to handle locale detection and routing
+6. Check the current next-intl docs for the App Router setup pattern —
+   the API has changed across versions, use whatever is current
+
+After this is done, every new page and component we build must use
+translation keys instead of hardcoded text — remind me if I forget.</div>
+      <div class="claude-note">💡 This is a bigger structural change. Let Claude Code show you the full folder restructure before applying it.</div>
+    </div>
+
+    <div class="callout red">
+      <span class="callout-icon">⚠️</span>
+      <span><strong>Already built login/register?</strong> They need to move into the new <code>[locale]</code> folder structure. Paste this next:</span>
+    </div>
+
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat (only if you already built login/register)</div>
+      <div class="claude-body">I already built login and register pages before setting up i18n.
+Please migrate them into the new app/[locale]/ structure and:
+1. Move all hardcoded English text into /messages/en.json
+2. Add matching Thai translations to /messages/th.json
+3. Update the pages to use next-intl's translation hooks
+4. Verify the login/register flow still works after the move</div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-title">What you should see</div>
+      <div class="preview-item">http://localhost:3000/en/login shows the English login page</div>
+      <div class="preview-item">http://localhost:3000/th/login shows the Thai login page</div>
+      <div class="preview-item">Language switcher in the header toggles between them</div>
+    </div>
+
+    <div class="callout green"><span class="callout-icon">✓</span><span>Because you added the i18n rule to <strong>AGENTS.md</strong> in the previous step, Claude Code will now automatically add both EN and TH translations for every page you build from here on — Phase 2 through Phase 7 don't need their prompts changed.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.3 -->
+<div class="step" id="p1-2b">
+  <div class="step-num">6</div>
+  <div class="step-body">
+    <div class="step-title">Ask Claude Code to setup Database + Auth</div>
+    <div class="step-desc">Open Claude Code chat in VS Code (Ctrl + Alt + I) and paste this prompt:</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste this into Claude Code Chat</div>
+      <div class="claude-body">Read AGENTS.md and all files in .ai/ folder.
+
+I just created a new Next.js project called task-tracking-system
+using the latest create-next-app defaults (App Router, TypeScript, Tailwind).
+
+I need to set up PostgreSQL + Prisma ORM + NextAuth.js.
+
+Please give me step-by-step terminal commands to:
+1. Install Prisma ORM (current version) and run prisma init
+2. Install NextAuth.js
+3. Install shadcn/ui using the current "shadcn" CLI package
+   (not the old "shadcn-ui" package name)
+4. Create the initial database schema for:
+   - User (id, name, email, password, createdAt)
+   - Project (id, name, description, ownerId, createdAt)
+   - Task (id, title, status, priority, projectId, assignedTo, dueDate, createdAt)
+
+Check the bundled Next.js docs and current Prisma docs for the
+correct setup commands — don't rely on older patterns.
+Give me every command to run in terminal, one at a time.</div>
+      <div class="claude-note">💡 Claude Code will give you exact commands. Run them one by one in terminal. If any command fails, paste the error back to Claude.</div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1.4 -->
+<div class="step">
+  <div class="step-num">7</div>
+  <div class="step-body">
+    <div class="step-title">Setup .env file</div>
+    <div class="step-desc">Create a file called <strong>.env</strong> in the project root (not inside src/) with these values:</div>
+    <div class="file-card">
+      <div class="file-name">.env</div>
+      DATABASE_URL="postgresql://postgres:password@localhost:5432/tasktracker"<br>
+      NEXTAUTH_SECRET="any-random-string-here-make-it-long"<br>
+      NEXTAUTH_URL="http://localhost:3000"
+    </div>
+    <div class="callout red"><span class="callout-icon">⚠️</span><span><strong>Important:</strong> Add .env to your .gitignore file so it never gets pushed to GitHub. It contains secrets.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.5 -->
+<div class="step">
+  <div class="step-num">8</div>
+  <div class="step-body">
+    <div class="step-title">Create the database schema</div>
+    <div class="step-desc">Ask Claude Code to write the Prisma schema for you:</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Write the complete Prisma schema file for my Task Tracking app.
+
+Models needed:
+- User: id, name, email, password (hashed), createdAt
+- Project: id, name, description, owner (relation to User), members (many-to-many with User), createdAt
+- Task: id, title, description, status (TODO/IN_PROGRESS/DONE), priority (LOW/MEDIUM/HIGH), project (relation), assignedTo (relation to User), dueDate, createdAt
+
+I'm using a recent version of Prisma ORM with prisma.config.ts —
+please use the current setup pattern, not the older schema-only config.
+Also give me the command to run the first migration.</div>
+      <div class="claude-note">💡 Claude will write schema.prisma + check your prisma.config.ts and give you the migration command to run.</div>
+    </div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">After Claude gives you the schema — run this</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npx prisma migrate dev --name init</span><br>
+        <span class="out">✔ Your database is now in sync with your schema.<br>
+✔ Generated Prisma Client (TypeScript engine — no Rust binary)</span>
+      </div>
+    </div>
+    <div class="callout blue"><span class="callout-icon">ℹ️</span><span><strong>Prisma is Rust-free now.</strong> Prisma Client runs as a TypeScript/WASM engine — smaller install, faster cold starts on Vercel/Railway. <code>prisma init</code> auto-creates a <code>prisma.config.ts</code> file alongside <code>schema.prisma</code>. If Claude's commands mention a Rust engine or skip <code>prisma.config.ts</code>, ask it to check the current Prisma docs.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.6 -->
+<div class="step" id="p1-3">
+  <div class="step-num">9</div>
+  <div class="step-body">
+    <div class="step-title">Build the Login & Register pages</div>
+    <div class="step-desc">Ask Claude Code to build the auth pages:</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build the login and register pages for my Next.js app.
+
+Setup:
+- Using the latest Next.js App Router (check AGENTS.md for version-matched docs)
+- NextAuth.js for authentication
+- Prisma ORM for database
+- Tailwind CSS + shadcn/ui for styling (clean, enterprise-style UI — minimal, neutral colors, no flashy gradients)
+
+I need:
+1. /app/(auth)/login/page.tsx — login form (email + password)
+2. /app/(auth)/register/page.tsx — register form (name + email + password)
+3. /lib/auth.ts — NextAuth configuration
+4. /api/auth/[...nextauth]/route.ts — NextAuth API route
+5. /api/auth/register/route.ts — register new user API
+
+Keep the UI clean and simple. Show me which files to create and what to put in each one.</div>
+      <div class="claude-note">💡 Claude Code will create multiple files at once. Review each one before saving.</div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1.7 -->
+<div class="step">
+  <div class="step-num">10</div>
+  <div class="step-body">
+    <div class="step-title">Test login works</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npm run dev</span><br>
+        <span class="out">▲ Next.js 16.x.x (Turbopack)<br>
+- Local: http://localhost:3000<br>
+✓ Ready in 1.2s</span>
+      </div>
+    </div>
+    <div class="preview">
+      <div class="preview-title">What you should see</div>
+      <div class="preview-item">Open http://localhost:3000/register — fill in name, email, password → click Register</div>
+      <div class="preview-item">Open http://localhost:3000/login — use the same email + password → you're logged in</div>
+      <div class="preview-item">After login, you're redirected to the dashboard page</div>
+    </div>
+    <div class="callout amber"><span class="callout-icon">🐛</span><span>Something broken? Paste the error message into Claude Code chat — it will tell you exactly what to fix.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.8 -->
+<div class="step" id="p1-4">
+  <div class="step-num">11</div>
+  <div class="step-body">
+    <div class="step-title">Push to GitHub</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">git init</span><br>
+        <span class="prompt">$ </span><span class="cmd">git add .</span><br>
+        <span class="prompt">$ </span><span class="cmd">git commit -m "feat: initial setup with auth"</span><br>
+        <span class="prompt">$ </span><span class="cmd">git remote add origin https://github.com/YOUR_USERNAME/task-tracking-system.git</span><br>
+        <span class="prompt">$ </span><span class="cmd">git push -u origin main</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 1 Complete — Users can register and login. Code is on GitHub.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 2 ═══════════ -->
+<div class="phase-head" id="p2-1">
+  <span class="phase-num">PHASE 2</span>
+  <h2>Projects & Tasks (CRUD)</h2>
+</div>
+<div class="phase-goal">By the end of Phase 2 — users can create projects and add tasks to them.</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Build Project CRUD</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build the Projects feature for my Task Tracking app.
+
+I need:
+1. /app/(dashboard)/projects/page.tsx — list all projects for the logged-in user
+2. /app/(dashboard)/projects/new/page.tsx — form to create a new project
+3. /app/(dashboard)/projects/[id]/page.tsx — view a single project with its tasks
+4. /api/projects/route.ts — GET (list) and POST (create) endpoints
+5. /api/projects/[id]/route.ts — GET, PUT (update), DELETE endpoints
+
+Rules:
+- Only show projects owned by the logged-in user
+- Protect all routes — redirect to login if not authenticated
+- Use Prisma for all database queries
+- Clean enterprise-style UI: neutral colors, generous whitespace, clear hierarchy — use shadcn/ui Card, Table, and Badge components rather than custom-styled divs</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p2-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Build Task CRUD</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build the Tasks feature for my Task Tracking app.
+
+I need:
+1. /api/tasks/route.ts — POST to create a new task
+2. /api/tasks/[id]/route.ts — PUT (update status/details), DELETE
+3. A TaskCard component — shows title, status badge, priority, assigned user
+4. A CreateTask form component — title, description, priority, due date
+
+Rules:
+- Tasks belong to a project
+- Only project members can create/edit tasks
+- Status can be: TODO, IN_PROGRESS, DONE
+- Priority can be: LOW, MEDIUM, HIGH
+- Use server actions OR API routes (your choice, recommend API routes for beginners)</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p2-3">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Test the full CRUD flow</div>
+    <div class="preview">
+      <div class="preview-title">Test each action manually</div>
+      <div class="preview-item">Create a new project → it appears in the project list</div>
+      <div class="preview-item">Click into a project → add a task → it appears in the project</div>
+      <div class="preview-item">Edit a task → changes are saved</div>
+      <div class="preview-item">Delete a task → it disappears</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Commit to GitHub</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">git add .</span><br>
+        <span class="prompt">$ </span><span class="cmd">git commit -m "feat: add project and task CRUD"</span><br>
+        <span class="prompt">$ </span><span class="cmd">git push</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 2 Complete — Projects and tasks work. Data saves to database.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 3 ═══════════ -->
+<div class="phase-head" id="p3-1">
+  <span class="phase-num">PHASE 3</span>
+  <h2>Kanban Board</h2>
+</div>
+<div class="phase-goal">By the end of Phase 3 — tasks can be dragged between Todo, In Progress, and Done columns.</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Install drag and drop library</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p3-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Build Kanban Board</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build a Kanban board component for my Task Tracking app.
+
+I have @dnd-kit installed.
+My tasks have a status field: "TODO" | "IN_PROGRESS" | "DONE"
+
+I need:
+1. KanbanBoard component — 3 columns (Todo, In Progress, Done)
+2. KanbanColumn component — shows column title + task count + list of task cards
+3. KanbanCard component — shows task title, priority badge, assigned user avatar
+4. Drag and drop between columns using @dnd-kit
+5. When a card is dropped in a new column, call PUT /api/tasks/[id] to update the status in the database
+
+Style: clean enterprise dashboard look — subtle borders, no heavy shadows, status colors muted not neon. No animations needed in v1.</div>
+      <div class="claude-note">💡 This is the most complex part. If something doesn't work, paste the error and Claude will fix it.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Test drag and drop</div>
+    <div class="preview">
+      <div class="preview-title">What you should see</div>
+      <div class="preview-item">Three columns: Todo / In Progress / Done</div>
+      <div class="preview-item">Drag a task card from Todo → In Progress → it moves</div>
+      <div class="preview-item">Refresh the page → task stays in the new column (saved in DB)</div>
+    </div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Commit</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">git add .</span><br>
+        <span class="prompt">$ </span><span class="cmd">git commit -m "feat: add kanban board with drag and drop"</span><br>
+        <span class="prompt">$ </span><span class="cmd">git push</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 3 Complete — Kanban board works. Tasks can be dragged between columns.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 4 ═══════════ -->
+<div class="phase-head" id="p4-1">
+  <span class="phase-num">PHASE 4</span>
+  <h2>Team Members + Notifications</h2>
+</div>
+<div class="phase-goal">By the end of Phase 4 — multiple users can join a project and get notified when assigned a task.</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Setup Resend (free email service)</div>
+    <div class="step-desc">Go to resend.com → Create free account → Get API key → Add to .env</div>
+    <div class="file-card">
+      <div class="file-name">.env — add this line</div>
+      RESEND_API_KEY="re_xxxxxxxx"
+    </div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npm install resend</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p4-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Add team invite + email notification</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Add team collaboration features to my Task Tracking app.
+
+I need:
+1. Invite a user to a project by email
+   - /api/projects/[id]/members/route.ts — POST to add a member
+   - Simple form: input email → click "Add member"
+   - Look up user by email in the database, then add them to ProjectMember table
+
+2. Email notification when a task is assigned
+   - When a task is assigned to a user, send them an email using Resend
+   - Email subject: "You have been assigned: [task title]"
+   - Email body: simple plain text with project name and task details
+   - Add a /lib/email.ts file for the Resend helper function
+
+I have RESEND_API_KEY in my .env file.</div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 4 Complete — Teams work. Users get email when assigned a task.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 5 ═══════════ -->
+<div class="phase-head" id="p5-1">
+  <span class="phase-num">PHASE 5</span>
+  <h2>Polish + Due Dates</h2>
+</div>
+<div class="phase-goal">By the end of Phase 5 — app looks professional and feels complete.</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Add due dates + priority colors</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Polish the UI of my Task Tracking app.
+
+I need:
+1. Due date picker on task create/edit form
+2. Show due date on task cards — red if overdue, yellow if due today
+3. Priority color badges: LOW = gray, MEDIUM = yellow, HIGH = red
+4. Task completion % in project header (e.g. "5/12 tasks done")
+5. Empty state message when a column has no tasks
+6. Loading spinner when fetching data
+
+Style direction: enterprise SaaS look (like Linear or Notion) — neutral grays, one accent color, consistent spacing. Keep all changes minimal and clean.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p5-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Code review before deploying</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Please do a security review of my app before I deploy.
+
+Check these files and look for:
+- Any API route that doesn't verify the user is logged in
+- Any place where I use user input directly in a database query without validation
+- Any sensitive data being exposed in API responses
+- Missing error handling that could crash the app
+
+Open the /api/ folder and check all route files.</div>
+      <div class="claude-note">💡 Claude Code can open and read all your files directly. It will find security issues you might have missed.</div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 5 Complete — App looks great and is secure. Ready to deploy.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 6: DEPLOY ═══════════ -->
+<div class="phase-head" id="p6-1">
+  <span class="phase-num">PHASE 6</span>
+  <h2>Deploy to Production</h2>
+</div>
+<div class="phase-goal">By the end of Phase 6 — app is live on the internet. Anyone can use it from any device.</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Deploy PostgreSQL on Railway</div>
+    <div class="step-desc">
+      1. Go to railway.com → Sign up with GitHub<br>
+      2. Click "New Project" → "Deploy PostgreSQL"<br>
+      3. After it deploys, click the PostgreSQL service → "Variables" tab<br>
+      4. Copy the <strong>DATABASE_URL</strong> value — you'll need it in the next step
+    </div>
+    <div class="callout blue"><span class="callout-icon">ℹ️</span><span>Railway gives you $5 free credit per month. A small PostgreSQL + Next.js app uses about $1-2/month.</span></div>
+  </div>
+</div>
+
+<div class="step" id="p6-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Deploy Backend on Railway</div>
+    <div class="step-desc">
+      1. In Railway, click "New" → "GitHub Repo" → Select your repo<br>
+      2. Railway will auto-detect Next.js and start building<br>
+      3. Go to "Variables" tab and add these:
+    </div>
+    <div class="file-card">
+      <div class="file-name">Railway Environment Variables</div>
+      DATABASE_URL = [paste from PostgreSQL service]<br>
+      NEXTAUTH_SECRET = [any long random string]<br>
+      NEXTAUTH_URL = https://your-app-name.up.railway.app<br>
+      RESEND_API_KEY = [your Resend key]
+    </div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Run database migration on production</div></div>
+      <div class="term-body">
+        <span class="comment"># In Railway → your app service → Settings → Add this to "Start Command"</span><br>
+        <span class="cmd">npx prisma migrate deploy && npm start</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p6-3">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Deploy Frontend on Vercel</div>
+    <div class="step-desc">
+      1. Go to vercel.com → Sign up with GitHub<br>
+      2. Click "New Project" → Import your GitHub repo<br>
+      3. Add the same environment variables as Railway<br>
+      4. Click "Deploy"<br>
+      5. Wait 2-3 minutes → your app is live!
+    </div>
+    <div class="callout green"><span class="callout-icon">🎉</span><span><strong>Your app is live!</strong> Share the Vercel URL with someone. Ask them to register and create a task. That's your first real user.</span></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Final deploy checklist</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat before going live</div>
+      <div class="claude-body">I'm about to deploy my Task Tracking app to production.
+Please give me a final checklist to verify everything is working.
+
+My stack: Next.js + PostgreSQL on Railway + Vercel
+Check: auth flow, task CRUD, kanban, email notification, environment variables</div>
+    </div>
+    <ul class="checklist">
+      <li><div class="box"></div>Register a new account on the live URL</li>
+      <li><div class="box"></div>Create a project and add tasks</li>
+      <li><div class="box"></div>Drag a task between columns</li>
+      <li><div class="box"></div>Invite a team member by email</li>
+      <li><div class="box"></div>Assign a task — check that email notification arrives</li>
+      <li><div class="box"></div>Test on mobile phone — does it look ok?</li>
+      <li><div class="box"></div>Share link with at least 1 real person</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout blue"><span class="callout-icon">ℹ️</span><span><strong>This is MVP-live, not enterprise-ready yet.</strong> Real users can use it, but it's missing security hardening, monitoring, and compliance features real organizations expect. Phase 7 covers exactly that — don't skip it if you plan to sell this.</span></div>
+
+<div class="phase-done">Phase 6 Complete — MVP is live. Real users can register and use the app.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 7: ENTERPRISE HARDENING ═══════════ -->
+<div class="phase-head" id="p7-1">
+  <span class="phase-num">PHASE 7</span>
+  <h2>Enterprise Hardening</h2>
+</div>
+<div class="phase-goal">By the end of Phase 7 — the app meets what a real organization expects before they trust it with their data and pay for it.</div>
+
+<div class="callout amber" style="margin-bottom:24px;">
+  <span class="callout-icon">⚠️</span>
+  <span><strong>Do this only after you have real users on the MVP.</strong> Building all of Phase 7 before anyone uses your app risks building things nobody needs. If you already have users from Phase 6, proceed — this phase turns your MVP into something you can actually sell to a company.</span>
+</div>
+
+<!-- 7.1 Security -->
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Rate Limiting + Two-Factor Authentication</div>
+    <div class="step-desc">Prevent brute-force login attempts and add optional 2FA for accounts that want it.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Read AGENTS.md and .ai/ folder.
+
+Add security hardening to my Task Tracking app:
+
+1. Rate limiting on /api/auth/login and /api/auth/register
+   - Max 5 attempts per IP per 15 minutes
+   - Use a simple in-memory or Redis-based limiter (recommend the current standard approach)
+
+2. Optional Two-Factor Authentication (TOTP)
+   - User can enable 2FA from their account settings
+   - Use an authenticator app (Google Authenticator style) via TOTP
+   - Show QR code to scan, verify with a 6-digit code
+   - Require the code at login if enabled
+
+Check current best practices for rate limiting in Next.js before giving me the implementation.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7.2 Audit Log -->
+<div class="step" id="p7-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Audit Log</div>
+    <div class="step-desc">Track who did what and when — required for any organization handling sensitive data.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Add an audit log system to my Task Tracking app.
+
+Requirements:
+1. New AuditLog model in Prisma:
+   id, userId, action, entityType, entityId, metadata (JSON), createdAt
+
+2. Log these actions automatically:
+   - User login / failed login
+   - Task created / updated / deleted
+   - Project member added / removed
+   - Permission changes
+
+3. Admin-only page at /admin/audit-log to view the log
+   - Filterable by user, date range, action type
+   - Paginated (don't load all records at once)
+
+Use a Prisma middleware or a helper function called from each API route — 
+whichever is the current recommended pattern.</div>
+    </div>
+    <div class="schema">
+<span class="comment">// AuditLog model — add to your Prisma schema</span><br>
+<span class="kw">model</span> AuditLog {<br>
+&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">String</span>&nbsp;&nbsp;@id @default(cuid())<br>
+&nbsp;&nbsp;userId&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">String</span><br>
+&nbsp;&nbsp;action&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">String</span>&nbsp;&nbsp;<span class="comment">// "task.created", "user.login", etc.</span><br>
+&nbsp;&nbsp;entityType&nbsp;<span class="type">String</span><br>
+&nbsp;&nbsp;entityId&nbsp;&nbsp;<span class="type">String</span><br>
+&nbsp;&nbsp;metadata&nbsp;&nbsp;<span class="type">Json</span>?<br>
+&nbsp;&nbsp;createdAt&nbsp;&nbsp;<span class="type">DateTime</span>&nbsp;@default(now())<br>
+}
+    </div>
+  </div>
+</div>
+
+<!-- 7.3 Error Monitoring -->
+<div class="step" id="p7-3">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Error Monitoring</div>
+    <div class="step-desc">Know when something breaks in production before your users tell you.</div>
+    <div class="step-desc">Go to <strong>sentry.io</strong> → create a free account → create a new Next.js project → copy your DSN key.</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npx @sentry/wizard@latest -i nextjs</span><br>
+        <span class="out">This walks you through connecting Sentry automatically —<br>
+follow the prompts and paste your DSN when asked.</span>
+      </div>
+    </div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">I just ran the Sentry setup wizard for Next.js.
+Please review what it changed in my project and:
+1. Confirm error boundaries are set up correctly on client and server
+2. Add a custom error page that shows a friendly message to users
+   while still reporting the error to Sentry
+3. Add environment tags (development vs production) so I can filter errors</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7.4 Database Backup -->
+<div class="step" id="p7-4">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Database Backup + Uptime Monitoring</div>
+    <div class="step-desc">If your database dies with no backup, you lose everything. This takes 15 minutes to set up.</div>
+    <ul class="checklist">
+      <li><div class="box"></div>Railway → PostgreSQL service → Settings → enable "Automated Backups" (daily)</li>
+      <li><div class="box"></div>Test a restore once so you know it actually works</li>
+      <li><div class="box"></div>Sign up at <strong>betteruptime.com</strong> or <strong>UptimeRobot</strong> (free tier)</li>
+      <li><div class="box"></div>Add a monitor that pings your app URL every 5 minutes</li>
+      <li><div class="box"></div>Connect it to your email or LINE Notify for alerts</li>
+    </ul>
+    <div class="callout green"><span class="callout-icon">✓</span><span>This step has no code — just configuration. Do it now while you remember, not after something breaks.</span></div>
+  </div>
+</div>
+
+<!-- 7.5 Pagination + Search -->
+<div class="step" id="p7-5">
+  <div class="step-num">5</div>
+  <div class="step-body">
+    <div class="step-title">Pagination, Search & Database Indexing</div>
+    <div class="step-desc">Your app works fine with 20 tasks. It will crawl with 20,000. Fix this before it's a problem.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">My Task Tracking app currently loads all tasks and projects
+at once with no pagination — this won't scale.
+
+Please:
+1. Add pagination to /api/tasks and /api/projects
+   (cursor-based pagination, 20 items per page)
+2. Add a search box on the task list — search by title
+3. Add a status/priority filter dropdown
+4. Review my Prisma schema and add @@index() on columns 
+   that are frequently queried (foreign keys, status, dueDate)
+5. Show me the migration needed for the new indexes</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7.6 PDPA Compliance -->
+<div class="step" id="p7-6">
+  <div class="step-num">6</div>
+  <div class="step-body">
+    <div class="step-title">PDPA Compliance</div>
+    <div class="step-desc">If you have Thai users and store their personal data, PDPA compliance isn't optional.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Add basic PDPA compliance features to my app:
+
+1. A consent checkbox at registration:
+   "I agree to the Privacy Policy and Terms of Service" (required to submit)
+
+2. A simple /privacy-policy and /terms pages (I'll write the actual legal text,
+   just build the page structure)
+
+3. Account settings page with:
+   - "Export my data" button → generates a JSON file of all their tasks/projects
+   - "Delete my account" button → deletes their data after confirmation
+     (soft-delete for 30 days, then hard-delete via a scheduled job)
+
+4. Make sure passwords are hashed (bcrypt/argon2) — verify this is already correct</div>
+    </div>
+    <div class="callout red"><span class="callout-icon">⚠️</span><span>This gives you the technical structure, not legal advice. Have an actual privacy policy and terms of service reviewed by someone qualified before launching to real customers.</span></div>
+  </div>
+</div>
+
+<!-- 7.7 Admin Panel -->
+<div class="step" id="p7-7">
+  <div class="step-num">7</div>
+  <div class="step-body">
+    <div class="step-title">Admin Panel</div>
+    <div class="step-desc">A separate view for you (the app owner) to manage users and see what's happening across all organizations — not something regular users should see.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build an admin panel for my Task Tracking app.
+
+I need:
+1. Add a "role" field to User: USER | ADMIN
+2. /admin route group, protected — only ADMIN role can access
+3. Admin dashboard showing:
+   - Total users, total projects, total tasks (simple counts)
+   - Recent signups (last 10)
+   - Link to the audit log page (built in step 7.2)
+4. User management page — list all users, ability to suspend an account
+
+Style: same enterprise clean look as the rest of the app.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7.8 Billing -->
+<div class="step" id="p7-8">
+  <div class="step-num">8</div>
+  <div class="step-body">
+    <div class="step-title">Billing / Subscription (if selling as SaaS)</div>
+    <div class="step-desc">Skip this step if you're not charging money yet. Add it when you have your first paying customer lined up.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">I'm ready to add billing to my Task Tracking app using Stripe
+(or Omise if targeting Thai businesses specifically).
+
+I need:
+1. A simple pricing model: Free (up to 3 projects) vs Pro ($9/month, unlimited)
+2. Stripe Checkout integration for upgrading to Pro
+3. A webhook handler to update the user's plan when payment succeeds
+4. A "Billing" page in account settings showing current plan + upgrade button
+5. Middleware that blocks creating a 4th project if user is on Free plan
+
+Check current Stripe Next.js integration docs before implementing — 
+their SDK patterns change often.</div>
+    </div>
+    <div class="callout blue"><span class="callout-icon">ℹ️</span><span>This is the step that turns your project into an actual business. Everything before this was preparation.</span></div>
+  </div>
+</div>
+
+<!-- 7.9 Onboarding + Support -->
+<div class="step" id="p7-9">
+  <div class="step-num">9</div>
+  <div class="step-body">
+    <div class="step-title">Onboarding Flow + Support Channel</div>
+    <div class="step-desc">New users who don't understand your app in the first 60 seconds will leave. Guide them.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Add an onboarding experience to my Task Tracking app:
+
+1. After first registration, show a 3-step welcome flow:
+   - Step 1: "Create your first project"
+   - Step 2: "Add your first task"
+   - Step 3: "Invite a teammate" (optional, can skip)
+
+2. Add a simple in-app help widget — a "?" icon in the corner
+   that links to a support email or a basic FAQ page
+
+3. Empty states everywhere should guide the user on what to do next
+   (e.g. empty task list says "Create your first task" with a button,
+   not just a blank screen)</div>
+    </div>
+    <ul class="checklist">
+      <li><div class="box"></div>Write 5-10 FAQ entries based on questions your early testers actually asked</li>
+      <li><div class="box"></div>Set up a support email (even a free Gmail alias works to start)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 7.10 Final Enterprise Checklist -->
+<div class="step" id="p7-10">
+  <div class="step-num">10</div>
+  <div class="step-body">
+    <div class="step-title">Final Enterprise Readiness Check</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Do a final review of my Task Tracking app before I position it
+as enterprise-ready. Check the whole codebase for:
+
+- Any remaining API routes without proper authentication checks
+- Any database query that could leak data across different projects/organizations
+- Missing error handling that could crash the app or expose stack traces to users
+- Any hardcoded secrets that should be environment variables
+- Performance: any N+1 query problems in Prisma calls
+
+Give me a prioritized list of what to fix before I'd feel comfortable 
+selling this to a real company.</div>
+    </div>
+    <ul class="checklist">
+      <li><div class="box"></div>Rate limiting + 2FA working</li>
+      <li><div class="box"></div>Audit log capturing key actions</li>
+      <li><div class="box"></div>Error monitoring live (Sentry)</li>
+      <li><div class="box"></div>Database backups enabled + tested restore</li>
+      <li><div class="box"></div>Uptime monitoring alerting you</li>
+      <li><div class="box"></div>Pagination + search working with large data</li>
+      <li><div class="box"></div>Database indexes on hot query paths</li>
+      <li><div class="box"></div>PDPA: consent, export, delete account all work</li>
+      <li><div class="box"></div>Admin panel accessible only to admins</li>
+      <li><div class="box"></div>Billing works end-to-end (if applicable)</li>
+      <li><div class="box"></div>Onboarding flow tested with a first-time user</li>
+      <li><div class="box"></div>Support channel exists and is monitored</li>
+    </ul>
+  </div>
+</div>
+
+<div class="phase-done">Phase 7 Complete — P01 is now genuinely enterprise-ready: secure, monitored, compliant, and sellable.</div>
+
+<hr class="div">
+
+<!-- HOW TO USE THIS FOR OTHER PROJECTS -->
+<div class="phase-head">
+  <span class="phase-num">TEMPLATE</span>
+  <h2>Use This Pattern for All Projects</h2>
+</div>
+
+<div class="callout blue">
+  <span class="callout-icon">📋</span>
+  <span>Every project after P01 follows the same pattern. The only thing that changes is the features and the domain knowledge required.</span>
+</div>
+
+<div style="background:var(--white);border:1.5px solid var(--line);padding:20px;margin:14px 0;">
+  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:14px;">The pattern that repeats for every project</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 1</div>
+      <div style="font-size:12px;color:var(--muted);">Setup + Auth<br><em>(same every time)</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 2</div>
+      <div style="font-size:12px;color:var(--muted);">Core CRUD<br><em>(changes per project)</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 3</div>
+      <div style="font-size:12px;color:var(--muted);">Main Feature<br><em>(the unique part)</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 4</div>
+      <div style="font-size:12px;color:var(--muted);">Team + Notify<br><em>(same every time)</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 5</div>
+      <div style="font-size:12px;color:var(--muted);">Polish + Review<br><em>(same every time)</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 6</div>
+      <div style="font-size:12px;color:var(--muted);">Deploy<br><em>(same every time)</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--green-l);border:1px solid var(--green-b);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;color:var(--green);">Phase 7</div>
+      <div style="font-size:12px;color:var(--green);">Enterprise Hardening<br><em>(same every time)</em></div>
+    </div>
+  </div>
+</div>
+
+<div class="callout green">
+  <span class="callout-icon">🚀</span>
+  <span><strong>P02 and beyond:</strong> Copy the .ai/ folder, AGENTS.md, and CLAUDE.md from P01 into the new project folder. Update PLAN.md with the new project details. Start from Phase 1 Step 3 — the setup commands are identical. Phase 7 (enterprise hardening) is copy-paste too — the prompts barely change between projects. By P03 you'll be twice as fast.</span>
+</div>
+
+</div><!-- end content -->
+
+<footer>
+  <span>// P01 Walkthrough — Task Tracking System</span>
+  <span>Setup → Build → Deploy → Repeat</span>
+</footer>
+
+</div><!-- end main -->
+</div><!-- end layout -->
+</body>
+</html>
