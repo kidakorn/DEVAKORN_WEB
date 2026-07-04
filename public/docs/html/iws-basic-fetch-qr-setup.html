@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Basic IWS Setup — Fetch + QR Code Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+  pre{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'IBM Plex Mono',monospace;}
+  pre code{background:none;padding:0;color:inherit;}
+
+  .wrap{max-width:800px;margin:0 auto;padding:48px 24px 100px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;}
+  h1{font-size:27px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14.5px;max-width:64ch;margin-bottom:6px;}
+  .intro-th{color:#94a3b8;font-size:13.5px;max-width:64ch;margin-bottom:32px;}
+
+  .step{border:1px solid #e2e8f0;border-radius:12px;margin-bottom:20px;overflow:hidden;}
+  .step-head{background:#f8fafc;padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;}
+  .step-num{width:30px;height:30px;border-radius:8px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+  .step-title{font-size:16px;font-weight:700;}
+  .step-title-th{font-size:13px;color:#64748b;font-weight:500;}
+  .step-body{padding:18px 20px;}
+  .th{background:#fafaf9;border-left:3px solid #c7d2fe;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13.5px;color:#475569;margin:10px 0;}
+  .th b{color:#4338ca;}
+  .prod-flag{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13.5px;color:#991b1b;}
+  .prod-flag b{color:#b91c1c;}
+  .file-tree{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:13px;font-family:'IBM Plex Mono',monospace;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;}
+  th, td{padding:9px 12px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  tr:nth-child(even) td{background:#f8fafc;}
+
+  label{display:block;font-size:13px;color:#475569;margin-bottom:6px;font-weight:600;}
+  input{width:100%;padding:9px 11px;border:1px solid #cbd5e1;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;background:#fff;}
+  input:focus, button:focus{outline:2px solid #4f46e5;outline-offset:1px;}
+  .row{display:flex;gap:10px;}
+  button{background:#4f46e5;color:#fff;border:none;padding:9px 18px;border-radius:6px;font-weight:600;font-size:13.5px;cursor:pointer;}
+  button:hover{background:#4338ca;}
+  button.ghost{background:#fff;color:#4338ca;border:1px solid #c7d2fe;}
+  button:disabled{opacity:.5;cursor:not-allowed;}
+  .status{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:2px 8px;border-radius:4px;display:inline-block;margin:10px 0;}
+  .status.ok{background:#dcfce7;color:#166534;}
+  .status.bad{background:#fee2e2;color:#991b1b;}
+  .status.pending{background:#fef3c7;color:#92400e;}
+  .status.preview{background:#dbeafe;color:#1e40af;}
+
+  .qr-cell{text-align:center;}
+  .qr-box{display:inline-block;padding:6px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;}
+  .checklist{list-style:none;padding:0;margin:0;}
+  .checklist li{display:flex;gap:10px;font-size:13.5px;margin-bottom:10px;align-items:flex-start;}
+  .checklist li::before{content:'☐';color:#4f46e5;font-size:16px;line-height:1.3;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">webas400app / kidakorn — Basic Build</div>
+  <h1>IWS Basic Setup: Fetch &amp; Display + QR Code Generator</h1>
+  <p class="intro">A minimal build for a blank shared folder: pull data from IWS, show it in a table, and generate a QR code for any identifier field (operator code, process code, etc.).</p>
+  <p class="intro-th">ไกด์แบบพื้นฐานสำหรับโฟลเดอร์แชร์เปล่าๆ: ดึงข้อมูลจาก IWS มาแสดงเป็นตาราง และสร้าง QR code จาก field ที่เป็นรหัส/identifier เช่น รหัสพนักงาน (Operator code) หรือรหัสกระบวนการ (Process code)</p>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <div><div class="step-title">Folder structure</div><div class="step-title-th">โครงสร้างโฟลเดอร์</div></div>
+    </div>
+    <div class="step-body">
+      <div class="file-tree">
+webas400app/kidakorn/<br>
+&nbsp;&nbsp;├── web.config <span style="color:#94a3b8;">(already there)</span><br>
+&nbsp;&nbsp;├── index.html<br>
+&nbsp;&nbsp;└── js/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── config.js<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── api.js
+      </div>
+      <div class="th"><b>ภาษาไทย:</b> เวอร์ชันพื้นฐานนี้ไม่ต้องมี css/data folder เพิ่ม เพราะยังไม่ต้อง save/update อะไร แค่ดึงมาแสดงกับสร้าง QR เท่านั้น</div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <div><div class="step-title">js/config.js</div><div class="step-title-th">ตั้งค่า config.js</div></div>
+    </div>
+    <div class="step-body">
+      <pre><code>const ENVIRONMENTS = {
+  local: { BASE_URL: "/api/web/serveices" },
+  production: { BASE_URL: "/api/web/serveices" }   // 🔴 แก้ตรงนี้ตอนขึ้นจริงถ้า path ต่างจาก dev
+};
+
+function detectEnvironment() {
+  const host = window.location.hostname;
+  return (host === "localhost" || host === "127.0.0.1") ? "local" : "production";
+}
+
+const IWS_CONFIG = {
+  BASE_URL: ENVIRONMENTS[detectEnvironment()].BASE_URL,
+  ENDPOINTS: {
+    GET_DATA: "/yourservice/GET_DATA"   // 🔴 แก้ path ให้ตรงกับที่แอดมิน deploy จริง
+  }
+};</code></pre>
+      <div class="th"><b>ภาษาไทย:</b> ตัวอย่างพื้นฐานมี endpoint เดียว (GET) เพราะแค่ดึงมาแสดง ไม่มีการบันทึกกลับ</div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <div><div class="step-title">js/api.js</div><div class="step-title-th">ตั้งค่า api.js</div></div>
+    </div>
+    <div class="step-body">
+      <pre><code>async function handleResponse(res) {
+  const raw = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${raw}`);
+  return JSON.parse(raw);
+}
+
+const IWS_API = {
+  async getData() {
+    const res = await fetch(IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.GET_DATA, {
+      headers: { "Accept": "application/json" }
+    });
+    return handleResponse(res);
+  }
+};</code></pre>
+    </div>
+  </div>
+
+  <!-- STEP 4 : QR LIBRARY -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <div><div class="step-title">Add the QR code library</div><div class="step-title-th">เพิ่มไลบรารีสร้าง QR code</div></div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:13.5px;color:#64748b;">Easiest way for development — load from CDN:</p>
+      <pre><code>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"&gt;&lt;/script&gt;</code></pre>
+      <div class="prod-flag">
+        🔴 <b>PRODUCTION CHANGE:</b> If the production server/network has no internet access (common on internal AS400/factory networks), this CDN link will fail silently and QR codes won't generate. Download <code>qrcode.min.js</code> once, save it to <code>js/vendor/qrcode.min.js</code> in your shared folder, and change the script tag to:
+        <pre style="margin-top:8px;"><code>&lt;script src="js/vendor/qrcode.min.js"&gt;&lt;/script&gt;</code></pre>
+      </div>
+      <div class="th"><b>ภาษาไทย:</b> เครือข่ายโรงงาน/production มักไม่มี internet ออกนอก ถ้าใช้ CDN ตรงๆ QR จะไม่ขึ้นเลยตอนขึ้นจริง — ให้โหลดไฟล์ไลบรารีมาเก็บไว้ในโฟลเดอร์ (self-host) แทน ปลอดภัยกว่าเยอะ</div>
+    </div>
+  </div>
+
+  <!-- STEP 5 : INDEX.HTML -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">5</div>
+      <div><div class="step-title">index.html — fetch, display, generate QR</div><div class="step-title-th">index.html — ดึง แสดง สร้าง QR</div></div>
+    </div>
+    <div class="step-body">
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;meta name="color-scheme" content="light"&gt;
+&lt;title&gt;Data + QR&lt;/title&gt;
+&lt;script src="js/vendor/qrcode.min.js"&gt;&lt;/script&gt; &lt;!-- 🔴 เปลี่ยนเป็น local path ตอน production --&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Data List&lt;/h1&gt;
+  &lt;button id="loadBtn"&gt;Load Data&lt;/button&gt;
+  &lt;table id="dataTable"&gt;&lt;/table&gt;
+
+  &lt;div id="qrModal" style="display:none;"&gt;
+    &lt;div id="qrcode"&gt;&lt;/div&gt;
+    &lt;p id="qrLabel"&gt;&lt;/p&gt;
+    &lt;button onclick="document.getElementById('qrModal').style.display='none'"&gt;Close&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;script src="js/config.js?v=1"&gt;&lt;/script&gt;
+  &lt;script src="js/api.js?v=1"&gt;&lt;/script&gt;
+  &lt;script&gt;
+    let qrInstance = null;
+
+    function showQR(value, label) {
+      document.getElementById('qrModal').style.display = 'block';
+      document.getElementById('qrLabel').textContent = label + ': ' + value;
+      document.getElementById('qrcode').innerHTML = '';
+      qrInstance = new QRCode(document.getElementById('qrcode'), {
+        text: String(value),
+        width: 180,
+        height: 180
+      });
+    }
+
+    async function loadData() {
+      const data = await IWS_API.getData();
+      const rows = Array.isArray(data) ? data : [data];
+      const table = document.getElementById('dataTable');
+      const cols = Object.keys(rows[0] || {});
+
+      let html = '&lt;tr&gt;' + cols.map(c =&gt; `&lt;th&gt;${c}&lt;/th&gt;`).join('') + '&lt;th&gt;QR&lt;/th&gt;&lt;/tr&gt;';
+      rows.forEach(r =&gt; {
+        html += '&lt;tr&gt;' + cols.map(c =&gt; `&lt;td&gt;${r[c]}&lt;/td&gt;`).join('');
+        // สมมติ column แรกเป็น identifier ที่จะเจนเป็น QR (เช่น operator code / process code)
+        html += `&lt;td&gt;&lt;button onclick="showQR('${r[cols[0]]}', '${cols[0]}')"&gt;Generate QR&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;`;
+      });
+      table.innerHTML = html;
+    }
+
+    document.getElementById('loadBtn').addEventListener('click', loadData);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <div class="th"><b>ภาษาไทย:</b> ตัวอย่างนี้สมมติว่า column แรกของข้อมูลคือ identifier (เช่น Operator code) ถ้าอยากเจน QR จาก field อื่น แก้ที่ <code>cols[0]</code> ให้ชี้ไปที่ field ที่ต้องการแทน</div>
+    </div>
+  </div>
+
+  <!-- STEP 6 : LIVE DEMO -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">6</div>
+      <div><div class="step-title">Try it now (sample data)</div><div class="step-title-th">ลองใช้ได้เลย (ข้อมูลตัวอย่าง)</div></div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:13.5px;color:#64748b;">This works right now using sample rows — no backend needed to try the QR flow.</p>
+      <div class="row" style="margin-bottom:12px;">
+        <button class="ghost" id="demoLoadBtn">Load sample data</button>
+      </div>
+      <span id="demoStatus" class="status pending">Not loaded</span>
+      <div id="demoTableArea"></div>
+      <div id="demoQrArea" style="margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <!-- STEP 7 : WEB.CONFIG -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">7</div>
+      <div><div class="step-title">web.config — same 2 additions</div><div class="step-title-th">web.config — เพิ่ม 2 อย่างเหมือนเดิม</div></div>
+    </div>
+    <div class="step-body">
+      <pre><code>&lt;rule name="YourExistingRule" stopProcessing="true"&gt;
+  &lt;match url="^(.*)$" /&gt;
+  &lt;conditions logicalGrouping="MatchAll"&gt;
+    &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
+    &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
+  &lt;/conditions&gt;
+  &lt;action type="Rewrite" url="..." /&gt;
+&lt;/rule&gt;</code></pre>
+      <div class="th"><b>ภาษาไทย:</b> ต้องมี conditions นี้เสมอ ไม่งั้น rewrite rule เดิมจะทับไฟล์ <code>.js</code> และไฟล์ QR library ที่ self-host ไว้ไม่ให้โหลดได้</div>
+    </div>
+  </div>
+
+  <!-- STEP 8 : SPEC -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">8</div>
+      <div><div class="step-title">Spec to send admin</div><div class="step-title-th">Spec ส่งแอดมิน</div></div>
+    </div>
+    <div class="step-body">
+      <pre><code>ขอ deploy IWS service พื้นฐานสำหรับดึงข้อมูลมาแสดงครับ
+
+GET_DATA
+  Method: GET
+  Output: [ระบุ field ที่ต้องการ เช่น OPERATOR_CODE, OPERATOR_NAME, PROCESS_CODE, PROCESS_NAME]
+  Source: [ชื่อ table หรือ RPG program]
+
+รบกวนแจ้ง URL/path หลัง deploy เสร็จด้วยครับ ขอบคุณครับ</code></pre>
+    </div>
+  </div>
+
+  <!-- STEP 9 : CHECKLIST -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">9</div>
+      <div><div class="step-title">Checklist before production</div><div class="step-title-th">เช็กก่อนขึ้นจริง</div></div>
+    </div>
+    <div class="step-body">
+      <ul class="checklist">
+        <li><b>config.js → BASE_URL / ENDPOINTS:</b> point to the real deployed path</li>
+        <li><b>QR library:</b> self-hosted in <code>js/vendor/</code>, not loaded from CDN</li>
+        <li><b>index.html → ?v=</b> numbers bumped so browsers don't cache stale files</li>
+        <li><b>web.config:</b> confirmed the 2 additions are merged into the real file</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---- Step 6 live demo (sample data, no backend needed) ----
+const SAMPLE_DATA = [
+  { OPERATOR_CODE: "OP1024", OPERATOR_NAME: "Somchai" },
+  { OPERATOR_CODE: "OP1025", OPERATOR_NAME: "Suda" },
+  { OPERATOR_CODE: "OP1026", OPERATOR_NAME: "Anan" }
+];
+
+function demoShowQR(value, label){
+  const area = document.getElementById('demoQrArea');
+  area.innerHTML = `<div class="qr-box"><div id="demoQrCode"></div></div><p style="font-size:13px;color:#64748b;margin-top:6px;">${label}: ${value}</p>`;
+  new QRCode(document.getElementById('demoQrCode'), { text: String(value), width: 150, height: 150 });
+}
+
+document.getElementById('demoLoadBtn').addEventListener('click', () => {
+  document.getElementById('demoStatus').className = 'status preview';
+  document.getElementById('demoStatus').textContent = 'Sample data (not live)';
+  const cols = Object.keys(SAMPLE_DATA[0]);
+  let html = '<table><thead><tr>' + cols.map(c => `<th>${c}</th>`).join('') + '<th>QR</th></tr></thead><tbody>';
+  SAMPLE_DATA.forEach(r => {
+    html += '<tr>' + cols.map(c => `<td>${r[c]}</td>`).join('');
+    html += `<td class="qr-cell"><button onclick="demoShowQR('${r[cols[0]]}','${cols[0]}')">Generate QR</button></td></tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('demoTableArea').innerHTML = html;
+});
+</script>
+</body>
+</html>
