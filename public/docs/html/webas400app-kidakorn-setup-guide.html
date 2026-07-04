@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Setup Guide — webas400app/kidakorn</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+  pre{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'IBM Plex Mono',monospace;}
+  pre code{background:none;padding:0;color:inherit;}
+
+  .wrap{max-width:780px;margin:0 auto;padding:48px 24px 100px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;}
+  h1{font-size:28px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14.5px;max-width:64ch;margin-bottom:8px;}
+  .intro-th{color:#94a3b8;font-size:13.5px;max-width:64ch;margin-bottom:36px;}
+
+  .step{
+    border:1px solid #e2e8f0;border-radius:12px;margin-bottom:20px;overflow:hidden;
+  }
+  .step-head{
+    background:#f8fafc;padding:16px 20px;display:flex;align-items:center;gap:12px;
+    border-bottom:1px solid #e2e8f0;
+  }
+  .step-num{
+    width:30px;height:30px;border-radius:8px;background:#4f46e5;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;
+  }
+  .step-title{font-size:16px;font-weight:700;}
+  .step-title-th{font-size:13px;color:#64748b;font-weight:500;}
+  .step-body{padding:18px 20px;}
+  .th{
+    background:#fafaf9;border-left:3px solid #c7d2fe;padding:10px 14px;border-radius:0 6px 6px 0;
+    font-size:13.5px;color:#475569;margin:10px 0;
+  }
+  .th b{color:#4338ca;}
+
+  .prod-flag{
+    background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin:12px 0;
+    font-size:13.5px;color:#991b1b;
+  }
+  .prod-flag b{color:#b91c1c;}
+
+  .file-tree{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:13px;font-family:'IBM Plex Mono',monospace;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;}
+  th, td{padding:9px 12px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  tr:nth-child(even) td{background:#f8fafc;}
+
+  .checklist{list-style:none;padding:0;margin:0;}
+  .checklist li{display:flex;gap:10px;font-size:13.5px;margin-bottom:10px;align-items:flex-start;}
+  .checklist li::before{content:'☐';color:#4f46e5;font-size:16px;line-height:1.3;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">webas400app / kidakorn — Setup Guide</div>
+  <h1>Step-by-Step: Building Your Web App on IBM i (IWS)</h1>
+  <p class="intro">A plain, ordered checklist for what to create and configure inside your shared folder — with a clear flag on anything that changes for production.</p>
+  <p class="intro-th">ไกด์แบบเป็นขั้นตอน บอกว่าต้องสร้างอะไร ตั้งค่าอะไรบ้างในโฟลเดอร์ที่แอดมินแชร์ให้ พร้อมจุดที่ต้องแก้ตอนขึ้นระบบจริงชัดเจน</p>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Understand the 2 layers</div>
+        <div class="step-title-th">เข้าใจโครงสร้าง 2 ชั้นก่อน</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <table>
+        <tr><th>Layer</th><th>Who does it</th><th>What</th></tr>
+        <tr><td>Backend (IWS service)</td><td>Admin / RPG team</td><td>Deploys an API from a table or RPG program on IBM i</td></tr>
+        <tr><td>Frontend (your folder)</td><td>You</td><td>HTML/CSS/JS that calls that API and shows it on screen</td></tr>
+      </table>
+      <div class="th"><b>ภาษาไทย:</b> คุณทำได้แค่ฝั่งหน้าเว็บ (HTML/JS) ในโฟลเดอร์แชร์ ส่วน API จริงต้องให้แอดมิน/ทีม RPG deploy ให้ก่อนเสมอ</div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Create this folder structure</div>
+        <div class="step-title-th">สร้างโครงสร้างโฟลเดอร์นี้</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="file-tree">
+webas400app/kidakorn/<br>
+&nbsp;&nbsp;├── web.config <span style="color:#94a3b8;">(already there — edit in Step 6)</span><br>
+&nbsp;&nbsp;├── index.html <span style="color:#94a3b8;">(Step 5)</span><br>
+&nbsp;&nbsp;├── js/<br>
+&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── config.js <span style="color:#94a3b8;">(Step 3)</span><br>
+&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── api.js <span style="color:#94a3b8;">(Step 4)</span><br>
+&nbsp;&nbsp;├── css/<br>
+&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── style.css <span style="color:#94a3b8;">(Step 5B)</span><br>
+&nbsp;&nbsp;└── data/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── lookup.json <span style="color:#94a3b8;">(Step 5C — optional)</span>
+      </div>
+      <div class="th"><b>ภาษาไทย:</b> วางไฟล์ตามนี้ในโฟลเดอร์ <code>webas400app/kidakorn</code> — ไฟล์ <code>lookup.json</code> ไม่จำเป็นต้องมีถ้ายังไม่มีค่าคงที่ที่ต้องใช้</div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Create js/config.js — your ".env" for the browser</div>
+        <div class="step-title-th">สร้าง config.js — ทำหน้าที่แทน .env</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:13.5px;color:#64748b;">A real <code>.env</code> file can't be read by browser JavaScript. This file plays that role instead — it's the single place you edit when switching environments.</p>
+      <pre><code>const ENVIRONMENTS = {
+  local: {
+    BASE_URL: "/api/web/serveices"
+  },
+  production: {
+    BASE_URL: "/api/web/serveices"   // 🔴 edit this when the real path is different in production
+  }
+};
+
+function detectEnvironment() {
+  const host = window.location.hostname;
+  return (host === "localhost" || host === "127.0.0.1") ? "local" : "production";
+}
+
+const IWS_CONFIG = {
+  ENV: detectEnvironment(),
+  BASE_URL: ENVIRONMENTS[detectEnvironment()].BASE_URL,
+
+  // เพิ่ม endpoint ใหม่ตรงนี้ทุกครั้งที่แอดมิน deploy service เพิ่ม
+  ENDPOINTS: {
+    GET_DATA:    "/yourservice/GET_DATA",
+    ADD_DATA:    "/yourservice/ADD_DATA",
+    UPDATE_DATA: "/yourservice/UPDATE_DATA",
+    DELETE_DATA: "/yourservice/DELETE_DATA"
+  },
+
+  AUTH: {
+    enabled: false,     // 🔴 set true if the API requires login
+    username: "",
+    password: ""
+  }
+};
+
+console.log("[IWS_CONFIG]", IWS_CONFIG.ENV, IWS_CONFIG.BASE_URL);</code></pre>
+      <div class="prod-flag">
+        🔴 <b>PRODUCTION CHANGE:</b> Update <code>ENVIRONMENTS.production.BASE_URL</code> if the live server uses a different path/port than dev. If the API needs login, set <code>AUTH.enabled = true</code> and fill in credentials (see Step 8 for a safer alternative).
+      </div>
+      <div class="th"><b>ภาษาไทย:</b> ไฟล์นี้คือจุดเดียวที่ต้องแก้ตอนย้ายจาก dev ไป production — ปกติแก้แค่ <code>BASE_URL</code> กับ <code>AUTH</code> เท่านั้น ส่วนที่เหลือไม่ต้องแตะ (แก้ชื่อ endpoint ใน <code>ENDPOINTS</code> ให้ตรงกับที่แอดมิน deploy จริง)</div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Create js/api.js — all your fetch calls in one place</div>
+        <div class="step-title-th">สร้าง api.js — รวมฟังก์ชันเรียก API ไว้ที่เดียว</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <pre><code>function buildHeaders() {
+  const headers = { "Content-Type": "application/json" };
+  if (IWS_CONFIG.AUTH.enabled) {
+    headers["Authorization"] = "Basic " + btoa(IWS_CONFIG.AUTH.username + ":" + IWS_CONFIG.AUTH.password);
+  }
+  return headers;
+}
+
+async function handleResponse(res) {
+  const raw = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${raw}`);
+  try { return JSON.parse(raw); }
+  catch(e) { throw new Error("Response is not valid JSON: " + raw); }
+}
+
+const IWS_API = {
+  async getData() {
+    const res = await fetch(IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.GET_DATA, {
+      method: "GET", headers: buildHeaders()
+    });
+    return handleResponse(res);
+  },
+  async addData(payload) {
+    const res = await fetch(IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.ADD_DATA, {
+      method: "POST", headers: buildHeaders(), body: JSON.stringify(payload)
+    });
+    return handleResponse(res);
+  },
+  async updateData(payload) {
+    const res = await fetch(IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.UPDATE_DATA, {
+      method: "PUT", headers: buildHeaders(), body: JSON.stringify(payload)
+    });
+    return handleResponse(res);
+  },
+  async deleteData(id) {
+    const res = await fetch(IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.DELETE_DATA, {
+      method: "DELETE", headers: buildHeaders(), body: JSON.stringify({ id })
+    });
+    return handleResponse(res);
+  }
+};</code></pre>
+      <div class="th"><b>ภาษาไทย:</b> ไฟล์นี้ปกติไม่ต้องแก้ตอนขึ้น production — แก้แค่ตอนมี endpoint ใหม่เพิ่มเข้ามาเท่านั้น ต้องโหลดไฟล์นี้ต่อจาก <code>config.js</code> เสมอ</div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">5</div>
+      <div>
+        <div class="step-title">Create index.html and load both scripts</div>
+        <div class="step-title-th">สร้าง index.html แล้วโหลดสคริปต์ทั้งสองไฟล์</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="th"&gt;
+&lt;head&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;meta name="color-scheme" content="light"&gt;
+&lt;title&gt;webas400app/kidakorn&lt;/title&gt;
+&lt;link rel="stylesheet" href="css/style.css?v=1"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="wrap"&gt;
+    &lt;h1&gt;My Page&lt;/h1&gt;
+    &lt;button id="testBtn"&gt;Test IWS&lt;/button&gt;
+    &lt;div id="resultArea"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- ต้องโหลด config.js ก่อน api.js เสมอ --&gt;
+  &lt;script src="js/config.js?v=1"&gt;&lt;/script&gt;
+  &lt;script src="js/api.js?v=1"&gt;&lt;/script&gt;
+  &lt;script&gt;
+    document.getElementById('testBtn').addEventListener('click', async () =&gt; {
+      const area = document.getElementById('resultArea');
+      try {
+        const data = await IWS_API.getData();
+        area.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        area.textContent = 'Error: ' + err.message;
+      }
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <div class="prod-flag">
+        🔴 <b>PRODUCTION CHANGE:</b> Bump the <code>?v=1</code> number every time you edit <code>config.js</code>, <code>api.js</code>, or <code>style.css</code> — otherwise browsers may keep serving a cached (old) version.
+      </div>
+      <div class="th"><b>ภาษาไทย:</b> ต้องโหลด <code>config.js</code> ก่อน <code>api.js</code> เสมอ (ลำดับสำคัญ) และอย่าลืมไล่เลข <code>?v=</code> ทุกครั้งที่แก้ไฟล์ ไม่งั้นเบราว์เซอร์จะ cache ของเก่าไว้</div>
+    </div>
+  </div>
+
+  <!-- STEP 5B -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">5B</div>
+      <div>
+        <div class="step-title">Create css/style.css</div>
+        <div class="step-title-th">สร้าง style.css</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:13.5px;color:#64748b;">Basic clean styling for the page and status badges. Not required, but makes testing much easier to read.</p>
+      <pre><code>:root{
+  --bg:#ffffff; --panel:#f8fafc; --border:#e2e8f0;
+  --text:#1e293b; --muted:#64748b; --primary:#4f46e5;
+}
+html, body{ background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; margin:0; }
+.wrap{ max-width:720px; margin:0 auto; padding:40px 24px 80px; }
+.card{ background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:20px; margin-bottom:16px; }
+button{ background:var(--primary); color:#fff; border:none; padding:10px 18px; border-radius:6px; font-weight:600; cursor:pointer; }
+table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+th, td{ padding:8px 10px; border:1px solid var(--border); text-align:left; }
+th{ background:#eef2ff; color:var(--primary); }</code></pre>
+      <div class="th"><b>ภาษาไทย:</b> ไฟล์นี้ไม่จำเป็นต้องมี แต่ช่วยให้หน้าทดสอบอ่านง่ายขึ้นเยอะ ไม่ต้องแก้ตอนขึ้น production</div>
+    </div>
+  </div>
+
+  <!-- STEP 5C -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">5C</div>
+      <div>
+        <div class="step-title">Create data/lookup.json (optional)</div>
+        <div class="step-title-th">สร้าง lookup.json (ไม่บังคับ)</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:13.5px;color:#64748b;">Static reference values that don't need to hit the IWS API — e.g. dropdown options.</p>
+      <pre><code>{
+  "statusOptions": [
+    { "code": "A", "label": "Active" },
+    { "code": "I", "label": "Inactive" }
+  ],
+  "categories": [
+    { "code": "1", "label": "General" },
+    { "code": "2", "label": "Urgent" }
+  ]
+}</code></pre>
+      <div class="th"><b>ภาษาไทย:</b> ใช้เก็บค่าคงที่ เช่น ตัวเลือกใน dropdown ที่ไม่เปลี่ยนบ่อย ไม่ต้องยิงไปเรียก IWS ทุกครั้ง — ข้ามได้ถ้ายังไม่มีค่าคงที่ที่ต้องใช้</div>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">6</div>
+      <div>
+        <div class="step-title">Check web.config — add 2 things if missing</div>
+        <div class="step-title-th">เช็ก web.config — เพิ่ม 2 อย่างถ้ายังไม่มี</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="prod-flag">⚠️ This is a reference to merge into your real web.config — never overwrite it directly, and never delete the admin's existing rewrite rule.</div>
+      <p style="font-size:13.5px;color:#64748b;font-weight:600;">A. Don't rewrite real static files</p>
+      <pre><code>&lt;rule name="YourExistingRule" stopProcessing="true"&gt;
+  &lt;match url="^(.*)$" /&gt;
+  &lt;conditions logicalGrouping="MatchAll"&gt;
+    &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
+    &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
+  &lt;/conditions&gt;
+  &lt;action type="Rewrite" url="..." /&gt;
+&lt;/rule&gt;</code></pre>
+      <p style="font-size:13.5px;color:#64748b;font-weight:600;margin-top:14px;">B. Allow .json files (skip if mimeMap already exists)</p>
+      <pre><code>&lt;system.webServer&gt;
+  &lt;staticContent&gt;
+    &lt;mimeMap fileExtension=".json" mimeType="application/json" /&gt;
+  &lt;/staticContent&gt;
+&lt;/system.webServer&gt;</code></pre>
+      <p style="font-size:13.5px;color:#64748b;font-weight:600;margin-top:14px;">Full reference (both parts combined)</p>
+      <pre><code>&lt;configuration&gt;
+  &lt;system.webServer&gt;
+
+    &lt;rewrite&gt;
+      &lt;rules&gt;
+        &lt;rule name="YourExistingRule" stopProcessing="true"&gt;
+          &lt;match url="^(.*)$" /&gt;
+          &lt;conditions logicalGrouping="MatchAll"&gt;
+            &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
+            &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
+          &lt;/conditions&gt;
+          &lt;action type="Rewrite" url="{admin's existing target}" /&gt;
+        &lt;/rule&gt;
+      &lt;/rules&gt;
+    &lt;/rewrite&gt;
+
+    &lt;staticContent&gt;
+      &lt;mimeMap fileExtension=".json" mimeType="application/json" /&gt;
+    &lt;/staticContent&gt;
+
+  &lt;/system.webServer&gt;
+&lt;/configuration&gt;</code></pre>
+      <div class="th"><b>ภาษาไทย:</b> ห้ามลบ rewrite rule เดิมที่แอดมินตั้งไว้ ให้เพิ่มต่อเท่านั้น ถ้า mimeMap ของ .json มีอยู่แล้วให้ข้าม ไม่งั้น IIS จะ error ว่าซ้ำ</div>
+    </div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">7</div>
+      <div>
+        <div class="step-title">Test it</div>
+        <div class="step-title-th">ทดสอบ</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <ul class="checklist">
+        <li>Open <code>index.html</code> through <code>http://as400webappdev/...</code> (not by double-clicking the file)</li>
+        <li>Open DevTools → Console, confirm you see <code>[IWS_CONFIG] ...</code></li>
+        <li>Call one endpoint and confirm you get JSON back, not an error</li>
+      </ul>
+      <div class="th"><b>ภาษาไทย:</b> ต้องเปิดผ่าน URL ของเว็บจริงเท่านั้น เปิดไฟล์ตรงๆ (double-click) จะเรียก API แบบ relative path ไม่ติด</div>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">8</div>
+      <div>
+        <div class="step-title">Before going live — production checklist</div>
+        <div class="step-title-th">ก่อนขึ้นระบบจริง — เช็กลิสต์</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <ul class="checklist">
+        <li><b>config.js → BASE_URL:</b> point to the production path/server, not dev</li>
+        <li><b>config.js → AUTH:</b> if login is required, don't hardcode passwords in JS — ask admin for a server-side proxy instead</li>
+        <li><b>web.config → CORS header (if set):</b> change <code>Access-Control-Allow-Origin "*"</code> to your real domain</li>
+        <li><b>index.html → ?v= numbers:</b> bump one more time before final release so users don't load stale cached files</li>
+        <li><b>Remove test/sample data</b> such as placeholder empid or dummy records used during development</li>
+      </ul>
+      <div class="th"><b>ภาษาไทย:</b> จุดที่ต้องแก้จริงๆ ตอนขึ้นระบบมีแค่ไม่กี่จุด: URL ของ API, การเข้าสู่ระบบ (ถ้ามี), CORS, และเลข version ของไฟล์ — ที่เหลือไม่ต้องแตะถ้าทดสอบผ่านแล้ว</div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">9</div>
+      <div>
+        <div class="step-title">Quick troubleshooting</div>
+        <div class="step-title-th">แก้ปัญหาเบื้องต้น</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <table>
+        <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+        <tr><td><code>404</code></td><td>Wrong URI or server not restarted</td><td>Check path spelling, restart IWS instance</td></tr>
+        <tr><td>CORS error</td><td>Called across domains instead of relative path</td><td>Use <code>/api/...</code> relative path via the same domain</td></tr>
+        <tr><td><code>500</code></td><td>SQL error or permission issue</td><td>Ask admin to check the job log (<code>WRKACTJOB</code>)</td></tr>
+        <tr><td>Old code keeps loading</td><td>Browser cached the file</td><td>Bump <code>?v=</code> number</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
