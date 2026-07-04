@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>ERP Full Stack — Stock &amp; User (IWS + AS400)</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.6;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+  pre{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'IBM Plex Mono',monospace;}
+  pre code{background:none;padding:0;color:inherit;}
+
+  .layout{display:grid;grid-template-columns:230px 1fr;max-width:1180px;margin:0 auto;}
+  @media(max-width:860px){.layout{grid-template-columns:1fr;}}
+  .sidebar{padding:32px 16px;border-right:1px solid #e2e8f0;position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;}
+  @media(max-width:860px){.sidebar{position:static;border-right:none;border-bottom:1px solid #e2e8f0;max-height:none;}}
+  .sidebar .brand{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:16px;padding:0 12px;}
+  .sidebar a{display:block;padding:7px 12px;border-radius:6px;font-size:13.5px;color:#475569;text-decoration:none;}
+  .sidebar a:hover{background:#eef2ff;color:#4338ca;}
+  .sidebar .group{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin:16px 0 4px;padding:0 12px;}
+
+  .content{padding:40px 32px 100px;max-width:840px;}
+  section{margin-bottom:56px;scroll-margin-top:24px;}
+  h1{font-size:28px;font-weight:800;margin:0 0 10px;}
+  h2{font-size:20px;font-weight:700;margin:0 0 6px;display:flex;align-items:center;gap:10px;}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:#4f46e5;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;}
+  .lead{color:#64748b;font-size:14px;margin:0 0 20px;max-width:64ch;}
+  .intro-sub{color:#64748b;font-size:15px;max-width:64ch;margin-bottom:32px;}
+
+  .card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.03em;}
+  .badge-you{background:#dcfce7;color:#166534;}
+  .badge-admin{background:#fee2e2;color:#991b1b;}
+
+  .file-tree{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:13px;font-family:'IBM Plex Mono',monospace;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;}
+  th, td{padding:9px 12px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  tr:nth-child(even) td{background:#f8fafc;}
+
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;font-family:'IBM Plex Mono',monospace;margin:16px 0;}
+  .flow .box{background:#eef2ff;border:1px solid #c7d2fe;color:#4338ca;padding:10px 14px;border-radius:8px;}
+  .flow .arrow{color:#94a3b8;font-size:16px;}
+
+  label{display:block;font-size:13px;color:#475569;margin-bottom:6px;font-weight:600;}
+  input, select{width:100%;padding:9px 11px;border:1px solid #cbd5e1;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;background:#fff;}
+  input:focus, button:focus, select:focus{outline:2px solid #4f46e5;outline-offset:1px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;}
+  @media(max-width:640px){.grid2,.grid4{grid-template-columns:1fr;}}
+  button{background:#4f46e5;color:#fff;border:none;padding:9px 18px;border-radius:6px;font-weight:600;font-size:13.5px;cursor:pointer;}
+  button:hover{background:#4338ca;}
+  button.ghost{background:#fff;color:#4338ca;border:1px solid #c7d2fe;}
+  button.danger{background:#fff;color:#b91c1c;border:1px solid #fecaca;}
+  button:disabled{opacity:.5;cursor:not-allowed;}
+  .status{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:2px 8px;border-radius:4px;display:inline-block;margin:10px 0;}
+  .status.ok{background:#dcfce7;color:#166534;}
+  .status.bad{background:#fee2e2;color:#991b1b;}
+  .status.pending{background:#fef3c7;color:#92400e;}
+  .tabbtn{background:#fff;border:1px solid #e2e8f0;color:#64748b;padding:8px 16px;border-radius:6px 6px 0 0;font-weight:600;font-size:13px;cursor:pointer;border-bottom:none;}
+  .tabbtn.active{background:#eef2ff;color:#4338ca;border-color:#c7d2fe;}
+  .tabpanel{border:1px solid #e2e8f0;border-radius:0 8px 8px 8px;padding:20px;}
+  .tabpanel.hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">ERP · Stock &amp; User</div>
+    <a href="#overview">0. ภาพรวมระบบ</a>
+    <a href="#datamodel">1. Data Model</a>
+    <a href="#backend">2. Backend (AS400 + IWS)</a>
+    <a href="#structure">3. โครงสร้าง Frontend</a>
+    <a href="#config">4. config.js</a>
+    <a href="#api">5. api.js</a>
+    <div class="group">Working Demo</div>
+    <a href="#demo">6. Stock &amp; User (live)</a>
+    <a href="#webconfig">7. web.config</a>
+    <a href="#spec">8. Spec ส่งแอดมิน</a>
+  </aside>
+
+  <main class="content">
+
+    <section id="overview">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;">Full Stack Summary · ERP Style</div>
+      <h1>ระบบ Stock &amp; User บน AS400 + IWS</h1>
+      <p class="intro-sub">
+        โมดูลพื้นฐานที่ระบบ ERP ส่วนใหญ่มีเหมือนกัน: <strong>Stock</strong> (คุมสต๊อกสินค้า เข้า-ออก) และ
+        <strong>User</strong> (จัดการผู้ใช้/สิทธิ์การเข้าถึง) — ใช้สถาปัตยกรรมเดียวกับที่คุยกันมาตลอด
+      </p>
+      <div class="flow">
+        <div class="box">AS400 Database</div><span class="arrow">→</span>
+        <div class="box">IWS (REST API)</div><span class="arrow">→</span>
+        <div class="box">HTML/CSS/JS</div><span class="arrow">→</span>
+        <div class="box">ผู้ใช้งาน</div>
+      </div>
+      <div class="card">
+        <table>
+          <tr><th>ชั้น</th><th>ใครทำ</th></tr>
+          <tr><td>ตาราง + Business logic</td><td><span class="badge badge-admin">แอดมิน/ทีม RPG</span></td></tr>
+          <tr><td>IWS service (API)</td><td><span class="badge badge-admin">แอดมิน/ทีม RPG</span></td></tr>
+          <tr><td>หน้าเว็บ (webas400app)</td><td><span class="badge badge-you">คุณ</span></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- 1 DATA MODEL -->
+    <section id="datamodel">
+      <h2><span class="num">1</span>Data Model</h2>
+
+      <p style="font-size:13.5px;font-weight:600;margin-bottom:6px;">📦 STOCK_ITEMS (สินค้าคงคลัง)</p>
+      <table>
+        <tr><th>Field</th><th>ชนิด</th><th>ความหมาย</th></tr>
+        <tr><td><code>ITEM_CODE</code></td><td>char(10)</td><td>รหัสสินค้า (PK)</td></tr>
+        <tr><td><code>ITEM_NAME</code></td><td>varchar(100)</td><td>ชื่อสินค้า</td></tr>
+        <tr><td><code>CATEGORY</code></td><td>varchar(30)</td><td>หมวดหมู่</td></tr>
+        <tr><td><code>UNIT</code></td><td>varchar(10)</td><td>หน่วยนับ เช่น ชิ้น, กล่อง</td></tr>
+        <tr><td><code>QTY_ON_HAND</code></td><td>decimal(10,2)</td><td>จำนวนคงเหลือ</td></tr>
+        <tr><td><code>REORDER_POINT</code></td><td>decimal(10,2)</td><td>จุดสั่งซื้อเพิ่ม</td></tr>
+      </table>
+
+      <p style="font-size:13.5px;font-weight:600;margin:16px 0 6px;">🔄 STOCK_TRANS (ประวัติเข้า-ออก)</p>
+      <table>
+        <tr><th>Field</th><th>ชนิด</th><th>ความหมาย</th></tr>
+        <tr><td><code>TRANS_ID</code></td><td>integer</td><td>เลขที่รายการ (auto)</td></tr>
+        <tr><td><code>ITEM_CODE</code></td><td>char(10)</td><td>อ้างอิงสินค้า</td></tr>
+        <tr><td><code>TRANS_TYPE</code></td><td>char(1)</td><td>I=รับเข้า, O=เบิกออก</td></tr>
+        <tr><td><code>QTY</code></td><td>decimal(10,2)</td><td>จำนวน</td></tr>
+        <tr><td><code>TRANS_DATE</code></td><td>date</td><td>วันที่ทำรายการ</td></tr>
+        <tr><td><code>REMARK</code></td><td>varchar(100)</td><td>หมายเหตุ</td></tr>
+      </table>
+
+      <p style="font-size:13.5px;font-weight:600;margin:16px 0 6px;">👤 APP_USERS (ผู้ใช้ระบบ)</p>
+      <table>
+        <tr><th>Field</th><th>ชนิด</th><th>ความหมาย</th></tr>
+        <tr><td><code>USER_ID</code></td><td>char(10)</td><td>รหัสผู้ใช้ (PK)</td></tr>
+        <tr><td><code>FULL_NAME</code></td><td>varchar(80)</td><td>ชื่อ-สกุล</td></tr>
+        <tr><td><code>DEPARTMENT</code></td><td>varchar(50)</td><td>แผนก</td></tr>
+        <tr><td><code>ROLE</code></td><td>varchar(20)</td><td>Admin / Staff / Viewer</td></tr>
+        <tr><td><code>STATUS</code></td><td>char(1)</td><td>A=Active, I=Inactive</td></tr>
+      </table>
+
+      <p style="font-size:13.5px;font-weight:600;margin:16px 0 6px;">🧾 PO_HEADER / PO_DETAIL (ใบสั่งซื้อ)</p>
+      <table>
+        <tr><th>Field</th><th>ชนิด</th><th>ความหมาย</th></tr>
+        <tr><td><code>PO_NO</code></td><td>char(10)</td><td>เลขที่ใบสั่งซื้อ (PK)</td></tr>
+        <tr><td><code>SUPPLIER</code></td><td>varchar(80)</td><td>ชื่อ supplier</td></tr>
+        <tr><td><code>PO_DATE</code></td><td>date</td><td>วันที่สั่งซื้อ</td></tr>
+        <tr><td><code>STATUS</code></td><td>char(1)</td><td>O=Open, R=Received, C=Cancelled</td></tr>
+        <tr><td><code>ITEM_CODE</code>, <code>QTY</code>, <code>UNIT_PRICE</code></td><td>-</td><td>รายการสินค้าใน PO (detail)</td></tr>
+      </table>
+
+      <p style="font-size:13.5px;font-weight:600;margin:16px 0 6px;">🧾 SO_HEADER / SO_DETAIL (ใบสั่งขาย)</p>
+      <table>
+        <tr><th>Field</th><th>ชนิด</th><th>ความหมาย</th></tr>
+        <tr><td><code>SO_NO</code></td><td>char(10)</td><td>เลขที่ใบสั่งขาย (PK)</td></tr>
+        <tr><td><code>CUSTOMER</code></td><td>varchar(80)</td><td>ชื่อลูกค้า</td></tr>
+        <tr><td><code>SO_DATE</code></td><td>date</td><td>วันที่ขาย</td></tr>
+        <tr><td><code>STATUS</code></td><td>char(1)</td><td>O=Open, S=Shipped, C=Cancelled</td></tr>
+        <tr><td><code>ITEM_CODE</code>, <code>QTY</code>, <code>UNIT_PRICE</code></td><td>-</td><td>รายการสินค้าใน SO (detail)</td></tr>
+      </table>
+    </section>
+
+    <!-- 2 BACKEND -->
+    <section id="backend">
+      <h2><span class="num">2</span>Backend — AS400 + IWS <span class="badge badge-admin">ส่วนของแอดมิน</span></h2>
+      <pre><code>CREATE TABLE ERPLIB.STOCK_ITEMS (
+  ITEM_CODE     CHAR(10)     NOT NULL,
+  ITEM_NAME     VARCHAR(100),
+  CATEGORY      VARCHAR(30),
+  UNIT          VARCHAR(10),
+  QTY_ON_HAND   DECIMAL(10,2) DEFAULT 0,
+  REORDER_POINT DECIMAL(10,2) DEFAULT 0,
+  PRIMARY KEY (ITEM_CODE)
+);
+
+CREATE TABLE ERPLIB.APP_USERS (
+  USER_ID    CHAR(10)    NOT NULL,
+  FULL_NAME  VARCHAR(80),
+  DEPARTMENT VARCHAR(50),
+  ROLE       VARCHAR(20),
+  STATUS     CHAR(1) DEFAULT 'A',
+  PRIMARY KEY (USER_ID)
+);</code></pre>
+      <p class="lead" style="margin-top:12px;">
+        Endpoint ที่ควรขอแอดมิน deploy (ผ่าน IWS Studio → Deploy New Service → SQL statement):
+      </p>
+      <table>
+        <tr><th>Endpoint</th><th>Method</th><th>คำอธิบาย</th></tr>
+        <tr><td><code>/stock/GET_ITEMS</code></td><td>GET</td><td>ดึงรายการสินค้า+จำนวนคงเหลือ</td></tr>
+        <tr><td><code>/stock/STOCK_IN</code></td><td>POST</td><td>รับสินค้าเข้า (insert trans + update qty)</td></tr>
+        <tr><td><code>/stock/STOCK_OUT</code></td><td>POST</td><td>เบิกสินค้าออก</td></tr>
+        <tr><td><code>/user/GET_USERS</code></td><td>GET</td><td>ดึงรายชื่อผู้ใช้</td></tr>
+        <tr><td><code>/user/ADD_USER</code></td><td>POST</td><td>เพิ่มผู้ใช้ใหม่</td></tr>
+        <tr><td><code>/user/SET_STATUS</code></td><td>POST</td><td>เปิด/ปิดการใช้งาน user</td></tr>
+        <tr><td><code>/po/GET_PO</code></td><td>GET</td><td>ดึงรายการใบสั่งซื้อ</td></tr>
+        <tr><td><code>/po/CREATE_PO</code></td><td>POST</td><td>สร้าง PO ใหม่ (header+detail)</td></tr>
+        <tr><td><code>/po/RECEIVE_PO</code></td><td>POST</td><td>รับของตาม PO → stock บวกอัตโนมัติ</td></tr>
+        <tr><td><code>/so/GET_SO</code></td><td>GET</td><td>ดึงรายการใบสั่งขาย</td></tr>
+        <tr><td><code>/so/CREATE_SO</code></td><td>POST</td><td>สร้าง SO ใหม่ → stock ลบอัตโนมัติ</td></tr>
+      </table>
+      <div class="card" style="margin-top:12px;">
+        <strong style="font-size:13.5px;">ทำไมต้องแยก RECEIVE_PO ออกจาก CREATE_PO</strong>
+        <p style="font-size:13px;color:#64748b;margin:6px 0 0;">
+          สั่งซื้อ (CREATE_PO) กับของมาถึงจริง (RECEIVE_PO) มักไม่ใช่วันเดียวกัน — แยก endpoint ไว้ stock จะได้บวกตอนของมาถึงจริงเท่านั้น ไม่ใช่ตอนสั่งซื้อ
+        </p>
+      </div>
+    </section>
+
+    <!-- 3 STRUCTURE -->
+    <section id="structure">
+      <h2><span class="num">3</span>โครงสร้าง Frontend <span class="badge badge-you">ส่วนของคุณ</span></h2>
+      <div class="file-tree">
+/webas400app/<br>
+&nbsp;&nbsp;├── web.config<br>
+&nbsp;&nbsp;├── index.html<br>
+&nbsp;&nbsp;├── js/<br>
+&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── config.js<br>
+&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── api.js<br>
+&nbsp;&nbsp;└── css/style.css
+      </div>
+    </section>
+
+    <!-- 4 CONFIG -->
+    <section id="config">
+      <h2><span class="num">4</span>js/config.js</h2>
+      <pre><code>const ENVIRONMENTS = {
+  local: { BASE_URL: "/api/web/serveices" },
+  production: { BASE_URL: "/api/web/serveices" }
+};
+
+function detectEnvironment() {
+  const host = window.location.hostname;
+  return (host === "localhost" || host === "127.0.0.1") ? "local" : "production";
+}
+
+const IWS_CONFIG = {
+  BASE_URL: ENVIRONMENTS[detectEnvironment()].BASE_URL,
+  ENDPOINTS: {
+    GET_ITEMS:  "/stock/GET_ITEMS",
+    STOCK_IN:   "/stock/STOCK_IN",
+    STOCK_OUT:  "/stock/STOCK_OUT",
+    GET_USERS:  "/user/GET_USERS",
+    ADD_USER:   "/user/ADD_USER",
+    SET_STATUS: "/user/SET_STATUS",
+    GET_PO:     "/po/GET_PO",
+    CREATE_PO:  "/po/CREATE_PO",
+    GET_SO:     "/so/GET_SO",
+    CREATE_SO:  "/so/CREATE_SO"
+  }
+};</code></pre>
+    </section>
+
+    <!-- 5 API -->
+    <section id="api">
+      <h2><span class="num">5</span>js/api.js</h2>
+      <pre><code>async function handleResponse(res) {
+  const raw = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${raw}`);
+  return JSON.parse(raw);
+}
+function post(endpoint, payload) {
+  return fetch(IWS_CONFIG.BASE_URL + endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).then(handleResponse);
+}
+
+const STOCK_API = {
+  getItems:  () => fetch(IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.GET_ITEMS).then(handleResponse),
+  stockIn:   (p) => post(IWS_CONFIG.ENDPOINTS.STOCK_IN, p),
+  stockOut:  (p) => post(IWS_CONFIG.ENDPOINTS.STOCK_OUT, p)
+};
+const USER_API = {
+  getUsers:  () => fetch(IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.GET_USERS).then(handleResponse),
+  addUser:   (p) => post(IWS_CONFIG.ENDPOINTS.ADD_USER, p),
+  setStatus: (p) => post(IWS_CONFIG.ENDPOINTS.SET_STATUS, p)
+};
+const PO_API = {
+  getPO:    () => fetch(IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.GET_PO).then(handleResponse),
+  createPO: (p) => post(IWS_CONFIG.ENDPOINTS.CREATE_PO, p)
+};
+const SO_API = {
+  getSO:    () => fetch(IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.GET_SO).then(handleResponse),
+  createSO: (p) => post(IWS_CONFIG.ENDPOINTS.CREATE_SO, p)
+};</code></pre>
+    </section>
+
+    <!-- 6 DEMO -->
+    <section id="demo">
+      <h2><span class="num">6</span>Demo ใช้งานจริง</h2>
+      <p class="lead">path ตอนนี้เป็นตัวอย่าง (<code>/api/web/serveices/stock/...</code>, <code>/user/...</code>) แก้ให้ตรงจริงใน <code>config.js</code> เมื่อแอดมิน deploy เสร็จ</p>
+
+      <div>
+        <button class="tabbtn active" id="tabStockBtn" onclick="switchTab('stock')">📦 Stock</button>
+        <button class="tabbtn" id="tabUserBtn" onclick="switchTab('user')">👤 User</button>
+        <button class="tabbtn" id="tabPoBtn" onclick="switchTab('po')">🧾 Purchase Order</button>
+        <button class="tabbtn" id="tabSoBtn" onclick="switchTab('so')">💰 Sales Order</button>
+      </div>
+
+      <div class="tabpanel" id="tabStock">
+        <div class="grid4">
+          <div><label>รหัสสินค้า</label><input id="sItemCode" placeholder="ITM001" /></div>
+          <div><label>จำนวน</label><input id="sQty" type="number" step="0.01" placeholder="10" /></div>
+          <div style="display:flex;align-items:flex-end;"><button style="width:100%;" onclick="doStock('in')">รับเข้า</button></div>
+          <div style="display:flex;align-items:flex-end;"><button class="danger" style="width:100%;" onclick="doStock('out')">เบิกออก</button></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;">
+          <span id="stockStatus" class="status pending">ยังไม่โหลด</span>
+          <button class="ghost" onclick="loadStock()">โหลดรายการสินค้า</button>
+        </div>
+        <div id="stockResult"><p style="color:#94a3b8;font-size:13.5px;">กด "โหลดรายการสินค้า"</p></div>
+      </div>
+
+      <div class="tabpanel hidden" id="tabUser">
+        <div class="grid4">
+          <div><label>รหัสผู้ใช้</label><input id="uUserId" placeholder="U001" /></div>
+          <div><label>ชื่อ-สกุล</label><input id="uFullName" placeholder="สมชาย ใจดี" /></div>
+          <div><label>แผนก</label><input id="uDept" placeholder="Warehouse" /></div>
+          <div><label>สิทธิ์</label>
+            <select id="uRole"><option>Staff</option><option>Admin</option><option>Viewer</option></select>
+          </div>
+        </div>
+        <div style="margin-top:12px;"><button onclick="addUser()">+ เพิ่มผู้ใช้</button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;">
+          <span id="userStatus" class="status pending">ยังไม่โหลด</span>
+          <button class="ghost" onclick="loadUsers()">โหลดรายชื่อผู้ใช้</button>
+        </div>
+        <div id="userResult"><p style="color:#94a3b8;font-size:13.5px;">กด "โหลดรายชื่อผู้ใช้"</p></div>
+      </div>
+
+      <div class="tabpanel hidden" id="tabPo">
+        <div class="grid4">
+          <div><label>Supplier</label><input id="poSupplier" placeholder="บริษัท ABC จำกัด" /></div>
+          <div><label>รหัสสินค้า</label><input id="poItemCode" placeholder="ITM001" /></div>
+          <div><label>จำนวน</label><input id="poQty" type="number" step="0.01" placeholder="100" /></div>
+          <div><label>ราคา/หน่วย</label><input id="poPrice" type="number" step="0.01" placeholder="25.00" /></div>
+        </div>
+        <div style="margin-top:12px;"><button onclick="createPO()">+ สร้างใบสั่งซื้อ</button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;">
+          <span id="poStatus" class="status pending">ยังไม่โหลด</span>
+          <button class="ghost" onclick="loadPO()">โหลดรายการ PO</button>
+        </div>
+        <div id="poResult"><p style="color:#94a3b8;font-size:13.5px;">กด "โหลดรายการ PO"</p></div>
+      </div>
+
+      <div class="tabpanel hidden" id="tabSo">
+        <div class="grid4">
+          <div><label>ลูกค้า</label><input id="soCustomer" placeholder="บริษัท XYZ จำกัด" /></div>
+          <div><label>รหัสสินค้า</label><input id="soItemCode" placeholder="ITM001" /></div>
+          <div><label>จำนวน</label><input id="soQty" type="number" step="0.01" placeholder="20" /></div>
+          <div><label>ราคา/หน่วย</label><input id="soPrice" type="number" step="0.01" placeholder="35.00" /></div>
+        </div>
+        <div style="margin-top:12px;"><button onclick="createSO()">+ สร้างใบสั่งขาย</button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;">
+          <span id="soStatus" class="status pending">ยังไม่โหลด</span>
+          <button class="ghost" onclick="loadSO()">โหลดรายการ SO</button>
+        </div>
+        <div id="soResult"><p style="color:#94a3b8;font-size:13.5px;">กด "โหลดรายการ SO"</p></div>
+      </div>
+    </section>
+
+    <!-- 7 WEBCONFIG -->
+    <section id="webconfig">
+      <h2><span class="num">7</span>web.config — สรุปที่ต้องเพิ่ม</h2>
+      <pre><code>&lt;rule name="YourExistingRule" stopProcessing="true"&gt;
+  &lt;match url="^(.*)$" /&gt;
+  &lt;conditions logicalGrouping="MatchAll"&gt;
+    &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
+    &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
+  &lt;/conditions&gt;
+  &lt;action type="Rewrite" url="..." /&gt;
+&lt;/rule&gt;
+
+&lt;system.webServer&gt;
+  &lt;staticContent&gt;
+    &lt;mimeMap fileExtension=".json" mimeType="application/json" /&gt;
+  &lt;/staticContent&gt;
+&lt;/system.webServer&gt;</code></pre>
+    </section>
+
+    <!-- 8 SPEC -->
+    <section id="spec">
+      <h2><span class="num">8</span>Spec ส่งแอดมิน</h2>
+      <pre><code>ขอ deploy IWS service สำหรับระบบ Stock &amp; User ครับ
+
+STOCK
+1) GET_ITEMS (GET)   → ITEM_CODE, ITEM_NAME, CATEGORY, UNIT, QTY_ON_HAND, REORDER_POINT
+   Source: ERPLIB.STOCK_ITEMS
+2) STOCK_IN (POST)   Input: ITEM_CODE, QTY, REMARK  → insert STOCK_TRANS + update QTY_ON_HAND (+)
+3) STOCK_OUT (POST)  Input: ITEM_CODE, QTY, REMARK  → insert STOCK_TRANS + update QTY_ON_HAND (-)
+
+USER
+4) GET_USERS (GET)   → USER_ID, FULL_NAME, DEPARTMENT, ROLE, STATUS
+   Source: ERPLIB.APP_USERS
+5) ADD_USER (POST)   Input: USER_ID, FULL_NAME, DEPARTMENT, ROLE
+6) SET_STATUS (POST) Input: USER_ID, STATUS (A/I)
+
+PURCHASE ORDER
+7) GET_PO (GET)      → PO_NO, SUPPLIER, PO_DATE, STATUS, ITEM_CODE, QTY, UNIT_PRICE
+   Source: ERPLIB.PO_HEADER join PO_DETAIL
+8) CREATE_PO (POST)  Input: SUPPLIER, ITEM_CODE, QTY, UNIT_PRICE → insert PO_HEADER+DETAIL, STATUS='O'
+9) RECEIVE_PO (POST) Input: PO_NO → update STATUS='R' + update STOCK_ITEMS.QTY_ON_HAND (+)
+
+SALES ORDER
+10) GET_SO (GET)     → SO_NO, CUSTOMER, SO_DATE, STATUS, ITEM_CODE, QTY, UNIT_PRICE
+    Source: ERPLIB.SO_HEADER join SO_DETAIL
+11) CREATE_SO (POST) Input: CUSTOMER, ITEM_CODE, QTY, UNIT_PRICE → insert SO_HEADER+DETAIL, update STOCK_ITEMS.QTY_ON_HAND (-)
+
+รบกวนแจ้ง URL/path ของแต่ละ endpoint หลัง deploy เสร็จด้วยครับ ขอบคุณครับ</code></pre>
+    </section>
+
+  </main>
+</div>
+
+<script>
+const BASE_PATH = '/api/web/serveices';
+
+function switchTab(tab){
+  ['stock','user','po','so'].forEach(t => {
+    document.getElementById('tab' + t[0].toUpperCase() + t.slice(1)).classList.toggle('hidden', tab !== t);
+    document.getElementById('tab' + t[0].toUpperCase() + t.slice(1) + 'Btn').classList.toggle('active', tab === t);
+  });
+}
+
+function setStatus(el, state, text){
+  el.className = 'status ' + state;
+  el.textContent = text;
+}
+
+function renderTable(container, data){
+  const rows = Array.isArray(data) ? data : [data];
+  if(rows.length === 0 || Object.keys(rows[0] || {}).length === 0){
+    container.innerHTML = '<p style="color:#94a3b8;font-size:13.5px;">ไม่พบข้อมูล</p>';
+    return;
+  }
+  const cols = Object.keys(rows[0]);
+  let html = '<table><thead><tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+  rows.forEach(r => { html += '<tr>' + cols.map(c => `<td>${r[c] ?? ''}</td>`).join('') + '</tr>'; });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+async function callApi(path, opts){
+  const res = await fetch(BASE_PATH + path, opts);
+  const raw = await res.text();
+  if(!res.ok) throw new Error(`HTTP ${res.status}: ${raw}`);
+  return JSON.parse(raw);
+}
+
+/* ---- Stock ---- */
+async function loadStock(){
+  const statusEl = document.getElementById('stockStatus');
+  const area = document.getElementById('stockResult');
+  setStatus(statusEl, 'pending', 'กำลังโหลด...');
+  try {
+    const data = await callApi('/stock/GET_ITEMS', { headers: {'Accept':'application/json'} });
+    setStatus(statusEl, 'ok', 'สำเร็จ');
+    renderTable(area, data);
+  } catch(err){
+    setStatus(statusEl, 'bad', 'ผิดพลาด');
+    area.innerHTML = `<pre>${err.message}\n\nยังเป็น path ตัวอย่าง — แก้ config.js ให้ตรงของจริงก่อนใช้งาน</pre>`;
+  }
+}
+
+async function doStock(direction){
+  const statusEl = document.getElementById('stockStatus');
+  const payload = {
+    ITEM_CODE: document.getElementById('sItemCode').value.trim(),
+    QTY: document.getElementById('sQty').value
+  };
+  if(!payload.ITEM_CODE){ setStatus(statusEl, 'bad', 'กรอกรหัสสินค้าก่อน'); return; }
+  setStatus(statusEl, 'pending', 'กำลังบันทึก...');
+  const endpoint = direction === 'in' ? '/stock/STOCK_IN' : '/stock/STOCK_OUT';
+  try {
+    await callApi(endpoint, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    setStatus(statusEl, 'ok', 'บันทึกสำเร็จ');
+    loadStock();
+  } catch(err){
+    setStatus(statusEl, 'bad', 'บันทึกไม่สำเร็จ');
+    document.getElementById('stockResult').innerHTML = `<pre>${err.message}</pre>`;
+  }
+}
+
+/* ---- User ---- */
+async function loadUsers(){
+  const statusEl = document.getElementById('userStatus');
+  const area = document.getElementById('userResult');
+  setStatus(statusEl, 'pending', 'กำลังโหลด...');
+  try {
+    const data = await callApi('/user/GET_USERS', { headers: {'Accept':'application/json'} });
+    setStatus(statusEl, 'ok', 'สำเร็จ');
+    renderTable(area, data);
+  } catch(err){
+    setStatus(statusEl, 'bad', 'ผิดพลาด');
+    area.innerHTML = `<pre>${err.message}\n\nยังเป็น path ตัวอย่าง — แก้ config.js ให้ตรงของจริงก่อนใช้งาน</pre>`;
+  }
+}
+
+async function addUser(){
+  const statusEl = document.getElementById('userStatus');
+  const payload = {
+    USER_ID: document.getElementById('uUserId').value.trim(),
+    FULL_NAME: document.getElementById('uFullName').value.trim(),
+    DEPARTMENT: document.getElementById('uDept').value.trim(),
+    ROLE: document.getElementById('uRole').value
+  };
+  if(!payload.USER_ID){ setStatus(statusEl, 'bad', 'กรอกรหัสผู้ใช้ก่อน'); return; }
+  setStatus(statusEl, 'pending', 'กำลังบันทึก...');
+  try {
+    await callApi('/user/ADD_USER', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    setStatus(statusEl, 'ok', 'เพิ่มผู้ใช้สำเร็จ');
+    loadUsers();
+  } catch(err){
+    setStatus(statusEl, 'bad', 'บันทึกไม่สำเร็จ');
+    document.getElementById('userResult').innerHTML = `<pre>${err.message}</pre>`;
+  }
+}
+
+/* ---- Purchase Order ---- */
+async function loadPO(){
+  const statusEl = document.getElementById('poStatus');
+  const area = document.getElementById('poResult');
+  setStatus(statusEl, 'pending', 'กำลังโหลด...');
+  try {
+    const data = await callApi('/po/GET_PO', { headers: {'Accept':'application/json'} });
+    setStatus(statusEl, 'ok', 'สำเร็จ');
+    renderTable(area, data);
+  } catch(err){
+    setStatus(statusEl, 'bad', 'ผิดพลาด');
+    area.innerHTML = `<pre>${err.message}\n\nยังเป็น path ตัวอย่าง — แก้ config.js ให้ตรงของจริงก่อนใช้งาน</pre>`;
+  }
+}
+
+async function createPO(){
+  const statusEl = document.getElementById('poStatus');
+  const payload = {
+    SUPPLIER: document.getElementById('poSupplier').value.trim(),
+    ITEM_CODE: document.getElementById('poItemCode').value.trim(),
+    QTY: document.getElementById('poQty').value,
+    UNIT_PRICE: document.getElementById('poPrice').value
+  };
+  if(!payload.SUPPLIER || !payload.ITEM_CODE){ setStatus(statusEl, 'bad', 'กรอก Supplier และรหัสสินค้าก่อน'); return; }
+  setStatus(statusEl, 'pending', 'กำลังบันทึก...');
+  try {
+    await callApi('/po/CREATE_PO', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    setStatus(statusEl, 'ok', 'สร้าง PO สำเร็จ');
+    loadPO();
+  } catch(err){
+    setStatus(statusEl, 'bad', 'บันทึกไม่สำเร็จ');
+    document.getElementById('poResult').innerHTML = `<pre>${err.message}</pre>`;
+  }
+}
+
+/* ---- Sales Order ---- */
+async function loadSO(){
+  const statusEl = document.getElementById('soStatus');
+  const area = document.getElementById('soResult');
+  setStatus(statusEl, 'pending', 'กำลังโหลด...');
+  try {
+    const data = await callApi('/so/GET_SO', { headers: {'Accept':'application/json'} });
+    setStatus(statusEl, 'ok', 'สำเร็จ');
+    renderTable(area, data);
+  } catch(err){
+    setStatus(statusEl, 'bad', 'ผิดพลาด');
+    area.innerHTML = `<pre>${err.message}\n\nยังเป็น path ตัวอย่าง — แก้ config.js ให้ตรงของจริงก่อนใช้งาน</pre>`;
+  }
+}
+
+async function createSO(){
+  const statusEl = document.getElementById('soStatus');
+  const payload = {
+    CUSTOMER: document.getElementById('soCustomer').value.trim(),
+    ITEM_CODE: document.getElementById('soItemCode').value.trim(),
+    QTY: document.getElementById('soQty').value,
+    UNIT_PRICE: document.getElementById('soPrice').value
+  };
+  if(!payload.CUSTOMER || !payload.ITEM_CODE){ setStatus(statusEl, 'bad', 'กรอกลูกค้าและรหัสสินค้าก่อน'); return; }
+  setStatus(statusEl, 'pending', 'กำลังบันทึก...');
+  try {
+    await callApi('/so/CREATE_SO', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    setStatus(statusEl, 'ok', 'สร้าง SO สำเร็จ');
+    loadSO();
+  } catch(err){
+    setStatus(statusEl, 'bad', 'บันทึกไม่สำเร็จ');
+    document.getElementById('soResult').innerHTML = `<pre>${err.message}</pre>`;
+  }
+}
+</script>
+</body>
+</html>
