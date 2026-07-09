@@ -1,9 +1,15 @@
 {
+  "html/connect-as400-scanner-minpop-steps.html": {
+    "createdAt": "2026-07-09T22:12:17+07:00"
+  },
   "html/csharp-roadmap.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
   },
   "html/dev-flow-html-iws-as400.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
+  },
+  "html/dev-mission-brief-v2.html": {
+    "createdAt": "2026-06-28T20:41:36+07:00"
   },
   "html/dev-mission-brief.html": {
     "createdAt": "2026-06-27T14:16:49+07:00"
@@ -20,8 +26,14 @@
   "html/enterprise-systems.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
   },
+  "html/erp-stock-user-iws-as400.html": {
+    "createdAt": "2026-07-04T15:04:37+07:00"
+  },
   "html/feature-spec.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
+  },
+  "html/framework-to-shared-folder-guide.html": {
+    "createdAt": "2026-07-09T22:12:17+07:00"
   },
   "html/ibm-http-server-workflow.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
@@ -38,14 +50,35 @@
   "html/iws-admin-folder-guide.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
   },
+  "html/iws-basic-fetch-qr-setup.html": {
+    "createdAt": "2026-07-04T15:59:43+07:00"
+  },
   "html/iws-guide.html": {
     "createdAt": "2026-06-25T22:29:44+07:00"
   },
   "html/learning-roadmap.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
   },
+  "html/nextjs-react-static-deploy-summary.html": {
+    "createdAt": "2026-07-09T22:12:17+07:00"
+  },
+  "html/p01-walkthrough-full.html": {
+    "createdAt": "2026-07-01T20:08:06+07:00"
+  },
+  "html/p01-walkthrough-v2.html": {
+    "createdAt": "2026-06-30T23:27:35+07:00"
+  },
+  "html/p01-walkthrough.html": {
+    "createdAt": "2026-06-29T20:58:34+07:00"
+  },
+  "html/rpg-vs-iws-config-comparison.html": {
+    "createdAt": "2026-07-09T22:12:17+07:00"
+  },
   "html/system-skills-detail.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
+  },
+  "html/webas400app-kidakorn-setup-guide.html": {
+    "createdAt": "2026-07-04T15:42:06+07:00"
   },
   "html/zero-cost-stack.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"

@@ -70,7 +70,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   modal_label_image: { th: "ลิงก์รูปภาพ (โลโก้)", en: "Image URL (Logo)" },
 
   // ── Links Hub ───────────────────────────────────────────────────
-  links_title: { th: "ลิงก์ทั้งหมด", en: "Links Hub" },
+  links_title: { th: "ช่องทางการติดต่อ", en: "Contact Hub" },
   links_subtitle: { th: "ช่องทางอื่นๆ ของผม", en: "Find me elsewhere" },
   link1_title: { th: "Facebook", en: "Facebook Profile" },
   link1_desc: { th: "พูดคุยและติดต่อส่วนตัว", en: "Personal contact and casual talk" },
