@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>ดึงข้อมูลจริงจาก AS400 — Step by Step</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+  pre{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'IBM Plex Mono',monospace;}
+  pre code{background:none;padding:0;color:inherit;}
+
+  .wrap{max-width:720px;margin:0 auto;padding:48px 24px 100px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;}
+  h1{font-size:26px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14.5px;max-width:64ch;margin-bottom:32px;}
+
+  .step{border:1px solid #e2e8f0;border-radius:12px;margin-bottom:20px;overflow:hidden;}
+  .step-head{background:#f8fafc;padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;}
+  .step-num{width:30px;height:30px;border-radius:8px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+  .step-title{font-size:16px;font-weight:700;}
+  .step-body{padding:18px 20px;}
+  .th{background:#fafaf9;border-left:3px solid #c7d2fe;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13.5px;color:#475569;margin:10px 0;}
+  .th b{color:#4338ca;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;}
+  th, td{padding:9px 12px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  tr:nth-child(even) td{background:#f8fafc;}
+
+  .checklist{list-style:none;padding:0;margin:0;}
+  .checklist li{display:flex;gap:10px;font-size:13.5px;margin-bottom:10px;align-items:flex-start;}
+  .checklist li::before{content:'☐';color:#4f46e5;font-size:16px;line-height:1.3;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">webas400app / kidakorn</div>
+  <h1>ดึงข้อมูลจริงจาก AS400 — วันนี้ทำแค่นี้พอ</h1>
+  <p class="intro">โฟกัสแค่ config.js + api.js ให้ดึงข้อมูลจริงจาก endpoint <code>scanner/minpop</code> ได้ก่อน ส่วนอื่นค่อยว่ากันทีหลัง</p>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <div class="step-title">เช็ค endpoint จริงก่อน</div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:13.5px;color:#64748b;">เปิด browser ไปที่ URL ที่มีอยู่แล้ว เช็คว่ายังได้ JSON กลับมาอยู่ไหม</p>
+      <pre><code>http://as400webappdev/api/web/serveices/scanner/minpop?empid=25066</code></pre>
+      <div class="th"><b>ถ้าได้ JSON กลับมา</b> แปลว่า endpoint ใช้งานได้ ไปข้อ 2 ต่อได้เลย</div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <div class="step-title">แก้ js/config.js (2 บรรทัด)</div>
+    </div>
+    <div class="step-body">
+      <pre><code>const IWS_CONFIG = {
+  BASE_URL: "/api/web/serveices",   // ให้ตรงกับ path จริงที่เช็คในข้อ 1
+  ENDPOINTS: {
+    GET_DATA: "/scanner/minpop"     // path ต่อจาก BASE_URL (ไม่รวม query string ?empid=)
+  }
+};</code></pre>
+      <div class="th"><b>ภาษาไทย:</b> แก้แค่ 2 ค่านี้พอ ที่เหลือในไฟล์ config.js ไม่ต้องแตะ</div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <div class="step-title">แก้ js/api.js ให้รองรับ query param</div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:13.5px;color:#64748b;">ของเดิมยังไม่รองรับ <code>?empid=</code> ต้องแก้ให้รับค่าเข้ามาแล้วต่อท้าย URL</p>
+      <pre><code>const IWS_API = {
+  async getData(empid) {
+    const res = await fetch(
+      IWS_CONFIG.BASE_URL + IWS_CONFIG.ENDPOINTS.GET_DATA + "?empid=" + empid,
+      { headers: { "Accept": "application/json" } }
+    );
+    return handleResponse(res);
+  }
+};</code></pre>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <div class="step-title">แก้ js/app.js ให้ส่ง empid เข้าไป</div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:13.5px;color:#64748b;">ตอนนี้ hardcode รหัสทดสอบไปก่อน ค่อยเปลี่ยนเป็นรับจาก input ทีหลัง</p>
+      <pre><code>async function loadData() {
+  setStatus('pending', 'กำลังโหลด...');
+  try {
+    const data = await IWS_API.getData("25066");   // ใส่รหัสทดสอบไปก่อน
+    renderRows(Array.isArray(data) ? data : [data]);
+    setStatus('ok', 'โหลดสำเร็จ (จาก IWS จริง)');
+  } catch (err) {
+    setStatus('bad', 'ผิดพลาด');
+    document.getElementById('dataTable').innerHTML = `&lt;tr&gt;&lt;td&gt;Error: ${err.message}&lt;/td&gt;&lt;/tr&gt;`;
+  }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">5</div>
+      <div class="step-title">เปิดผ่าน URL จริงเท่านั้น</div>
+    </div>
+    <div class="step-body">
+      <pre><code>http://as400webappdev/...</code></pre>
+      <div class="th"><b>ห้าม double-click เปิดไฟล์ตรงๆ</b> ไม่งั้น relative path (<code>/api/...</code>) จะเรียกไม่ติด เพราะไม่ได้เป็น same-origin กับ IWS</div>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">6</div>
+      <div class="step-title">เปิด DevTools → Console เช็ค 2 อย่าง</div>
+    </div>
+    <div class="step-body">
+      <ul class="checklist">
+        <li>เห็น <code>[IWS_CONFIG] ...</code> = config โหลดถูก</li>
+        <li>กด "Load Data" แล้วดู error (ถ้ามี)</li>
+      </ul>
+      <table>
+        <tr><th>Error</th><th>ความหมาย</th></tr>
+        <tr><td><code>404</code></td><td>path ผิด — เช็ก BASE_URL/ENDPOINTS อีกที</td></tr>
+        <tr><td>CORS error</td><td>เรียกข้าม domain — เช็กว่าเปิดผ่าน as400webappdev จริงไหม</td></tr>
+        <tr><td><code>500</code></td><td>ฝั่ง backend มีปัญหา — แจ้งแอดมินเช็ก joblog</td></tr>
+      </table>
+      <div class="th"><b>ติดตรงไหน:</b> ถ่ายรูป error ใน Console ส่งมาได้เลย จะได้ช่วยดูให้ทัน</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

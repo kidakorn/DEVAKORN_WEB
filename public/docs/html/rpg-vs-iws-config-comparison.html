@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>RPG Program vs IWS Config — เปรียบเทียบ</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+
+  .wrap{max-width:760px;margin:0 auto;padding:48px 24px 100px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;}
+  h1{font-size:26px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14.5px;max-width:64ch;margin-bottom:36px;}
+
+  h2{font-size:17px;font-weight:700;margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+  section{margin-bottom:36px;}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:640px){.split{grid-template-columns:1fr;}}
+  .card{border:1px solid #e2e8f0;border-radius:12px;padding:22px;}
+  .card.rpg{background:#fdf4ff;border-color:#f0abfc;}
+  .card.iws{background:#eff6ff;border-color:#93c5fd;}
+  .card h3{font-size:15px;font-weight:700;margin:0 0 4px;}
+  .card.rpg h3{color:#a21caf;}
+  .card.iws h3{color:#1d4ed8;}
+  .card .sub{font-size:12.5px;color:#64748b;margin:0 0 14px;}
+  .card ul{margin:0;padding-left:18px;font-size:13.5px;color:#334155;}
+  .card li{margin-bottom:8px;}
+
+  .analogy{
+    background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;
+    font-size:14px;color:#475569;text-align:center;margin-top:16px;
+  }
+  .analogy b{color:#1e293b;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th, td{padding:10px 12px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  tr:nth-child(even) td{background:#f8fafc;}
+  td.tag-rpg{color:#a21caf;font-weight:600;}
+  td.tag-iws{color:#1d4ed8;font-weight:600;}
+
+  .footer-note{
+    margin-top:40px;padding-top:20px;border-top:1px solid #e2e8f0;
+    font-size:13px;color:#94a3b8;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">webas400app / kidakorn</div>
+  <h1>RPG Program vs IWS Config</h1>
+  <p class="intro">สองส่วนที่มักสับสนกันบ่อยที่สุดเวลาทำงานกับ AS400 — คู่มือนี้แยกให้เห็นชัดว่าอะไรเป็นของใคร และต้องติดต่อใครเวลาเจอปัญหา</p>
+
+  <!-- SPLIT COMPARISON -->
+  <section>
+    <div class="split">
+      <div class="card rpg">
+        <h3>🔧 RPG Program</h3>
+        <p class="sub">"เครื่องยนต์" — ตรรกะทางธุรกิจจริง</p>
+        <ul>
+          <li>ภาษาโปรแกรมที่รันบน IBM i (คล้ายเขียน function/class)</li>
+          <li>ทำงานจริง เช่น อ่าน/เขียนตาราง, คำนวณ, ตรวจเงื่อนไข</li>
+          <li>เก็บเป็น object บน IBM i (<code>*PGM</code>/<code>*SRVPGM</code>) ใน library</li>
+          <li>แก้ได้เฉพาะทีม RPG/programmer เท่านั้น</li>
+          <li>แก้แล้วต้อง <b>compile</b> ใหม่เสมอ</li>
+          <li>ถ้าไม่มี IWS ครอบ เรียกได้แค่จาก green screen (5250)</li>
+        </ul>
+      </div>
+      <div class="card iws">
+        <h3>🌐 IWS Config</h3>
+        <p class="sub">"ป้ายทางเข้า" — ตัวห่อให้เว็บเรียกได้</p>
+        <ul>
+          <li>ไม่ใช่โค้ด แต่เป็น<b>การตั้งค่า/mapping</b></li>
+          <li>บอกว่า "URL นี้ ให้ไปเรียก RPG program ตัวนี้"</li>
+          <li>ตั้งค่าผ่าน IWS Studio ไม่ต้องเขียนโค้ดใหม่</li>
+          <li>ผลลัพธ์คือ URL เช่น <code>/api/web/services/SCANNER/MINPOP</code></li>
+          <li>แก้แล้วแค่ <b>deploy ใหม่</b> ไม่ต้อง compile โปรแกรม</li>
+          <li>ฝั่งเว็บ (คุณ) จะยุ่งกับส่วนนี้เป็นหลัก</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="analogy">
+      เปรียบง่ายๆ: RPG program คือ <b>เครื่องยนต์</b> (ทำงานจริง) ส่วน IWS config คือ <b>ป้ายทางเข้า + คู่มือใช้งาน</b> (บอกว่าต้องเข้าทางไหน ส่งอะไรเข้าไป)
+    </div>
+  </section>
+
+  <!-- QUICK CHECK TABLE -->
+  <section>
+    <h2>เช็คจากสิ่งที่เจอจริง — เป็นของฝั่งไหน</h2>
+    <table>
+      <tr><th>สิ่งที่เจอ</th><th>ฝั่งที่เกี่ยวข้อง</th></tr>
+      <tr><td>ชื่อ table, field, business logic (เช่น "ถ้า status=1 ให้ทำแบบนี้")</td><td class="tag-rpg">RPG Program</td></tr>
+      <tr><td>URL <code>/api/web/services/...</code>, path, HTTP method (GET/POST)</td><td class="tag-iws">IWS Config</td></tr>
+      <tr><td>Error <code>500</code> เพราะ SQL ผิดหรือคำนวณผิด</td><td class="tag-rpg">RPG Program</td></tr>
+      <tr><td>Error <code>404</code> / <code>405</code> เพราะ path ผิดหรือยังไม่ deploy</td><td class="tag-iws">IWS Config</td></tr>
+      <tr><td>แก้แล้วต้อง "compile" โปรแกรมใหม่</td><td class="tag-rpg">RPG Program</td></tr>
+      <tr><td>แก้แล้วแค่ "deploy ใหม่" ใน IWS Studio</td><td class="tag-iws">IWS Config</td></tr>
+    </table>
+  </section>
+
+  <!-- WHO TO ASK -->
+  <section>
+    <h2>ติดปัญหา ต้องถามใคร</h2>
+    <table>
+      <tr><th>อาการ</th><th>ติดต่อ</th></tr>
+      <tr><td>อยากได้ field เพิ่ม / เปลี่ยนตรรกะการคำนวณ</td><td class="tag-rpg">ทีม RPG</td></tr>
+      <tr><td>อยาก endpoint ใหม่ / เปลี่ยน path / เปลี่ยน method</td><td class="tag-iws">แอดมิน (IWS Studio)</td></tr>
+      <tr><td>เรียก API แล้ว 500</td><td class="tag-rpg">ทีม RPG (เช็ก joblog)</td></tr>
+      <tr><td>เรียก API แล้ว 404 / 405</td><td class="tag-iws">แอดมิน (เช็ก deploy/path)</td></tr>
+    </table>
+  </section>
+
+  <p class="footer-note">สรุป: ฝั่งเว็บ (คุณ) ยุ่งกับ IWS config เป็นหลักผ่านการคุยกับแอดมิน ไม่ต้องแตะ RPG เลย ถ้าอยากเปลี่ยนตรรกะจริงๆ ต้องขอทีม RPG แก้โปรแกรมแล้ว deploy IWS ใหม่อีกที — สองขั้นตอนนี้แยกกันคนละทีมเสมอ</p>
+
+</div>
+</body>
+</html>

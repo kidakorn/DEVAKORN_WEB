@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import { motion, type Variants } from "framer-motion";
-import { GitFork, Globe, Briefcase, ChevronRight } from "lucide-react";
+import { GitFork, Globe, Briefcase, ChevronRight, Facebook, MessageCircle, Mail, MonitorPlay } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import type { LucideIcon } from "lucide-react";
 
@@ -19,35 +19,51 @@ const LINKS: Array<{
   external: boolean;
 }> = [
   {
-    id: "link-resume",
-    titleKey: "link4_title",
-    descKey: "link4_desc",
-    icon: Briefcase,
-    href: "/resume",
-    external: false,
-  },
-  {
-    id: "link-github",
+    id: "link-facebook-profile",
     titleKey: "link1_title",
     descKey: "link1_desc",
-    icon: GitFork,
-    href: "https://github.com/kidakorn",
+    icon: Facebook,
+    href: "https://facebook.com/kidakorn43",
     external: true,
   },
   {
-    id: "link-facebook",
+    id: "link-facebook-page",
     titleKey: "link2_title",
     descKey: "link2_desc",
-    icon: Globe,
+    icon: MonitorPlay,
     href: "https://facebook.com/devakorn",
     external: true,
   },
   {
-    id: "link-fastwork",
+    id: "link-line",
     titleKey: "link3_title",
     descKey: "link3_desc",
+    icon: MessageCircle,
+    href: "https://line.me/ti/p/~kidakorn",
+    external: true,
+  },
+  {
+    id: "link-fastwork",
+    titleKey: "link4_title",
+    descKey: "link4_desc",
     icon: Briefcase,
     href: "https://fastwork.co/user/kidakorn43",
+    external: true,
+  },
+  {
+    id: "link-email",
+    titleKey: "link5_title",
+    descKey: "link5_desc",
+    icon: Mail,
+    href: "mailto:kidakorn.1@gmail.com",
+    external: true,
+  },
+  {
+    id: "link-github",
+    titleKey: "link6_title",
+    descKey: "link6_desc",
+    icon: GitFork,
+    href: "https://github.com/kidakorn",
     external: true,
   },
 ];

@@ -322,7 +322,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
                 {/* Card Bottom: Actions & Admin Controls */}
                 <div className="relative z-10 flex items-center justify-between w-full mt-auto pt-6 border-t border-[var(--border-main)] border-opacity-50">
                   <div className="flex items-center gap-3">
-                    {project.github && (
+                    {project.github && (!project.isPrivateDocs || isAdmin) && (
                       <a
                         href={project.github}
                         target="_blank"
@@ -334,7 +334,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
                         <GitFork size={20} strokeWidth={2} />
                       </a>
                     )}
-                    {project.live && (
+                    {project.live && (!project.isPrivateDocs || isAdmin) && (
                       <a
                         href={project.live}
                         target="_blank"
@@ -450,7 +450,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
                     style={{ borderColor: "var(--border-main)", accentColor: "var(--color-primary-red)" }}
                   />
                   <span className="label-text font-semibold" style={{ color: "var(--text-strong)" }}>
-                    Admin Only Docs (Hide 'View Details' from public)
+                    Admin Only Project (Hide links and docs from public)
                   </span>
                 </label>
               </div>

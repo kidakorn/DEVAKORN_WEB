@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Next.js / React — ใช้กับ Shared Folder ได้ไหม</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+  pre{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'IBM Plex Mono',monospace;}
+  pre code{background:none;padding:0;color:inherit;}
+
+  .wrap{max-width:780px;margin:0 auto;padding:48px 24px 100px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;}
+  h1{font-size:26px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14.5px;max-width:64ch;margin-bottom:32px;}
+
+  h2{font-size:17px;font-weight:700;margin:0 0 12px;}
+  section{margin-bottom:36px;}
+
+  .principle{
+    background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:18px 20px;
+    font-size:14px;color:#3730a3;margin-bottom:32px;
+  }
+  .principle b{color:#312e81;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th, td{padding:10px 12px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  tr:nth-child(even) td{background:#f8fafc;}
+  td.yes{color:#166534;font-weight:600;}
+  td.no{color:#991b1b;font-weight:600;}
+
+  .card{border:1px solid #e2e8f0;border-radius:12px;padding:22px;margin-bottom:16px;}
+  .card h3{font-size:15px;font-weight:700;margin:0 0 4px;display:flex;align-items:center;gap:8px;}
+  .card .sub{font-size:12.5px;color:#64748b;margin:0 0 14px;}
+
+  .steps{list-style:none;padding:0;margin:0;}
+  .steps li{
+    display:flex;gap:12px;margin-bottom:14px;font-size:13.5px;align-items:flex-start;
+  }
+  .steps .n{
+    width:24px;height:24px;border-radius:6px;background:#4f46e5;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;
+  }
+
+  .prod-flag{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13.5px;color:#991b1b;}
+  .prod-flag b{color:#b91c1c;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">webas400app / kidakorn</div>
+  <h1>Next.js / React — ใช้กับ Shared Folder ได้ไหม</h1>
+  <p class="intro">สรุปว่า framework ไหนใช้ได้ ใช้ไม่ได้ กับโฟลเดอร์แชร์ที่เป็น static hosting (IIS ไม่มี Node.js runtime)</p>
+
+  <div class="principle">
+    <b>หลักการเดียวที่ต้องจำ:</b> โฟลเดอร์แชร์ serve ได้แค่ไฟล์ HTML/CSS/JS ที่ build เสร็จแล้ว (static) เท่านั้น — ไม่มี Node.js รันอยู่เบื้องหลัง ดังนั้น framework ที่ใช้ได้ต้องเป็นแบบที่ <b>build ออกมาเป็นไฟล์ static ล้วนๆ</b>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <section>
+    <h2>สรุปเปรียบเทียบ</h2>
+    <table>
+      <tr><th>Framework / Feature</th><th>ใช้ได้ไหม</th><th>หมายเหตุ</th></tr>
+      <tr><td>React (Vite / CRA)</td><td class="yes">✅ ใช้ได้</td><td>build แล้วได้ static files ล้วนๆ</td></tr>
+      <tr><td>Vue / Svelte / Angular</td><td class="yes">✅ ใช้ได้</td><td>หลักการเดียวกับ React</td></tr>
+      <tr><td>Next.js (Static Export)</td><td class="yes">✅ ใช้ได้</td><td>ต้องตั้ง <code>output: 'export'</code></td></tr>
+      <tr><td>Next.js API Routes</td><td class="no">❌ ใช้ไม่ได้</td><td>ต้องมี Node.js server รันตลอดเวลา</td></tr>
+      <tr><td>Next.js SSR / Middleware / ISR</td><td class="no">❌ ใช้ไม่ได้</td><td>ต้องการ server เช่นกัน</td></tr>
+      <tr><td>Client-side <code>fetch()</code> เรียก IWS</td><td class="yes">✅ ใช้ได้</td><td>เกิดในเบราว์เซอร์ ไม่เกี่ยวกับ server</td></tr>
+    </table>
+  </section>
+
+  <!-- NEXT.JS -->
+  <section>
+    <div class="card">
+      <h3>▲ Next.js — ใช้ได้แค่โหมด Static Export</h3>
+      <p class="sub">ต้องตั้งค่าก่อน build ไม่งั้นจะได้ผลลัพธ์ที่ใช้กับ static hosting ไม่ได้</p>
+      <pre><code>// next.config.js
+module.exports = {
+  output: 'export'
+}</code></pre>
+      <pre><code>npx next build</code></pre>
+      <p style="font-size:13.5px;color:#64748b;">จะได้โฟลเดอร์ <code>out/</code> — เอาไฟล์ข้างในไปวางในโฟลเดอร์แชร์ได้เลย</p>
+      <div class="prod-flag">
+        🔴 <b>ข้อจำกัด:</b> ห้ามใช้ API Routes, Server Components ที่ fetch จาก server, Middleware, หรือ Image Optimization (ต้องปิดด้วย <code>images: { unoptimized: true }</code>) — ใช้ได้แค่ Client Component ที่เรียก <code>fetch()</code> ไปหา IWS ตรงๆ เหมือนที่ทำกันอยู่
+      </div>
+    </div>
+  </section>
+
+  <!-- REACT -->
+  <section>
+    <div class="card">
+      <h3>⚛️ React (Vite) — ใช้ได้ตรงไปตรงมา</h3>
+      <p class="sub">ไม่มีข้อจำกัดพิเศษ เพราะ React เป็น client-side ล้วนอยู่แล้ว</p>
+      <pre><code>npm create vite@latest my-app -- --template react
+cd my-app
+npm install
+npm run build</code></pre>
+      <p style="font-size:13.5px;color:#64748b;">จะได้โฟลเดอร์ <code>dist/</code> — เอาไฟล์ข้างในไปวางในโฟลเดอร์แชร์ได้เลย</p>
+    </div>
+  </section>
+
+  <!-- DEPLOY FLOW -->
+  <section>
+    <h2>Flow การใช้งานจริง (ทั้งสองแบบเหมือนกัน)</h2>
+    <ul class="steps">
+      <li><span class="n">1</span>เขียนโค้ด + build บนเครื่องตัวเอง (มี Node.js/terminal อยู่แล้ว)</li>
+      <li><span class="n">2</span>ได้โฟลเดอร์ output (<code>out/</code> สำหรับ Next.js หรือ <code>dist/</code> สำหรับ React/Vite)</li>
+      <li><span class="n">3</span>Copy ไฟล์ข้างในโฟลเดอร์นั้นไปวางใน <code>webas400app/kidakorn/</code></li>
+      <li><span class="n">4</span>เว็บทำงานเหมือนเดิม เรียก IWS ผ่าน relative path (<code>/api/web/services/...</code>)</li>
+    </ul>
+  </section>
+
+  <!-- WEB.CONFIG NOTE -->
+  <section>
+    <h2>เรื่อง web.config ที่ต้องรู้เพิ่ม</h2>
+    <table>
+      <tr><th>รูปแบบแอป</th><th>ต้องทำอะไรกับ web.config</th></tr>
+      <tr><td>Next.js Static Export (หลายหน้า .html แยกกัน)</td><td>ไม่ต้องเพิ่ม SPA fallback — แต่ละหน้ามีไฟล์ .html จริงอยู่แล้ว</td></tr>
+      <tr><td>React ที่ใช้ React Router (SPA เดียว)</td><td>ต้องมี <code>&lt;conditions&gt;</code> ให้ทุก route fallback ไปที่ <code>index.html</code> (ตามที่คุยกันไว้ก่อนหน้า)</td></tr>
+    </table>
+  </section>
+
+</div>
+</body>
+</html>
