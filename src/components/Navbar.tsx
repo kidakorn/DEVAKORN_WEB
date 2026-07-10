@@ -17,15 +17,16 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 const NAV_LINKS = [
-  { key: "nav_about", href: "#about" },
-  { key: "nav_projects", href: "#projects" },
-  { key: "nav_clients", href: "#clients" },
-  { key: "nav_links", href: "#links" },
-  { key: "nav_contact", href: "#contact" },
+  { key: "nav_about", href: "/#about" },
+  { key: "nav_projects", href: "/#projects" },
+  { key: "nav_process", href: "/portfolio#process" },
+  { key: "nav_clients", href: "/portfolio#clients" },
+  { key: "nav_links", href: "/portfolio#links" },
+  { key: "nav_contact", href: "/portfolio#contact" },
   { key: "nav_resume", href: "/resume" },
 ] as const;
 
-const SECTION_IDS = ["about", "projects", "clients", "links", "contact"];
+const SECTION_IDS = ["about", "projects", "process", "clients", "links", "contact"];
 
 export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const { t, lang, toggleLang } = useLanguage();
@@ -96,27 +97,29 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
     e.preventDefault();
     setMenuOpen(false);
 
-    if (!href.startsWith("#")) {
-      // It's a different page route (e.g., /resume)
-      router.push(href);
+    if (href === "/" || href === "/#") {
+      if (window.location.pathname === "/") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        router.push("/");
+      }
       return;
     }
 
-    if (href === "#") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
+    const [path, hash] = href.split("#");
+    const currentPath = window.location.pathname;
+
+    // If it's a hash link for the current page
+    if (hash && (path === "" || path === currentPath || (path === "/" && currentPath === "/"))) {
+      const targetElement = document.getElementById(hash);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
     }
 
-    const targetId = href.replace("#", "");
-    const targetElement = document.getElementById(targetId);
-    
-    if (targetElement) {
-      // Element exists on current page, smooth scroll to it
-      targetElement.scrollIntoView({ behavior: "smooth" });
-    } else {
-      // Element is on the home page, but we are on a different page
-      router.push("/" + href);
-    }
+    // Otherwise navigate to the route
+    router.push(href);
   };
 
   const handleLogout = async () => {

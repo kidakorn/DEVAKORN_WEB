@@ -255,7 +255,7 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
                 key={project.id}
                 id={project.id}
                 variants={fadeUp}
-                className={`group relative flex flex-col justify-between p-8 md:p-12 overflow-hidden border rounded-[2rem] transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl ${
+                className={`group relative flex flex-col justify-between p-8 md:p-12 overflow-hidden border rounded-[2rem] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(200,16,46,0.08)] ${
                   isFeatured ? "lg:col-span-2" : "col-span-1"
                 }`}
                 style={{
@@ -263,14 +263,11 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
                   borderColor: "var(--border-main)",
                 }}
               >
-                {/* Noise overlay for premium texture */}
-                <div className="absolute inset-0 noise-bg opacity-[0.2] pointer-events-none mix-blend-overlay" />
-
                 {/* Glowing hover aura */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
                   style={{
-                    background: "radial-gradient(circle at 50% 150%, rgba(200,16,46,0.15) 0%, transparent 60%)",
+                    background: "radial-gradient(circle at 50% 120%, rgba(200,16,46,0.1) 0%, transparent 70%)",
                   }}
                 />
 
@@ -375,17 +372,16 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
                     {project.slug && (!project.isPrivateDocs || isAdmin) && (
                       <Link
                         href={`/projects/${project.slug}`}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border transition-all duration-300 hover:bg-[var(--color-primary-red)] hover:border-[var(--color-primary-red)] hover:text-white"
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
                         style={{
-                          color: "var(--text-strong)",
-                          borderColor: "var(--border-main)",
-                          background: "var(--bg-main)",
+                          background: "var(--color-primary-red)",
+                          color: "white",
                         }}
                       >
                         <span className="hidden sm:inline">
                           {project.isPrivateDocs ? t("projects_view_details") + " 🔒" : t("projects_view_details")}
                         </span>
-                        <ArrowRight size={14} />
+                        <ArrowRight size={16} />
                       </Link>
                     )}
                   </div>

@@ -27,7 +27,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 // ── Provider ─────────────────────────────────────────────────────
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark"); // default: dark
+  const [theme, setTheme] = useState<Theme>("light"); // default: light
 
   // Read from localStorage on mount (client only)
   useEffect(() => {

@@ -213,7 +213,7 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
             {[...clients, ...clients, ...clients, ...clients].slice(0, Math.max(8, clients.length * 2)).map((client, idx) => (
               <div
                 key={`${client.id}-${idx}`}
-                className="relative shrink-0 w-[320px] md:w-[380px] h-[320px] md:h-[380px] overflow-hidden group shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_30px_rgba(200,16,46,0.15)] transition-all duration-500 border border-[var(--border-main)] bg-[var(--bg-card)] flex flex-col"
+                className="relative shrink-0 w-[320px] md:w-[360px] h-[320px] md:h-[360px] overflow-hidden group rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_40px_rgba(200,16,46,0.12)] hover:-translate-y-2 transition-all duration-500 border border-[var(--border-main)] bg-[var(--bg-card)] flex flex-col"
               >
                 {/* Admin Controls */}
                 {isAdmin && (

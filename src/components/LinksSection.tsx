@@ -90,7 +90,7 @@ export default function LinksSection() {
     <section
       id="links"
       aria-labelledby="links-heading"
-      className="w-full px-6 py-28 border-t noise-bg"
+      className="w-full px-6 py-28 border-t"
       style={{
         background: "var(--bg-hover)",
         borderColor: "var(--border-main)",
@@ -135,7 +135,7 @@ export default function LinksSection() {
                 target={!isEmail && external ? "_blank" : undefined}
                 rel={!isEmail && external ? "noopener noreferrer" : undefined}
                 onClick={isEmail ? handleCopyEmail : undefined}
-                className="group relative flex flex-col justify-between p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden text-left w-full cursor-pointer"
+                className="group relative flex flex-col justify-between p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_30px_rgba(200,16,46,0.1)] overflow-hidden text-left w-full cursor-pointer"
               style={{
                 background: "var(--bg-card)",
                 borderColor: "var(--border-main)",

@@ -1,38 +1,24 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// HeroSection.tsx — Full-viewport cinematic hero
-// - Giant centered name display
-// - Animated typing role line
-// - Line-grid background with red drift glow
-// - New logo.png as brand mark
+// HeroSection.tsx — 2-column professional hero
+// - Left: Name, Typing Tagline, CTAs, Socials
+// - Right: Avatar Card with "Available for hire" badge
 // ─────────────────────────────────────────────────────────────────
 
 import { motion, type Variants } from "framer-motion";
-import { GitFork, Globe, Briefcase, ArrowDown } from "lucide-react";
+import { GitFork, Globe, Briefcase, ArrowRight, MapPin, Mail, MessageCircle, Code2 } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import TypingText from "@/components/TypingText";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const SOCIAL_LINKS = [
-  {
-    id: "github-link",
-    href: "https://github.com/kidakorn",
-    icon: GitFork,
-    label: "GitHub",
-  },
-  {
-    id: "facebook-link",
-    href: "https://facebook.com/devakorn",
-    icon: Globe,
-    label: "Facebook",
-  },
-  {
-    id: "fastwork-link",
-    href: "https://fastwork.co/user/kidakorn43",
-    icon: Briefcase,
-    label: "Fastwork",
-  },
+  { id: "hero-github", href: "https://github.com/kidakorn", icon: GitFork, label: "GitHub" },
+  { id: "hero-facebook", href: "https://facebook.com/devakorn", icon: Globe, label: "Facebook" },
+  { id: "hero-fastwork", href: "https://fastwork.co/user/kidakorn43", icon: Briefcase, label: "Fastwork" },
+  { id: "hero-line", href: "https://line.me/ti/p/~hume.ry", icon: MessageCircle, label: "LINE" },
+  { id: "hero-email", href: "mailto:kidakorn.1@gmail.com", icon: Mail, label: "Email" },
 ] as const;
 
 const fadeUp: Variants = {
@@ -40,178 +26,134 @@ const fadeUp: Variants = {
   visible: (delay: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const },
+    transition: { duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] },
+  }),
+};
+
+const popIn: Variants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: (delay: number = 0) => ({
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] },
   }),
 };
 
 export default function HeroSection() {
   const { t, lang } = useLanguage();
+  const router = useRouter();
 
   return (
     <section
       id="hero"
-      className="relative w-full min-h-screen flex flex-col items-center justify-center line-grid-bg overflow-hidden noise-bg"
+      className="relative w-full min-h-[100svh] flex items-center justify-center overflow-hidden pt-20 pb-10"
+      style={{ background: "var(--bg-main)" }}
     >
-      {/* ── Drifting Red Glow ─────────────────────────────────────── */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden="true"
-      >
-        {/* Center pulse */}
+      {/* ── Soft Red Glow (Clean Light Mode) ────────────────────────────── */}
+      <motion.div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full opacity-[0.07]"
-          style={{
-            background:
-              "radial-gradient(circle, var(--color-primary-red) 0%, transparent 65%)",
-          }}
-          animate={{
-            scale: [1, 1.15, 1],
-            opacity: [0.07, 0.11, 0.07],
-          }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        />
-        {/* Off-center drift */}
-        <motion.div
-          className="absolute top-[30%] left-[20%] w-[400px] h-[400px] rounded-full opacity-[0.04]"
-          style={{
-            background:
-              "radial-gradient(circle, var(--color-primary-red) 0%, transparent 70%)",
-          }}
-          animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
+          className="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] rounded-full opacity-[0.08]"
+          style={{ background: "radial-gradient(circle, var(--color-primary-red) 0%, transparent 60%)" }}
+          animate={{ scale: [1, 1.05, 1], opacity: [0.06, 0.1, 0.06] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-[0.05]"
+          style={{ background: "radial-gradient(circle, var(--color-secondary-red) 0%, transparent 60%)" }}
+          animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
       </motion.div>
 
-      {/* ── Thin top accent line ──────────────────────────────────── */}
-      <motion.div
-        className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-primary-red)] to-transparent"
-        initial={{ width: "0%", opacity: 0 }}
-        animate={{ width: "100%", opacity: 1 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        aria-hidden="true"
-      />
-
-      {/* ── Main Content ─────────────────────────────────────────── */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center text-center gap-6">
-
-        {/* Logo Brand Mark */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0}
-          className="relative w-20 h-20 mx-auto rounded-full overflow-hidden"
-        >
-          <div
-            className="absolute inset-0 rounded-full blur-2xl opacity-40"
-            style={{ background: "var(--color-primary-red)" }}
-            aria-hidden="true"
-          />
-          <Image
-            src="/logo.png"
-            alt="Devakorn"
-            fill
-            className="object-contain relative z-10"
-            priority
-          />
-        </motion.div>
-
-        {/* Location badge */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.1}
-        >
-          <span
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] border"
-            style={{
-              borderColor: "var(--border-main)",
-              color: "var(--text-muted)",
-              background: "var(--bg-card)",
-            }}
-          >
+      {/* ── Main Content Grid ────────────────────────────────────── */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        
+        {/* Left Column: Text & CTA */}
+        <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left gap-6 order-2 lg:order-1">
+          
+          <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0.1}>
             <span
-              className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-red)] animate-pulse"
-              aria-hidden="true"
-            />
-            {t("hero_location")}
-          </span>
-        </motion.div>
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase border"
+              style={{
+                borderColor: "var(--border-main)",
+                color: "var(--color-primary-red)",
+                background: "var(--bg-card)",
+              }}
+            >
+              <Code2 size={14} />
+              {t("hero_greeting")}
+            </span>
+          </motion.div>
 
-        {/* Greeting */}
-        <motion.p
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.2}
-          className="text-lg md:text-xl font-semibold"
-          style={{ color: "var(--text-muted)" }}
-        >
-          {t("hero_greeting")}
-        </motion.p>
-
-        {/* Giant Name */}
-        <motion.h1
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.3}
-          className="gradient-text font-black tracking-[-0.04em] leading-[0.9] uppercase"
-          style={{
-            fontSize: "clamp(4.5rem, 14vw, 12rem)",
-            fontFamily: "var(--font-display)",
-          }}
-        >
-          {t("hero_name")}
-        </motion.h1>
-
-        {/* Tagline with typing */}
-        <motion.p
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.45}
-          className="text-lg md:text-2xl font-bold mt-2"
-          style={{ color: "var(--text-muted)" }}
-        >
-          {lang === "en" ? "I am a " : "ผมคือ "}
-          <TypingText
-            strings={["Software Developer", "Builder", "Problem Solver"]}
-            className="font-bold text-[var(--text-strong)]"
-          />
-        </motion.p>
-
-        {/* CTA + Social row */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.6}
-          className="flex flex-col sm:flex-row items-center gap-5 mt-4"
-        >
-          <a
-            href="#projects"
-            id="hero-cta-btn"
-            className="btn-ref btn-solid-ref min-h-12 px-8 text-sm"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+          <motion.h1
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.2}
+            className="font-black tracking-tighter leading-[1.05]"
+            style={{
+              fontSize: "clamp(4rem, 10vw, 8rem)",
+              fontFamily: "var(--font-display)",
+              color: "var(--text-strong)",
             }}
           >
-            {t("hero_cta")}
-            <ArrowDown size={16} aria-hidden="true" />
-          </a>
+            {t("hero_name")}
+          </motion.h1>
 
-          {/* Divider */}
-          <div
-            className="hidden sm:block w-px h-8 opacity-30"
-            style={{ background: "var(--border-main)" }}
-            aria-hidden="true"
-          />
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.3}
+            className="text-lg md:text-2xl font-medium"
+            style={{ color: "var(--text-muted)" }}
+          >
+            <TypingText
+              strings={["Web Developer", "Problem Solver", "Builder"]}
+              className="font-bold text-[var(--color-primary-red)]"
+            />
+          </motion.div>
 
-          {/* Social icons */}
-          <div className="flex items-center gap-2">
+          {/* Buttons */}
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.4}
+            className="flex flex-col sm:flex-row items-center gap-4 mt-4 w-full sm:w-auto"
+          >
+            <a
+              href="/#projects"
+              className="btn-ref btn-solid-ref w-full sm:w-auto min-h-[52px] px-8 text-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/#projects");
+              }}
+            >
+              {t("hero_cta")}
+              <ArrowRight size={16} aria-hidden="true" />
+            </a>
+            <a
+              href="/portfolio#contact"
+              className="btn-ref btn-outline-ref w-full sm:w-auto min-h-[52px] px-8 text-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/portfolio#contact");
+              }}
+            >
+              {lang === "en" ? "Hire Me" : "ติดต่อผม"}
+            </a>
+          </motion.div>
+
+          {/* Social Row */}
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.5}
+            className="flex flex-wrap justify-center lg:justify-start gap-3 mt-6 pt-6 border-t w-full lg:max-w-md"
+            style={{ borderColor: "var(--border-main)" }}
+          >
             {SOCIAL_LINKS.map(({ id, href, icon: Icon, label }) => (
               <a
                 key={id}
@@ -220,35 +162,101 @@ export default function HeroSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="w-10 h-10 flex items-center justify-center rounded-lg border transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-primary-red)] hover:text-[var(--color-primary-red)]"
+                className="w-11 h-11 flex items-center justify-center rounded-xl border transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--color-primary-red)] hover:border-[var(--color-primary-red)] hover:text-white"
                 style={{
                   color: "var(--text-muted)",
                   background: "var(--bg-card)",
                   borderColor: "var(--border-main)",
                 }}
               >
-                <Icon size={17} strokeWidth={1.75} />
+                <Icon size={18} strokeWidth={2} />
               </a>
             ))}
-          </div>
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
 
-      {/* ── Scroll indicator ─────────────────────────────────────── */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6 }}
-        aria-hidden="true"
-      >
-        <motion.div
-          className="w-px h-12 origin-top"
-          style={{ background: "linear-gradient(to bottom, var(--color-primary-red), transparent)" }}
-          animate={{ scaleY: [0, 1, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </motion.div>
+        {/* Right Column: Avatar Card */}
+        <div className="lg:col-span-5 flex justify-center order-1 lg:order-2">
+          <motion.div
+            variants={popIn}
+            initial="hidden"
+            animate="visible"
+            custom={0.3}
+            className="relative w-full max-w-sm"
+          >
+            {/* Card wrapper */}
+            <div
+              className="relative rounded-3xl p-6 border shadow-2xl overflow-hidden group"
+              style={{
+                background: "var(--glass-bg)",
+                backdropFilter: "blur(12px)",
+                borderColor: "var(--border-main)",
+                boxShadow: "var(--glass-hover-shadow)",
+              }}
+            >
+              {/* Abstract Developer Terminal Avatar */}
+              <div
+                className="relative w-full aspect-square rounded-2xl overflow-hidden mb-6 flex flex-col bg-[#050505] border shadow-inner"
+                style={{ borderColor: "var(--border-main)" }}
+              >
+                {/* Terminal Header */}
+                <div className="flex items-center gap-2 px-4 py-3 bg-[#111] border-b border-white/5">
+                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                  <div className="ml-2 text-[10px] font-mono text-white/40 uppercase tracking-widest">developer.exe</div>
+                </div>
+                
+                {/* Terminal Body */}
+                <div className="flex-1 p-5 font-mono text-xs sm:text-sm text-green-400 flex flex-col gap-2 relative">
+                  {/* Subtle Grid */}
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
+                  
+                  {/* Animated Typing Sequence */}
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+                    <span className="text-white/50">{">"}</span> Connect LANSA...
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="text-blue-400">
+                    [OK] Connected.
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.0 }}>
+                    <span className="text-white/50">{">"}</span> Compile RPG...
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.8 }} className="text-yellow-400">
+                    [100%] Build Success.
+                  </motion.div>
+                  
+                  {/* Final blinking cursor line */}
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.5 }} className="mt-2 text-[var(--color-primary-red)] font-bold flex items-center gap-2">
+                    <span className="text-white/50 font-normal">{">"}</span> SYSTEM_READY
+                    <motion.div
+                      animate={{ opacity: [1, 0, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                      className="w-2 h-4 bg-[var(--color-primary-red)] inline-block"
+                    />
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Badges */}
+              <div className="flex flex-wrap gap-2 justify-center">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  Available for hire
+                </span>
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border" style={{ background: "var(--bg-main)", borderColor: "var(--border-main)", color: "var(--text-muted)" }}>
+                  <MapPin size={12} />
+                  {t("hero_location")}
+                </span>
+              </div>
+            </div>
+            
+            {/* Decorative background accent */}
+            <div className="absolute -inset-4 bg-[var(--color-primary-red)] opacity-[0.03] rounded-[2.5rem] -z-10 blur-xl" />
+          </motion.div>
+        </div>
+
+      </div>
     </section>
   );
 }

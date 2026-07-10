@@ -10,6 +10,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   nav_about: { th: "เกี่ยวกับ", en: "About" },
   nav_projects: { th: "ผลงาน", en: "Projects" },
   nav_clients: { th: "พาร์ทเนอร์", en: "Partners" },
+  nav_process: { th: "วิธีทำงาน", en: "Process" },
   nav_resume: { th: "เรซูเม่", en: "Resume" },
   nav_links: { th: "ลิงก์", en: "Links" },
   nav_contact: { th: "ติดต่อ", en: "Contact" },
@@ -19,8 +20,8 @@ export const translations: Record<string, Record<Lang, string>> = {
   hero_greeting: { th: "สวัสดีครับ ผม", en: "Hi, I'm" },
   hero_name: { th: "Devakorn", en: "Devakorn" },
   hero_role: {
-    th: "นักพัฒนาเว็บ & นักออกแบบกราฟิก",
-    en: "Web Developer & Graphic Designer",
+    th: "Staff (Developer)",
+    en: "Staff (Developer)",
   },
   hero_cta: { th: "ดูผลงาน", en: "View Portfolio" },
   hero_location: { th: "ลำพูน, ประเทศไทย", en: "Lamphun, Thailand" },
@@ -28,10 +29,16 @@ export const translations: Record<string, Record<Lang, string>> = {
   // ── About ───────────────────────────────────────────────────────
   about_title: { th: "เกี่ยวกับผม", en: "About Me" },
   about_bio: {
-    th: "Web Developer และ Graphic Designer ที่มุ่งมั่นสร้างผลงานดิจิทัลที่ใช้งานได้จริงและสวยงาม ทำงานกับ React, Next.js, Angular, Node.js และ Express เพื่อสร้างเว็บไซต์และแอปพลิเคชัน พร้อมเรียนรู้ทักษะใหม่อยู่เสมอ ตั้งแต่การดูแลระบบไปจนถึงการออกแบบ UI",
-    en: "Web Developer and Graphic Designer focused on creating functional and good-looking digital projects. Works with React, Next.js, Angular, Node.js, and Express to build websites and applications. Always eager to solve problems and learn new skills, from system administration to UI design.",
+    th: "ปัจจุบันทำงานในตำแหน่ง Staff (Developer) มีความเชี่ยวชาญและประสบการณ์ในการพัฒนาระบบด้วย RPG, RMDL และ LANSA นอกจากนี้ก็ยังคงพัฒนาเว็บไซต์และระบบต่างๆ อย่างต่อเนื่อง มุ่งเน้นการสร้างและดูแลรักษาระบบให้มีประสิทธิภาพและเสถียรภาพสูงสุด พร้อมที่จะเรียนรู้เทคโนโลยีใหม่ๆ เสมอ",
+    en: "Currently working as a Staff (Developer) with expertise in enterprise system development using RPG, RMDL, and LANSA. I also continuously develop websites and various systems. Focused on building and maintaining highly efficient and stable systems, while always being eager to learn new technologies.",
   },
   about_stack_title: { th: "เทคโนโลยีที่ใช้", en: "Tech Stack" },
+  about_value1_title: { th: "คุณภาพ", en: "Quality" },
+  about_value1_desc: { th: "เขียนโค้ดที่สะอาดและบำรุงรักษาง่าย", en: "Clean and maintainable code." },
+  about_value2_title: { th: "ตรงเวลา", en: "On Time" },
+  about_value2_desc: { th: "ส่งมอบงานตามกำหนดเสมอ", en: "Always deliver on schedule." },
+  about_value3_title: { th: "ประสบการณ์", en: "Experience" },
+  about_value3_desc: { th: "ประสบการณ์สร้างโปรเจกต์จริง", en: "Real-world project experience." },
 
   // ── Projects ────────────────────────────────────────────────────
   projects_title: { th: "ผลงาน", en: "Projects" },
@@ -69,6 +76,17 @@ export const translations: Record<string, Record<Lang, string>> = {
   modal_label_date: { th: "ปี / วันที่", en: "Date / Year" },
   modal_label_image: { th: "ลิงก์รูปภาพ (โลโก้)", en: "Image URL (Logo)" },
 
+  // ── Work Process ────────────────────────────────────────────────
+  process_title: { th: "วิธีการทำงานของผม", en: "How I Work" },
+  process_step1_title: { th: "1. พูดคุยและวางแผน", en: "1. Discuss & Plan" },
+  process_step1_desc: { th: "ทำความเข้าใจความต้องการและเป้าหมายของโปรเจกต์", en: "Understand requirements and project goals." },
+  process_step2_title: { th: "2. ออกแบบ", en: "2. Design" },
+  process_step2_desc: { th: "ออกแบบ UI/UX ให้ใช้งานง่ายและสวยงาม", en: "Create intuitive and beautiful UI/UX." },
+  process_step3_title: { th: "3. พัฒนา", en: "3. Build" },
+  process_step3_desc: { th: "เขียนโค้ดด้วยเทคโนโลยีที่เหมาะสม", en: "Write clean code with the right technologies." },
+  process_step4_title: { th: "4. ส่งมอบ", en: "4. Deliver" },
+  process_step4_desc: { th: "ทดสอบและส่งมอบงานที่มีคุณภาพ", en: "Test and deliver high-quality results." },
+
   // ── Links Hub ───────────────────────────────────────────────────
   links_title: { th: "ช่องทางการติดต่อ", en: "Contact Hub" },
   links_subtitle: { th: "ช่องทางอื่นๆ ของผม", en: "Find me elsewhere" },
@@ -86,16 +104,17 @@ export const translations: Record<string, Record<Lang, string>> = {
   link6_desc: { th: "โปรเจกต์และโค้ดของผม", en: "My projects and source code" },
 
   // ── Contact ─────────────────────────────────────────────────────
-  contact_title: { th: "ติดต่อผม", en: "Get In Touch" },
+  contact_title: { th: "พร้อมทำงานร่วมกัน?", en: "Ready to work together?" },
   contact_subtitle: {
-    th: "มีโปรเจกต์หรืองานที่อยากทำร่วมกัน? ส่งอีเมลหาผมได้เลย",
-    en: "Have a project in mind? I'm always open to new ideas and creative work.",
+    th: "มีโปรเจกต์หรืองานที่อยากทำร่วมกัน? ติดต่อผมได้ทุกช่องทาง!",
+    en: "Have a project in mind? Let's connect and make it happen!",
   },
   contact_email_btn: { th: "ส่งอีเมลหาฉัน", en: "Send me an Email" },
   contact_email_copied: { th: "คัดลอกอีเมลแล้ว!", en: "Email Copied!" },
   contact_email: { th: "kidakorn.1@gmail.com", en: "kidakorn.1@gmail.com" },
   contact_phone: { th: "090-759-6314", en: "090-759-6314" },
   contact_location: { th: "ลำพูน, ประเทศไทย", en: "Lamphun, Thailand" },
+  contact_reply_time: { th: "ตอบกลับภายใน 24 ชั่วโมง", en: "Replies within 24 hours" },
 
   // ── Footer ──────────────────────────────────────────────────────
   footer_copy: { th: "© 2025 Devakorn. สงวนลิขสิทธิ์.", en: "© 2025 Devakorn. All rights reserved." },

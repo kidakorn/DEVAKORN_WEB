@@ -3,26 +3,34 @@
 // ─────────────────────────────────────────────────────────────────
 // AboutSection.tsx — 2-column editorial split layout
 // Left: sticky avatar with red frame + name + location
-// Right: tagline, bio, 4-col tech stack grid
+// Right: tagline, bio, value props, tech stack pills
 // ─────────────────────────────────────────────────────────────────
 
 import { motion, type Variants } from "framer-motion";
-import { MapPin } from "lucide-react";
+import { MapPin, CheckCircle, Clock, Award, Code2, Zap, Terminal, FileCode2, Server, Cpu, Database, Leaf, LayoutTemplate, AppWindow, FileCode, Box, Layers, Briefcase, FileJson, Coffee } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 
 const TECH_STACK = [
-  { name: "React",        icon: "⚛" },
-  { name: "Next.js",      icon: "▲" },
-  { name: "Angular",      icon: "🅰" },
-  { name: "TypeScript",   icon: "TS" },
-  { name: "Node.js",      icon: "⬡" },
-  { name: "Express",      icon: "Ex" },
-  { name: "MySQL",        icon: "🐬" },
-  { name: "MongoDB",      icon: "🍃" },
-  { name: "WordPress",    icon: "W" },
-  { name: "HTML/CSS",     icon: "</>" },
-  { name: "PHP",          icon: "🐘" },
-  { name: "Docker",       icon: "🐳" },
+  { name: "LANSA", icon: Layers },
+  { name: "RPG", icon: Terminal },
+  { name: "RMDL", icon: FileCode2 },
+  { name: "Db2", icon: Database },
+  { name: "ERP Systems", icon: Briefcase },
+  { name: "C# / .NET", icon: FileJson },
+  { name: "Java", icon: Coffee },
+  { name: "Python", icon: FileCode },
+  { name: "React", icon: Code2 },
+  { name: "Next.js", icon: Zap },
+  { name: "Angular", icon: Terminal },
+  { name: "TypeScript", icon: FileCode2 },
+  { name: "Node.js", icon: Server },
+  { name: "Express", icon: Cpu },
+  { name: "MySQL", icon: Database },
+  { name: "MongoDB", icon: Leaf },
+  { name: "WordPress", icon: LayoutTemplate },
+  { name: "HTML/CSS", icon: AppWindow },
+  { name: "PHP", icon: FileCode },
+  { name: "Docker", icon: Box },
 ];
 
 const fadeUp: Variants = {
@@ -46,13 +54,13 @@ export default function AboutSection() {
     <section
       id="about"
       aria-labelledby="about-heading"
-      className="w-full px-6 py-28 noise-bg border-t"
+      className="w-full px-6 py-28 border-t"
       style={{
         background: "var(--bg-main)",
         borderColor: "var(--border-main)",
       }}
     >
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
 
         {/* Section label */}
         <motion.div
@@ -65,7 +73,7 @@ export default function AboutSection() {
         </motion.div>
 
         {/* 2-Column editorial grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-16 lg:gap-24 items-start mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12 lg:gap-24 items-start mt-8">
 
           {/* ── LEFT COLUMN: Avatar + identity ──────────────────── */}
           <motion.div
@@ -89,7 +97,7 @@ export default function AboutSection() {
               />
               {/* Avatar image */}
               <div
-                className="relative w-56 h-56 overflow-hidden rounded-[1.25rem] border shadow-2xl"
+                className="relative w-56 h-56 overflow-hidden rounded-[1.25rem] border shadow-xl"
                 style={{
                   background: "var(--bg-card)",
                   borderColor: "var(--border-main)",
@@ -100,13 +108,12 @@ export default function AboutSection() {
                   alt="Devakorn Profile"
                   className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
-                {/* Red overlay on hover */}
                 <div className="absolute inset-0 bg-[var(--color-primary-red)] opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
               </div>
             </motion.div>
 
             {/* Name */}
-            <div className="text-center lg:text-left">
+            <div className="text-center lg:text-left mt-2">
               <h2
                 id="about-heading"
                 className="text-3xl font-black tracking-tight leading-none"
@@ -115,7 +122,7 @@ export default function AboutSection() {
                 Devakorn
               </h2>
               <p
-                className="mt-1 text-sm font-semibold uppercase tracking-[0.12em]"
+                className="mt-2 text-sm font-semibold uppercase tracking-[0.12em]"
                 style={{ color: "var(--color-primary-red)" }}
               >
                 Kidakorn Intha
@@ -124,7 +131,7 @@ export default function AboutSection() {
 
             {/* Location pill */}
             <p
-              className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-full border"
+              className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-full border shadow-sm"
               style={{
                 color: "var(--text-muted)",
                 borderColor: "var(--border-main)",
@@ -139,19 +146,6 @@ export default function AboutSection() {
               />
               {t("contact_location")}
             </p>
-
-            {/* Availability badge */}
-            <span
-              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full"
-              style={{
-                background: "rgba(200,16,46,0.1)",
-                color: "var(--color-primary-red)",
-                border: "1px solid rgba(200,16,46,0.25)",
-              }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-red)] animate-pulse" aria-hidden="true" />
-              Available for projects
-            </span>
           </motion.div>
 
           {/* ── RIGHT COLUMN: Bio + Tech Stack ──────────────────── */}
@@ -167,68 +161,89 @@ export default function AboutSection() {
             >
               <motion.h3
                 variants={fadeUp}
-                className="text-4xl md:text-5xl font-bold leading-[1.1] tracking-tight"
+                className="text-3xl md:text-5xl font-bold leading-[1.15] tracking-tight"
                 style={{ fontFamily: "var(--font-display)", color: "var(--text-strong)" }}
               >
-                Bringing ideas{" "}
-                <span className="gradient-text">to Life</span>
+                Bringing ideas <span className="gradient-text">to Life</span>
               </motion.h3>
 
               <motion.p
                 variants={fadeUp}
-                className="text-xl leading-[1.9] font-light"
+                className="text-lg md:text-xl leading-[1.8] font-light max-w-3xl"
                 style={{ color: "var(--text-main)" }}
               >
                 {t("about_bio")}
               </motion.p>
             </motion.div>
 
-            {/* Divider */}
-            <div
-              className="w-full h-px"
-              style={{ background: "var(--border-main)" }}
-              aria-hidden="true"
-            />
-
-            {/* Tech Stack Grid */}
+            {/* Value Props */}
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-40px" }}
               variants={stagger}
-              className="flex flex-col gap-5"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6"
             >
-              <motion.p variants={fadeUp} className="section-label">
+              {[
+                { id: "v1", title: "about_value1_title", desc: "about_value1_desc", icon: CheckCircle },
+                { id: "v2", title: "about_value2_title", desc: "about_value2_desc", icon: Clock },
+                { id: "v3", title: "about_value3_title", desc: "about_value3_desc", icon: Award },
+              ].map((item) => (
+                <motion.div
+                  key={item.id}
+                  variants={fadeUp}
+                  className="flex flex-col gap-3 p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(200,16,46,0.08)]"
+                  style={{ background: "var(--bg-card)", borderColor: "var(--border-main)" }}
+                >
+                  <item.icon size={26} strokeWidth={2} style={{ color: "var(--color-primary-red)" }} />
+                  <div>
+                    <h4 className="font-bold text-lg mb-1" style={{ color: "var(--text-strong)", fontFamily: "var(--font-display)" }}>
+                      {t(item.title)}
+                    </h4>
+                    <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                      {t(item.desc)}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Divider */}
+            <div
+              className="w-full h-px opacity-60"
+              style={{ background: "var(--border-main)" }}
+              aria-hidden="true"
+            />
+
+            {/* Tech Stack Pills */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-40px" }}
+              variants={stagger}
+              className="flex flex-col gap-6"
+            >
+              <motion.p variants={fadeUp} className="text-sm font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
                 {t("about_stack_title")}
               </motion.p>
 
               <motion.div
                 variants={stagger}
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"
+                className="flex flex-wrap gap-2.5"
               >
                 {TECH_STACK.map((tech) => (
                   <motion.div
                     key={tech.name}
                     variants={fadeUp}
-                    className="group flex items-center gap-3 px-4 py-3 rounded-xl border cursor-default transition-all duration-300 hover:border-[var(--color-primary-red)] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(200,16,46,0.12)]"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-primary-red)] hover:text-[var(--color-primary-red)] cursor-default group"
                     style={{
                       background: "var(--bg-card)",
                       borderColor: "var(--border-main)",
+                      color: "var(--text-main)"
                     }}
                   >
-                    <span
-                      className="text-base font-mono font-bold w-7 text-center flex-shrink-0 transition-colors duration-300 group-hover:text-[var(--color-primary-red)]"
-                      style={{ color: "var(--text-muted)" }}
-                      aria-hidden="true"
-                    >
-                      {tech.icon}
-                    </span>
-                    <span
-                      className="text-sm font-semibold transition-colors duration-300 group-hover:text-[var(--text-strong)]"
-                      style={{ color: "var(--text-main)" }}
-                    >
-                      {tech.name}
-                    </span>
+                    <tech.icon size={16} className="text-[var(--text-muted)] group-hover:text-[var(--color-primary-red)] transition-colors" />
+                    {tech.name}
                   </motion.div>
                 ))}
               </motion.div>

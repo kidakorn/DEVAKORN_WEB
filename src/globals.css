@@ -36,21 +36,21 @@
   --color-secondary-red: #ef233c;
 
   /* Light mode surfaces */
-  --bg-main: #f5f7fa;
+  --bg-main: #ffffff;
   --bg-card: #ffffff;
-  --bg-hover: #f0f2f5;
+  --bg-hover: #f9f9fb;
 
   /* Light mode text */
   --text-strong: #0a0c10;
-  --text-main: #1a1d2e;
-  --text-muted: #8a8fa8;
+  --text-main: #2b3040;
+  --text-muted: #737992;
 
   /* Light mode borders */
-  --border-main: #e2e4e9;
+  --border-main: #ebeef5;
 
   /* Glass */
-  --glass-bg: rgba(255, 255, 255, 0.88);
-  --glass-hover-shadow: 0 8px 32px rgba(200, 16, 46, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-hover-shadow: 0 12px 40px rgba(200, 16, 46, 0.12);
 
   /* Spacing */
   --section-py: 7rem;
