@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>สร้าง minpop แบบเดิม ด้วย ODBC บน pub400</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+  pre{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'IBM Plex Mono',monospace;}
+  pre code{background:none;padding:0;color:inherit;}
+
+  .layout{display:grid;grid-template-columns:210px 1fr;max-width:1140px;margin:0 auto;}
+  @media(max-width:860px){.layout{grid-template-columns:1fr;}}
+  .sidebar{padding:32px 16px;border-right:1px solid #e2e8f0;position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;}
+  @media(max-width:860px){.sidebar{position:static;border-right:none;border-bottom:1px solid #e2e8f0;max-height:none;}}
+  .sidebar .brand{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:16px;padding:0 12px;}
+  .sidebar a{display:block;padding:7px 12px;border-radius:6px;font-size:13.5px;color:#475569;text-decoration:none;}
+  .sidebar a:hover{background:#eef2ff;color:#4338ca;}
+
+  .content{padding:40px 32px 100px;max-width:820px;}
+  section{margin-bottom:40px;scroll-margin-top:24px;}
+  h1{font-size:24px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14px;max-width:66ch;margin-bottom:28px;}
+  h2{font-size:17px;font-weight:700;margin:0 0 10px;}
+
+  .step{border:1px solid #e2e8f0;border-radius:12px;margin-bottom:14px;overflow:hidden;}
+  .step-head{background:#f8fafc;padding:13px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;}
+  .step-num{width:26px;height:26px;border-radius:7px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;}
+  .step-title{font-size:14px;font-weight:700;}
+  .step-body{padding:15px 18px;}
+
+  .compare{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:10px;}
+  .compare th, .compare td{padding:9px 11px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  .compare th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  .compare tr:nth-child(even) td{background:#f8fafc;}
+  .compare td.iws{color:#991b1b;}
+  .compare td.odbc{color:#1d4ed8;}
+
+  .th{background:#fafaf9;border-left:3px solid #c7d2fe;padding:9px 13px;border-radius:0 6px 6px 0;font-size:12.5px;color:#475569;margin:10px 0;}
+  .th b{color:#4338ca;}
+  .warn-flag{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:11px 15px;margin:10px 0;font-size:12.5px;color:#991b1b;}
+  .warn-flag b{color:#b91c1c;}
+  .ok-flag{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:11px 15px;margin:10px 0;font-size:12.5px;color:#166534;}
+  .ok-flag b{color:#15803d;}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">minpop บน pub400</div>
+    <a href="#compare">0. เทียบขั้นตอน</a>
+    <a href="#s1">1. สร้างตาราง</a>
+    <a href="#s2">2. ใส่ข้อมูลตัวอย่าง</a>
+    <a href="#s3">3. ทดสอบ SQL ก่อน</a>
+    <a href="#s4">4. เขียน Node.js API</a>
+    <a href="#s5">5. ทดสอบ endpoint</a>
+    <a href="#s6">6. ต่อกับหน้าเว็บเดิม</a>
+    <a href="#recap">7. สรุปย้ำ</a>
+  </aside>
+
+  <main class="content">
+
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;">Personal Practice · pub400</div>
+    <h1>สร้าง endpoint แบบ minpop เดิม ด้วย ODBC</h1>
+    <p class="intro">ทำ endpoint หน้าตาเดียวกับ <code>SCANNER/minpop</code> ที่เคยทำกับบริษัท (ใส่ empid → ได้ <code>P_EMPNAME</code>, <code>P_ISFOUND</code> กลับมา) แต่คราวนี้สร้างเองทั้งหมดผ่าน pub400</p>
+
+    <!-- 0 COMPARE -->
+    <section id="compare">
+      <h2>เทียบขั้นตอนแบบคู่กัน — เหมือนกันมากกว่าที่คิด</h2>
+      <table class="compare">
+        <tr><th>ขั้นตอน</th><th>แบบ IWS (บริษัท)</th><th>แบบ ODBC (pub400)</th></tr>
+        <tr><td>1. มีตาราง/ข้อมูลอยู่แล้ว</td><td class="iws">มีอยู่แล้วบน AS400 บริษัท</td><td class="odbc">ต้องสร้างเองบน pub400 (ขั้นตอนที่ 1-2)</td></tr>
+        <tr><td>2. เขียน query ดึงข้อมูล</td><td class="iws">แอดมิน/RPG เขียนให้</td><td class="odbc">คุณเขียนเอง เป็น SQL ธรรมดา</td></tr>
+        <tr><td>3. ทำให้เรียกผ่าน URL ได้</td><td class="iws">IWS Studio ห่อให้อัตโนมัติ</td><td class="odbc">Express.js เขียน route เอง</td></tr>
+        <tr><td>4. แปลงชื่อ field จริง → ชื่อที่เว็บใช้</td><td class="iws">ตั้งค่า mapping ใน IWS Studio (<code>CDOPCD</code>→<code>empid</code>)</td><td class="odbc">เขียนเองใน <code>res.json({...})</code></td></tr>
+        <tr><td>5. รับ parameter (empid)</td><td class="iws"><code>?empid=25066</code></td><td class="odbc"><code>?empid=25066</code> — เหมือนกันเป๊ะ</td></tr>
+        <tr><td>6. ตอบกลับเป็น JSON</td><td class="iws">{ P_EMPNAME, P_ISFOUND }</td><td class="odbc">{ P_EMPNAME, P_ISFOUND } — ทำให้หน้าตาเหมือนเดิมได้เลย</td></tr>
+        <tr><td>7. ฝั่งเว็บเรียกใช้</td><td class="iws"><code>fetch()</code></td><td class="odbc"><code>fetch()</code> — โค้ดเดิมไม่ต้องแก้เลย</td></tr>
+      </table>
+      <div class="ok-flag"><b>สรุปสั้นๆ:</b> ขั้นตอนที่ 5-7 ฝั่งเว็บเหมือนกัน 100% ต่างกันแค่ขั้นตอน 1-4 ที่คุณต้องทำเองแทนแอดมิน (รวมถึงงาน "แปลงชื่อ field" ที่ IWS เคยทำให้อัตโนมัติ)</div>
+    </section>
+
+    <!-- 1 CREATE TABLE -->
+    <section id="s1">
+      <div class="step">
+        <div class="step-head"><div class="step-num">1</div><div class="step-title">สร้างตารางบน pub400 (แทนตารางจริงที่บริษัท)</div></div>
+        <div class="step-body">
+          <p style="font-size:13px;color:#64748b;">เข้า pub400 ผ่าน 5250 หรือ ACS Run SQL Scripts แล้วรัน (ใช้ชื่อ field แบบเดียวกับ AS400 จริง <code>CDOPCD</code>/<code>NMOPCD</code> แทนชื่อสมมติ):</p>
+          <pre><code>CREATE TABLE MYLIB.OPERATOR (
+  CDOPCD   CHAR(6)     NOT NULL,   -- Operator Code (key) — ชื่อ field จริงในตาราง
+  NMOPCD   VARCHAR(50),            -- Operator Name — ชื่อ field จริงในตาราง
+  PRIMARY KEY (CDOPCD)
+);</code></pre>
+          <div class="th"><b>เทียบกับของบริษัท:</b> ตารางนี้แทนตารางจริงที่ RPG program <code>MINPOP</code> ไปดึงข้อมูลมา — ใช้ชื่อ field จริง (<code>CDOPCD</code>, <code>NMOPCD</code>) เพราะฝั่ง IWS ก็ทำหน้าที่ "แปลงชื่อ" ให้กลายเป็น <code>empid</code>/<code>P_EMPNAME</code> ก่อนส่งถึงเว็บอยู่แล้ว เราจะจำลองขั้นตอนแปลงชื่อนี้เองในขั้นตอนที่ 4</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 SAMPLE DATA -->
+    <section id="s2">
+      <div class="step">
+        <div class="step-head"><div class="step-num">2</div><div class="step-title">ใส่ข้อมูลตัวอย่าง (ห้ามใช้ข้อมูลจริงบริษัท)</div></div>
+        <div class="step-body">
+          <pre><code>INSERT INTO MYLIB.OPERATOR (CDOPCD, NMOPCD) VALUES
+  ('25066', 'I.KIDAKORN'),
+  ('25067', 'S.SOMCHAI'),
+  ('25068', 'A.ANAN');</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 TEST SQL -->
+    <section id="s3">
+      <div class="step">
+        <div class="step-head"><div class="step-num">3</div><div class="step-title">ทดสอบ SQL ก่อนเขียนโค้ด (สำคัญมาก — เช็คให้ผ่านก่อนเสมอ)</div></div>
+        <div class="step-body">
+          <pre><code>SELECT CDOPCD, NMOPCD FROM MYLIB.OPERATOR WHERE CDOPCD = '25066';</code></pre>
+          <p style="font-size:13px;color:#64748b;">ต้องได้แถวข้อมูลกลับมา 1 แถวก่อน ถึงจะไปขั้นต่อไป — เหมือนตอนที่เคยทดสอบ URL <code>SCANNER/minpop?empid=25066</code> ตรงๆ ใน browser ก่อนต่อ IWS</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 NODE API -->
+    <section id="s4">
+      <div class="step">
+        <div class="step-head"><div class="step-num">4</div><div class="step-title">เขียน Node.js API — โครงสร้างที่ขยาย endpoint เพิ่มได้ง่าย</div></div>
+        <div class="step-body">
+          <p style="font-size:13px;color:#64748b;">ตั้งชื่อโปรเจกต์แบบกลางๆ ไม่ผูกกับ endpoint เดียว เพราะจะมี <code>talinf</code> หรือตัวอื่นตามมาทีหลัง:</p>
+          <pre><code>mkdir my-iws-api
+cd my-iws-api
+npm init -y
+npm install express odbc cors dotenv</code></pre>
+          <pre><code>// .env
+DB_DSN=PUB400
+DB_USER=your_username
+DB_PASSWORD=your_password</code></pre>
+
+          <p style="font-size:13px;color:#64748b;font-weight:600;margin-top:14px;">โครงสร้างโฟลเดอร์ — แยก route ต่อ 1 endpoint ต่อ 1 ไฟล์ (เพิ่ม endpoint ใหม่ = เพิ่มไฟล์ใหม่ ไม่ต้องแก้ของเดิม)</p>
+          <pre><code>my-iws-api/
+  ├── .env
+  ├── server.js        ← จุดรวม ผูก route ทั้งหมดเข้าด้วยกัน
+  ├── db.js             ← ฟังก์ชันเชื่อมต่อ ODBC ใช้ร่วมกันทุก endpoint
+  └── routes/
+        ├── minpop.js    ← endpoint นี้
+        └── talinf.js    ← เพิ่มทีหลังตามแบบเดียวกัน</code></pre>
+
+          <pre><code>// db.js — ฟังก์ชันเชื่อมต่อกลาง ใช้ซ้ำได้ทุก route
+require('dotenv').config();
+const odbc = require('odbc');
+
+const connStr =
+  `DSN=${process.env.DB_DSN};UID=${process.env.DB_USER};PWD=${process.env.DB_PASSWORD}`;
+
+async function getConnection() {
+  return odbc.connect(connStr);
+}
+
+module.exports = { getConnection };</code></pre>
+
+          <pre><code>// routes/minpop.js — endpoint แทน SCANNER/minpop เดิม
+const express = require('express');
+const router = express.Router();
+const { getConnection } = require('../db');
+
+router.get('/minpop', async (req, res) => {
+  const empid = req.query.empid;   // ← ชื่อที่ฝั่งเว็บใช้เรียก (เหมือนที่ IWS ตั้งไว้เดิม)
+
+  if (!empid) {
+    return res.status(400).json({ error: 'empid is required' });
+  }
+
+  try {
+    const connection = await getConnection();
+
+    // query ด้วยชื่อ field จริงในตาราง (CDOPCD) ไม่ใช่ empid
+    const result = await connection.query(
+      'SELECT CDOPCD, NMOPCD FROM MYLIB.OPERATOR WHERE CDOPCD = ?',
+      [empid]
+    );
+    await connection.close();
+
+    // จุดนี้คือ "IWS mapping layer" ที่จำลองขึ้นเอง —
+    // แปลงชื่อ field จริง (CDOPCD/NMOPCD) เป็นชื่อที่เว็บคุ้นเคย (P_EMPNAME/P_ISFOUND)
+    if (result.length === 0) {
+      return res.json({ P_EMPNAME: "", P_ISFOUND: "0" });
+    }
+    res.json({
+      P_EMPNAME: result[0].NMOPCD,
+      P_ISFOUND: "1"
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;</code></pre>
+
+          <pre><code>// routes/talinf.js — เทมเพลตเปล่า เตรียมไว้สำหรับตอนต่อ endpoint นี้จริง
+const express = require('express');
+const router = express.Router();
+const { getConnection } = require('../db');
+
+router.get('/talinf', async (req, res) => {
+  // TODO: แก้ query/field ให้ตรงกับตาราง TALINF จริงตอนพร้อม
+  res.status(501).json({ error: 'talinf endpoint not implemented yet' });
+});
+
+module.exports = router;</code></pre>
+
+          <pre><code>// server.js — จุดเดียวที่ผูก route ทั้งหมดเข้าด้วยกัน
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+
+const minpopRoute = require('./routes/minpop');
+const talinfRoute = require('./routes/talinf');   // เพิ่ม route ใหม่ตรงนี้เวลามีเพิ่ม
+
+const app = express();
+app.use(cors());
+
+app.use('/api', minpopRoute);
+app.use('/api', talinfRoute);
+
+app.listen(3001, () => console.log('API running: http://localhost:3001/api'));</code></pre>
+
+          <div class="th"><b>ขยายในอนาคตทำแค่ 3 ขั้นตอน:</b> (1) สร้างไฟล์ใหม่ใน <code>routes/</code> เช่น <code>routes/talinf.js</code> (2) เขียน query + mapping ในไฟล์นั้น (3) เพิ่ม 1 บรรทัด <code>require</code> + <code>app.use</code> ใน <code>server.js</code> — ไม่ต้องแตะ <code>minpop.js</code> หรือ <code>db.js</code> เลย</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 TEST ENDPOINT -->
+    <section id="s5">
+      <div class="step">
+        <div class="step-head"><div class="step-num">5</div><div class="step-title">รันแล้วทดสอบ (เหมือนตอนทดสอบ IWS URL ตรงๆ)</div></div>
+        <div class="step-body">
+          <pre><code>node server.js</code></pre>
+          <p style="font-size:13px;color:#64748b;">เปิด browser ไปที่:</p>
+          <pre><code>http://localhost:3001/api/minpop?empid=25066</code></pre>
+          <p style="font-size:13px;color:#64748b;">ควรได้ผลลัพธ์ (แม้ query ข้างในใช้ <code>CDOPCD</code>/<code>NMOPCD</code> แต่ response ที่ออกมาหน้าตาเหมือนของเดิมเป๊ะ เพราะผ่าน mapping ใน Step 4 แล้ว):</p>
+          <pre><code>{ "P_EMPNAME": "I.KIDAKORN", "P_ISFOUND": "1" }</code></pre>
+          <div class="ok-flag">ถ้าได้แบบนี้ แปลว่า endpoint ของคุณทำงานเหมือน IWS เดิมทุกประการแล้ว 🎉</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 CONNECT WEB -->
+    <section id="s6">
+      <div class="step">
+        <div class="step-head"><div class="step-num">6</div><div class="step-title">ต่อกับหน้าเว็บเดิม — แก้แค่ 1 บรรทัด</div></div>
+        <div class="step-body">
+          <p style="font-size:13px;color:#64748b;">ในโปรเจกต์ Next.js เดิม (<code>iws_webAS400_next</code>) เปลี่ยนแค่ค่าใน config:</p>
+          <pre><code>// เดิม (บริษัท)
+NEXT_PUBLIC_API_BASE_URL=/api/web/serveices
+
+// เปลี่ยนเป็น (ฝึกกับ pub400)
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api</code></pre>
+          <p style="font-size:13px;color:#64748b;">และถ้า endpoint path ต่างชื่อ (<code>/minpop</code> vs <code>/scanner/minpop</code>) ก็แก้แค่ตรงนั้นใน config เดียวกัน — <code>useMinpopSearch.ts</code> และ component อื่นๆ ไม่ต้องแตะเลย</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECAP -->
+    <section id="recap">
+      <h2>สรุปย้ำ — ทำไมวิธีนี้ถึง "คล้ายกัน" จริงๆ</h2>
+      <ul style="font-size:13.5px;color:#475569;padding-left:18px;">
+        <li>รูปแบบ URL + query string (<code>?empid=...</code>) เหมือนเดิม</li>
+        <li>รูปแบบ response JSON (<code>P_EMPNAME</code>, <code>P_ISFOUND</code>) เหมือนเดิม เพราะจงใจ mapping ให้ตรง แม้ field จริงในตารางจะชื่อ <code>CDOPCD</code>/<code>NMOPCD</code> ก็ตาม</li>
+        <li>โค้ดฝั่ง React/Next.js (hooks, component, error handling) เหมือนเดิม 100%</li>
+        <li>สิ่งที่ต่างคือ "ใครสร้าง endpoint และใครทำ mapping" — IWS ให้แอดมินตั้งค่าผ่านหน้าจอ / วิธีนี้คุณเขียน mapping เองในโค้ด</li>
+      </ul>
+      <div class="warn-flag">
+        🔴 <b>ข้อจำกัดที่ต้องรู้:</b> Node.js API นี้ต้องรันอยู่บนเครื่อง PC ตลอดเวลาที่ใช้งาน (ปิดเครื่อง = endpoint หายไปด้วย) ต่างจาก IWS ที่รันอยู่บน server ตลอดเวลา — เหมาะกับ "ฝึกส่วนตัว" เท่านั้น ไม่ใช่ระบบที่จะให้คนอื่นใช้งานจริง
+      </div>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

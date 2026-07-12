@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>IWS ทางเลือก — ต่อ pub400 ผ่าน ODBC ด้วยตัวเอง</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+  pre{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'IBM Plex Mono',monospace;}
+  pre code{background:none;padding:0;color:inherit;}
+
+  .layout{display:grid;grid-template-columns:210px 1fr;max-width:1140px;margin:0 auto;}
+  @media(max-width:860px){.layout{grid-template-columns:1fr;}}
+  .sidebar{padding:32px 16px;border-right:1px solid #e2e8f0;position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;}
+  @media(max-width:860px){.sidebar{position:static;border-right:none;border-bottom:1px solid #e2e8f0;max-height:none;}}
+  .sidebar .brand{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:16px;padding:0 12px;}
+  .sidebar a{display:block;padding:7px 12px;border-radius:6px;font-size:13.5px;color:#475569;text-decoration:none;}
+  .sidebar a:hover{background:#eef2ff;color:#4338ca;}
+
+  .content{padding:40px 32px 100px;max-width:820px;}
+  section{margin-bottom:40px;scroll-margin-top:24px;}
+  h1{font-size:25px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14px;max-width:66ch;margin-bottom:28px;}
+  h2{font-size:17px;font-weight:700;margin:0 0 10px;}
+
+  .step{border:1px solid #e2e8f0;border-radius:12px;margin-bottom:14px;overflow:hidden;}
+  .step-head{background:#f8fafc;padding:13px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;}
+  .step-num{width:26px;height:26px;border-radius:7px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;}
+  .step-title{font-size:14px;font-weight:700;}
+  .step-body{padding:15px 18px;}
+
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;margin:16px 0;}
+  .flow .box{background:#eef2ff;border:1px solid #c7d2fe;color:#4338ca;padding:9px 13px;border-radius:8px;}
+  .flow .arrow{color:#94a3b8;font-size:16px;}
+
+  .compare{width:100%;border-collapse:collapse;font-size:13px;}
+  .compare th, .compare td{padding:9px 11px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  .compare th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  .compare tr:nth-child(even) td{background:#f8fafc;}
+
+  .th{background:#fafaf9;border-left:3px solid #c7d2fe;padding:9px 13px;border-radius:0 6px 6px 0;font-size:12.5px;color:#475569;margin:10px 0;}
+  .th b{color:#4338ca;}
+  .warn-flag{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:11px 15px;margin:10px 0;font-size:12.5px;color:#991b1b;}
+  .warn-flag b{color:#b91c1c;}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">IWS ทางเลือก</div>
+    <a href="#why">0. ทำไม IWS ใช้ไม่ได้</a>
+    <a href="#option">1. ทางเลือกคืออะไร</a>
+    <a href="#s1">2. สมัคร pub400</a>
+    <a href="#s2">3. ติดตั้ง ODBC Driver</a>
+    <a href="#s3">4. ทดสอบเชื่อมต่อ</a>
+    <a href="#s4">5. สร้าง Node.js API</a>
+    <a href="#s5">6. ต่อกับ Next.js</a>
+    <a href="#compare">7. เทียบกับ IWS</a>
+    <a href="#security">8. เรื่องความปลอดภัย</a>
+  </aside>
+
+  <main class="content">
+
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;">Personal Practice Setup</div>
+    <h1>ทางเลือกแทน IWS — ต่อ pub400 ด้วย ODBC เอง</h1>
+    <p class="intro">สำหรับกรณีที่ไม่มีสิทธิ์ deploy IWS (ทั้งที่บริษัทและที่ pub400) แต่อยากพัฒนาแยกต่างหากด้วยตัวเอง</p>
+
+    <!-- 0 WHY -->
+    <section id="why">
+      <h2>ทำไม IWS ใช้ไม่ได้</h2>
+      <p style="font-size:13.5px;color:#64748b;">IWS ต้องมีคนตั้งค่า <b>Web Services Server Instance</b> ผ่าน IBM Web Administration for i ซึ่งต้องใช้สิทธิ์ authority ระดับสูง (ใกล้ admin) — บัญชี pub400 ทั่วไปที่สมัครฟรีมักได้แค่:</p>
+      <table class="compare">
+        <tr><th>สิทธิ์ที่ได้</th><th>ใช้ทำอะไรได้</th></tr>
+        <tr><td>5250 terminal (green screen)</td><td>เขียน RPG, รัน CL command, จัดการไฟล์ตัวเอง</td></tr>
+        <tr><td>Database access (ODBC/JDBC)</td><td>ต่อฐานข้อมูล DB2 for i จากเครื่องภายนอกได้โดยตรง</td></tr>
+        <tr><td>❌ HTTP Admin / IWS Studio</td><td>ไม่ได้ให้ทั่วไป เพราะกระทบ server instance ทั้งเครื่องที่ใช้ร่วมกับคนอื่น</td></tr>
+      </table>
+    </section>
+
+    <!-- 1 OPTION -->
+    <section id="option">
+      <h2>ทางเลือก: ต่อฐานข้อมูลตรง แล้วสร้าง API เอง</h2>
+      <p style="font-size:13.5px;color:#64748b;">แทนที่จะให้ IBM i เป็นคนสร้าง REST API ให้ (แบบ IWS) เราต่อเข้า database ตรงๆ ด้วย ODBC จากเครื่องเราเอง แล้วเขียน Node.js API เอง — ควบคุมได้ 100% ไม่ต้องพึ่งสิทธิ์ admin ของใครเลย</p>
+      <div class="flow">
+        <div class="box">Next.js (PC)</div><span class="arrow">→</span>
+        <div class="box">Node.js API (PC)</div><span class="arrow">→</span>
+        <div class="box">ODBC Driver</div><span class="arrow">→</span>
+        <div class="box">pub400 DB2</div>
+      </div>
+      <p style="font-size:13.5px;color:#64748b;">เทียบกับของบริษัท: <code>Node.js API</code> ที่คุณเขียนเองตรงนี้ ทำหน้าที่แทน "IWS" — เป็นตัวกลางแปลง SQL query ให้กลายเป็น REST endpoint เหมือนกัน แค่คุณเป็นคนคุมเองแทน</p>
+    </section>
+
+    <!-- 2 SIGNUP -->
+    <section id="s1">
+      <div class="step">
+        <div class="step-head"><div class="step-num">1</div><div class="step-title">สมัคร pub400</div></div>
+        <div class="step-body">
+          <ul style="font-size:13.5px;color:#475569;margin:0;padding-left:18px;">
+            <li>เข้า <code>pub400.com</code> สมัครบัญชีฟรี</li>
+            <li>จะได้ user profile + สิทธิ์ database พื้นฐาน</li>
+            <li>จดค่าที่ต้องใช้ไว้: <code>hostname</code>, <code>username</code>, <code>password</code></li>
+          </ul>
+          <div class="warn-flag">⚠️ ใช้ข้อมูลสมมติในการฝึกเท่านั้น ห้ามเอาข้อมูลบริษัทมาใส่ในตารางที่ pub400 เด็ดขาด</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 ODBC -->
+    <section id="s2">
+      <div class="step">
+        <div class="step-head"><div class="step-num">2</div><div class="step-title">ติดตั้ง ODBC Driver บน PC</div></div>
+        <div class="step-body">
+          <p style="font-size:13.5px;color:#64748b;">โหลด <b>IBM i Access Client Solutions (ACS)</b> จากเว็บ IBM (ฟรี) แล้วติดตั้งส่วน ODBC Driver — ใช้ได้ทั้ง Windows/Mac</p>
+          <p style="font-size:13.5px;color:#64748b;">ตั้งค่า DSN (Data Source Name) ชี้ไปที่ hostname ของ pub400 พร้อม username/password ที่สมัครไว้</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 TEST -->
+    <section id="s3">
+      <div class="step">
+        <div class="step-head"><div class="step-num">3</div><div class="step-title">ทดสอบเชื่อมต่อก่อนเขียนโค้ด</div></div>
+        <div class="step-body">
+          <p style="font-size:13.5px;color:#64748b;">ใช้เครื่องมือทดสอบ ODBC ที่มากับ ACS ลอง query ง่ายๆ ก่อน เช่น</p>
+          <pre><code>SELECT * FROM QSYS2.SYSTABLES FETCH FIRST 5 ROWS ONLY</code></pre>
+          <p style="font-size:13.5px;color:#64748b;">ถ้าได้ผลลัพธ์กลับมา แปลว่าเชื่อมต่อสำเร็จ พร้อมไปขั้นต่อไป</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 NODE API -->
+    <section id="s4">
+      <div class="step">
+        <div class="step-head"><div class="step-num">4</div><div class="step-title">สร้าง Node.js API ของตัวเอง</div></div>
+        <div class="step-body">
+          <pre><code>mkdir my-iws-alternative
+cd my-iws-alternative
+npm init -y
+npm install express odbc cors dotenv</code></pre>
+          <pre><code>// .env
+DB_DSN=PUB400
+DB_USER=your_username
+DB_PASSWORD=your_password</code></pre>
+          <pre><code>// server.js
+require('dotenv').config();
+const express = require('express');
+const odbc = require('odbc');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());   // เปิด CORS ให้ Next.js เรียกได้ (ทำเองได้เต็มที่ ต่างจาก IWS ที่ต้องขอแอดมิน)
+
+const connectionString =
+  `DSN=${process.env.DB_DSN};UID=${process.env.DB_USER};PWD=${process.env.DB_PASSWORD}`;
+
+app.get('/api/employee', async (req, res) => {
+  const empid = req.query.empid;
+  try {
+    const connection = await odbc.connect(connectionString);
+    const result = await connection.query(
+      `SELECT * FROM MYLIB.EMPLOYEE WHERE EMPID = '${empid}'`
+    );
+    await connection.close();
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.listen(3001, () => console.log('API running on http://localhost:3001'));</code></pre>
+          <div class="warn-flag">
+            🔴 <b>ระวัง SQL Injection:</b> ตัวอย่างข้างบนต่อ string ตรงๆ (ไม่ปลอดภัย) ใช้ได้แค่ตอนฝึกส่วนตัว ถ้าจะทำจริงต้องใช้ parameterized query แทน เช่น
+            <code>connection.query(sql, [empid])</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 CONNECT NEXTJS -->
+    <section id="s5">
+      <div class="step">
+        <div class="step-head"><div class="step-num">5</div><div class="step-title">ต่อกับ Next.js (pattern เดียวกับที่เคยทำ)</div></div>
+        <div class="step-body">
+          <pre><code>// lib/config.ts
+export const API_CONFIG = {
+  BASE_URL: "http://localhost:3001/api",   // ชี้ไปที่ Node.js API ที่สร้างเอง แทน IWS
+  ENDPOINTS: {
+    EMPLOYEE: "/employee"
+  }
+};</code></pre>
+          <p style="font-size:13.5px;color:#64748b;">ที่เหลือ (<code>fetch()</code>, hooks, component) ใช้ pattern เดิมทุกอย่างที่เคยทำกับบริษัทได้เลย ไม่ต้องแก้อะไรเพิ่ม — เพราะจากมุมมอง frontend มันคือ REST API เหมือนกัน แค่คนละคนสร้าง</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 COMPARE -->
+    <section id="compare">
+      <h2>เทียบ IWS กับวิธีนี้</h2>
+      <table class="compare">
+        <tr><th></th><th>IWS (บริษัท)</th><th>Node.js + ODBC (วิธีนี้)</th></tr>
+        <tr><td>ใครสร้าง</td><td>แอดมิน/ทีม RPG</td><td>คุณเอง</td></tr>
+        <tr><td>ต้องมีสิทธิ์ admin ไหม</td><td>ต้องมี</td><td>ไม่ต้อง (แค่ database access พื้นฐาน)</td></tr>
+        <tr><td>รันอยู่ที่ไหน</td><td>บน IBM i</td><td>บนเครื่อง PC ของคุณ (ต้องเปิดค้างไว้ตอนใช้งาน)</td></tr>
+        <tr><td>ควบคุม CORS/security เอง</td><td>ไม่ได้ ต้องขอแอดมิน</td><td>ได้เต็มที่</td></tr>
+        <tr><td>ใช้ฝึก pattern fetch/hooks/config</td><td>✅</td><td>✅ เหมือนกัน</td></tr>
+      </table>
+      <div class="th"><b>สรุป:</b> วิธีนี้ฝึก "หน้าบ้าน" (frontend, fetch pattern, state management) ได้เหมือนกันทุกอย่าง สิ่งเดียวที่ต่างคือ "หลังบ้าน" ไม่ใช่ IWS จริง — พอกลับไปทำงานที่บริษัท แค่เปลี่ยน <code>BASE_URL</code> กลับไปเป็น IWS endpoint จริง โค้ด frontend แทบไม่ต้องแก้เลย</div>
+    </section>
+
+    <!-- 8 SECURITY -->
+    <section id="security">
+      <h2>เรื่องความปลอดภัยที่ต้องรู้</h2>
+      <ul style="font-size:13.5px;color:#475569;padding-left:18px;">
+        <li>ห้าม commit ไฟล์ <code>.env</code> (มี password) ขึ้น GitHub — ใส่ใน <code>.gitignore</code> เสมอ</li>
+        <li>Node.js API ที่สร้างเองรันบน PC เท่านั้น ไม่ได้ deploy public ให้คนอื่นเข้าถึง เหมาะกับฝึกส่วนตัวเท่านั้น</li>
+        <li>ถ้าจะทำ query จริง ใช้ parameterized query เสมอ ป้องกัน SQL Injection</li>
+        <li>Credential ของ pub400 เป็นของส่วนตัว ห้ามแชร์ให้คนอื่น</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Roadmap — IWS vs pub400 vs PC Dev</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+
+  .wrap{max-width:820px;margin:0 auto;padding:48px 24px 100px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;}
+  h1{font-size:26px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14.5px;max-width:66ch;margin-bottom:32px;}
+  h2{font-size:17px;font-weight:700;margin:0 0 14px;}
+  section{margin-bottom:40px;}
+
+  .split{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin-bottom:16px;}
+  @media(max-width:640px){.split{grid-template-columns:1fr;}}
+  .split .arrow{display:flex;align-items:center;justify-content:center;font-size:20px;color:#94a3b8;}
+  @media(max-width:640px){.split .arrow{transform:rotate(90deg);padding:6px 0;}}
+  .env-card{border-radius:12px;padding:20px;border:1px solid;}
+  .env-card.pub400{background:#eff6ff;border-color:#93c5fd;}
+  .env-card.pc{background:#f0fdf4;border-color:#bbf7d0;}
+  .env-card h3{font-size:14.5px;font-weight:700;margin:0 0 4px;}
+  .env-card.pub400 h3{color:#1d4ed8;}
+  .env-card.pc h3{color:#166534;}
+  .env-card .sub{font-size:12px;color:#64748b;margin:0 0 10px;}
+  .env-card ul{margin:0;padding-left:16px;font-size:12.5px;color:#334155;}
+  .env-card li{margin-bottom:5px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th, td{padding:10px 12px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  tr:nth-child(even) td{background:#f8fafc;}
+  td.tag-pub{color:#1d4ed8;font-weight:600;}
+  td.tag-pc{color:#166534;font-weight:600;}
+  td.tag-both{color:#7c2d12;font-weight:600;}
+
+  .phase{display:flex;gap:14px;margin-bottom:18px;}
+  .phase .dot{
+    width:28px;height:28px;border-radius:50%;background:#4f46e5;color:#fff;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;
+  }
+  .phase .body h4{font-size:14.5px;font-weight:700;margin:0 0 4px;}
+  .phase .body p{font-size:13px;color:#64748b;margin:0 0 6px;}
+  .phase .body .env-tags{display:flex;gap:6px;}
+  .env-tag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;}
+  .env-tag.pub{background:#dbeafe;color:#1d4ed8;}
+  .env-tag.pc{background:#dcfce7;color:#166534;}
+
+  .warn-flag{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;font-size:13px;color:#991b1b;margin-top:16px;}
+  .warn-flag b{color:#b91c1c;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">webas400app / kidakorn — Dev Roadmap</div>
+  <h1>IWS เทียบกับ pub400 + PC — ใช้อะไรตรงไหน</h1>
+  <p class="intro">แบ่งงานให้ชัดว่า "ฝึกฝั่ง backend (IWS/RPG)" ทำที่ pub400 กับ "พัฒนาฝั่ง frontend" ทำที่ PC ตัวเอง แล้วมาต่อกันตอนไหน</p>
+
+  <!-- SPLIT: 2 ENVIRONMENTS -->
+  <section>
+    <h2>สองสภาพแวดล้อม แยกหน้าที่กันชัดเจน</h2>
+    <div class="split">
+      <div class="env-card pub400">
+        <h3>🌐 pub400</h3>
+        <p class="sub">IBM i จริง — ฝึกฝั่ง IWS/backend</p>
+        <ul>
+          <li>สร้าง RPG program / SQL table ทดลองเอง</li>
+          <li>ฝึก deploy service ผ่าน IWS Studio ด้วยตัวเอง (ไม่ต้องรอสิทธิ์จากแอดมันบริษัท)</li>
+          <li>ทดสอบ endpoint จริงผ่าน URL แบบเดียวกับที่ทำกับ <code>SCANNER/minpop</code></li>
+          <li>ใช้ข้อมูลสมมติเท่านั้น ห้ามใช้ข้อมูลบริษัท</li>
+        </ul>
+      </div>
+      <div class="arrow">⇄</div>
+      <div class="env-card pc">
+        <h3>💻 PC ตัวเอง</h3>
+        <p class="sub">พัฒนาฝั่ง frontend — Next.js/React</p>
+        <ul>
+          <li>เขียน UI, component, logic ทั้งหมด</li>
+          <li><code>npm run dev</code> ทดสอบด้วย mock data ก่อน</li>
+          <li>สลับไปเรียก endpoint จริงจาก pub400 หรือบริษัทได้ (แค่เปลี่ยน <code>BASE_URL</code>)</li>
+          <li><code>npm run build</code> ได้ static files พร้อม deploy</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warn-flag">
+      ⚠️ pub400 อยู่บน internet สาธารณะ ส่วน endpoint บริษัท (<code>as400webappdev</code>) อยู่ใน network ภายในเท่านั้น — โค้ดฝั่ง frontend ที่ทดสอบกับ pub400 จะต้องแก้ <code>BASE_URL</code> เป็น URL เต็มของ pub400 (ไม่ใช่ relative path แบบที่ใช้ในบริษัท เพราะคนละ origin กัน จะติด CORS ด้วย ต้องเช็ก config CORS ฝั่ง pub400 ก่อน)
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE -->
+  <section>
+    <h2>เทียบ capability ของ IWS กับที่ที่ควรฝึก</h2>
+    <table>
+      <tr><th>สิ่งที่ต้องทำ</th><th>ทำที่ไหน</th><th>เหตุผล</th></tr>
+      <tr><td>สร้าง RPG program ใหม่ / SQL service ใหม่</td><td class="tag-pub">pub400</td><td>ต้อง deploy จริงถึงจะฝึกได้ ไม่มีใน company env ให้ลองเอง</td></tr>
+      <tr><td>ออกแบบ UI/UX, component, state management</td><td class="tag-pc">PC</td><td>ไม่เกี่ยวกับ backend เลย ทำที่ไหนก็ได้ที่มี Node.js</td></tr>
+      <tr><td>ฝึก deploy service ผ่าน IWS Studio</td><td class="tag-pub">pub400</td><td>ได้สิทธิ์เต็มที่ ไม่ต้องรอแอดมิน</td></tr>
+      <tr><td>ทดสอบ fetch/error handling/loading state</td><td class="tag-pc">PC</td><td>ใช้ mock data หรือต่อ pub400 ก็ได้ ไม่กระทบใคร</td></tr>
+      <tr><td>ฝึก pattern "config.js/api.js แยกไฟล์"</td><td class="tag-both">ทั้งคู่</td><td>เขียนที่ PC แต่ทดสอบ endpoint จริงจาก pub400</td></tr>
+      <tr><td>เชื่อมกับข้อมูลจริงของบริษัท</td><td class="tag-both">ทั้งคู่ → บริษัท</td><td>เอา pattern ที่ฝึกจาก pub400 มาต่อกับ endpoint จริงที่แอดมิน deploy ให้</td></tr>
+    </table>
+  </section>
+
+  <!-- ROADMAP -->
+  <section>
+    <h2>Roadmap รวม (เรียงตามลำดับ)</h2>
+
+    <div class="phase">
+      <div class="dot">1</div>
+      <div class="body">
+        <h4>สมัคร pub400 + ฝึกพื้นฐาน</h4>
+        <p>สมัครบัญชี pub400.com ฟรี ลองสร้างตารางง่ายๆ (เช่น mock employee table) ด้วย SQL</p>
+        <div class="env-tags"><span class="env-tag pub">pub400</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="dot">2</div>
+      <div class="body">
+        <h4>Deploy IWS service แรกด้วยตัวเอง</h4>
+        <p>ลอง deploy SQL statement เป็น REST endpoint ผ่าน IWS Studio บน pub400 — ฝึกขั้นตอนที่ปกติต้องขอแอดมินบริษัททำให้</p>
+        <div class="env-tags"><span class="env-tag pub">pub400</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="dot">3</div>
+      <div class="body">
+        <h4>สร้างโปรเจกต์ Next.js บน PC เชื่อม pub400</h4>
+        <p>ใช้ pattern เดียวกับที่ทำกับบริษัท (<code>config.ts</code>, <code>lib/api/</code>, hooks) แต่ชี้ <code>BASE_URL</code> ไปที่ pub400 แทน — ฝึกทั้ง flow ครบวงจรโดยไม่กระทบระบบจริง</p>
+        <div class="env-tags"><span class="env-tag pc">PC</span><span class="env-tag pub">pub400</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="dot">4</div>
+      <div class="body">
+        <h4>ลองฟีเจอร์ใหม่ที่ยังไม่เคยทำ</h4>
+        <p>เช่น POST/PUT/DELETE (แก้ข้อมูล ไม่ใช่แค่ดึงมาดู), auth แบบง่าย, endpoint ที่ return array หลาย record — ลองบน pub400 ก่อนเสมอ</p>
+        <div class="env-tags"><span class="env-tag pub">pub400</span></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="dot">5</div>
+      <div class="body">
+        <h4>ย้าย pattern ที่ฝึกแล้วมาใช้กับบริษัทจริง</h4>
+        <p>พอมั่นใจใน pattern แล้ว เอาโครงสร้างเดียวกันไปเสนอ/สร้าง spec ขอแอดมิน deploy endpoint จริงแบบเดียวกัน</p>
+        <div class="env-tags"><span class="env-tag pc">PC</span></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
