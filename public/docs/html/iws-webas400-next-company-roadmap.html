@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>iws_webAS400_next — Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+
+  .wrap{max-width:820px;margin:0 auto;padding:48px 24px 100px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;}
+  h1{font-size:26px;font-weight:800;margin:0 0 6px;}
+  .repo-link{font-size:12.5px;color:#4f46e5;font-family:'IBM Plex Mono',monospace;margin:0 0 24px;}
+  .intro{color:#64748b;font-size:14.5px;max-width:66ch;margin-bottom:32px;}
+  h2{font-size:17px;font-weight:700;margin:0 0 14px;}
+  section{margin-bottom:40px;}
+
+  .status-card{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:20px 22px;margin-bottom:12px;}
+  .status-card h3{font-size:14px;font-weight:700;color:#166534;margin:0 0 10px;}
+  .status-card ul{margin:0;padding-left:18px;font-size:13px;color:#166534;}
+  .status-card li{margin-bottom:5px;}
+
+  .todo-card{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:20px 22px;margin-bottom:12px;}
+  .todo-card h3{font-size:14px;font-weight:700;color:#92400e;margin:0 0 10px;}
+  .todo-card ul{margin:0;padding-left:18px;font-size:13px;color:#92400e;}
+  .todo-card li{margin-bottom:5px;}
+
+  .phase{border:1px solid #e2e8f0;border-radius:12px;margin-bottom:14px;overflow:hidden;}
+  .phase-head{
+    background:#f8fafc;padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;
+  }
+  .phase-num{
+    width:28px;height:28px;border-radius:8px;background:#4f46e5;color:#fff;display:flex;
+    align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;
+  }
+  .phase-title{font-size:15px;font-weight:700;}
+  .phase-sub{font-size:11.5px;color:#94a3b8;font-family:'IBM Plex Mono',monospace;}
+  .phase-body{padding:16px 20px;}
+  .phase-body ul{margin:0;padding-left:18px;font-size:13px;color:#475569;}
+  .phase-body li{margin-bottom:7px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th, td{padding:9px 11px;border:1px solid #e2e8f0;text-align:left;vertical-align:top;}
+  th{background:#eef2ff;color:#4338ca;font-weight:600;}
+  tr:nth-child(even) td{background:#f8fafc;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Company Project · webas400app/kidakorn</div>
+  <h1>iws_webAS400_next — Roadmap ต่อยอด</h1>
+  <p class="repo-link">github.com/kidakorn/iws_webAS400_next</p>
+  <p class="intro">สรุปสถานะปัจจุบันของโปรเจกต์จริงที่ทำร่วมกับบริษัท (IWS + Next.js) และแผนพัฒนาต่อจากนี้ เรียงตามลำดับที่ควรทำก่อน-หลัง</p>
+
+  <!-- STATUS -->
+  <section>
+    <h2>สถานะตอนนี้</h2>
+    <div class="status-card">
+      <h3>✅ ทำสำเร็จแล้ว</h3>
+      <ul>
+        <li>Setup <code>next.config.ts</code> เป็น Static Export ถูกต้อง (<code>output: 'export'</code>, <code>basePath: '/kidakorn'</code>, <code>trailingSlash: true</code>)</li>
+        <li>โครงสร้างโปรเจกต์ clean code: <code>app/</code>, <code>components/</code>, <code>hooks/</code>, <code>lib/</code>, <code>types/</code> แยกชัดเจน</li>
+        <li>ดึงข้อมูลจริงจาก IWS สำเร็จ — หน้า <code>minpop</code> (Operator Code Search) ใช้งานได้จริง</li>
+        <li>มี validation, error handling, SweetAlert2 popup แจ้งเตือนครบ</li>
+        <li>Deploy ไปโฟลเดอร์แชร์บริษัทสำเร็จ ผ่าน <code>as400webappdev/kidakorn</code></li>
+        <li>บังคับเช็ก <code>NEXT_PUBLIC_API_BASE_URL</code> ตอน build กันลืมตั้งค่า</li>
+        <li><b>หน้า <code>talinf</code> — โค้ดตรวจสอบแล้วครบ:</b> <code>client.ts</code> เป็นตัวกลางที่ถูกต้อง, <code>lib/api/minpop.ts</code> และ <code>lib/api/talinf.ts</code> ใช้ <code>apiRequest()</code> pattern เดียวกัน 1:1, <code>useTalinfSearch.ts</code> เขียนตาม pattern เดียวกับ minpop ครบ</li>
+      </ul>
+    </div>
+    <div class="todo-card">
+      <h3>🕐 รอทดสอบพรุ่งนี้ที่บริษัท (ไม่ใช่ของค้างในโค้ดแล้ว)</h3>
+      <ul>
+        <li>ทดสอบหน้า <code>talinf</code> กับ lot number จริงผ่าน URL production (<code>as400webappdev/kidakorn/talinf/</code>) — โค้ดพร้อมแล้ว รอแค่ยืนยันกับข้อมูลจริง</li>
+        <li>ถ้าผ่าน → ปิดจ็อบ talinf ได้อย่างเป็นทางการ ไม่ต้องกลับมาแก้โค้ดส่วนนี้อีก</li>
+      </ul>
+    </div>
+    <div class="todo-card">
+      <h3>🚧 ของค้างอื่นที่ยังเหลือจริง</h3>
+      <ul>
+        <li><code>console.log</code> debug ที่เคยใส่ไว้ชั่วคราวใน <code>useMinpopSearch.ts</code> — เช็คว่าลบออกแล้วหรือยัง</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- PHASE 1 -->
+  <section>
+    <h2>แผนพัฒนาต่อ</h2>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">1</div>
+        <div><div class="phase-title">ปิดจ็อบที่เหลือ (ทำก่อนสุด)</div><div class="phase-sub">เกือบจบแล้ว เหลือแค่ยืนยันของจริง</div></div>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li>ทดสอบ <code>talinf</code> กับ lot number จริงที่บริษัทพรุ่งนี้ — โค้ดพร้อมแล้ว 100% รอแค่ยืนยันผล</li>
+          <li>ลบ <code>console.log</code> debug ที่เหลือใน <code>useMinpopSearch.ts</code> ออกให้หมด</li>
+          <li>ทดสอบทั้ง 2 หน้า (<code>minpop</code>, <code>talinf</code>) พร้อมกันบน production URL จริงอีกรอบให้ชัวร์</li>
+          <li>พิจารณา refactor เล็กน้อย: ทั้ง 2 endpoint มี logic ซ้ำกันเยอะมาก (validate → fetch → handle state → mock) อาจดึงเป็น generic hook กลาง เช่น <code>useSearchResource()</code> ให้ endpoint ใหม่ในอนาคตเขียนโค้ดซ้ำน้อยลง</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">2</div>
+        <div><div class="phase-title">ปรับปรุงประสบการณ์ใช้งาน (UX)</div><div class="phase-sub">ฟีเจอร์เล็กๆ ที่เพิ่มคุณภาพงานได้เร็ว</div></div>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li>Loading skeleton แทนข้อความ "Loading..." ธรรมดา (มี shadcn/ui อยู่แล้ว ใช้ <code>Skeleton</code> component ได้เลย)</li>
+          <li>เก็บประวัติค้นหาล่าสุด (recent search) ไว้ใน localStorage ให้กดซ้ำได้เร็ว</li>
+          <li>QR code แบบ print-friendly สำหรับพิมพ์เป็นบัตร/ป้าย</li>
+          <li>Responsive check บนมือถือให้ครบ (ปุ่ม, ตาราง, popup)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">3</div>
+        <div><div class="phase-title">ขยาย endpoint ใหม่</div><div class="phase-sub">ต้องคุยกับแอดมิน/ทีม RPG</div></div>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li>รวมข้อมูล <code>minpop</code> + <code>talinf</code> เป็นหน้าเดียวถ้าใช้งานคู่กันบ่อย (tab หรือ combined view)</li>
+          <li>ขอ endpoint แบบ list/pagination ถ้าต้องการดูข้อมูลหลาย record พร้อมกัน</li>
+          <li>ใช้ pattern spec ที่เคยร่างไว้ก่อนหน้าตอนขอแอดมิน deploy service ใหม่</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">4</div>
+        <div><div class="phase-title">Production hardening</div><div class="phase-sub">ก่อนให้คนอื่นในบริษัทใช้งานจริงเป็นวงกว้าง</div></div>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li>แยก <code>.env.production</code> / <code>.env.local</code> ให้ชัดเจน ไม่ปนกัน</li>
+          <li>คุยกับแอดมินเรื่องจำกัด CORS header ให้เจาะจงโดเมนจริง (ไม่ใช้ <code>*</code>)</li>
+          <li>เพิ่ม error boundary/monitoring เบื้องต้น (เช่น log error ไปที่ไหนสักที่เวลาเกิด 500/network error)</li>
+          <li>เขียน README/เอกสารส่งมอบให้คนอื่นในทีมเข้าใจ pattern <code>config → api → hooks → page</code></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIORITY SUMMARY -->
+  <section>
+    <h2>สรุปลำดับความสำคัญ</h2>
+    <table>
+      <tr><th>ลำดับ</th><th>งาน</th><th>เหตุผลที่ต้องทำก่อน</th></tr>
+      <tr><td>1</td><td>ทดสอบ talinf ของจริง + เคลียร์ debug log</td><td>ของค้างสุดท้ายก่อนปิดจ็อบเดิมได้ทั้งหมด</td></tr>
+      <tr><td>2</td><td>UX เล็กๆ (loading, history, QR print)</td><td>ทำเร็ว เห็นผลชัด ไม่ต้องพึ่งแอดมิน</td></tr>
+      <tr><td>3</td><td>ขอ endpoint ใหม่</td><td>ต้องรอแอดมิน วางแผนล่วงหน้าไว้ก่อนได้</td></tr>
+      <tr><td>4</td><td>Production hardening</td><td>ทำตอนใกล้จะปล่อยให้คนอื่นใช้งานจริง</td></tr>
+    </table>
+  </section>
+
+</div>
+</body>
+</html>
