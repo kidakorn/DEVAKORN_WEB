@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P02 Walkthrough — Leave Management System</title>
+<style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --bg:      #f9f8f6;
+  --white:   #ffffff;
+  --ink:     #1a1714;
+  --ink2:    #3d3a36;
+  --muted:   #6b6560;
+  --faint:   #a8a39c;
+  --line:    #e8e4de;
+  --line2:   #d4cfc8;
+
+  --green:   #1a5c2a;
+  --green-l: #e8f5ec;
+  --green-b: #a3d4ae;
+  --blue:    #1a3a6b;
+  --blue-l:  #e8eef8;
+  --blue-b:  #9ab0d4;
+  --amber:   #8a5a00;
+  --amber-l: #fdf3dc;
+  --amber-b: #d4a840;
+  --red:     #7a2020;
+  --red-l:   #fce8e8;
+  --red-b:   #d49090;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── LAYOUT ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--ink);
+  color: #e8e4dc;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.sb-top {
+  padding: 24px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sb-proj {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--amber-b);
+  margin-bottom: 6px;
+}
+.sb-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.sb-nav { padding: 12px 0 24px; flex: 1; }
+.sb-phase-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  padding: 10px 20px 5px;
+}
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 20px;
+  font-size: 12.5px;
+  color: rgba(255,255,255,.55);
+  text-decoration: none;
+  transition: color .15s, background .15s;
+  border-left: 2px solid transparent;
+}
+.sb-link:hover { color: #fff; background: rgba(255,255,255,.05); }
+.sb-link .sn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,.2);
+  flex-shrink: 0;
+  width: 20px;
+}
+.sb-link.done { color: var(--green-b); }
+.sb-link.done .sn { color: var(--green-b); }
+
+/* ── MAIN ── */
+.main { flex: 1; min-width: 0; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--ink);
+  color: #e8e4dc;
+  padding: 52px 52px 44px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: 'P01';
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 120px;
+  color: rgba(255,255,255,.04);
+  line-height: 1;
+  pointer-events: none;
+}
+.hero-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--amber-b);
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  margin-bottom: 14px;
+}
+.hero-sub {
+  font-size: 14px;
+  color: rgba(232,228,220,.6);
+  max-width: 480px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.hero-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.hchip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.5);
+  border-radius: 3px;
+}
+
+/* ── CONTENT ── */
+.content { padding: 0 52px 80px; max-width: 860px; }
+
+/* ── PHASE HEADER ── */
+.phase-head {
+  padding: 44px 0 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 28px;
+}
+.phase-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--faint);
+  letter-spacing: .06em;
+}
+.phase-head h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -.01em;
+}
+.phase-goal {
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--white);
+  border: 1px solid var(--line);
+  padding: 10px 14px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.phase-goal::before { content: '🎯'; flex-shrink: 0; }
+
+/* ── STEP ── */
+.step {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 28px;
+  align-items: flex-start;
+}
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  width: 28px;
+  height: 28px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-body { flex: 1; }
+.step-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+.step-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+/* ── TERMINAL BLOCK ── */
+.terminal {
+  background: #1a1714;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+.term-head {
+  background: #2a2724;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.term-dots { display: flex; gap: 5px; }
+.term-dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,.12);
+}
+.term-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.term-body {
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.8;
+}
+.term-body .prompt { color: #69db7c; }
+.term-body .cmd { color: #e8e4dc; }
+.term-body .comment { color: rgba(255,255,255,.25); }
+.term-body .out { color: rgba(255,255,255,.4); font-size: 11.5px; }
+
+/* ── CLAUDE PROMPT BOX ── */
+.claude-box {
+  border: 1.5px solid var(--line2);
+  margin: 10px 0;
+  overflow: hidden;
+}
+.claude-head {
+  background: var(--amber-l);
+  border-bottom: 1.5px solid var(--amber-b);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--amber);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.claude-body {
+  background: var(--white);
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--ink2);
+  white-space: pre-wrap;
+}
+.claude-note {
+  background: var(--amber-l);
+  border-top: 1px solid var(--amber-b);
+  padding: 8px 14px;
+  font-size: 11.5px;
+  color: var(--amber);
+  line-height: 1.5;
+}
+
+/* ── CALLOUT ── */
+.callout {
+  padding: 12px 16px;
+  margin: 10px 0;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.6;
+  border-radius: 2px;
+}
+.callout.green { background: var(--green-l); border-left: 3px solid var(--green); color: var(--green); }
+.callout.blue  { background: var(--blue-l);  border-left: 3px solid var(--blue);  color: var(--blue);  }
+.callout.amber { background: var(--amber-l); border-left: 3px solid var(--amber); color: var(--amber); }
+.callout.red   { background: var(--red-l);   border-left: 3px solid var(--red);   color: var(--red);   }
+.callout-icon { flex-shrink: 0; font-size: 15px; margin-top: 1px; }
+
+/* ── FILE CARD ── */
+.file-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  padding: 14px 16px;
+  margin: 8px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--ink2);
+}
+.file-card .file-name {
+  font-size: 11px;
+  color: var(--blue);
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.file-card .file-name::before { content: '📄'; }
+
+/* ── COLLAPSIBLE FILE VIEWER ── */
+.file-viewer {
+  border: 1.5px solid var(--line2);
+  margin: 10px 0;
+  overflow: hidden;
+}
+.file-viewer summary {
+  background: var(--blue-l);
+  border-bottom: 1.5px solid var(--blue-b);
+  padding: 10px 14px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--blue);
+}
+.file-viewer summary::-webkit-details-marker { display: none; }
+.file-viewer summary::before { content: '▸'; transition: transform .15s; flex-shrink: 0; }
+.file-viewer[open] summary::before { transform: rotate(90deg); }
+.file-viewer summary .fv-meta {
+  margin-left: auto;
+  font-weight: 400;
+  color: rgba(26,58,107,.55);
+  font-size: 10px;
+}
+.file-viewer-body {
+  background: var(--white);
+  padding: 16px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--ink2);
+  max-height: 480px;
+  overflow-y: auto;
+}
+.file-viewer-body h1, .file-viewer-body h2 { color: var(--ink); font-family: 'Syne', sans-serif; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; padding: 0; margin: 10px 0; }
+.checklist li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist li .box {
+  width: 15px; height: 15px;
+  border: 1.5px solid var(--line2);
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── DIVIDER ── */
+.div { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+
+/* ── WHAT YOU'LL SEE ── */
+.preview {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  padding: 16px 18px;
+  margin: 10px 0;
+}
+.preview-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--faint);
+  margin-bottom: 10px;
+}
+.preview-item {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 4px 0;
+  display: flex;
+  gap: 8px;
+}
+.preview-item::before { content: '→'; color: var(--green); flex-shrink: 0; }
+
+/* ── SCHEMA ── */
+.schema {
+  background: #1a1714;
+  color: #e8e4dc;
+  padding: 16px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 10px 0;
+}
+.schema .kw { color: #74c0fc; }
+.schema .type { color: #69db7c; }
+.schema .comment { color: rgba(255,255,255,.3); }
+
+/* ── PHASE DONE BANNER ── */
+.phase-done {
+  background: var(--green);
+  color: #fff;
+  padding: 16px 20px;
+  margin: 28px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+.phase-done::before { content: '✓'; font-size: 18px; }
+
+footer {
+  padding: 24px 52px;
+  border-top: 2px solid var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--faint);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media(max-width:760px) {
+  .sidebar { display: none; }
+  .content, .hero { padding-left: 24px; padding-right: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-top">
+    <div class="sb-proj">P02 Walkthrough</div>
+    <div class="sb-title">Leave Management System</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-phase-label">Before you start</div>
+    <a class="sb-link" href="#setup"><span class="sn">00</span>Setup (reuse P01 tools)</a>
+
+    <div class="sb-phase-label">Phase 1</div>
+    <a class="sb-link" href="#p1-1"><span class="sn">1.1</span>Create Project</a>
+    <a class="sb-link" href="#p1-2"><span class="sn">1.2</span>Copy .ai/ Template</a>
+    <a class="sb-link" href="#p1-2a"><span class="sn">1.2a</span>.ai/ File Contents</a>
+    <a class="sb-link" href="#p1-2c"><span class="sn">1.2b</span>AGENTS.md + CLAUDE.md</a>
+    <a class="sb-link" href="#p1-2d"><span class="sn">1.2c</span>i18n Setup (EN/TH)</a>
+    <a class="sb-link" href="#p1-3"><span class="sn">1.3</span>DB + Roles + Auth</a>
+    <a class="sb-link" href="#p1-4"><span class="sn">1.4</span>First Commit</a>
+
+    <div class="sb-phase-label">Phase 2</div>
+    <a class="sb-link" href="#p2-1"><span class="sn">2.1</span>Leave Types</a>
+    <a class="sb-link" href="#p2-2"><span class="sn">2.2</span>Leave Quota</a>
+
+    <div class="sb-phase-label">Phase 3 — Core</div>
+    <a class="sb-link" href="#p3-1"><span class="sn">3.1</span>Leave Request Form</a>
+    <a class="sb-link" href="#p3-2"><span class="sn">3.2</span>Approval Workflow</a>
+    <a class="sb-link" href="#p3-3"><span class="sn">3.3</span>State Machine Logic</a>
+
+    <div class="sb-phase-label">Phase 4</div>
+    <a class="sb-link" href="#p4-1"><span class="sn">4.1</span>Team Calendar</a>
+    <a class="sb-link" href="#p4-2"><span class="sn">4.2</span>Email Notifications</a>
+    <a class="sb-link" href="#p4-3"><span class="sn">4.3</span>HR Overview</a>
+
+    <div class="sb-phase-label">Phase 5</div>
+    <a class="sb-link" href="#p5-1"><span class="sn">5.1</span>Polish UI</a>
+    <a class="sb-link" href="#p5-2"><span class="sn">5.2</span>RBAC Security Review</a>
+
+    <div class="sb-phase-label">Phase 6</div>
+    <a class="sb-link" href="#p6-1"><span class="sn">6.1</span>Dockerfile</a>
+    <a class="sb-link" href="#p6-2"><span class="sn">6.2</span>docker-compose.yml</a>
+    <a class="sb-link" href="#p6-3"><span class="sn">6.3</span>Test Multi-Role Flow ✓</a>
+
+    <div class="sb-phase-label">Phase 7 — Enterprise</div>
+    <a class="sb-link" href="#p7-1"><span class="sn">7.1</span>Rate Limit + 2FA</a>
+    <a class="sb-link" href="#p7-2"><span class="sn">7.2</span>Audit Log</a>
+    <a class="sb-link" href="#p7-3"><span class="sn">7.3</span>Error Monitoring</a>
+    <a class="sb-link" href="#p7-4"><span class="sn">7.4</span>DB Backup</a>
+    <a class="sb-link" href="#p7-5"><span class="sn">7.5</span>Pagination + Search</a>
+    <a class="sb-link" href="#p7-6"><span class="sn">7.6</span>PDPA Compliance+</a>
+    <a class="sb-link" href="#p7-7"><span class="sn">7.7</span>Admin Panel</a>
+    <a class="sb-link" href="#p7-8"><span class="sn">7.8</span>Billing / SaaS</a>
+    <a class="sb-link" href="#p7-9"><span class="sn">7.9</span>Onboarding + Support</a>
+    <a class="sb-link" href="#p7-10"><span class="sn">7.10</span>Enterprise Done ✓</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">// Complete Walkthrough — Zero to Deployed</div>
+  <h1>P02 Leave Management<br>System</h1>
+  <p class="hero-sub">Second project using the P01 template — built and run entirely locally. HR module with multi-role approval workflow — Employee, Manager, HR. EN/TH from day one, containerized with Docker, enterprise-grade by Phase 7.</p>
+  <div class="hero-chips">
+    <span class="hchip">Next.js 16</span>
+    <span class="hchip">Turbopack</span>
+    <span class="hchip">PostgreSQL</span>
+    <span class="hchip">Prisma 7</span>
+    <span class="hchip">NextAuth</span>
+    <span class="hchip">Resend</span>
+    <span class="hchip">Docker</span>
+    <span class="hchip">Sentry</span>
+  </div>
+</div>
+
+<div class="content">
+<!-- ═══════════ PHASE 0: SETUP ═══════════ -->
+<div class="phase-head" id="setup">
+  <span class="phase-num">00</span>
+  <h2>Before You Start</h2>
+</div>
+<div class="phase-goal">If you already have Node.js, Git, and Claude Code set up from P01, skip straight to Phase 1 — you only need a new project folder and a new GitHub repo.</div>
+
+<div class="callout green">
+  <span class="callout-icon">✓</span>
+  <span><strong>Already installed from P01:</strong> Node.js, Git, VS Code, Claude Code login, Codeium. These are one-time installs — no need to repeat them.</span>
+</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Create a New GitHub Repository</div>
+    <div class="step-desc">Go to github.com → "New" → Name it <strong>leave-management-system</strong> → Public → No README → Create → copy the repo URL.</div>
+  </div>
+</div>
+
+<!-- ═══════════ PHASE 1 ═══════════ -->
+<div class="phase-head" id="p1-1">
+  <span class="phase-num">PHASE 1</span>
+  <h2>Project Setup + Auth</h2>
+</div>
+<div class="phase-goal">By the end of Phase 1 — app runs locally, three roles exist (Employee, Manager, HR), users can register and login in EN/TH, code is on GitHub.</div>
+
+<div class="callout blue">
+  <span class="callout-icon">ℹ️</span>
+  <span><strong>What's different from P01:</strong> This app has roles baked in from day one — a Leave Management System is useless without Employee vs Manager vs HR distinction. We add the <code>role</code> field to the User model immediately instead of adding it later in Phase 7 like P01 did.</span>
+</div>
+
+<!-- STEP 1.1 -->
+<div class="step" id="p1-1">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Create the Next.js Project</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npx create-next-app@latest leave-management-system</span><br>
+        <span class="out"><br>
+What is your project named? → leave-management-system<br>
+Would you like to use the recommended Next.js defaults?<br>
+  → <strong style="color:#69db7c;">Yes, use recommended defaults</strong><br><br></span>
+        <span class="prompt">$ </span><span class="cmd">cd leave-management-system</span><br>
+        <span class="prompt">$ </span><span class="cmd">code .</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1.2 -->
+<div class="step" id="p1-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Copy .ai/ folder from P01, then update it</div>
+    <div class="step-desc">Don't start from scratch — copy the whole <strong>.ai/</strong> folder from your P01 project into this new one. You'll edit the contents in the next step.</div>
+    <div class="file-card">
+      <div class="file-name">Project Structure</div>
+      leave-management-system/<br>
+      ├── <strong>.ai/</strong> <span style="color:#a8a39c;">← copied from P01, will edit next</span><br>
+      │   ├── CONTEXT.md<br>
+      │   ├── PLAN.md<br>
+      │   └── SKILLS.md<br>
+      ├── AGENTS.md <span style="color:#a8a39c;">← auto-generated by Next.js</span><br>
+      ├── CLAUDE.md<br>
+      ├── src/<br>
+      └── package.json
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1.2a: Full .ai/ file contents -->
+<div class="step" id="p1-2a">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Update the .ai/ files for this project</div>
+    <div class="step-desc">Replace the content of each file with the version below — written specifically for Leave Management System.</div>
+
+    <details class="file-viewer">
+      <summary>.ai/SKILLS.md <span class="fv-meta">click to expand</span></summary>
+      <div class="file-viewer-body"># Developer Skills Profile<br>
+<br>
+## Who I Am<br>
+- Solo developer, now on my second full project after P01<br>
+- Goal: Build SaaS products + AI Agent systems for businesses<br>
+- Daily time available: flexible, no fixed schedule<br>
+<br>
+---<br>
+<br>
+## What I Learned From P01<br>
+- Full-stack CRUD, auth, i18n setup, deployment — all done once already<br>
+- Comfortable with Next.js App Router, Prisma, NextAuth basics<br>
+- Comfortable reading and applying Claude Code&#x27;s suggested diffs<br>
+<br>
+## What&#x27;s New in This Project<br>
+- Role-based access control (RBAC) with 4 roles instead of 1<br>
+- Approval workflow / state machine (Pending → Approved/Rejected)<br>
+- Self-relational database schema (User manages User)<br>
+- Handling more sensitive personal data (HR context) — extra care on PDPA<br>
+<br>
+---<br>
+<br>
+## My Stack for This Project<br>
+- **Frontend**: Next.js (App Router, current stable version)<br>
+- **Styling**: Tailwind CSS + shadcn/ui — enterprise-clean style<br>
+- **i18n**: next-intl (English + formal Thai — this is workplace software)<br>
+- **Backend**: Next.js API Routes<br>
+- **Auth**: NextAuth.js + role-based middleware<br>
+- **Database**: PostgreSQL + Prisma ORM<br>
+- **Email**: Resend (approval notifications)<br>
+- **Deploy**: Docker (containerized, runs locally — no cloud account needed)<br>
+- **Monitoring**: Sentry (Phase 7)<br>
+- **AI Tool**: Claude Code (planning) + Gemini 3.1 Pro via Antigravity (implementation)<br>
+<br>
+---<br>
+<br>
+## How to Help Me<br>
+- Explain concepts simply before showing code<br>
+- Break tasks into small steps (1 step at a time)<br>
+- Flag anything related to the manager-employee self-relation — this is new to me<br>
+- Remind me to commit to GitHub after each feature<br>
+- Follow all rules in AGENTS.md and CLAUDE.md automatically<br>
+</div>
+    </details>
+
+    <details class="file-viewer">
+      <summary>.ai/PLAN.md <span class="fv-meta">click to expand — 7 phases</span></summary>
+      <div class="file-viewer-body"># Project Plan — P02 Leave Management System<br>
+<br>
+## Overview<br>
+An HR leave management app for small-to-medium teams. Employees submit<br>
+leave requests, managers approve or reject them, HR sees the full picture<br>
+and manages leave types and quotas. Supports English and Thai (formal register).<br>
+Built to be genuinely enterprise-ready by the end, like P01.<br>
+<br>
+## Timeline: Flexible, no fixed deadline<br>
+<br>
+---<br>
+<br>
+## Phase 1 — Project Setup + Roles + Auth<br>
+**Goal**: App runs locally, 4 roles exist, users can register/login in EN/TH<br>
+<br>
+- [ ] Create Next.js project<br>
+- [ ] Copy .ai/ folder from P01, update content for this project<br>
+- [ ] Fill in AGENTS.md and CLAUDE.md (copy from P01, update Project Snapshot)<br>
+- [ ] Setup i18n (next-intl) — formal Thai register for HR context<br>
+- [ ] Setup PostgreSQL + Prisma<br>
+- [ ] Create User model with role enum (EMPLOYEE/MANAGER/HR/ADMIN) + manager self-relation<br>
+- [ ] Create LeaveType model<br>
+- [ ] Add NextAuth.js<br>
+- [ ] Build Login and Register pages (register as EMPLOYEE by default)<br>
+- [ ] Push first commit to GitHub<br>
+<br>
+**Done when**: You can register, and your role defaults to EMPLOYEE<br>
+<br>
+---<br>
+<br>
+## Phase 2 — Leave Types &amp; Quota<br>
+**Goal**: HR can define leave types; employees can see their quota<br>
+<br>
+- [ ] LeaveQuota model (userId, leaveTypeId, year, allocatedDays, usedDays)<br>
+- [ ] HR-only page: manage leave types (create/edit sick leave, vacation, etc.)<br>
+- [ ] HR-only page: assign/adjust quota per employee<br>
+- [ ] Employee page: view my leave balance (per type, remaining days)<br>
+- [ ] API routes for leave types and quota (role-protected)<br>
+<br>
+**Done when**: HR can create a leave type, assign quota, employee sees correct balance<br>
+<br>
+---<br>
+<br>
+## Phase 3 — Leave Request + Approval Workflow<br>
+**Goal**: Employees submit requests; managers approve/reject; quota updates automatically<br>
+<br>
+- [ ] LeaveRequest model: status (DRAFT/PENDING/APPROVED/REJECTED),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;startDate, endDate, reason, leaveTypeId, userId, approvedBy<br>
+- [ ] Employee page: submit leave request form (date range, type, reason)<br>
+- [ ] Date validation: no overlapping requests, can&#x27;t exceed remaining quota<br>
+- [ ] Manager page: see pending requests from direct reports, approve/reject with comment<br>
+- [ ] State machine: DRAFT → PENDING → APPROVED (deduct quota) or REJECTED (no deduction)<br>
+- [ ] Employee page: see status of my own requests<br>
+<br>
+**Done when**: Full request-to-approval cycle works and quota deducts correctly<br>
+<br>
+---<br>
+<br>
+## Phase 4 — Team Calendar + Notifications + HR Overview<br>
+**Goal**: Visibility across the team, automatic email notifications<br>
+<br>
+- [ ] Team calendar view — see who&#x27;s on approved leave, by date<br>
+- [ ] Email via Resend: notify manager when request submitted<br>
+- [ ] Email via Resend: notify employee when approved/rejected<br>
+- [ ] HR dashboard: company-wide leave overview, filterable by department/date<br>
+<br>
+**Done when**: A submitted request triggers an email, and the calendar shows it once approved<br>
+<br>
+---<br>
+<br>
+## Phase 5 — Polish &amp; Security Review<br>
+**Goal**: App feels complete, RBAC is verified airtight<br>
+<br>
+- [ ] Leave balance widget on employee dashboard<br>
+- [ ] Export leave report (PDF or Excel) for HR<br>
+- [ ] Mobile responsive design<br>
+- [ ] Loading states and error messages<br>
+- [ ] RBAC security review — verify employees can&#x27;t see others&#x27; requests,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;managers can only approve their own reports, HR sees everything<br>
+<br>
+**Done when**: A security review confirms no data leaks across roles<br>
+<br>
+---<br>
+<br>
+## Phase 6 — Containerize with Docker<br>
+**Goal**: App runs as a production-like Docker container, locally, with multi-role flow working<br>
+<br>
+- [ ] Write Dockerfile + docker-compose.yml (app + PostgreSQL)<br>
+- [ ] Run `docker compose up --build` successfully<br>
+- [ ] Set environment variables (including RESEND_API_KEY) via .env.docker<br>
+- [ ] Run prisma migrate deploy against the containerized DB<br>
+- [ ] Create test accounts and promote to MANAGER/HR roles<br>
+- [ ] Test full flow with 3 test accounts (employee, manager, HR)<br>
+<br>
+**Done when**: A full request-to-approval cycle works inside the container — deploy-ready, not yet enterprise-ready<br>
+<br>
+---<br>
+<br>
+## Phase 7 — Enterprise Hardening<br>
+**Goal**: App meets what a real HR department expects before trusting it with employee data<br>
+<br>
+- [ ] Rate limiting + optional 2FA<br>
+- [ ] Audit log (who approved/rejected what, when — HR compliance requirement)<br>
+- [ ] Error monitoring (Sentry)<br>
+- [ ] Database backups + uptime monitoring<br>
+- [ ] Pagination, search, and database indexing<br>
+- [ ] PDPA compliance — extra important here (real employee personal + health data)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consent, data export, deletion, and role-scoped visibility all verified<br>
+- [ ] Admin panel — role management (promote/demote users), company settings<br>
+- [ ] Billing / subscription (if selling to multiple companies) — likely per-employee pricing<br>
+- [ ] Onboarding flow + support channel<br>
+- [ ] Final enterprise readiness review<br>
+<br>
+**Done when**: You&#x27;d feel comfortable selling this to an HR department.<br>
+<br>
+---<br>
+<br>
+## Must Have (MVP — Phases 1-6)<br>
+- Multi-role auth (Employee/Manager/HR) in EN/TH<br>
+- Leave types and quota management<br>
+- Leave request submission and approval workflow<br>
+- Team calendar and email notifications<br>
+- HR overview dashboard<br>
+<br>
+## Enterprise Must Have (Phase 7)<br>
+- Audit log (compliance requirement for HR software)<br>
+- PDPA — higher priority than P01 due to sensitive HR data<br>
+- Admin role management<br>
+- Billing (if monetizing)<br>
+<br>
+## Not in v1 (Save for Later)<br>
+- Payroll integration<br>
+- Public holiday calendar auto-sync<br>
+- Half-day leave granularity<br>
+- Leave carry-over / expiry rules across years<br>
+- Mobile native app<br>
+<br>
+---<br>
+<br>
+## Database Schema (Simple Version)<br>
+<br>
+```<br>
+User<br>
+- id, name, email, password, role (EMPLOYEE/MANAGER/HR/ADMIN)<br>
+- managerId (→ User, self-relation), createdAt<br>
+<br>
+LeaveType<br>
+- id, name, defaultDaysPerYear, createdAt<br>
+<br>
+LeaveQuota<br>
+- id, userId (→ User), leaveTypeId (→ LeaveType)<br>
+- year, allocatedDays, usedDays<br>
+<br>
+LeaveRequest<br>
+- id, userId (→ User), leaveTypeId (→ LeaveType)<br>
+- status (DRAFT/PENDING/APPROVED/REJECTED)<br>
+- startDate, endDate, reason, approvedBy (→ User), createdAt<br>
+<br>
+AuditLog (Phase 7)<br>
+- id, userId, action, entityType, entityId, metadata (JSON), createdAt<br>
+```<br>
+<br>
+## i18n Structure (same as P01)<br>
+<br>
+```<br>
+messages/<br>
+├── en.json<br>
+└── th.json    ← formal register, this is workplace software<br>
+<br>
+app/[locale]/...<br>
+```<br>
+</div>
+    </details>
+
+    <details class="file-viewer">
+      <summary>.ai/CONTEXT.md <span class="fv-meta">click to expand</span></summary>
+      <div class="file-viewer-body"># Project Context — Rules &amp; Conventions<br>
+<br>
+## How to Use This File<br>
+Paste this file into Claude Code at the start of every session,<br>
+alongside AGENTS.md and CLAUDE.md.<br>
+<br>
+---<br>
+<br>
+## Project Info<br>
+- **Name**: Leave Management System (P02)<br>
+- **Type**: Full-stack HR web app, EN/TH, enterprise-ready by Phase 7<br>
+- **Status**: Phase [X] of 7 — currently working on: [describe what you&#x27;re doing]<br>
+<br>
+---<br>
+<br>
+## Tech Stack<br>
+| Layer      | Technology                          |<br>
+|------------|--------------------------------------|<br>
+| Frontend   | Next.js (App Router, current stable) |<br>
+| Styling    | Tailwind CSS + shadcn/ui (enterprise clean) |<br>
+| i18n       | next-intl (en / th, formal register)|<br>
+| Auth       | NextAuth.js + role-based middleware |<br>
+| Backend    | Next.js API Routes                  |<br>
+| Database   | PostgreSQL                          |<br>
+| ORM        | Prisma (current version)            |<br>
+| Email      | Resend                              |<br>
+| Monitoring | Sentry (Phase 7)                    |<br>
+| Billing    | Stripe or Omise (Phase 7, if selling)|<br>
+| Deploy     | Docker (local container)            |<br>
+<br>
+---<br>
+<br>
+## Roles &amp; Permissions<br>
+| Role     | Can do |<br>
+|----------|--------|<br>
+| EMPLOYEE | Submit own leave requests, view own balance/history |<br>
+| MANAGER  | Everything EMPLOYEE can + approve/reject direct reports&#x27; requests |<br>
+| HR       | Everything MANAGER can + manage leave types/quota + company-wide view |<br>
+| ADMIN    | Everything HR can + manage user roles + system settings |<br>
+<br>
+**Rule: role checks happen server-side in every API route, never trust client-side role display alone.**<br>
+<br>
+---<br>
+<br>
+## Folder Structure<br>
+```<br>
+src/<br>
+├── app/<br>
+│   └── [locale]/<br>
+│       ├── (auth)/            ← login, register<br>
+│       ├── (dashboard)/<br>
+│       │   ├── requests/       ← employee: submit/view own requests<br>
+│       │   ├── approvals/      ← manager: approve/reject direct reports<br>
+│       │   ├── calendar/       ← team calendar<br>
+│       │   └── hr/             ← HR-only: leave types, quota, overview<br>
+│       └── admin/              ← admin-only: role management (Phase 7)<br>
+├── app/api/<br>
+├── components/<br>
+├── messages/<br>
+│   ├── en.json<br>
+│   └── th.json<br>
+├── lib/<br>
+│   ├── prisma.ts<br>
+│   ├── auth.ts<br>
+│   ├── rbac.ts                 ← role-check helper functions<br>
+│   └── email.ts<br>
+└── middleware.ts<br>
+```<br>
+<br>
+---<br>
+<br>
+## Coding Rules<br>
+- Use **TypeScript** for all files<br>
+- Use **async/await**<br>
+- Always validate input server-side before saving to database<br>
+- Never trust data from the frontend — verify role AND ownership on every request<br>
+- Use Prisma for ALL database queries<br>
+- Commit to GitHub after every completed feature<br>
+- Never hardcode user-facing text — use next-intl translation keys<br>
+- Comment every new or changed piece of code<br>
+- **Every API route that touches LeaveRequest, LeaveQuota, or User must check<br>
+&nbsp;&nbsp;role + ownership before returning data — this is HR data, treat it as sensitive by default**<br>
+<br>
+---<br>
+<br>
+## Naming Conventions<br>
+- Files: `kebab-case.ts`<br>
+- Components: `PascalCase`<br>
+- Functions: `camelCase`<br>
+- Database tables: `PascalCase`<br>
+- API routes: `/api/leave-requests`, `/api/leave-types`, `/api/quota`<br>
+- Translation keys: `namespace.key` (e.g. `leaveRequest.submitButton`)<br>
+<br>
+---<br>
+<br>
+## Environment Variables Needed<br>
+```<br>
+DATABASE_URL=postgresql://...<br>
+NEXTAUTH_SECRET=random-secret-string<br>
+NEXTAUTH_URL=http://localhost:3000<br>
+RESEND_API_KEY=re_...<br>
+SENTRY_DSN=...              # Phase 7<br>
+STRIPE_SECRET_KEY=...       # Phase 7, if selling<br>
+```<br>
+<br>
+---<br>
+<br>
+## How to Ask Claude Code / Gemini for Help<br>
+<br>
+**When starting a session:**<br>
+&gt; &quot;Read AGENTS.md, CLAUDE.md, and all files in .ai/ folder. I&#x27;m on Phase [X], working on [task]. Help me [what you need].&quot;<br>
+<br>
+**These are always active automatically (from AGENTS.md):**<br>
+- Enterprise-clean UI style<br>
+- Both EN and TH translations on every page<br>
+- Code comments on every change<br>
+- Plan shown first if the task touches 3+ files<br>
+- Verify current versions before giving install commands<br>
+<br>
+**Extra rule specific to this project:**<br>
+- Any time you build a page or API route that shows leave data, explicitly<br>
+&nbsp;&nbsp;confirm which role(s) can see it and how ownership is checked<br>
+<br>
+---<br>
+<br>
+## Current Progress<br>
+- [ ] Phase 1: Setup + Roles + i18n + Auth<br>
+- [ ] Phase 2: Leave Types &amp; Quota<br>
+- [ ] Phase 3: Leave Request + Approval Workflow<br>
+- [ ] Phase 4: Team Calendar + Notifications + HR Overview<br>
+- [ ] Phase 5: Polish + RBAC Security Review<br>
+- [ ] Phase 6: Containerize (Docker)<br>
+- [ ] Phase 7: Enterprise Hardening<br>
+<br>
+&gt; Update this checklist as you complete each phase.<br>
+</div>
+    </details>
+
+    <div class="callout amber"><span class="callout-icon">📌</span><span><strong>Notice how little changed.</strong> The Working Rules, Style Direction, i18n rules, Code Comments, and Plan-Before-Big-Changes sections are identical to P01 — only the domain-specific content (models, features, phase details) is different. This is what makes P03 even faster than P02.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.2c: AGENTS.md + CLAUDE.md -->
+<div class="step" id="p1-2c">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Fill in AGENTS.md and CLAUDE.md</div>
+    <div class="step-desc">Same as P01 — Next.js already created these files with just the Next.js-managed block. Add your project rules below it. Only the "Project Snapshot" in CLAUDE.md changes.</div>
+
+    <div class="file-card">
+      <div class="file-name">AGENTS.md — add below the existing Next.js block (identical to P01)</div>
+# Project-Specific Instructions
+
+> Everything below this line is yours. Next.js will never overwrite it.
+
+## My Project Context
+
+This project also has a `.ai/` folder with more detailed context.
+Always read these files at the start of a session, in this order:
+
+1. `.ai/SKILLS.md` — what I know and don't know
+2. `.ai/PLAN.md` — the current phase and roadmap
+3. `.ai/CONTEXT.md` — tech stack, conventions, and rules
+
+## Style Direction
+
+- Clean, enterprise-style UI — neutral colors, generous whitespace, clear hierarchy
+- Use shadcn/ui components (Card, Table, Badge) instead of custom-styled divs
+- No heavy shadows, no flashy gradients, no unnecessary animation
+
+## Internationalization
+
+- This app supports English (en) and Thai (th) via next-intl
+- Never hardcode user-facing text — always add it to /messages/en.json and /messages/th.json
+- If I ask you to build a new page or component, add both translations automatically
+
+## Working Rules
+
+- Always check `node_modules/next/dist/docs/` before suggesting Next.js patterns
+- Always verify current versions of Prisma, shadcn, etc. before giving install commands
+- Give terminal commands one at a time, not as a giant block
+- Explain *why*, briefly, not just *what* — I'm still learning
+
+## Plan Before Big Changes
+
+- If a task touches 3 or more files, show me a short implementation plan
+  first — what files, what changes — before writing any code
+- Wait for me to confirm before proceeding
+- Small single-file fixes don't need a plan, just do them
+- This applies no matter which model you are (Claude, Gemini, GPT-OSS, etc.)
+
+## Code Comments
+
+- Every time you add or change code, add a short comment explaining what it does and why
+- Comment above functions, non-obvious logic, and any workaround or edge-case handling
+    </div>
+
+    <div class="file-card">
+      <div class="file-name">CLAUDE.md — replace contents with this</div>
+# Claude Code Instructions
+
+@AGENTS.md
+
+## Session Start Checklist
+
+1. Read AGENTS.md (imported above)
+2. Read .ai/SKILLS.md, .ai/PLAN.md, .ai/CONTEXT.md
+3. Check .ai/PLAN.md for which Phase I'm currently on
+4. Ask what I want to work on today if I haven't said yet
+
+## How I Want to Work With You
+
+- One step at a time — build incrementally
+- Show me commands before running them
+- Paste-ready full file contents, not partial snippets
+- Flag risky changes — anything touching auth, payments, or deleting data
+- Comment every new or changed piece of code
+
+## Project Snapshot
+
+- Name: Leave Management System (P02)
+- Stack: Next.js (App Router) + PostgreSQL + Prisma ORM + NextAuth.js + Tailwind + shadcn/ui + next-intl (EN/TH) + Resend
+- Roles: EMPLOYEE, MANAGER, HR, ADMIN
+- Deploy target: Docker (containerized, local — no cloud account needed)
+- Current phase: _(update this each time you move to a new phase)_
+    </div>
+
+    <div class="callout green"><span class="callout-icon">✓</span><span>Everything except "Project Snapshot" is a straight copy-paste from P01. This is the payoff of building the template correctly the first time.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.2d: i18n Setup -->
+<div class="step" id="p1-2d">
+  <div class="step-num">5</div>
+  <div class="step-body">
+    <div class="step-title">Setup Internationalization (EN / TH)</div>
+    <div class="step-desc">Same setup as P01 — do this before building any pages.</div>
+
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npm install next-intl</span>
+      </div>
+    </div>
+
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Read AGENTS.md and .ai/ folder.
+
+Set up internationalization for my Next.js app using next-intl —
+same pattern as my previous project (P01):
+
+1. Two locales: "en" (default, hidden prefix) and "th" (/th/ prefix)
+2. Restructure routing to app/[locale]/...
+3. Create /messages/en.json and /messages/th.json
+4. Language switcher in the header
+5. middleware.ts for locale detection + auth guards
+
+This is a Leave Management System — HR terminology in Thai should
+use formal register (ภาษาราชการ/ทางการ), not casual Thai, since
+this is workplace software.</div>
+      <div class="claude-note">💡 New note for this project: HR software needs formal Thai. Flag this in the prompt so Claude Code doesn't produce overly casual translations.</div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1.3 -->
+<div class="step" id="p1-3">
+  <div class="step-num">6</div>
+  <div class="step-body">
+    <div class="step-title">Setup Database, Roles, and Auth</div>
+    <div class="step-desc">This is the biggest structural difference from P01 — roles are part of the schema from the start.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Read AGENTS.md and .ai/ folder.
+
+I need PostgreSQL + Prisma ORM + NextAuth.js set up for this
+Leave Management System.
+
+Please give me step-by-step terminal commands to:
+1. Install Prisma ORM (current version) and run prisma init
+2. Install NextAuth.js
+3. Install shadcn/ui using the current "shadcn" CLI package
+4. Create the initial database schema:
+
+   User: id, name, email, password, role, createdAt
+   - role is an enum: EMPLOYEE | MANAGER | HR | ADMIN
+   - each User optionally has a managerId (self-relation) so
+     employees know who approves their leave
+
+   LeaveType: id, name, defaultDaysPerYear, createdAt
+   - e.g. "Sick Leave", "Vacation", "Personal Leave"
+
+Check the bundled Next.js docs and current Prisma docs before
+giving me the setup commands.</div>
+    </div>
+    <div class="schema">
+<span class="comment">// Key schema decision for this project — the self-relation</span><br>
+<span class="kw">model</span> User {<br>
+&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">String</span>&nbsp;&nbsp;@id @default(cuid())<br>
+&nbsp;&nbsp;role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Role</span>&nbsp;&nbsp;&nbsp;&nbsp;@default(EMPLOYEE)<br>
+&nbsp;&nbsp;managerId&nbsp;&nbsp;&nbsp;<span class="type">String</span>?<br>
+&nbsp;&nbsp;manager&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">User</span>?&nbsp;&nbsp;&nbsp;@relation("ManagerEmployees", fields: [managerId], references: [id])<br>
+&nbsp;&nbsp;reports&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">User</span>[]&nbsp;@relation("ManagerEmployees")<br>
+&nbsp;&nbsp;...<br>
+}<br><br>
+<span class="kw">enum</span> Role { EMPLOYEE&nbsp;MANAGER&nbsp;HR&nbsp;ADMIN }
+    </div>
+    <div class="callout amber"><span class="callout-icon">⚠️</span><span>This self-relation (User → manages → User) is the trickiest part of the schema. If Claude Code's first attempt has issues, paste the Prisma error back and ask it to fix the relation names.</span></div>
+  </div>
+</div>
+
+<!-- STEP 1.4 -->
+<div class="step">
+  <div class="step-num">7</div>
+  <div class="step-body">
+    <div class="step-title">Build Login & Register (with role assignment)</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build login and register pages for my Leave Management app.
+
+Same pattern as before — NextAuth.js + Prisma + i18n + enterprise UI.
+
+One difference from a normal register form: new users register as
+EMPLOYEE by default. Only an HR or ADMIN user (via the admin panel,
+built later in Phase 7) can promote someone to MANAGER, HR, or ADMIN.
+Don't let users pick their own role at registration.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p1-4">
+  <div class="step-num">8</div>
+  <div class="step-body">
+    <div class="step-title">Test and push to GitHub</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npm run dev</span><br>
+        <span class="out">▲ Next.js 16.x.x (Turbopack)<br>
+- Local: http://localhost:3000</span><br><br>
+        <span class="comment"># After testing /en/register, /th/register work</span><br>
+        <span class="prompt">$ </span><span class="cmd">git init</span><br>
+        <span class="prompt">$ </span><span class="cmd">git add .</span><br>
+        <span class="prompt">$ </span><span class="cmd">git commit -m "feat: initial setup with roles, i18n, auth"</span><br>
+        <span class="prompt">$ </span><span class="cmd">git remote add origin https://github.com/YOUR_USERNAME/leave-management-system.git</span><br>
+        <span class="prompt">$ </span><span class="cmd">git push -u origin main</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 1 Complete — Roles exist, users can register/login in EN/TH. Code is on GitHub.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 2 ═══════════ -->
+<div class="phase-head" id="p2-1">
+  <span class="phase-num">PHASE 2</span>
+  <h2>Leave Types & Quota</h2>
+</div>
+<div class="phase-goal">By the end of Phase 2 — HR can define leave types and assign quota; employees can see their balance.</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Build Leave Type management (HR only)</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build Leave Type management for my Leave Management app.
+
+I need:
+1. /app/[locale]/(dashboard)/hr/leave-types/page.tsx — HR-only page to
+   list, create, edit leave types (name, default days per year)
+2. /api/leave-types/route.ts — GET (anyone logged in), POST (HR/ADMIN only)
+3. /api/leave-types/[id]/route.ts — PUT/DELETE (HR/ADMIN only)
+
+Rules:
+- Only HR and ADMIN roles can create/edit/delete leave types
+- All logged-in users can GET the list (needed for the request form later)
+- Use a role-check helper in /lib/rbac.ts — create it if it doesn't exist,
+  and reuse it for future role checks in this project</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p2-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Build Leave Quota management</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build Leave Quota management for my app.
+
+I need:
+1. LeaveQuota model already exists in schema (userId, leaveTypeId, year,
+   allocatedDays, usedDays) — if not, add it first
+2. /app/[locale]/(dashboard)/hr/quota/page.tsx — HR-only page to view
+   and adjust quota per employee
+3. /app/[locale]/(dashboard)/requests/balance/page.tsx — employee page
+   showing their own remaining balance per leave type, current year
+4. /api/quota/route.ts — GET own quota (any user), POST/PUT (HR/ADMIN
+   only, for adjusting someone else's quota)
+
+Show a simple table: Leave Type | Allocated | Used | Remaining</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Test the flow</div>
+    <div class="preview">
+      <div class="preview-title">What you should see</div>
+      <div class="preview-item">Login as HR → create a leave type "Vacation" with 10 days default</div>
+      <div class="preview-item">HR assigns quota to an employee account</div>
+      <div class="preview-item">Login as that employee → see "Vacation: 10 allocated, 0 used, 10 remaining"</div>
+      <div class="preview-item">Login as a regular employee trying to access /hr/leave-types → redirected or blocked</div>
+    </div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Commit</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">git add .</span><br>
+        <span class="prompt">$ </span><span class="cmd">git commit -m "feat: add leave types and quota management"</span><br>
+        <span class="prompt">$ </span><span class="cmd">git push</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 2 Complete — Leave types and quota system work. RBAC enforced.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 3: CORE FEATURE ═══════════ -->
+<div class="phase-head" id="p3-1">
+  <span class="phase-num">PHASE 3</span>
+  <h2>Leave Request + Approval Workflow</h2>
+</div>
+<div class="phase-goal">By the end of Phase 3 — this is the heart of the app. Employees submit requests, managers approve/reject, quota deducts automatically.</div>
+
+<div class="callout blue">
+  <span class="callout-icon">ℹ️</span>
+  <span><strong>This phase is the equivalent of P01's Kanban board</strong> — it's the one genuinely unique, complex feature of this project. Everything else follows a pattern you already know from P01.</span>
+</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Build the Leave Request submission form</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build the leave request submission feature.
+
+I need:
+1. LeaveRequest model in Prisma (if not already added):
+   id, userId, leaveTypeId, status (DRAFT/PENDING/APPROVED/REJECTED),
+   startDate, endDate, reason, approvedBy, createdAt
+
+2. /app/[locale]/(dashboard)/requests/new/page.tsx — form with:
+   - Leave type dropdown (fetched from /api/leave-types)
+   - Start date / end date picker
+   - Reason text field
+   - Submit button
+
+3. /api/leave-requests/route.ts — POST to create a request
+   Validation before allowing submission:
+   - endDate must be after startDate
+   - Requested days must not exceed remaining quota for that leave type
+   - No overlap with an existing PENDING or APPROVED request for the same user
+   - On successful creation, status starts as PENDING (skip DRAFT for v1 simplicity)
+
+Show me the plan before writing code — this touches the schema and
+multiple files.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p3-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Build the Manager Approval page</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build the manager approval feature.
+
+I need:
+1. /app/[locale]/(dashboard)/approvals/page.tsx — MANAGER-only page
+   showing PENDING requests from their direct reports only
+   (use the managerId self-relation on User to filter)
+
+2. Each request card shows: employee name, leave type, dates, reason
+   Two buttons: Approve / Reject (reject requires a comment)
+
+3. /api/leave-requests/[id]/approve/route.ts — POST, MANAGER only,
+   and only if the request belongs to one of their direct reports
+4. /api/leave-requests/[id]/reject/route.ts — POST, same restriction,
+   requires a rejection comment
+
+A HR or ADMIN user should also be able to see and act on ANY pending
+request, not just their direct reports — add that permission too.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p3-3">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Implement the state machine logic</div>
+    <div class="step-desc">This is the trickiest part — approving must be atomic (either everything succeeds, or nothing does).</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Implement the approval state machine logic properly.
+
+When a manager/HR approves a request:
+1. Update LeaveRequest.status to APPROVED
+2. Set approvedBy to the approver's userId
+3. Deduct the requested days from LeaveQuota.usedDays for that user/leaveType/year
+4. All of this must happen in a single Prisma transaction — if any step
+   fails, none of it should apply
+
+When rejected:
+1. Update status to REJECTED, store the rejection comment
+2. No quota changes
+
+Also add a state guard: a request can only be approved/rejected if its
+current status is PENDING — prevent double-approval or approving an
+already-rejected request. Return a clear error if someone tries.
+
+Explain the transaction pattern briefly so I understand why it's needed.</div>
+      <div class="claude-note">💡 This prevents a real bug: if two managers click "Approve" at the same time, or someone double-clicks, the quota shouldn't get deducted twice.</div>
+    </div>
+    <div class="schema">
+<span class="comment">// The state machine — valid transitions only</span><br>
+PENDING&nbsp;→&nbsp;APPROVED&nbsp;<span class="comment">(deduct quota, atomic)</span><br>
+PENDING&nbsp;→&nbsp;REJECTED&nbsp;<span class="comment">(no quota change)</span><br>
+<span class="comment">// Nothing else is a valid transition — enforce this server-side</span>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Build employee's "My Requests" view</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build /app/[locale]/(dashboard)/requests/page.tsx —
+employee's own request history.
+
+Show a table/list of all their requests with status badges
+(PENDING = yellow, APPROVED = green, REJECTED = red), dates,
+leave type, and rejection comment if applicable.
+
+Only show the logged-in user's own requests — verify ownership
+in the API route, not just by hiding the UI.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">5</div>
+  <div class="step-body">
+    <div class="step-title">Test the full cycle</div>
+    <div class="preview">
+      <div class="preview-title">What you should see</div>
+      <div class="preview-item">Employee submits a request → status PENDING → appears in manager's approval list</div>
+      <div class="preview-item">Manager approves → status APPROVED → quota decreases in employee's balance page</div>
+      <div class="preview-item">Try approving the same request twice → second attempt should fail with a clear error</div>
+      <div class="preview-item">Employee tries to submit a request exceeding remaining quota → blocked with an error</div>
+    </div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Commit</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">git add .</span><br>
+        <span class="prompt">$ </span><span class="cmd">git commit -m "feat: add leave request submission and approval workflow"</span><br>
+        <span class="prompt">$ </span><span class="cmd">git push</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 3 Complete — Core approval workflow works end-to-end, with atomic quota deduction.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 4 ═══════════ -->
+<div class="phase-head" id="p4-1">
+  <span class="phase-num">PHASE 4</span>
+  <h2>Team Calendar + Notifications + HR Overview</h2>
+</div>
+<div class="phase-goal">By the end of Phase 4 — the team can see who's out, emails fire automatically, HR has a company-wide view.</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Build the Team Calendar</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build a team leave calendar.
+
+/app/[locale]/(dashboard)/calendar/page.tsx — a month view calendar
+showing approved leave only (not pending/rejected) for the logged-in
+user's team (their manager's other direct reports, plus themselves).
+
+HR/ADMIN should see the whole company, not just one team.
+
+Use a simple grid calendar, no need for a heavy calendar library —
+show name + leave type as a small colored chip on each day.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p4-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Setup Resend + Email Notifications</div>
+    <div class="step-desc">Go to resend.com → free account → get API key → add to .env</div>
+    <div class="file-card">
+      <div class="file-name">.env — add this line</div>
+      RESEND_API_KEY="re_xxxxxxxx"
+    </div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npm install resend</span>
+      </div>
+    </div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Add email notifications using Resend, in /lib/email.ts,
+with translated subject/body for EN and TH:
+
+1. When an employee submits a request → email their manager
+   Subject: "New leave request from [name]"
+
+2. When a manager approves → email the employee
+   Subject: "Your leave request was approved"
+
+3. When a manager rejects → email the employee, include the comment
+   Subject: "Your leave request was rejected"
+
+Send the email in the correct language based on the recipient's
+locale preference — if we don't track that per-user yet, default
+to Thai for now and note that we should add a language preference
+field to User later.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p4-3">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Build the HR Overview Dashboard</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build /app/[locale]/(dashboard)/hr/overview/page.tsx —
+HR/ADMIN only dashboard.
+
+Show:
+1. Total employees, total pending requests company-wide
+2. A table of all pending requests (across all managers) with a
+   quick approve/reject option for HR to intervene if needed
+3. Simple stats: most-used leave type this year, average leave
+   days taken per employee
+
+Use shadcn/ui Card components for the stat tiles, enterprise-clean
+style like the rest of the app.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Test and commit</div>
+    <div class="preview">
+      <div class="preview-title">What you should see</div>
+      <div class="preview-item">Submit a request → manager receives an email</div>
+      <div class="preview-item">Approve it → calendar shows the leave on the correct dates</div>
+      <div class="preview-item">HR overview shows the request in company-wide stats</div>
+    </div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Commit</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">git add .</span><br>
+        <span class="prompt">$ </span><span class="cmd">git commit -m "feat: add team calendar, email notifications, HR overview"</span><br>
+        <span class="prompt">$ </span><span class="cmd">git push</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 4 Complete — Team visibility, notifications, and HR overview all work.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 5 ═══════════ -->
+<div class="phase-head" id="p5-1">
+  <span class="phase-num">PHASE 5</span>
+  <h2>Polish + RBAC Security Review</h2>
+</div>
+<div class="phase-goal">By the end of Phase 5 — app looks professional and the role boundaries are verified airtight.</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Polish the UI</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Polish the UI of my Leave Management app.
+
+I need:
+1. Leave balance widget on the main dashboard (all leave types at a glance)
+2. Export leave report to PDF for HR (per employee or company-wide, by date range)
+3. Empty states — "No pending requests" instead of a blank list
+4. Loading spinners while fetching data
+5. Mobile responsive check on the request form and approval pages
+
+Style direction: enterprise SaaS look (like Linear or Notion) —
+neutral grays, one accent color, consistent spacing.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p5-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">RBAC Security Review</div>
+    <div class="step-desc">This is more important for this project than P01 — one leaked API route could expose salary-adjacent HR data or let an employee approve their own leave.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Do a thorough RBAC security review of my Leave Management app.
+Open every file in /app/api/ and check:
+
+1. Can an EMPLOYEE call the approve/reject endpoint directly (bypassing
+   the UI) and approve their own or someone else's request?
+2. Can a MANAGER approve a request from an employee who is NOT their
+   direct report, by guessing the request ID?
+3. Can any user see another user's LeaveQuota or LeaveRequest data by
+   changing an ID in the URL or API call?
+4. Is role checked on the SERVER for every sensitive route, not just
+   hidden in the UI?
+5. Does the HR overview page leak data to non-HR/ADMIN users if they
+   navigate to the URL directly?
+
+List every issue you find, ranked by severity, before fixing anything.</div>
+      <div class="claude-note">💡 This is the single most important review in the whole project. HR software with a broken permission boundary is worse than no software at all.</div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-done">Phase 5 Complete — App is polished and RBAC is verified secure. Ready to deploy.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 6: CONTAINERIZE ═══════════ -->
+<div class="phase-head" id="p6-1">
+  <span class="phase-num">PHASE 6</span>
+  <h2>Containerize with Docker (Deploy-Ready)</h2>
+</div>
+<div class="phase-goal">By the end of Phase 6 — the app runs as a production-like Docker container on your own machine, with multiple test roles working end-to-end. Nothing goes to a public cloud, but everything is packaged exactly as it would be if you deployed it tomorrow.</div>
+
+<div class="callout blue">
+  <span class="callout-icon">ℹ️</span>
+  <span><strong>Same approach as P01:</strong> Docker gives you a reproducible production build and a real PostgreSQL instance without needing a public URL or a cloud account. If you already wrote a Dockerfile and docker-compose.yml for P01, most of this transfers directly — the differences are noted below.</span>
+</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Write the Dockerfile</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Read AGENTS.md and .ai/ folder.
+
+Write a production-ready Dockerfile for my Next.js app, same pattern
+as my previous project (P01):
+
+1. Multi-stage build — "builder" stage runs `next build`, "runner"
+   stage only contains the built output (Next.js standalone mode)
+2. Slim Node.js base image, non-root user, expose port 3000
+3. Update next.config.ts to set `output: "standalone"` if needed
+
+Check current Next.js docs for the recommended Docker pattern.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p6-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Write docker-compose.yml (app + database)</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Write a docker-compose.yml for local production-like testing.
+
+1. "db" — PostgreSQL, named volume for persistence, healthcheck
+2. "app" — builds from my Dockerfile, depends on "db" being healthy,
+   reads DATABASE_URL, NEXTAUTH_SECRET, RESEND_API_KEY from a
+   .env.docker file, exposes port 3000
+
+Create .env.docker with placeholder values — don't put real secrets
+in anything committed to git. Add it to .gitignore.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Build and run the full stack locally</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">docker compose up --build</span><br>
+        <span class="out"><br>
+[+] Building app...<br>
+[+] Running db (healthy)<br>
+[+] Running app<br>
+app-1  | ▲ Next.js<br>
+app-1  | - Local: http://localhost:3000<br>
+app-1  | ✓ Ready</span>
+      </div>
+    </div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Run migrations against the containerized DB</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">docker compose exec app npx prisma migrate deploy</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p6-3">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Create test accounts for all 4 roles</div>
+    <div class="step-desc">Unlike P01, this app needs multiple roles working together to test properly — you can't verify the approval flow with just one account.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">I need a quick way to promote test users to MANAGER or HR role
+inside my Docker container, since registration only creates
+EMPLOYEE accounts by default.
+
+Give me either:
+1. A one-time script I can run via `docker compose exec app node ...`
+   to promote a specific user by email, or
+2. A temporary admin API route I can call once and then remove
+
+Whichever is faster and safer for local test setup. Also show me
+how to set a user's managerId so the manager-employee relationship
+works for testing the approval flow.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">5</div>
+  <div class="step-body">
+    <div class="step-title">Test the full multi-role flow</div>
+    <ul class="checklist">
+      <li><div class="box"></div>Register 3 test accounts: employee, manager, HR</li>
+      <li><div class="box"></div>Promote 2 of them using the script/route above</li>
+      <li><div class="box"></div>Set the manager as the employee's managerId</li>
+      <li><div class="box"></div>Employee submits a request → manager receives email</li>
+      <li><div class="box"></div>Manager approves → employee receives email, quota updates</li>
+      <li><div class="box"></div>HR sees it in the company-wide overview dashboard</li>
+      <li><div class="box"></div>Test on mobile viewport — does the approval flow work?</li>
+      <li><div class="box"></div>Data persists after <code>docker compose down && docker compose up</code></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">6</div>
+  <div class="step-body">
+    <div class="step-title">Document how to actually deploy later (optional reference)</div>
+    <div class="file-card">
+      <div class="file-name">DEPLOYMENT.md</div>
+      # Deployment Notes<br><br>
+      This app is containerized and deploy-ready. To actually go live:<br><br>
+      **Option A — Railway/Fly.io/Render**<br>
+      Push this Dockerfile directly — most platforms build from it automatically.<br><br>
+      **Option B — Your own VPS**<br>
+      Copy docker-compose.yml to the server, add a reverse proxy<br>
+      (Caddy/nginx) for HTTPS, point your domain at it.<br><br>
+      **HR-specific note:** if deploying for real, review data residency<br>
+      requirements before choosing a hosting region — employee personal<br>
+      data may have legal storage location requirements depending on<br>
+      your jurisdiction.
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">7</div>
+  <div class="step-body">
+    <div class="step-title">Commit</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">git add .</span><br>
+        <span class="prompt">$ </span><span class="cmd">git commit -m "feat: containerize app with Docker, verify multi-role flow"</span><br>
+        <span class="prompt">$ </span><span class="cmd">git push</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="callout blue"><span class="callout-icon">ℹ️</span><span><strong>Deploy-ready, not deployed — same as P01.</strong> Now go straight into Phase 7. A few Phase 7 items (monitoring, backups) are adapted for the local Docker context — the notes in each step explain how. PDPA carries extra weight in this phase given the sensitivity of HR data.</span></div>
+
+<div class="phase-done">Phase 6 Complete — App is fully containerized, multi-role flow works end-to-end.</div>
+
+<hr class="div">
+
+<!-- ═══════════ PHASE 7: ENTERPRISE HARDENING ═══════════ -->
+<div class="phase-head" id="p7-1">
+  <span class="phase-num">PHASE 7</span>
+  <h2>Enterprise Hardening</h2>
+</div>
+<div class="phase-goal">By the end of Phase 7 — the app meets what a real HR department expects before trusting it with employee personal data and paying for it.</div>
+
+<div class="callout amber" style="margin-bottom:24px;">
+  <span class="callout-icon">⚠️</span>
+  <span><strong>Higher stakes than P01.</strong> This app handles real HR data — leave reasons can reveal health or personal circumstances. Treat PDPA (step 7.6) as non-negotiable, not optional, for this specific project.</span>
+</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">Rate Limiting + Two-Factor Authentication</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Read AGENTS.md and .ai/ folder.
+
+Add security hardening to my Leave Management app:
+
+1. Rate limiting on /api/auth/login and /api/auth/register
+   - Max 5 attempts per IP per 15 minutes
+
+2. Optional 2FA (TOTP) — especially recommend it be required for
+   HR and ADMIN roles, since they can see everyone's leave data
+
+Check current best practices for rate limiting in Next.js.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p7-2">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Audit Log</div>
+    <div class="step-desc">Not optional for HR software — you need a record of who approved/rejected what and when.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Add an audit log system to my Leave Management app.
+
+1. AuditLog model: id, userId, action, entityType, entityId, metadata (JSON), createdAt
+
+2. Log these actions automatically:
+   - Login / failed login
+   - Leave request submitted / approved / rejected
+   - Quota adjusted by HR
+   - User role changed
+   - Leave type created/edited/deleted
+
+3. HR/ADMIN-only page at /admin/audit-log — filterable by user, date range, action type, paginated</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p7-3">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">Error Monitoring</div>
+    <div class="callout blue"><span class="callout-icon">ℹ️</span><span><strong>Local adaptation:</strong> Sentry works the same whether the app is live or running in a local Docker container — configure the SDK against a real Sentry project even without a public URL.</span></div>
+    <div class="step-desc">sentry.io → free account → new Next.js project → copy DSN.</div>
+    <div class="terminal">
+      <div class="term-head"><div class="term-dots"><span></span><span></span><span></span></div><div class="term-label">Terminal</div></div>
+      <div class="term-body">
+        <span class="prompt">$ </span><span class="cmd">npx @sentry/wizard@latest -i nextjs</span>
+      </div>
+    </div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">I just ran the Sentry setup wizard, and my app runs inside
+Docker (docker compose), not a live cloud URL.
+
+Please make sure the Sentry DSN passes correctly as an environment
+variable through docker-compose.yml and the Dockerfile, then trigger
+a deliberate test error (e.g. in the approval workflow) so I can
+confirm it shows up in my Sentry dashboard.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p7-4">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">Database Backup (Docker-local version)</div>
+    <div class="step-desc">This matters more here than in P01 — losing this database means losing real leave history and approval records, which may have compliance implications even in a learning project.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">I need a backup strategy for my PostgreSQL database running
+inside Docker (docker-compose), same pattern as my P01 project.
+
+Give me:
+1. backup.sh — runs pg_dump against the "db" service, saves a
+   timestamped .sql file to /backups
+2. restore.sh — restores from a chosen backup file
+3. Since this is HR data, also add a brief comment in the script
+   noting that in a real deployment, backup files themselves would
+   need to be encrypted at rest — not implementing that now, just
+   documenting it as a known gap for this local learning version
+
+Add /backups/ to .gitignore.</div>
+    </div>
+    <ul class="checklist">
+      <li><div class="box"></div>Run backup.sh, confirm a .sql file is created</li>
+      <li><div class="box"></div>Test restore.sh restores data correctly</li>
+      <li><div class="box"></div>backups/ folder is gitignored</li>
+    </ul>
+    <div class="callout amber"><span class="callout-icon">💡</span><span><strong>Uptime monitoring skipped:</strong> needs a public URL to ping — not applicable locally. Note it as the equivalent step if deploying for real later.</span></div>
+  </div>
+</div>
+
+<div class="step" id="p7-5">
+  <div class="step-num">5</div>
+  <div class="step-body">
+    <div class="step-title">Pagination, Search & Database Indexing</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">My Leave Management app loads all requests/audit logs at once —
+won't scale for a company with hundreds of employees.
+
+1. Add cursor-based pagination to /api/leave-requests and audit log endpoints
+2. Add a search/filter on the HR overview (by employee name, date range, status)
+3. Add @@index() on frequently-queried columns (userId, status, createdAt)
+4. Show me the migration for the new indexes</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p7-6">
+  <div class="step-num">6</div>
+  <div class="step-body">
+    <div class="step-title">PDPA Compliance — Higher Priority for This Project</div>
+    <div class="step-desc">Leave reasons and dates can reveal sensitive health or personal information. This isn't a checkbox exercise here — it's central to whether this app is legally usable.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Add PDPA compliance to my Leave Management app — this handles
+sensitive HR data so treat this seriously:
+
+1. Consent checkbox at registration (required)
+2. /privacy-policy and /terms pages (structure only, I'll write the legal text)
+3. Employee settings page:
+   - "Export my data" → JSON of all their leave requests, quota, audit entries about them
+   - "Request account deletion" → soft-delete 30 days, then hard-delete via scheduled job
+     (but preserve anonymized audit log entries for company compliance records —
+     ask me how to handle this legal tension between "right to deletion" and
+     "company's obligation to keep leave records" before implementing)
+4. Verify passwords are properly hashed
+5. Review: does the "reason" field on leave requests need extra access
+   restriction? Only the employee, their manager, and HR/ADMIN should
+   ever see the free-text reason — not other employees, even in the calendar view</div>
+    </div>
+    <div class="callout red"><span class="callout-icon">⚠️</span><span>The deletion-vs-retention conflict is a real legal question, not just a technical one. Get this reviewed by someone qualified before launching to an actual company — this isn't legal advice.</span></div>
+  </div>
+</div>
+
+<div class="step" id="p7-7">
+  <div class="step-num">7</div>
+  <div class="step-body">
+    <div class="step-title">Admin Panel</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Build an admin panel for my Leave Management app.
+
+1. /admin route group, ADMIN-only
+2. Admin dashboard: total employees, pending requests, recent role changes
+3. User management page: change any user's role (EMPLOYEE/MANAGER/HR/ADMIN),
+   set their managerId, suspend accounts
+4. Link to the audit log page
+
+Style: same enterprise clean look as the rest of the app.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p7-8">
+  <div class="step-num">8</div>
+  <div class="step-body">
+    <div class="step-title">Billing / Subscription (learn the pattern, test locally)</div>
+    <div class="step-desc">Worth building even without a live app — Stripe's CLI forwards webhooks to your local container without a public URL.</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">I'm learning how to add billing to my Leave Management app
+using Stripe (test mode), testing entirely inside Docker locally.
+
+Pricing model: per-employee-per-month makes more sense than a flat
+subscription for HR software — e.g. 50 THB/employee/month.
+
+1. Stripe Checkout integration tied to employee count
+2. Webhook to update the company's active employee limit
+3. Block adding a new employee beyond the paid limit
+4. Billing page showing current employee count vs plan limit
+
+Since I don't have a public URL, walk me through using the Stripe CLI
+(`stripe listen --forward-to localhost:3000/api/webhooks/stripe`) to
+test the webhook locally, including triggering a fake successful
+payment event.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step" id="p7-9">
+  <div class="step-num">9</div>
+  <div class="step-body">
+    <div class="step-title">Onboarding + Support</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Add onboarding to my Leave Management app:
+
+1. First-time HR setup wizard: create first leave types, invite first employees
+2. Employee first-login: quick tour of "submit a request" and "check your balance"
+3. Help widget linking to FAQ or support email
+4. Empty states guide users to their next action everywhere</div>
+    </div>
+    <ul class="checklist">
+      <li><div class="box"></div>Write FAQ based on real questions from your Phase 6 test users</li>
+      <li><div class="box"></div>Setup a support email</li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" id="p7-10">
+  <div class="step-num">10</div>
+  <div class="step-body">
+    <div class="step-title">Final Enterprise Readiness Check</div>
+    <div class="claude-box">
+      <div class="claude-head">📋 Paste into Claude Code Chat</div>
+      <div class="claude-body">Do a final review of my Leave Management app before I position
+it as enterprise-ready for HR departments. Check the whole codebase for:
+
+- Any API route missing proper role + ownership checks
+- Any place an employee could see another employee's leave reason
+- Missing error handling that could crash the app or leak stack traces
+- Hardcoded secrets that should be environment variables
+- N+1 query problems in Prisma calls, especially on the HR overview page
+
+Give me a prioritized list before I'd feel comfortable selling this
+to a real HR department handling real employee data.</div>
+    </div>
+    <ul class="checklist">
+      <li><div class="box"></div>Rate limiting + 2FA (especially for HR/ADMIN) working</li>
+      <li><div class="box"></div>Audit log capturing approvals, rejections, role changes</li>
+      <li><div class="box"></div>Error monitoring live</li>
+      <li><div class="box"></div>Database backups enabled + tested restore</li>
+      <li><div class="box"></div>Uptime monitoring alerting you</li>
+      <li><div class="box"></div>Pagination + search working at scale</li>
+      <li><div class="box"></div>Database indexes on hot query paths</li>
+      <li><div class="box"></div>PDPA: consent, export, deletion — reviewed for the retention conflict</li>
+      <li><div class="box"></div>Reason field access properly restricted</li>
+      <li><div class="box"></div>Admin panel role management working correctly</li>
+      <li><div class="box"></div>Billing works end-to-end (if applicable)</li>
+      <li><div class="box"></div>Onboarding tested with a first-time HR user</li>
+      <li><div class="box"></div>Support channel exists</li>
+    </ul>
+  </div>
+</div>
+
+<div class="phase-done">Phase 7 Complete — P02 is now genuinely enterprise-ready: secure, compliant, and sellable to real HR departments.</div>
+
+<hr class="div">
+
+<!-- HOW THIS COMPARED TO P01 -->
+<div class="phase-head">
+  <span class="phase-num">RECAP</span>
+  <h2>What Changed From P01 → P02</h2>
+</div>
+
+<div style="background:var(--white);border:1.5px solid var(--line);padding:20px;margin:14px 0;">
+  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:14px;">Phase-by-phase comparison</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 1</div>
+      <div style="font-size:12px;color:var(--muted);">~90% identical<br><em>just added roles</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--amber-l);border:1px solid var(--amber-b);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;color:var(--amber);">Phase 2</div>
+      <div style="font-size:12px;color:var(--amber);">Fully new<br><em>domain-specific CRUD</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--amber-l);border:1px solid var(--amber-b);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;color:var(--amber);">Phase 3</div>
+      <div style="font-size:12px;color:var(--amber);">Fully new<br><em>the unique feature</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 4</div>
+      <div style="font-size:12px;color:var(--muted);">~70% same pattern<br><em>Resend reused</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 5</div>
+      <div style="font-size:12px;color:var(--muted);">Same pattern<br><em>+ RBAC focus</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--bg);border:1px solid var(--line);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Phase 6</div>
+      <div style="font-size:12px;color:var(--muted);">~95% identical<br><em>Dockerfile + compose</em></div>
+    </div>
+    <div style="text-align:center;padding:12px;background:var(--green-l);border:1px solid var(--green-b);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;color:var(--green);">Phase 7</div>
+      <div style="font-size:12px;color:var(--green);">Same categories<br><em>PDPA weighted higher</em></div>
+    </div>
+  </div>
+</div>
+
+<div class="callout green">
+  <span class="callout-icon">🚀</span>
+  <span><strong>For P03 and beyond:</strong> the pattern holds. Phase 1, 4, 5, 6, 7 stay structurally the same — copy and lightly adapt. Only Phase 2 and 3 (the domain-specific CRUD and the one genuinely unique feature) need real design thinking. By P04 or P05, you'll likely finish Phase 1 in under an hour.</span>
+</div>
+
+</div><!-- end content -->
+
+<footer>
+  <span>// P02 Walkthrough — Leave Management System</span>
+  <span>Setup → Build → Containerize → Repeat</span>
+</footer>
+
+</div><!-- end main -->
+</div><!-- end layout -->
+</body>
+</html>

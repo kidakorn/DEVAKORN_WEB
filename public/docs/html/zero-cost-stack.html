@@ -775,21 +775,31 @@ footer {
 <section class="cat">
   <div class="cat-head">
     <span class="cat-icon">☁️</span>
-    <h2>Deploy & Hosting</h2>
-    <span class="cat-en">การ deploy และ hosting</span>
+    <h2>Containerize & Deploy (ภายหลัง)</h2>
+    <span class="cat-en">local container ก่อน, cloud ทีหลังถ้าต้องการ</span>
   </div>
 
-  <div class="note">ระวัง: Platform หลายตัวมี free tier ที่ "หลับ" หลัง 15–30 นาทีไม่ใช้งาน (cold start) ไม่เหมาะกับ production จริง ใช้ได้ดีสำหรับ prototype และเรียนรู้</div>
+  <div class="note">แนวทางหลัก: พัฒนาและรันด้วย <strong>Docker บนเครื่องตัวเอง</strong> ก่อนเสมอ — ครบทุก database, service ต่างๆ รันแบบ local container ทั้งหมด ไม่ต้องพึ่ง cloud account ระหว่างพัฒนา เครื่องมือ cloud ด้านล่างเป็นตัวเลือกสำหรับ "ตอนต้องการ deploy จริง" เท่านั้น ไม่ใช่ขั้นตอนบังคับ</div>
 
   <div class="tool-grid">
 
     <div class="tool-card">
       <div class="tc-top">
-        <div class="tc-name">Railway (Free Tier)</div>
+        <div class="tc-name">Docker + Docker Compose</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">รัน app + PostgreSQL + Redis เป็น container บนเครื่องตัวเอง — production-like build โดยไม่ต้องมี cloud account เลย นี่คือแนวทางหลักของทุกโปรเจ็ค</p>
+      <div class="tc-tags"><span class="ttag">แนะนำ</span><span class="ttag">Local Dev</span><span class="ttag">Production-like</span></div>
+      <a class="tc-link" href="https://docs.docker.com/engine/install" target="_blank">docs.docker.com/engine</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Railway</div>
         <span class="badge forever">Free Forever</span>
       </div>
-      <p class="tc-desc">Deploy Node.js, Python, Go ได้เลย มี PostgreSQL ฟรีในตัว free tier $5 credit/เดือน ไม่หลับ เหมาะกับโปรเจ็คเริ่มต้น</p>
-      <div class="tc-tags"><span class="ttag">แนะนำ</span><span class="ttag">Node/Python/Go</span><span class="ttag">PostgreSQL ฟรี</span></div>
+      <p class="tc-desc">สำหรับตอนต้องการ deploy จริง — Node.js, Python, Go + PostgreSQL ฟรี $5 credit/เดือน ไม่หลับ รับ Dockerfile ที่มีอยู่แล้วได้ตรงๆ</p>
+      <div class="tc-tags"><span class="ttag">ภายหลัง</span><span class="ttag">Node/Python/Go</span><span class="ttag">PostgreSQL ฟรี</span></div>
       <a class="tc-link" href="https://railway.com" target="_blank">railway.com</a>
     </div>
 
@@ -798,9 +808,19 @@ footer {
         <div class="tc-name">Vercel</div>
         <span class="badge forever">Free Forever</span>
       </div>
-      <p class="tc-desc">Deploy Next.js/React ได้ทันที free tier ไม่จำกัด bandwidth สำหรับ static/SSR site เหมาะกับ frontend และ landing page</p>
-      <div class="tc-tags"><span class="ttag">Next.js</span><span class="ttag">Frontend</span><span class="ttag">Serverless</span></div>
+      <p class="tc-desc">สำหรับตอนต้องการ deploy จริง — Next.js/React ฟรี bandwidth ไม่จำกัด เหมาะกับ frontend</p>
+      <div class="tc-tags"><span class="ttag">ภายหลัง</span><span class="ttag">Next.js</span><span class="ttag">Frontend</span></div>
       <a class="tc-link" href="https://vercel.com" target="_blank">vercel.com</a>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-top">
+        <div class="tc-name">Coolify</div>
+        <span class="badge oss">Open Source</span>
+      </div>
+      <p class="tc-desc">สำหรับตอนต้องการ deploy จริง — self-hosted PaaS บน VPS ตัวเอง รับ Dockerfile ที่มีอยู่แล้วได้ตรงๆ ไม่ต้องแก้อะไรเพิ่ม</p>
+      <div class="tc-tags"><span class="ttag">ภายหลัง</span><span class="ttag">Self-hosted PaaS</span><span class="ttag">VPS</span></div>
+      <a class="tc-link" href="https://coolify.io" target="_blank">coolify.io</a>
     </div>
 
     <div class="tool-card">
@@ -808,8 +828,8 @@ footer {
         <div class="tc-name">Cloudflare Pages/Workers</div>
         <span class="badge forever">Free Forever</span>
       </div>
-      <p class="tc-desc">Deploy static site และ edge function ฟรีมาก Workers free tier 100,000 requests/วัน ไม่มี cold start เพราะรันบน edge</p>
-      <div class="tc-tags"><span class="ttag">Edge</span><span class="ttag">Static Site</span><span class="ttag">API</span></div>
+      <p class="tc-desc">สำหรับตอนต้องการ deploy จริง — edge function ฟรี 100,000 requests/วัน ไม่มี cold start</p>
+      <div class="tc-tags"><span class="ttag">ภายหลัง</span><span class="ttag">Edge</span><span class="ttag">API</span></div>
       <a class="tc-link" href="https://pages.cloudflare.com" target="_blank">pages.cloudflare.com</a>
     </div>
 
@@ -818,29 +838,9 @@ footer {
         <div class="tc-name">GitHub Pages</div>
         <span class="badge forever">Free Forever</span>
       </div>
-      <p class="tc-desc">Host static website จาก GitHub repo ฟรีถาวร เหมาะกับ landing page, portfolio, documentation</p>
-      <div class="tc-tags"><span class="ttag">Static Site</span><span class="ttag">Portfolio</span><span class="ttag">Docs</span></div>
+      <p class="tc-desc">สำหรับตอนต้องการ deploy จริง — host static site จาก GitHub repo ฟรีถาวร เหมาะ landing page, portfolio</p>
+      <div class="tc-tags"><span class="ttag">ภายหลัง</span><span class="ttag">Static Site</span><span class="ttag">Portfolio</span></div>
       <a class="tc-link" href="https://pages.github.com" target="_blank">pages.github.com</a>
-    </div>
-
-    <div class="tool-card">
-      <div class="tc-top">
-        <div class="tc-name">Docker</div>
-        <span class="badge oss">Open Source</span>
-      </div>
-      <p class="tc-desc">Container runtime ฟรีถาวร (Personal/OSS plan) ใช้สำหรับ local dev, packaging, deploy บน VPS ส่วน Docker Desktop มีข้อจำกัดเชิงพาณิชย์</p>
-      <div class="tc-tags"><span class="ttag">Container</span><span class="ttag">Local Dev</span><span class="ttag">VPS</span></div>
-      <a class="tc-link" href="https://docs.docker.com/engine/install" target="_blank">docs.docker.com/engine</a>
-    </div>
-
-    <div class="tool-card">
-      <div class="tc-top">
-        <div class="tc-name">Coolify</div>
-        <span class="badge oss">Open Source</span>
-      </div>
-      <p class="tc-desc">Self-hosted Heroku/Vercel ทางเลือก deploy app, DB, service บน VPS ตัวเองได้ มี UI สวยงาม ฟรีถาวร self-host</p>
-      <div class="tc-tags"><span class="ttag">Self-hosted PaaS</span><span class="ttag">VPS</span></div>
-      <a class="tc-link" href="https://coolify.io" target="_blank">coolify.io</a>
     </div>
 
   </div>
@@ -1158,7 +1158,7 @@ footer {
       <div class="mx-row"><span class="mx-role">FE</span><span class="mx-tool">Next.js + shadcn/ui + Recharts</span></div>
       <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Node.js + NestJS + Prisma</span></div>
       <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL</span></div>
-      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Railway</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Docker (local) — Railway ภายหลังถ้าต้องการ</span></div>
       <div class="mx-row"><span class="mx-role">PDF</span><span class="mx-tool">pdfkit (npm) — open source</span></div>
     </div>
   </div>
@@ -1170,7 +1170,7 @@ footer {
       <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Node.js + Prisma</span></div>
       <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL</span></div>
       <div class="mx-row"><span class="mx-role">Mobile</span><span class="mx-tool">Flutter (check-in/ลา)</span></div>
-      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Railway / Coolify on VPS</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Docker (local) — Coolify/VPS ภายหลังถ้าต้องการ</span></div>
     </div>
   </div>
 
@@ -1181,7 +1181,7 @@ footer {
       <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">FastAPI (Python) + Prisma</span></div>
       <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL</span></div>
       <div class="mx-row"><span class="mx-role">Mobile</span><span class="mx-tool">Flutter + barcode scanner</span></div>
-      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Coolify on VPS</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Docker (local) — Coolify/VPS ภายหลังถ้าต้องการ</span></div>
     </div>
   </div>
 
@@ -1192,7 +1192,7 @@ footer {
       <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Go / Node.js + WebSocket</span></div>
       <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL + PostGIS</span></div>
       <div class="mx-row"><span class="mx-role">Mobile</span><span class="mx-tool">Flutter + GPS background</span></div>
-      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">VPS (Coolify)</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Docker (local) — VPS/Coolify ภายหลังถ้าต้องการ</span></div>
     </div>
   </div>
 
@@ -1203,7 +1203,7 @@ footer {
       <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Node.js + Prisma</span></div>
       <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL + Redis (cart)</span></div>
       <div class="mx-row"><span class="mx-role">Pay</span><span class="mx-tool">Omise / PromptPay (pay per use)</span></div>
-      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Vercel (FE) + Railway (BE)</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Docker (local) — Vercel/Railway ภายหลังถ้าต้องการ</span></div>
     </div>
   </div>
 
@@ -1214,7 +1214,7 @@ footer {
       <div class="mx-row"><span class="mx-role">BE</span><span class="mx-tool">Node.js / Python</span></div>
       <div class="mx-row"><span class="mx-role">DB</span><span class="mx-tool">PostgreSQL + Redis (cache)</span></div>
       <div class="mx-row"><span class="mx-role">Alt</span><span class="mx-tool">Metabase — open source BI tool</span></div>
-      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Railway / Docker on VPS</span></div>
+      <div class="mx-row"><span class="mx-role">Deploy</span><span class="mx-tool">Docker (local) — Railway/VPS ภายหลังถ้าต้องการ</span></div>
     </div>
   </div>
 

@@ -579,7 +579,7 @@ footer {
   <div>
     <div class="cover-badge">Developer Mission Brief — AI-Assisted</div>
     <h1>คู่มือพัฒนา<br><span class="hl">ตัวคุณเอง</span><br>ด้วย AI Agent</h1>
-    <p class="cover-meta">แนวทางพัฒนาแบบชัดเจนตั้งแต่วันแรก — วิธีใช้ AI Agent ร่วมพัฒนา, คำสั่งที่ต้องรู้, โปรเจ็คที่ต้องสร้าง ไปจนถึง deployment จริง</p>
+    <p class="cover-meta">แนวทางพัฒนาแบบชัดเจนตั้งแต่วันแรก — วิธีใช้ Claude Code ร่วมพัฒนาใน VS Code, prompt ที่ต้องรู้, โปรเจ็คที่ต้องสร้าง ไปจนถึง deployment จริง</p>
     <div class="cover-stats">
       <div class="stat"><strong>15</strong>โปรเจ็ค Enterprise</div>
       <div class="stat"><strong>3</strong>Phase หลัก</div>
@@ -592,7 +592,7 @@ footer {
     <div class="id-row"><span class="id-key">Level</span><span class="id-val">Intermediate → Full-stack</span></div>
     <div class="id-row"><span class="id-key">Goal</span><span class="id-val">SaaS + AI Agent products</span></div>
     <div class="id-row"><span class="id-key">Domain</span><span class="id-val">ทุก Enterprise System</span></div>
-    <div class="id-row"><span class="id-key">Mode</span><span class="id-val">AI-pair programming</span></div>
+    <div class="id-row"><span class="id-key">AI Tool</span><span class="id-val">Claude Code (VS Code)</span></div>
     <div class="id-row"><span class="id-key">Timeline</span><span class="id-val">1st product ใน 6 เดือน</span></div>
   </div>
 </header>
@@ -653,13 +653,13 @@ footer {
     <span class="sec-num">02</span>
     <h2>วิธีใช้ AI Agent ร่วมพัฒนา</h2>
   </div>
-  <p class="sec-sub">AI ทำงานได้ดีเมื่อได้รับ context ที่ถูกต้อง ใช้ pattern คำสั่งเหล่านี้เป็น template ในการสื่อสารกับ Claude หรือ AI agent ทุกตัว</p>
+  <p class="sec-sub">Claude Code ใน VS Code อ่านไฟล์ .ai/*.md ในโปรเจ็คโดยตรง ไม่ต้อง copy-paste ไปมา — prompt เหล่านี้คือตัวอย่างที่พิมพ์ใน Claude Code Chat ได้เลย</p>
 
   <!-- .skills -->
   <div class="ai-box">
     <div class="ai-box-head">
       <div class="dot-row"><span></span><span></span><span></span></div>
-      CLAUDE — .skills command
+      CLAUDE CODE — เริ่ม session ใหม่ (พิมพ์ใน Claude Code Chat)
     </div>
     <div class="ai-box-body">
       <div class="ai-prompt">
@@ -674,10 +674,10 @@ footer {
         Priority 1 → Node.js + Express API basics (สัปดาห์ 1–2)<br>
         Priority 2 → PostgreSQL + Prisma schema design (สัปดาห์ 2–3)<br>
         Priority 3 → JWT Auth + middleware (สัปดาห์ 3–4)<br>
-        Priority 4 → Deploy Railway + domain (สัปดาห์ 5–6)<br><br>
-        <span class="tag">SKIP FOR NOW</span> TypeScript, Testing, Docker — เพิ่มทีหลัง<br>
+        Priority 4 → Docker + docker-compose basics (สัปดาห์ 5–6)<br><br>
+        <span class="tag">SKIP FOR NOW</span> TypeScript strict mode, Testing, Cloud deploy — เพิ่มทีหลัง<br>
         <span class="gtag">NEXT ACTION</span> สร้าง Hello World API ที่มี /health endpoint ก่อนเลย
-        <div class="ai-note">💡 ใช้ .skills ทุกครั้งที่เริ่มโปรเจ็คใหม่ — บอก AI ว่าคุณรู้อะไร ไม่รู้อะไร และมีเวลาเท่าไร</div>
+        <div class="ai-note">💡 ทำทุกครั้งที่เปิด VS Code ใหม่ — Claude Code จะอ่าน .ai/ folder แล้วเข้าใจ context ของโปรเจ็คคุณทันที</div>
       </div>
     </div>
   </div>
@@ -686,7 +686,7 @@ footer {
   <div class="ai-box">
     <div class="ai-box-head">
       <div class="dot-row"><span></span><span></span><span></span></div>
-      CLAUDE — .plan project
+      CLAUDE CODE — วางแผนก่อนเริ่ม build
     </div>
     <div class="ai-box-body">
       <div class="ai-prompt">
@@ -694,8 +694,8 @@ footer {
         โปรเจ็ค: Leave Management System<br>
         ผู้ใช้: พนักงาน 50 คน + HR 2 คน<br>
         Must have: ยื่นลา, อนุมัติ, ดูโควตา, สลิปลา<br>
-        Stack: Next.js, PostgreSQL, Prisma, Railway<br>
-        Deadline: 6 สัปดาห์
+        Stack: Next.js, PostgreSQL, Prisma, Docker<br>
+        Deadline: ไม่มี deadline ตายตัว<br>
       </div>
       <div class="ai-response">
         <span class="tag">WEEK 1</span> Setup project, Auth (login/register), DB schema<br>
@@ -703,9 +703,9 @@ footer {
         <span class="tag">WEEK 3</span> HR approval dashboard, email notification<br>
         <span class="tag">WEEK 4</span> Leave quota system, calendar view<br>
         <span class="tag">WEEK 5</span> PDF export, mobile-responsive polish<br>
-        <span class="tag">WEEK 6</span> Deploy Railway, domain, user testing<br><br>
+        <span class="tag">WEEK 6</span> Dockerize, docker compose up, user testing<br><br>
         <span class="gtag">SKIP v1</span> Analytics, Multi-company, Mobile app — ทำ v2
-        <div class="ai-note">💡 ใช้ .plan ก่อนเริ่มทุกโปรเจ็ค ให้ AI ช่วย scope ให้เล็กพอที่จะทำได้จริงใน timeline ที่มี</div>
+        <div class="ai-note">💡 Claude Code อ่าน PLAN.md แล้วรู้ทันทีว่าโปรเจ็คนี้ต้องทำอะไร ไม่ต้องอธิบายซ้ำทุกครั้ง</div>
       </div>
     </div>
   </div>
@@ -714,7 +714,7 @@ footer {
   <div class="ai-box">
     <div class="ai-box-head">
       <div class="dot-row"><span></span><span></span><span></span></div>
-      CLAUDE — .build (ระหว่างพัฒนา)
+      CLAUDE CODE — ระหว่างพัฒนา ติดปัญหา
     </div>
     <div class="ai-box-body">
       <div class="ai-prompt">
@@ -738,7 +738,7 @@ footer {
   <div class="ai-box">
     <div class="ai-box-head">
       <div class="dot-row"><span></span><span></span><span></span></div>
-      CLAUDE — .debug
+      CLAUDE CODE — มี error แก้ไม่ออก
     </div>
     <div class="ai-box-body">
       <div class="ai-prompt">
@@ -761,7 +761,7 @@ footer {
   <div class="ai-box">
     <div class="ai-box-head">
       <div class="dot-row"><span></span><span></span><span></span></div>
-      CLAUDE — .review (ก่อน deploy)
+      CLAUDE CODE — ก่อน deploy ทุกครั้ง
     </div>
     <div class="ai-box-body">
       <div class="ai-prompt">
@@ -784,43 +784,43 @@ footer {
   <div class="ai-box">
     <div class="ai-box-head">
       <div class="dot-row"><span></span><span></span><span></span></div>
-      CLAUDE — .deploy checklist
+      CLAUDE CODE — Containerize ก่อนใช้งานจริง
     </div>
     <div class="ai-box-body">
       <div class="ai-prompt">
-        .deploy<br>
-        Stack: Next.js + PostgreSQL บน Railway<br>
-        ช่วยทำ checklist ก่อน deploy production
+        Help me containerize this app with Docker<br>
+        Stack: Next.js + PostgreSQL, running locally, no cloud deploy needed<br>
+        ช่วยทำ checklist ก่อน build production image
       </div>
       <div class="ai-response">
-        <span class="tag">ENV</span> ✓ ตั้ง DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL ใน Railway<br>
-        <span class="tag">DB</span> ✓ รัน prisma migrate deploy ก่อน start<br>
-        <span class="tag">BUILD</span> ✓ next build ไม่มี error<br>
-        <span class="tag">SECURITY</span> ✓ ไม่มี .env ใน git, ตั้ง CORS ถูก<br>
-        <span class="tag">TEST</span> ✓ ทดสอบ login, create, approve ครบ flow<br>
-        <span class="gtag">DONE</span> push to main → Railway auto-deploy
-        <div class="ai-note">💡 สร้าง .deploy checklist เฉพาะของแต่ละโปรเจ็ค แล้ว save ไว้ใน repo</div>
+        <span class="tag">ENV</span> ✓ ตั้ง DATABASE_URL, NEXTAUTH_SECRET ใน .env.docker (gitignored)<br>
+        <span class="tag">DB</span> ✓ รัน prisma migrate deploy ผ่าน docker compose exec<br>
+        <span class="tag">BUILD</span> ✓ next build ไม่มี error, output: "standalone" ตั้งแล้ว<br>
+        <span class="tag">SECURITY</span> ✓ ไม่มี .env ใน git, non-root user ใน container<br>
+        <span class="tag">TEST</span> ✓ ทดสอบ login, create, approve ครบ flow ผ่าน localhost<br>
+        <span class="gtag">DONE</span> docker compose up --build → รันได้จริงเหมือน production
+        <div class="ai-note">💡 สร้าง Dockerfile + docker-compose.yml เฉพาะของแต่ละโปรเจ็ค แล้ว commit ไว้ใน repo — deploy จริงทำได้ทีหลังถ้าต้องการ</div>
       </div>
     </div>
   </div>
 
   <!-- Command Reference Table -->
-  <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin:28px 0 12px;">Command Reference — คำสั่ง AI ที่ใช้บ่อย</h3>
+  <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin:28px 0 12px;">Prompt Reference — สิ่งที่พิมพ์ใน Claude Code Chat</h3>
   <table class="cmd-table">
     <thead>
-      <tr><th>Command</th><th>ใช้เมื่อไร</th><th>ต้องบอก AI ว่าอะไร</th></tr>
+      <tr><th>Prompt Pattern</th><th>ใช้เมื่อไร</th><th>ต้องบอก Claude ว่าอะไร</th></tr>
     </thead>
     <tbody>
-      <tr><td class="cmd">.skills</td><td class="purpose">เริ่มโปรเจ็คใหม่ / ประเมินตัวเอง</td><td class="example">รู้อะไรแล้ว, ยังไม่รู้อะไร, เป้าหมาย, เวลาที่มี</td></tr>
-      <tr><td class="cmd">.plan [project]</td><td class="purpose">วางแผนก่อนเริ่ม build</td><td class="example">ชื่อโปรเจ็ค, must-have features, stack, deadline</td></tr>
-      <tr><td class="cmd">.build [task]</td><td class="purpose">ระหว่าง coding ติดปัญหา</td><td class="example">task ที่ทำอยู่, context ของ project, ปัญหาที่ติด</td></tr>
-      <tr><td class="cmd">.debug [error]</td><td class="purpose">มี error แก้ไม่ออก</td><td class="example">error message, code ที่ error, schema ที่เกี่ยวข้อง</td></tr>
-      <tr><td class="cmd">.review</td><td class="purpose">ก่อน merge / deploy</td><td class="example">code ทั้งหมด, โฟกัส security/perf/logic</td></tr>
-      <tr><td class="cmd">.deploy [stack]</td><td class="purpose">เตรียม production</td><td class="example">stack ที่ใช้, platform deploy</td></tr>
-      <tr><td class="cmd">.explain [concept]</td><td class="purpose">ไม่เข้าใจ concept</td><td class="example">concept ที่งง, context ว่าเจอตอนไหน</td></tr>
-      <tr><td class="cmd">.refactor</td><td class="purpose">ปรับโค้ดให้ดีขึ้น</td><td class="example">โค้ดที่ต้องการ refactor, เหตุผล</td></tr>
-      <tr><td class="cmd">.schema [feature]</td><td class="purpose">ออกแบบ database</td><td class="example">feature ที่ต้องการ, ความสัมพันธ์ของข้อมูล</td></tr>
-      <tr><td class="cmd">.agent [task]</td><td class="purpose">ให้ AI ทำงานซ้ำๆ แทน</td><td class="example">task ที่ต้องทำซ้ำ, input/output format</td></tr>
+      <tr><td class="cmd">Read .ai/ folder</td><td class="purpose">เปิด session ใหม่ทุกครั้ง</td><td class="example">บอกว่าวันนี้จะทำอะไร</td></tr>
+      <tr><td class="cmd">Read PLAN.md, help me start Phase X</td><td class="purpose">เริ่ม phase ใหม่</td><td class="example">บอกว่า phase ไหน ต้องการอะไร</td></tr>
+      <tr><td class="cmd">I need to build [feature]</td><td class="purpose">ต้องการสร้าง feature</td><td class="example">feature ที่ต้องการ, ปัญหาที่ติด</td></tr>
+      <tr><td class="cmd">I got this error: [paste error]</td><td class="purpose">มี error แก้ไม่ออก</td><td class="example">error + code + schema ที่เกี่ยวข้อง</td></tr>
+      <tr><td class="cmd">Review this code before I deploy</td><td class="purpose">ก่อน deploy ทุกครั้ง</td><td class="example">เปิดไฟล์ใน Claude Code หรือ paste code</td></tr>
+      <tr><td class="cmd">Help me containerize this with Docker</td><td class="purpose">พร้อม run local production build</td><td class="example">stack ที่ใช้, deploy จริงทีหลังก็ได้ถ้าต้องการ</td></tr>
+      <tr><td class="cmd">Explain [concept] in simple terms</td><td class="purpose">ไม่เข้าใจ concept</td><td class="example">concept ที่งง บอก context ว่าเจอตอนไหน</td></tr>
+      <tr><td class="cmd">Refactor this code to be cleaner</td><td class="purpose">ปรับโค้ดให้ดีขึ้น</td><td class="example">เปิดไฟล์ใน Claude Code แล้วบอกว่าอยากปรับอะไร</td></tr>
+      <tr><td class="cmd">Design database schema for [feature]</td><td class="purpose">ออกแบบ database</td><td class="example">feature ที่ต้องการ ความสัมพันธ์ของข้อมูล</td></tr>
+      <tr><td class="cmd">Do this task for me: [task]</td><td class="purpose">ให้ Claude ทำงานแทนเลย</td><td class="example">บอก task ให้ชัด Claude จะเขียนโค้ดและแก้ไฟล์ให้เลย</td></tr>
     </tbody>
   </table>
 </section>
@@ -845,7 +845,7 @@ footer {
   <div class="tool-row">
     <div class="tool-pill"><span class="tk">Claude</span><span class="td">AI pair programmer หลัก</span></div>
     <div class="tool-pill"><span class="tk">Codeium</span><span class="td">AI autocomplete ใน VS Code ฟรี</span></div>
-    <div class="tool-pill"><span class="tk">Cursor</span><span class="td">VS Code + AI (ทางเลือก)</span></div>
+    <div class="tool-pill"><span class="tk">Cursor</span><span class="td">ทางเลือกแทน VS Code (ดีกว่าแต่ $20/เดือน)</span></div>
     <div class="tool-pill"><span class="tk">Ollama</span><span class="td">AI local สำหรับงาน private</span></div>
   </div>
 
@@ -858,12 +858,18 @@ footer {
     <div class="tool-pill"><span class="tk">Bruno</span><span class="td">API testing แทน Postman</span></div>
   </div>
 
-  <h4 style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:16px 0 10px;">DEPLOY & INFRA</h4>
+  <h4 style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:16px 0 10px;">CONTAINERIZE & INFRA (local-first)</h4>
   <div class="tool-row">
     <div class="tool-pill"><span class="tk">GitHub</span><span class="td">Repository + CI/CD Actions</span></div>
-    <div class="tool-pill"><span class="tk">Railway</span><span class="td">Deploy backend + DB ฟรี</span></div>
-    <div class="tool-pill"><span class="tk">Vercel</span><span class="td">Deploy Next.js frontend ฟรี</span></div>
-    <div class="tool-pill"><span class="tk">Coolify</span><span class="td">Self-host บน VPS (ขยายใหญ่)</span></div>
+    <div class="tool-pill"><span class="tk">Docker</span><span class="td">รัน production build บนเครื่องตัวเอง — แนวทางหลัก</span></div>
+    <div class="tool-pill"><span class="tk">Docker Compose</span><span class="td">รวม app + database เป็น stack เดียว</span></div>
+  </div>
+
+  <h4 style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:16px 0 10px;">DEPLOY จริง (ตัวเลือกอนาคต ไม่บังคับ)</h4>
+  <div class="tool-row">
+    <div class="tool-pill"><span class="tk">Railway</span><span class="td">Deploy backend + DB ฟรี — ตอนต้องการขึ้น cloud</span></div>
+    <div class="tool-pill"><span class="tk">Vercel</span><span class="td">Deploy Next.js frontend ฟรี — ตอนต้องการขึ้น cloud</span></div>
+    <div class="tool-pill"><span class="tk">Coolify</span><span class="td">Self-host บน VPS ด้วย Dockerfile ที่มีอยู่แล้ว</span></div>
   </div>
 
   <h4 style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:16px 0 10px;">DESIGN & DIAGRAM</h4>
@@ -910,7 +916,7 @@ footer {
       <div class="ai-box-body">
         <div class="ai-prompt">
           .plan Task Tracking System<br>
-          Stack: Next.js 14 App Router, PostgreSQL, Prisma, NextAuth, Railway<br>
+          Stack: Next.js App Router, PostgreSQL, Prisma, NextAuth, Docker<br>
           Must: สร้าง project, สร้าง task, assign คน, drag Kanban, แจ้งเตือน<br>
           Level: มือใหม่ full-stack, เคยทำ React แต่ไม่เคยทำ backend<br>
           Timeline: 6 สัปดาห์ วันละ 3 ชั่วโมง<br>
@@ -922,14 +928,13 @@ footer {
       <div class="proj-col">
         <div class="proj-col-title">Tech Stack</div>
         <div class="proj-stack">
-          <span class="stk fe">Next.js 14</span>
+          <span class="stk fe">Next.js</span>
           <span class="stk fe">Tailwind CSS</span>
           <span class="stk fe">shadcn/ui</span>
           <span class="stk be">NextAuth.js</span>
           <span class="stk db">PostgreSQL</span>
           <span class="stk db">Prisma ORM</span>
-          <span class="stk inf">Railway</span>
-          <span class="stk inf">Vercel</span>
+          <span class="stk inf">Docker</span>
         </div>
         <div class="proj-col-title" style="margin-top:12px;">Must Have (MVP)</div>
         <ul>
@@ -963,11 +968,10 @@ footer {
       <span class="deploy-label">DEPLOY →</span>
       <div class="deploy-steps">
         <span class="deploy-step">push GitHub</span>
-        <span class="deploy-step">Railway: PostgreSQL + App</span>
-        <span class="deploy-step">Vercel: Frontend</span>
-        <span class="deploy-step">ตั้ง ENV vars</span>
+        <span class="deploy-step">Dockerfile + docker-compose.yml</span>
+        <span class="deploy-step">docker compose up --build</span>
         <span class="deploy-step">prisma migrate deploy</span>
-        <span class="deploy-step">Custom domain</span>
+        <span class="deploy-step">Test local container</span>
       </div>
     </div>
   </div>
@@ -989,7 +993,7 @@ footer {
           .plan Leave Management System<br>
           Must: ยื่นลา, อนุมัติ/ปฏิเสธ, โควตาลา, ปฏิทิน, แจ้งเตือน email<br>
           Role: พนักงาน (ยื่นลา), หัวหน้า (อนุมัติ), HR (ดูภาพรวม)<br>
-          Stack: Next.js, PostgreSQL, Prisma, Resend (email), Railway<br>
+          Stack: Next.js, PostgreSQL, Prisma, Resend (email), Docker<br>
           ช่วยออกแบบ state machine: Draft→Pending→Approved/Rejected
         </div>
       </div>
@@ -998,13 +1002,13 @@ footer {
       <div class="proj-col">
         <div class="proj-col-title">Tech Stack</div>
         <div class="proj-stack">
-          <span class="stk fe">Next.js 14</span>
+          <span class="stk fe">Next.js</span>
           <span class="stk fe">shadcn/ui</span>
           <span class="stk be">NextAuth</span>
           <span class="stk be">Resend API</span>
           <span class="stk db">PostgreSQL</span>
           <span class="stk db">Prisma</span>
-          <span class="stk inf">Railway</span>
+          <span class="stk inf">Docker</span>
         </div>
         <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
         <ul>
@@ -1036,11 +1040,10 @@ footer {
       <span class="deploy-label">DEPLOY →</span>
       <div class="deploy-steps">
         <span class="deploy-step">GitHub repo</span>
-        <span class="deploy-step">Railway (DB + App)</span>
-        <span class="deploy-step">Resend API key</span>
-        <span class="deploy-step">ENV: DATABASE_URL, RESEND_KEY, NEXTAUTH_SECRET</span>
-        <span class="deploy-step">migrate deploy</span>
-        <span class="deploy-step">Test email flow</span>
+        <span class="deploy-step">Dockerfile + docker-compose.yml</span>
+        <span class="deploy-step">Resend API key (test mode)</span>
+        <span class="deploy-step">docker compose up --build</span>
+        <span class="deploy-step">Test email flow locally</span>
       </div>
     </div>
   </div>
@@ -1060,7 +1063,7 @@ footer {
       <div class="ai-box-body">
         <div class="ai-prompt">
           .plan POS System — Mobile First<br>
-          Stack: Next.js PWA หรือ Flutter, PostgreSQL, Omise payment, Railway<br>
+          Stack: Next.js PWA หรือ Flutter, PostgreSQL, Omise payment, Docker<br>
           Must: เพิ่มสินค้า, คิดเงิน, PromptPay QR, พิมพ์ใบเสร็จ, ตัดสต๊อกอัตโนมัติ<br>
           Critical: ต้องใช้งานได้เมื่อ internet หลุด (offline-first)<br>
           ช่วยอธิบาย offline sync strategy ด้วย
@@ -1077,7 +1080,7 @@ footer {
           <span class="stk be">Omise / PromptPay</span>
           <span class="stk db">PostgreSQL</span>
           <span class="stk db">SQLite (offline)</span>
-          <span class="stk inf">Railway</span>
+          <span class="stk inf">Docker</span>
         </div>
         <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
         <ul>
@@ -1110,11 +1113,9 @@ footer {
     <div class="proj-deploy">
       <span class="deploy-label">DEPLOY →</span>
       <div class="deploy-steps">
-        <span class="deploy-step">Railway (Backend + DB)</span>
-        <span class="deploy-step">Vercel (PWA Frontend)</span>
-        <span class="deploy-step">Omise live key</span>
-        <span class="deploy-step">Test offline mode</span>
-        <span class="deploy-step">Test payment webhook</span>
+        <span class="deploy-step">Docker (Backend + DB)</span>
+        <span class="deploy-step">Test offline mode locally</span>
+        <span class="deploy-step">Omise test key + Stripe CLI</span>
         <span class="deploy-step">Printer test</span>
       </div>
     </div>
@@ -1135,7 +1136,7 @@ footer {
       <div class="ai-box-body">
         <div class="ai-prompt">
           .plan CRM System — B2B Sales Focus<br>
-          Stack: Next.js, PostgreSQL, Prisma, Recharts, Railway<br>
+          Stack: Next.js, PostgreSQL, Prisma, Recharts, Docker<br>
           Must: ข้อมูลลูกค้า, Sales pipeline Kanban, บันทึก activity, forecast รายได้<br>
           ช่วยออกแบบ data model สำหรับ Contact → Company → Deal → Activity
         </div>
@@ -1151,7 +1152,7 @@ footer {
           <span class="stk be">SendGrid</span>
           <span class="stk db">PostgreSQL</span>
           <span class="stk db">Prisma</span>
-          <span class="stk inf">Railway</span>
+          <span class="stk inf">Docker</span>
         </div>
         <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
         <ul>
@@ -1183,11 +1184,10 @@ footer {
     <div class="proj-deploy">
       <span class="deploy-label">DEPLOY →</span>
       <div class="deploy-steps">
-        <span class="deploy-step">Railway (DB + App)</span>
-        <span class="deploy-step">SendGrid API</span>
+        <span class="deploy-step">Docker (DB + App)</span>
+        <span class="deploy-step">SendGrid API (test mode)</span>
         <span class="deploy-step">Cron job (reminder)</span>
-        <span class="deploy-step">Custom domain</span>
-        <span class="deploy-step">SSL cert</span>
+        <span class="deploy-step">Test in container</span>
       </div>
     </div>
   </div>
@@ -1207,7 +1207,7 @@ footer {
       <div class="ai-box-body">
         <div class="ai-prompt">
           .plan Warehouse Management System<br>
-          Stack: Next.js, Flutter (mobile scan), PostgreSQL, Prisma, Railway<br>
+          Stack: Next.js, Flutter (mobile scan), PostgreSQL, Prisma, Docker<br>
           Must: รับสินค้า, เบิกสินค้า, นับสต๊อก, สแกน barcode, แจ้งเตือนสินค้าหมด<br>
           Challenge: หลายคนเบิกสินค้าพร้อมกัน — ช่วยออกแบบ concurrency control
         </div>
@@ -1222,7 +1222,7 @@ footer {
           <span class="stk be">Node.js API</span>
           <span class="stk db">PostgreSQL</span>
           <span class="stk db">Prisma + Row Lock</span>
-          <span class="stk inf">Railway</span>
+          <span class="stk inf">Docker</span>
         </div>
         <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
         <ul>
@@ -1253,8 +1253,7 @@ footer {
     <div class="proj-deploy">
       <span class="deploy-label">DEPLOY →</span>
       <div class="deploy-steps">
-        <span class="deploy-step">Railway (API + DB)</span>
-        <span class="deploy-step">Vercel (Admin web)</span>
+        <span class="deploy-step">Docker (API + DB)</span>
         <span class="deploy-step">Flutter build APK</span>
         <span class="deploy-step">Test concurrent เบิก</span>
         <span class="deploy-step">Barcode test จริง</span>
@@ -1278,7 +1277,7 @@ footer {
         <div class="ai-prompt">
           .plan Accounting System — SME Level<br>
           ฉันไม่มีความรู้บัญชีมาก่อน — ช่วยอธิบาย double-entry bookkeeping ก่อน<br>
-          Stack: Next.js, PostgreSQL, Prisma, PDFKit, Railway<br>
+          Stack: Next.js, PostgreSQL, Prisma, PDFKit, Docker<br>
           Must: Journal entry, ใบแจ้งหนี้, งบกำไรขาดทุน, VAT, Bank reconcile<br>
           ช่วยออกแบบ Chart of Accounts และ schema สำหรับ SME ไทย
         </div>
@@ -1294,7 +1293,7 @@ footer {
           <span class="stk be">PDFKit</span>
           <span class="stk db">PostgreSQL</span>
           <span class="stk db">Prisma (Decimal)</span>
-          <span class="stk inf">Railway</span>
+          <span class="stk inf">Docker</span>
         </div>
         <div class="proj-col-title" style="margin-top:12px;">Must Have</div>
         <ul>
@@ -1325,11 +1324,10 @@ footer {
     <div class="proj-deploy">
       <span class="deploy-label">DEPLOY →</span>
       <div class="deploy-steps">
-        <span class="deploy-step">Railway (DB + App)</span>
+        <span class="deploy-step">Docker (DB + App)</span>
         <span class="deploy-step">ตั้ง Decimal precision</span>
         <span class="deploy-step">PDF generation test</span>
         <span class="deploy-step">VAT calculation verify</span>
-        <span class="deploy-step">Audit log check</span>
       </div>
     </div>
   </div>
@@ -1345,7 +1343,7 @@ footer {
       <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
         .plan GPS Logistics Tracker<br>
         Stack: Next.js, Go backend, PostgreSQL+PostGIS,<br>
-        Mapbox, MQTT, Railway<br>
+        Mapbox, MQTT, Docker<br>
         Must: GPS real-time, geofence, POD photo,<br>
         driver mobile app (Flutter)
       </div>
@@ -1380,7 +1378,7 @@ footer {
       <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-bottom:10px;">QR asset • PM schedule • Work order</div>
       <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
         .plan CMMS Maintenance System<br>
-        Stack: Next.js, Flutter, PostgreSQL, Railway<br>
+        Stack: Next.js, Flutter, PostgreSQL, Docker<br>
         Must: Asset register, Work order,<br>
         PM schedule (cron), QR scan history<br>
         Niche: โรงงาน / อาคาร / โรงพยาบาล
@@ -1393,7 +1391,7 @@ footer {
       <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
         .plan Business Intelligence Dashboard<br>
         Stack: Next.js, Recharts/D3, PostgreSQL,<br>
-        Redis (cache), Railway<br>
+        Redis (cache), Docker<br>
         Must: KPI cards, trend charts,<br>
         drill-down, scheduled email report
       </div>
@@ -1405,7 +1403,7 @@ footer {
       <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
         .plan Document Management System<br>
         Stack: Next.js, Cloudflare R2 (S3),<br>
-        PostgreSQL, Prisma, Railway<br>
+        PostgreSQL, Prisma, Docker<br>
         Must: Upload, version, permission,<br>
         full-text search, share link
       </div>
@@ -1417,7 +1415,7 @@ footer {
       <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
         .plan Procurement System<br>
         Stack: Next.js, PostgreSQL, Prisma,<br>
-        Resend, Railway<br>
+        Resend, Docker<br>
         Must: PR/PO workflow, vendor list,<br>
         multi-level approve, GR matching
       </div>
@@ -1429,7 +1427,7 @@ footer {
       <div style="background:var(--ink);color:rgba(240,237,230,.7);font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:10px 12px;line-height:1.65;">
         .plan Payroll Calculation Engine<br>
         Stack: Next.js, PostgreSQL (Decimal),<br>
-        PDFKit, Cron job, Railway<br>
+        PDFKit, Cron job, Docker<br>
         Must: เงินเดือน+OT, หักภาษี/ประกันสังคม,<br>
         สลิป PDF, monthly auto-run
       </div>
@@ -1473,7 +1471,7 @@ footer {
       <div class="wf-title">Deep Build</div>
       <ul class="wf-steps">
         <li>ปิด notification ทุกอย่าง</li>
-        <li>Build → error → .debug Claude → แก้ → commit</li>
+        <li>Build → error → paste error ใน Claude Code → แก้ → commit</li>
         <li>1 commit ต่อ 1 feature เล็กๆ</li>
         <li>อย่าทำหลาย task พร้อมกัน</li>
       </ul>
@@ -1483,7 +1481,7 @@ footer {
       <div class="wf-title">Review & Learn</div>
       <ul class="wf-steps">
         <li>Push code ขึ้น GitHub</li>
-        <li>.review Claude — ดู code ที่เขียนวันนี้</li>
+        <li>บอก Claude Code: "Review what I wrote today" — ดู code ที่เขียนวันนี้</li>
         <li>จดสิ่งที่เรียนรู้ใหม่ในวันนี้ (1 บรรทัด)</li>
         <li>ตั้ง task พรุ่งนี้ไว้</li>
       </ul>
@@ -1568,20 +1566,20 @@ footer {
 
   <ul class="checklist">
     <li><div class="box"></div>ติดตั้ง VS Code + Node.js + Git + DBeaver</li>
-    <li><div class="box"></div>สมัคร GitHub, Railway, Vercel (ฟรีทุกอัน)</li>
+    <li><div class="box"></div>ติดตั้ง Docker Desktop (ฟรี)</li>
+    <li><div class="box"></div>สมัคร GitHub (ฟรี)</li>
     <li><div class="box"></div>รัน <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--paper2);padding:1px 4px;">npx create-next-app@latest my-first-app</code></li>
     <li><div class="box"></div>ติดตั้ง Prisma + เชื่อม PostgreSQL local</li>
     <li><div class="box"></div>สร้าง User model แรก + migrate</li>
     <li><div class="box"></div>ทำ Login ง่ายๆ ด้วย NextAuth</li>
-    <li><div class="box"></div>Deploy ขึ้น Railway + Vercel ให้ได้</li>
-    <li><div class="box"></div>เปิด claude.ai ทดลองใช้ .plan .build .debug</li>
+    <li><div class="box"></div>เขียน Dockerfile + docker-compose.yml แล้วรัน <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--paper2);padding:1px 4px;">docker compose up --build</code> ให้ได้</li>
+    <li><div class="box"></div>Login Claude Code ใน VS Code แล้วลองพิมพ์ "Read .ai/ folder"</li>
     <li><div class="box"></div>สร้าง repo บน GitHub push code แรก</li>
-    <li><div class="box"></div>แชร์ link ให้คนอื่น 1 คนดู — สำคัญมาก</li>
   </ul>
 
   <div class="callout amber" style="margin-top:20px;">
     <span class="callout-icon">🎯</span>
-    <span><strong>เป้าหมายสัปดาห์แรก:</strong> มี Next.js app ที่ login ได้ deploy อยู่บน internet จริง แค่นี้พอ ไม่ต้องสวย ไม่ต้องครบฟีเจอร์ แต่ต้องอยู่บน internet และใช้งานได้จริง</span>
+    <span><strong>เป้าหมายสัปดาห์แรก:</strong> มี Next.js app ที่ login ได้ และรันเป็น Docker container บนเครื่องตัวเองสำเร็จ แค่นี้พอ ไม่ต้องสวย ไม่ต้องครบฟีเจอร์ ไม่ต้องขึ้น cloud จริง แต่ต้องรันเป็น production build ในเครื่องได้จริง</span>
   </div>
 </section>
 
