@@ -325,7 +325,12 @@
     </p>
 
     <div class="sec-label" style="margin-top:0;">Phase 1 — Connectivity</div>
-    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">สร้างโปรเจกต์ Node.js ชื่อ "iws-clone" ทำทีละขั้นตอนดังนี้:
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่านไฟล์เหล่านี้ก่อน:
+- CLAUDE.md (บริบทโปรเจกต์และกฎตายตัว)
+- .ai/PLAN.md (สถานะงานปัจจุบัน)
+- .ai/skills/ibmi-pub400/SKILL.md (การเชื่อมต่อ pub400 และ pattern การตอบกลับ)
+
+จากนั้นสร้างโปรเจกต์ Node.js ชื่อ "iws-clone" ทำทีละขั้นตอนดังนี้:
 
 1. รัน npm init -y แล้วติดตั้ง express, odbc, dotenv
 2. สร้างไฟล์ .env.example ที่มี PUB400_USER= และ PUB400_PASS= (ไม่ใส่ค่าจริง)
@@ -352,7 +357,10 @@
 ทุก query ต้องใช้ parameterized query ห้ามต่อ string ตรงๆ เข้า SQL</div>
 
     <div class="sec-label" style="margin-top:32px;">Phase 2 — Program Call (RPG/CL)</div>
-    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ต่อยอดจากโปรเจกต์ "iws-clone" เดิม ทำทีละขั้นตอนดังนี้:
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน CLAUDE.md, .ai/PLAN.md และ
+.ai/skills/ibmi-pub400/SKILL.md ก่อน เพื่อดูว่า Phase 1 ทำอะไรไปแล้วบ้าง
+
+จากนั้นต่อยอดจากโปรเจกต์ "iws-clone" เดิม ทำทีละขั้นตอนดังนี้:
 
 1. เช็คก่อนว่า pub400 เปิดใช้ XMLSERVICE ให้ user ทั่วไปหรือไม่ ถ้าไม่แน่ใจ
    ให้เขียนสคริปต์ทดสอบสั้นๆ เพื่อยืนยันก่อนเขียนโค้ดจริง
@@ -369,7 +377,10 @@
 8. ทดสอบเรียกโปรแกรมง่ายๆ 1 ตัวจริงบน pub400 แล้วรายงานผล</div>
 
     <div class="sec-label" style="margin-top:32px;">Phase 3 — API Layer</div>
-    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ปรับโครงสร้างโปรเจกต์ "iws-clone" ให้เป็น API ที่ใช้งานจริงได้ ทำทีละขั้นตอน:
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน CLAUDE.md และ .ai/PLAN.md ก่อน เพื่อดูว่า
+Phase 1-2 ทำอะไรไปแล้วบ้าง
+
+จากนั้นปรับโครงสร้างโปรเจกต์ "iws-clone" ให้เป็น API ที่ใช้งานจริงได้ ทำทีละขั้นตอน:
 
 1. จัดกลุ่ม routes ใหม่ตาม resource แยกเป็นไฟล์ใน /routes
    (เช่น routes/customers.js, routes/programs.js, routes/commands.js)
@@ -386,7 +397,10 @@
    พร้อมตัวอย่าง request/response)</div>
 
     <div class="sec-label" style="margin-top:32px;">Phase 4 — Desktop GUI (Electron)</div>
-    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ห่อโปรเจกต์ "iws-clone" ให้เป็นแอป Windows ด้วย Electron ทำทีละขั้นตอน:
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน CLAUDE.md และ .ai/PLAN.md ก่อน เพื่อดูว่า
+Phase 1-3 ทำอะไรไปแล้วบ้าง
+
+จากนั้นห่อโปรเจกต์ "iws-clone" ให้เป็นแอป Windows ด้วย Electron ทำทีละขั้นตอน:
 
 1. ติดตั้ง electron และ electron-builder ในโปรเจกต์
 2. สร้าง main.js: ให้ Electron รัน Express server (จาก Phase 1-3) เป็น
