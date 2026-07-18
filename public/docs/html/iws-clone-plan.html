@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แผนพัฒนา: IWS Clone สำหรับ AS400</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #0b1210;
+    --bg-panel: #101a17;
+    --line: #1f332c;
+    --green: #39ff88;
+    --green-dim: #1f8a52;
+    --amber: #ffb454;
+    --text: #d7e6df;
+    --text-dim: #7d9a8e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top, #0f1a17 0%, var(--bg) 60%);
+    color:var(--text);
+    font-family:'IBM Plex Sans Thai','IBM Plex Mono',monospace;
+    line-height:1.65;
+    padding-bottom:80px;
+  }
+  .scanline{
+    position:fixed; inset:0; pointer-events:none; z-index:50;
+    background:repeating-linear-gradient(180deg, rgba(57,255,136,0.02) 0px, rgba(57,255,136,0.02) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode:overlay;
+  }
+  header{
+    padding:56px 24px 40px;
+    max-width:920px; margin:0 auto;
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--green); opacity:0.85;
+    display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  }
+  .eyebrow::before{content:"●"; color:var(--green); animation:blink 1.6s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+  h1{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:clamp(28px,4vw,42px);
+    font-weight:700;
+    margin:0 0 12px;
+    color:#f2fbf6;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    color:var(--text-dim); font-size:15px; max-width:640px; margin:0;
+  }
+  main{max-width:920px; margin:0 auto; padding:40px 24px 0;}
+  section{margin-bottom:56px;}
+  .sec-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px; color:var(--amber); letter-spacing:0.14em;
+    text-transform:uppercase; margin-bottom:10px;
+  }
+  h2{
+    font-size:22px; font-weight:600; color:#f2fbf6; margin:0 0 18px;
+  }
+  .diagram{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:28px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    overflow-x:auto;
+    color:var(--green);
+  }
+  .diagram .arrow{color:var(--text-dim);}
+  .diagram .sub{color:var(--text-dim); font-size:11px; display:block; margin-top:4px;}
+  .flow{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    justify-content:center; padding:12px 0;
+  }
+  .box{
+    border:1px solid var(--green-dim);
+    background:rgba(57,255,136,0.04);
+    border-radius:4px;
+    padding:14px 18px;
+    text-align:center;
+    min-width:160px;
+  }
+  .box b{color:#f2fbf6; font-size:14px;}
+
+  table{
+    width:100%; border-collapse:collapse;
+    font-size:14px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  th,td{
+    text-align:left; padding:14px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--amber); background:rgba(255,180,84,0.05);
+  }
+  tr:last-child td{border-bottom:none;}
+  td code, li code{
+    font-family:'IBM Plex Mono',monospace;
+    background:rgba(57,255,136,0.08);
+    color:var(--green);
+    padding:2px 6px;
+    border-radius:3px;
+    font-size:13px;
+  }
+  ol.steps{
+    list-style:none; margin:0; padding:0;
+    counter-reset:step;
+  }
+  ol.steps li{
+    counter-increment:step;
+    position:relative;
+    padding:16px 0 16px 52px;
+    border-bottom:1px solid var(--line);
+  }
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{
+    content:counter(step);
+    position:absolute; left:0; top:14px;
+    width:32px; height:32px;
+    border:1px solid var(--green-dim);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--green);
+  }
+  li strong{color:#f2fbf6;}
+  .callout{
+    border-left:3px solid var(--amber);
+    background:rgba(255,180,84,0.05);
+    padding:16px 20px;
+    border-radius:0 6px 6px 0;
+    font-size:14px;
+    color:var(--text);
+  }
+  .callout b{color:var(--amber);}
+  .tag-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px; padding:5px 10px;
+    border:1px solid var(--line); border-radius:4px;
+    color:var(--text-dim);
+  }
+  footer{
+    max-width:920px; margin:0 auto; padding:32px 24px 0;
+    color:var(--text-dim); font-size:12px;
+    border-top:1px solid var(--line); margin-top:40px;
+  }
+  @media (max-width:600px){
+    .flow{flex-direction:column;}
+    .flow .arrow{transform:rotate(90deg);}
+  }
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+
+<header>
+  <div class="eyebrow">Project Plan · IBM i / AS400</div>
+  <h1>สร้าง GUI ของตัวเอง แทน IWS</h1>
+  <p>สรุปแนวทางพัฒนา middleware/API server ที่รันบน PC ของคุณเอง ทำหน้าที่แทน Integrated Web Services (IWS) ที่แอดมินเคยตั้งไว้ให้ — เพื่อให้พัฒนาเว็บเชื่อม AS400 ได้เอง โดยไม่ต้องรอใคร</p>
+</header>
+
+<main>
+
+  <section>
+    <div class="sec-label">00 · IWS ของจริงทำงานอย่างไร</div>
+    <h2>อ้างอิงจาก endpoint จริงที่เคยเจอ</h2>
+    <div class="diagram">
+      <div class="flow">
+        <div class="box"><b>RPG / SQL</b></div>
+        <div class="arrow">──▶</div>
+        <div class="box"><b>IWS Studio</b><span class="sub">deploy บน WAS Base</span></div>
+        <div class="arrow">──▶</div>
+        <div class="box"><b>REST URL</b></div>
+        <div class="arrow">──▶</div>
+        <div class="box"><b>เว็บเรียก fetch()</b></div>
+      </div>
+    </div>
+    <p style="color:var(--text-dim); font-size:13px; margin:16px 0 10px;">
+      ตัวอย่าง endpoint จริง: <code>GET /api/web/serveices/scanner/minpop?empid=25066</code>
+      → คืน <code>{ "P_EMPNAME": "I.KIDAKORN", "P_ISFOUND": "1" }</code>
+    </p>
+    <table>
+      <tr><th>Field จริงในตาราง/RPG</th><th>ชื่อที่ IWS map ออกมาให้เว็บเห็น</th></tr>
+      <tr><td><code>CDOPCD</code> (key)</td><td><code>empid</code> (parameter รับเข้า)</td></tr>
+      <tr><td><code>NMOPCD</code></td><td><code>P_EMPNAME</code> (field ตอบกลับ)</td></tr>
+    </table>
+    <div class="callout">
+      <b>Pattern ที่ต้องทำตาม:</b> ทุก endpoint ของ IWS จริงคืนค่า <code>P_ISFOUND</code>
+      เป็น string <code>"1"</code>/<code>"0"</code> บอกว่าเจอข้อมูลไหม — ตอนจำลองควรตอบกลับ
+      รูปแบบเดียวกัน เพื่อให้ frontend เดิม (ถ้าย้ายมาใช้ API ใหม่) ไม่ต้องแก้โค้ดมาก
+      และการ mapping ชื่อ field เป็นสิ่งที่ต้องทำเองใน <code>res.json({...})</code>
+      ไม่ใช่แค่ห่อ URL เฉยๆ
+    </div>
+    <div class="tag-row">
+      <span class="tag">IWS จริงรันบน WebSphere (WAS Base) built-in บน IBM i</span>
+      <span class="tag">Deploy ผ่าน IBM Navigator :2001 หรือ Web Admin :2010/HTTPAdmin</span>
+      <span class="tag">ต้อง authority สูง — pub400/user ทั่วไปไม่มีสิทธิ์นี้</span>
+      <span class="tag">Production จริงเรียกผ่าน reverse proxy (IIS URL Rewrite) ไม่ใช่ IP:port ตรง</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">01 · ภาพรวมระบบ</div>
+    <h2>สถาปัตยกรรม</h2>
+    <div class="diagram">
+      <div class="flow">
+        <div class="box"><b>เว็บที่คุณพัฒนา</b><span class="sub">React / Vue</span></div>
+        <div class="arrow">──▶</div>
+        <div class="box"><b>API Server</b><span class="sub">Node.js + Express บน PC</span></div>
+        <div class="arrow">──▶</div>
+        <div class="box"><b>AS400 / pub400</b><span class="sub">RPG · CL · DB2</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">02 · ตัวเชื่อมต่อ (Connector)</div>
+    <h2>สองเส้นทางหลัก</h2>
+    <table>
+      <tr><th>เส้นทาง</th><th>ใช้เมื่อ</th><th>ไลบรารี</th></tr>
+      <tr>
+        <td><b>itoolkit + XMLSERVICE</b></td>
+        <td>ต้องเรียกโปรแกรม RPG / CL / Command</td>
+        <td><code>itoolkit</code> (IBM/nodejs-itoolkit)</td>
+      </tr>
+      <tr>
+        <td><b>ODBC/JDBC ตรง</b></td>
+        <td>แค่ query/update ตาราง DB2</td>
+        <td><code>odbc</code> หรือ <code>idb-connector</code></td>
+      </tr>
+    </table>
+    <div class="tag-row">
+      <span class="tag">ต้องมี XMLSERVICE บนเครื่อง i</span>
+      <span class="tag">เชื่อมได้ผ่าน ODBC / SSH / REST</span>
+      <span class="tag">รันจาก PC ภายนอกได้ ไม่ต้องอยู่บน i</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">03 · Stack ที่แนะนำ</div>
+    <h2>เทคโนโลยี</h2>
+    <table>
+      <tr><th>ส่วน</th><th>แนะนำ</th></tr>
+      <tr><td>Backend API</td><td><code>Node.js</code> + <code>Express</code></td></tr>
+      <tr><td>Connector</td><td><code>itoolkit</code> + <code>odbc</code></td></tr>
+      <tr><td>GUI ทดสอบ/จัดการ endpoint</td><td>เว็บเล็ก React ในตัว หรือ Electron</td></tr>
+      <tr><td>Auth ไปยัง AS400</td><td>เก็บ user/profile ใน <code>.env</code></td></tr>
+    </table>
+  </section>
+
+  <section>
+    <div class="sec-label">04 · อยาก ได้ GUI บน Windows</div>
+    <h2>ห่อเป็นแอป Desktop ด้วย Electron</h2>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:16px;">
+      รัน Express server ไว้ข้างในตัวแอปเอง แล้วแสดงหน้าจัดการ endpoint เป็นหน้าต่าง Windows ปกติ — กด <code>.exe</code> เดียวเปิดได้เลย ไม่ต้องเปิด browser แยก
+    </p>
+    <div class="callout">
+      <b>แนวคิด:</b> Electron = Chromium + Node.js ในตัวเดียวกัน จึงเรียก <code>itoolkit</code>/<code>odbc</code> จากฝั่ง main process ได้ตรงๆ แล้วส่งผลลัพธ์ขึ้นหน้า GUI ผ่าน IPC — ได้ทั้ง "API server" และ "หน้าต่างโปรแกรม" ในไฟล์เดียว
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">05 · เริ่มลงมือ</div>
+    <h2>ขั้นตอนแรก (เชื่อม pub400)</h2>
+    <ol class="steps">
+      <li><strong>ติดตั้ง IBM i Access ODBC Driver</strong> บนเครื่อง PC ของคุณ</li>
+      <li><strong>สร้างโปรเจกต์</strong> — <code>npm install odbc express dotenv</code></li>
+      <li><strong>ทดสอบเชื่อมต่อ</strong> ผ่าน <code>SYSTEM=www.pub400.com;PORT=8471</code></li>
+      <li><strong>เช็ค XMLSERVICE</strong> บน pub400 ว่า user ทั่วไปเรียกได้ไหม (สำหรับเรียก RPG/CL)</li>
+      <li><strong>ทำ endpoint แรก</strong> เช่น query ตาราง <code>QIWS.QCUSTCDT</code> ก่อน</li>
+      <li><strong>ขยายทีละ endpoint</strong> จนครอบคลุมสิ่งที่ IWS เดิมทำอยู่</li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="sec-label">06 · Roadmap</div>
+    <h2>แผนพัฒนา 4 เฟส</h2>
+    <table>
+      <tr><th>เฟส</th><th>เป้าหมาย</th><th>สิ่งที่ต้องทำ</th></tr>
+      <tr>
+        <td><b>Phase 1</b><br><span style="color:var(--text-dim); font-size:12px;">Connectivity</span></td>
+        <td>เชื่อม PC ↔ pub400 ได้จริง</td>
+        <td>ติดตั้ง ODBC driver, ต่อ <code>odbc</code>, query DB2 อ่านอย่างเดียวได้สำเร็จ</td>
+      </tr>
+      <tr>
+        <td><b>Phase 2</b><br><span style="color:var(--text-dim); font-size:12px;">Program Call</span></td>
+        <td>เรียก RPG/CL ได้แบบ IWS เดิม</td>
+        <td>ตั้งค่า/ตรวจสอบ XMLSERVICE, ติดตั้ง <code>itoolkit</code>, ทำ endpoint เรียกโปรแกรมตัวอย่าง</td>
+      </tr>
+      <tr>
+        <td><b>Phase 3</b><br><span style="color:var(--text-dim); font-size:12px;">API Layer</span></td>
+        <td>มี API มาตรฐานใช้ซ้ำได้</td>
+        <td>ออกแบบ route ตาม resource, เพิ่ม validation, error handling, connection pooling</td>
+      </tr>
+      <tr>
+        <td><b>Phase 4</b><br><span style="color:var(--text-dim); font-size:12px;">Desktop GUI</span></td>
+        <td>แอป Windows ใช้งานจริง</td>
+        <td>ห่อด้วย Electron, ทำหน้าจัดการ/ทดสอบ endpoint, เก็บ config เป็น .env หรือ settings UI</td>
+      </tr>
+    </table>
+  </section>
+
+  <section>
+    <div class="sec-label">07 · Prompt สำหรับ Agent</div>
+    <h2>สั่งทีละ Phase (คัดลอกไปวางได้เลย)</h2>
+
+    <p style="color:var(--text-dim); font-size:13px; margin-bottom:24px;">
+      ใช้ทีละ prompt ตามลำดับ เฟสไหนรันผ่านแล้วค่อยเอา prompt เฟสถัดไปไปสั่งต่อ ไม่ต้องรวมกันในครั้งเดียว
+    </p>
+
+    <div class="sec-label" style="margin-top:0;">Phase 1 — Connectivity</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">สร้างโปรเจกต์ Node.js ชื่อ "iws-clone" ทำทีละขั้นตอนดังนี้:
+
+1. รัน npm init -y แล้วติดตั้ง express, odbc, dotenv
+2. สร้างไฟล์ .env.example ที่มี PUB400_USER= และ PUB400_PASS= (ไม่ใส่ค่าจริง)
+3. สร้าง db.js: ทำ connection pool ด้วย odbc.pool() เชื่อมต่อ
+   DRIVER={IBM i Access ODBC Driver};SYSTEM=www.pub400.com;PORT=8471;
+   UID=&lt;จาก .env&gt;;PWD=&lt;จาก .env&gt;
+4. สร้าง server.js เป็น Express บนพอร์ต 3000 พร้อม endpoint เดียวคือ
+   GET /api/health ที่เช็คว่าเชื่อม pub400 ได้ไหม คืน { status: "ok" }
+   หรือ { status: "error", message }
+5. เพิ่ม GET /api/customers query ตาราง QIWS.QCUSTCDT คืนเป็น JSON โดยตอบกลับ
+   ตาม pattern ของ IWS จริง คือมี field P_ISFOUND เป็น string "1"/"0" บอกว่า
+   เจอข้อมูลไหม เช่น { "P_ISFOUND": "1", "data": [...] } หรือถ้าไม่เจอ
+   { "P_ISFOUND": "0", "data": [] }
+6. ทำตัวอย่าง field mapping ให้เห็นชัดเจน 1 endpoint เช่น
+   GET /api/employee?empid=xxx ที่ map ชื่อ field จริงในตาราง (เช่น รหัส
+   พนักงาน) ให้ออกมาเป็นชื่อ field ที่ต้องการฝั่ง response เอง
+   ไม่ใช่คืนชื่อ column ดิบจากฐานข้อมูลตรงๆ
+7. เขียน README.md อธิบายการติดตั้ง IBM i Access ODBC Driver บน Windows,
+   วิธีตั้งค่า .env, วิธีรัน, และอธิบาย pattern P_ISFOUND ที่ใช้ทุก endpoint
+8. ทดสอบรันจริงแล้วรายงานผลกลับมาว่า endpoint ไหนทำงานได้บ้าง
+
+ห้ามใช้ itoolkit ในเฟสนี้ โฟกัสแค่ ODBC ให้เสถียรก่อน
+ห้ามใช้ข้อมูลจริงของบริษัทใดๆ ทดสอบบน pub400 ใช้ข้อมูลสมมติ/ตัวอย่างเท่านั้น
+ทุก query ต้องใช้ parameterized query ห้ามต่อ string ตรงๆ เข้า SQL</div>
+
+    <div class="sec-label" style="margin-top:32px;">Phase 2 — Program Call (RPG/CL)</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ต่อยอดจากโปรเจกต์ "iws-clone" เดิม ทำทีละขั้นตอนดังนี้:
+
+1. เช็คก่อนว่า pub400 เปิดใช้ XMLSERVICE ให้ user ทั่วไปหรือไม่ ถ้าไม่แน่ใจ
+   ให้เขียนสคริปต์ทดสอบสั้นๆ เพื่อยืนยันก่อนเขียนโค้ดจริง
+2. ติดตั้ง itoolkit และ fast-xml-parser
+3. สร้าง ibmi.js: ฟังก์ชัน callProgram(programName, params) ที่ห่อ
+   itoolkit Connection + ProgramCall ไว้ใช้ซ้ำได้ทุก endpoint
+4. เพิ่ม endpoint ตัวอย่าง POST /api/program/:name รับพารามิเตอร์จาก body
+   แล้วเรียกโปรแกรมผ่าน callProgram() คืนผลลัพธ์เป็น JSON
+5. เพิ่ม endpoint สำหรับรันคำสั่ง CL เช่น POST /api/command รับ command
+   string แล้วรันผ่าน CommandCall ของ itoolkit
+6. เพิ่ม error handling เฉพาะของ itoolkit (เช่น timeout, XML parse error)
+   ให้คืน error message ที่อ่านง่าย ไม่ใช่ raw XML
+7. อัปเดต README.md เพิ่มส่วนอธิบายวิธีเรียกโปรแกรมผ่าน endpoint ใหม่
+8. ทดสอบเรียกโปรแกรมง่ายๆ 1 ตัวจริงบน pub400 แล้วรายงานผล</div>
+
+    <div class="sec-label" style="margin-top:32px;">Phase 3 — API Layer</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ปรับโครงสร้างโปรเจกต์ "iws-clone" ให้เป็น API ที่ใช้งานจริงได้ ทำทีละขั้นตอน:
+
+1. จัดกลุ่ม routes ใหม่ตาม resource แยกเป็นไฟล์ใน /routes
+   (เช่น routes/customers.js, routes/programs.js, routes/commands.js)
+2. เพิ่ม validation ด้วย library เช่น zod ตรวจสอบ input ทุก endpoint
+   ก่อนส่งไปหา pub400
+3. จำกัดสิทธิ์ /api/query ให้รับเฉพาะ SELECT statement เท่านั้น
+   ปฏิเสธ INSERT/UPDATE/DELETE/DROP ด้วย regex หรือ SQL parser
+4. เพิ่ม logging กลาง (เช่น morgan หรือ pino) log ทุก request/response
+   พร้อมเวลาและ endpoint ที่เรียก
+5. เพิ่ม rate limiting เบื้องต้นกันเรียกถี่เกินไปจนโดน pub400 บล็อก
+6. เขียน integration test อย่างน้อย 1 ไฟล์ทดสอบ endpoint หลักด้วย
+   supertest
+7. อัปเดต README.md ให้เป็นเอกสาร API แบบสมบูรณ์ (list endpoint ทั้งหมด
+   พร้อมตัวอย่าง request/response)</div>
+
+    <div class="sec-label" style="margin-top:32px;">Phase 4 — Desktop GUI (Electron)</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ห่อโปรเจกต์ "iws-clone" ให้เป็นแอป Windows ด้วย Electron ทำทีละขั้นตอน:
+
+1. ติดตั้ง electron และ electron-builder ในโปรเจกต์
+2. สร้าง main.js: ให้ Electron รัน Express server (จาก Phase 1-3) เป็น
+   background process ตอนเปิดแอป แล้วเปิดหน้าต่างโหลดหน้า GUI
+3. สร้างหน้า GUI เดียว (index.html + renderer.js) ที่มี:
+   - ฟอร์มกรอก user/password สำหรับ pub400 (เก็บด้วย electron-store
+     ไม่ hardcode)
+   - ปุ่มทดสอบการเชื่อมต่อ (เรียก /api/health)
+   - ตารางแสดงผลลัพธ์เวลาทดสอบ endpoint ต่างๆ
+   - ช่องให้พิมพ์ SQL หรือชื่อโปรแกรมเพื่อทดสอบยิง request ได้จาก GUI เลย
+4. ใช้ IPC (ipcMain/ipcRenderer) เชื่อม renderer กับ main process แทนการ
+   เรียก HTTP ตรงจากหน้าเว็บ เพื่อความปลอดภัย (contextIsolation: true)
+5. ตั้งค่า electron-builder ให้ build ออกมาเป็นไฟล์ .exe สำหรับ Windows
+6. ทดสอบ build แล้วรันไฟล์ .exe จริง 1 ครั้ง รายงานผลว่าเปิดและเชื่อม
+   pub400 ได้หรือไม่</div>
+  </section>
+
+  <section>
+    <div class="sec-label">08 · ข้อควรระวัง</div>
+    <h2>Safety checklist</h2>
+    <ol class="steps">
+      <li><strong>ห้ามใช้ข้อมูลจริงของบริษัท</strong> ไปทดสอบบน pub400 หรือระบบสาธารณะใดๆ — ใช้ข้อมูลสมมติเท่านั้น</li>
+      <li><strong>Parameterized query เสมอ</strong> ป้องกัน SQL Injection ห้ามต่อ string ตรงๆ เข้า query</li>
+      <li><strong>ห้าม commit ไฟล์ .env</strong> ที่มี password ขึ้น GitHub — ใส่ใน <code>.gitignore</code> ตั้งแต่ commit แรก</li>
+      <li><strong>โปรเจกต์นี้เหมาะกับฝึกส่วนตัว/จำลองเท่านั้น</strong> ไม่ใช่ระบบ production — ต้องรัน Node.js อยู่บน PC ตลอดเวลาที่ใช้งาน ปิดเครื่อง endpoint ก็หายไปด้วย</li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="sec-label">09 · ไฟล์สำหรับ Agent</div>
+    <h2>CLAUDE.md · AGENTS.md · PLAN.md · SKILL.md</h2>
+    <p style="color:var(--text-dim); font-size:13px; margin-bottom:20px;">
+      ไฟล์เหล่านี้วางไว้ที่ root ของโปรเจกต์ (ยกเว้น SKILL.md) ให้ agent อ่านอัตโนมัติทุกครั้งที่เริ่มงาน จะได้ไม่ต้องอธิบายบริบทซ้ำทุกรอบ
+    </p>
+
+    <div class="diagram">
+      <div class="flow">
+        <div class="box"><b>iws-clone/</b></div>
+      </div>
+      <div style="text-align:center; color:var(--text-dim); font-size:12px; margin-top:-4px;">
+├── CLAUDE.md<br>
+├── AGENTS.md<br>
+├── PLAN.md<br>
+├── .claude/skills/ibmi-pub400/SKILL.md<br>
+├── server.js, db.js, routes/ ...
+      </div>
+    </div>
+
+    <div class="sec-label" style="margin-top:28px;">CLAUDE.md — บริบทหลักของโปรเจกต์</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;"># iws-clone
+
+Middleware API จำลองการทำงานของ IBM i Integrated Web Services (IWS)
+รันบน PC เชื่อมต่อ IBM i (pub400.com) ผ่าน ODBC/itoolkit แทน IWS จริง
+(ไม่มีสิทธิ์ deploy IWS บนบริษัทหรือ pub400 ได้ทั้งคู่)
+
+## Tech stack
+- Node.js + Express
+- odbc (npm) + IBM i Access ODBC Driver
+- itoolkit — เรียก RPG/CL (Phase 2 ขึ้นไป)
+- Electron — GUI บน Windows (Phase 4)
+
+## คำสั่งที่ใช้บ่อย
+- npm install
+- npm run dev      รัน server แบบ watch mode
+- npm test         รัน integration test
+
+## กฎที่ต้องทำตามทุกครั้ง
+- ทุก endpoint ต้องตอบ field P_ISFOUND เป็น "1"/"0" (ดูตัวอย่างใน SKILL.md)
+- ต้องใช้ parameterized query เท่านั้น ห้ามต่อ SQL string ตรงๆ
+- ห้ามใช้ข้อมูลจริงของบริษัทใดๆ ทดสอบบน pub400
+- ห้าม commit ไฟล์ .env
+- เชื่อมต่อ pub400 ต้องใช้ connection pool ห้ามเปิด/ปิดทุก request
+
+## อ้างอิงเพิ่มเติม
+- สถานะงาน/roadmap → PLAN.md
+- รายละเอียดการเชื่อมต่อ pub400 และ pattern ของ IWS → .claude/skills/ibmi-pub400/SKILL.md</div>
+
+    <div class="sec-label" style="margin-top:28px;">AGENTS.md — สำหรับ agent เครื่องมืออื่นที่ไม่อ่าน CLAUDE.md</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;"># AGENTS.md
+
+โปรเจกต์นี้คือ "iws-clone" — ดูรายละเอียดเต็มใน CLAUDE.md (เนื้อหาเดียวกัน)
+ไฟล์นี้มีไว้เพื่อ agent/เครื่องมืออื่นที่อ่านมาตรฐาน AGENTS.md แทน CLAUDE.md
+
+## ขอบเขตงานที่ agent ทำได้
+- แก้ไข/เพิ่มไฟล์ใน routes/, db.js, server.js, tests/
+- ห้ามแก้ .env หรือใส่ credential ตรงๆ ในโค้ด
+- ห้ามรัน query ที่ไม่ใช่ SELECT บน pub400 โดยไม่ถามก่อน
+
+## ก่อน commit ทุกครั้ง
+- รัน npm test ผ่านทั้งหมด
+- เช็คว่าไม่มี password/credential หลุดในไฟล์ที่ commit</div>
+
+    <div class="sec-label" style="margin-top:28px;">PLAN.md — roadmap แบบ living document</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;"># PLAN.md
+
+## Phase 1 — Connectivity
+- [ ] เชื่อม ODBC ไป pub400 สำเร็จ
+- [ ] GET /api/health
+- [ ] GET /api/customers (ตอบตาม pattern P_ISFOUND)
+
+## Phase 2 — Program Call (RPG/CL)
+- [ ] เช็คสิทธิ์ XMLSERVICE บน pub400
+- [ ] callProgram() ผ่าน itoolkit
+- [ ] POST /api/program/:name
+
+## Phase 3 — API Layer
+- [ ] แยก routes ตาม resource
+- [ ] validation (zod)
+- [ ] จำกัด /api/query เฉพาะ SELECT
+
+## Phase 4 — Desktop GUI
+- [ ] ห่อด้วย Electron
+- [ ] หน้าทดสอบ endpoint ในตัว
+- [ ] build .exe
+
+## บันทึกล่าสุด
+(อัปเดตทุกครั้งที่ทำงานเสร็จ 1 ขั้น — เขียนวันที่ + สิ่งที่ทำ + ปัญหาที่เจอ)</div>
+
+    <div class="sec-label" style="margin-top:28px;">.claude/skills/ibmi-pub400/SKILL.md — ความรู้เฉพาะโดเมน</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">---
+name: ibmi-pub400
+description: ใช้เมื่อต้องเขียน endpoint ที่เชื่อมต่อ IBM i / pub400, จำลอง
+  พฤติกรรมของ IWS, หรือแปลง RPG/DB2 field ให้เป็น REST response
+---
+
+# การเชื่อมต่อ pub400
+SYSTEM=www.pub400.com, PORT=8471 (ไม่เข้ารหัส) หรือ 9471 (SSL)
+ใช้ driver "IBM i Access ODBC Driver", credential เก็บใน .env เท่านั้น
+
+# Pattern การตอบกลับแบบ IWS
+ทุก endpoint ต้องมี field P_ISFOUND เป็น string "1"/"0"
+ตัวอย่างจริง: GET /minpop?empid=25066
+  → { "P_EMPNAME": "I.KIDAKORN", "P_ISFOUND": "1" }
+
+# Field mapping
+ชื่อ column จริงในตาราง (เช่น CDOPCD, NMOPCD) ไม่ตรงกับชื่อ response
+(เช่น empid, P_EMPNAME) — ต้อง map เองใน res.json() เสมอ ห้ามคืนชื่อ
+column ดิบตรงๆ
+
+# ข้อจำกัดของ pub400
+- user ทั่วไปมักไม่มีสิทธิ์ deploy IWS จริง (ต้อง authority สูง)
+- ไม่แน่ใจว่า XMLSERVICE เปิดให้ใช้ไหม ต้องทดสอบก่อนเขียนโค้ด Phase 2
+- ห้ามใช้ข้อมูลจริงของบริษัทใดๆ ทดสอบบน pub400</div>
+
+    <div class="callout" style="margin-top:20px;">
+      <b>ทำไมต้องแยกเป็น 4 ไฟล์:</b> CLAUDE.md/AGENTS.md บอก "บริบทของทั้งโปรเจกต์"
+      ให้ agent เห็นทันทีตอนเริ่มงาน, PLAN.md ติดตาม "ตอนนี้ทำถึงไหนแล้ว"
+      จะได้สั่งงานต่อได้โดยไม่ต้องอธิบายซ้ำ, ส่วน SKILL.md เก็บ "ความรู้เฉพาะโดเมน"
+      (pub400 + IWS pattern) แยกไว้ต่างหาก เผื่อเอาไปใช้ซ้ำกับโปรเจกต์อื่นที่เกี่ยวกับ IBM i ได้เลย
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  สรุปจากบทสนทนา · แนวทางอ้างอิงจาก IBM/nodejs-itoolkit และ IBM i Access ODBC Driver
+</footer>
+
+</body>
+</html>
