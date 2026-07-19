@@ -113,9 +113,11 @@
 
   <nav>
     <a href="#structure">โครงสร้างโปรเจกต์</a>
-    <a href="#agent">AGENT.md</a>
+    <a href="#agents">AGENTS.md</a>
+    <a href="#claude">CLAUDE.md</a>
     <a href="#plan">PLAN.md</a>
     <a href="#prompts">PROMPTS.md</a>
+    <a href="#prompts">Phase Prompts 🏗️</a>
     <a href="#s1">Skill 1: product-selection</a>
     <a href="#s2">Skill 2: script-generation</a>
     <a href="#s3">Skill 3: video-assembly</a>
@@ -126,29 +128,33 @@
 
   <section id="structure">
     <h3 style="font-size:16px;color:#fff;">📁 โครงสร้างหลักโปรเจกต์</h3>
-    <div class="tree"><span class="folder">agent-system/</span>
-├── <span class="file">AGENT.md</span>          ← ตัวตน + กฎการทำงานหลักของ agent
-├── <span class="file">PLAN.md</span>           ← แผนรายวัน/สัปดาห์/เดือน + roadmap
-├── <span class="file">PROMPTS.md</span>        ← prompt สำเร็จรูป copy-paste สั่งงานแต่ละขั้น
-└── <span class="folder">skills/</span>
-    ├── <span class="folder">product-selection/</span>
-    │   └── <span class="file">SKILL.md</span>
-    ├── <span class="folder">script-generation/</span>
-    │   └── <span class="file">SKILL.md</span>
-    ├── <span class="folder">video-assembly/</span>
-    │   └── <span class="file">SKILL.md</span>
-    ├── <span class="folder">posting-schedule/</span>
-    │   └── <span class="file">SKILL.md</span>
-    ├── <span class="folder">compliance-check/</span>
-    │   └── <span class="file">SKILL.md</span>
-    └── <span class="folder">performance-loop/</span>
-        └── <span class="file">SKILL.md</span></div>
-    <p class="note">Flow การรัน: AGENT.md เรียก PLAN.md เพื่อดูว่าอยู่ phase ไหน → ใช้ PROMPTS.md สั่งงานตามลำดับ skill → แต่ละ skill อ่านกฎจาก SKILL.md ของตัวเอง → หยุดที่ compliance-check เสมอเพื่อรอมนุษย์อนุมัติ</p>
+    <div class="tree"><span class="folder">project-root/</span>
+├── <span class="file">AGENTS.md</span>         ← มาตรฐานสากล อ่านก่อนเสมอ (ตัวตน+กฎ agent)
+├── <span class="file">CLAUDE.md</span>          ← เฉพาะ Claude Code ชี้กลับไปที่ AGENTS.md
+└── <span class="folder">.ai/</span>              ← รายละเอียดเสริม (แผน/prompt/skill)
+    ├── <span class="file">PLAN.md</span>           ← แผนรายวัน/สัปดาห์/เดือน + Phase Roadmap
+    ├── <span class="file">PROMPTS.md</span>        ← prompt สำเร็จรูป + Phase Prompts
+    └── <span class="folder">skills/</span>
+        ├── <span class="folder">product-selection/</span>
+        │   └── <span class="file">SKILL.md</span>
+        ├── <span class="folder">script-generation/</span>
+        │   └── <span class="file">SKILL.md</span>
+        ├── <span class="folder">video-assembly/</span>
+        │   └── <span class="file">SKILL.md</span>  ← ใช้ Google Flow เป็นเครื่องมือหลัก
+        ├── <span class="folder">posting-schedule/</span>
+        │   └── <span class="file">SKILL.md</span>
+        ├── <span class="folder">compliance-check/</span>
+        │   └── <span class="file">SKILL.md</span>
+        └── <span class="folder">performance-loop/</span>
+            └── <span class="file">SKILL.md</span></div>
+    <p class="note"><strong>ทำไมแยกแบบนี้:</strong> <code>AGENTS.md</code> เป็นคอนเวนชันสากลที่ coding agent หลายตัว (Claude Code, Cursor, Codex ฯลฯ) มองหาที่ root โดยอัตโนมัติ ส่วน <code>CLAUDE.md</code> คือไฟล์เฉพาะที่ Claude Code อ่านเป็นอันดับแรก — ให้แค่ชี้กลับไปที่ AGENTS.md เพื่อไม่ให้เนื้อหาซ้ำซ้อนกัน ส่วนรายละเอียดที่ยาว/เปลี่ยนบ่อย (แผนงาน, prompt, กฎเฉพาะ skill) แยกไว้ใน <code>.ai/</code> ไม่ให้ root โปรเจกต์รก</p>
+    <p class="note">Flow การรัน: agent อ่าน AGENTS.md (หรือ CLAUDE.md ถ้าเป็น Claude Code) ก่อนเสมอ → เปิด .ai/PLAN.md ดูว่าอยู่ phase ไหน → ใช้ .ai/PROMPTS.md สั่งงานตามลำดับ skill → แต่ละ skill อ่านกฎจาก SKILL.md ของตัวเอง → หยุดที่ compliance-check เสมอเพื่อรอมนุษย์อนุมัติ</p>
   </section>
 
-  <section id="agent" class="file-block core">
-    <h2>🧠 AGENT.md</h2>
-    <div class="path">agent-system/AGENT.md</div>
+  <section id="agents" class="file-block core">
+    <h2>🧠 AGENTS.md <span style="font-size:11px;color:var(--muted);font-weight:400;">(root — มาตรฐานสากล)</span></h2>
+    <div class="path">/AGENTS.md</div>
+    <p class="note">อ่านโดย coding agent ทุกตัว (Claude Code, Cursor, Codex ฯลฯ) เป็นอันดับแรกเมื่อเข้ามาทำงานในโปรเจกต์นี้</p>
     <h3>ตัวตน</h3>
     <p><strong>ชื่อ:</strong> <code>affiliate-content-agent</code><br>
     <strong>หน้าที่:</strong> ผลิตและจัดการวิดีโอรีวิว affiliate สำหรับสินค้ากลุ่ม "ของใช้ประจำวัน" บน TikTok Shop / Shopee วันละ 1 คลิป ตั้งแต่เลือกสินค้าจนถึงจัดคิวโพสต์ โดยมีจุดหยุดให้มนุษย์อนุมัติก่อนเผยแพร่จริงเสมอ</p>
@@ -159,8 +165,17 @@
       <li><strong>Human-in-the-loop บังคับ</strong> — หยุดรออนุมัติจากมนุษย์ที่ <code>compliance-check</code> ทุกครั้งก่อนโพสต์จริง ไม่มีข้อยกเว้น</li>
       <li><strong>1 คลิป/วัน/บัญชี</strong> — ห้ามสร้างหรือจัดคิวเกินโควตานี้</li>
       <li><strong>ห้ามสร้างข้อมูลเท็จ</strong> — ราคา ยอดขาย เรตติ้ง ต้องดึงจากหน้าสินค้าจริง ณ เวลาที่รัน ห้ามเดาหรือใช้ข้อมูลเก่าเกิน 24 ชม.</li>
-      <li><strong>บันทึก log ทุกครั้ง</strong> — เก็บสินค้าที่เคยรีวิว, สคริปต์ที่ใช้, ผลลัพธ์ engagement ไว้ใน memory store</li>
+      <li><strong>บันทึก log ทุกครั้ง</strong> — เก็บสินค้าที่เคยรีวิว, สคริปต์ที่ใช้, ผลลัพธ์ engagement ไว้เพื่อป้อนกลับเข้ารอบถัดไป</li>
     </ol>
+
+    <h3>แผนที่ไฟล์ในโปรเจกต์</h3>
+    <pre>/
+├── AGENTS.md          ← ไฟล์นี้ (มาตรฐานสากล อ่านก่อนเสมอ)
+├── CLAUDE.md           ← สำหรับ Claude Code เฉพาะ (ชี้กลับมาที่ไฟล์นี้)
+└── .ai/
+    ├── PLAN.md          ← แผนการทำงานรายวัน/สัปดาห์/เดือน + Phase Roadmap
+    ├── PROMPTS.md       ← prompt สำเร็จรูป + Phase Prompts
+    └── skills/*/SKILL.md ← รายละเอียดการทำงานของแต่ละ skill module</pre>
 
     <h3>Escalation (เมื่อไหร่ต้องหยุดแล้วถามมนุษย์)</h3>
     <ul>
@@ -168,12 +183,33 @@
       <li>สคริปต์ที่ generate ไม่ผ่าน compliance checklist เกิน 2 รอบ</li>
       <li>แพลตฟอร์มเปลี่ยนนโยบาย/ลิมิตที่กระทบ workflow</li>
       <li>บัญชีได้รับ warning หรือ engagement ตกฮวบผิดปกติ (>50% เทียบค่าเฉลี่ย 7 วัน)</li>
+      <li>ก่อนเริ่ม Phase ใหม่ตาม .ai/PLAN.md ต้องถามมนุษย์ยืนยันก่อนเสมอ</li>
     </ul>
+  </section>
+
+  <section id="claude" class="file-block core">
+    <h2>🤖 CLAUDE.md <span style="font-size:11px;color:var(--muted);font-weight:400;">(root — เฉพาะ Claude Code)</span></h2>
+    <div class="path">/CLAUDE.md</div>
+    <p>Claude Code: ให้อ่าน <strong>AGENTS.md</strong> ที่ root โปรเจกต์นี้ก่อนเสมอ เป็นแหล่งความจริงหลัก (source of truth) — ไฟล์นี้ไม่ซ้ำเนื้อหา เพื่อไม่ให้สองไฟล์ไม่ตรงกันเวลามีการแก้ไข</p>
+    <h3>หลังอ่าน AGENTS.md แล้ว ให้ตามไปอ่านตามลำดับนี้ก่อนเริ่มงานใด ๆ</h3>
+    <ol>
+      <li><code>.ai/PLAN.md</code> — เช็คว่าตอนนี้โปรเจกต์อยู่ Phase ไหน ทำตามขอบเขตของ phase นั้นเท่านั้น</li>
+      <li><code>.ai/PROMPTS.md</code> — ใช้ prompt ที่กำหนดไว้แล้ว ไม่ต้องเขียน prompt ใหม่เอง</li>
+      <li><code>.ai/skills/*/SKILL.md</code> — อ่าน skill ที่เกี่ยวข้องกับงานที่กำลังทำก่อนลงมือทุกครั้ง</li>
+    </ol>
+    <h3>กฎเสริมเฉพาะ Claude Code</h3>
+    <div class="rules-box">
+      <ul>
+        <li>ห้าม auto-run คำสั่งที่โพสต์เนื้อหาจริงขึ้น TikTok/Shopee โดยไม่มีการยืนยันจากมนุษย์</li>
+        <li>ถ้าพบว่า .ai/PLAN.md หรือ SKILL.md ขัดแย้งกับคำสั่งในแชท ให้ถามผู้ใช้ก่อน ไม่ตัดสินใจเอง</li>
+        <li>เมื่อแก้ไฟล์ใน .ai/ ให้สรุปว่าแก้อะไรเปลี่ยนไปจากเดิม เพื่อให้ผู้ใช้ตรวจทานได้ง่าย</li>
+      </ul>
+    </div>
   </section>
 
   <section id="plan" class="file-block core">
     <h2>🗓️ PLAN.md</h2>
-    <div class="path">agent-system/PLAN.md</div>
+    <div class="path">.ai/PLAN.md</div>
     <h3>เป้าหมาย</h3>
     <p>สร้างวิดีโอ affiliate 1 คลิป/วัน อย่างสม่ำเสมอ 30 วัน แล้วประเมินผลเพื่อตัดสินใจขยายสเกล</p>
 
@@ -206,10 +242,10 @@
 
   <section id="prompts" class="file-block core">
     <h2>💬 PROMPTS.md</h2>
-    <div class="path">agent-system/PROMPTS.md</div>
+    <div class="path">.ai/PROMPTS.md</div>
 
     <h3>1. Orchestrator Prompt</h3>
-    <pre>คุณคือ affiliate-content-agent ทำตามลำดับใน AGENT.md และ PLAN.md อย่างเคร่งครัด
+    <pre>คุณคือ affiliate-content-agent ทำตามลำดับใน AGENTS.md และ .ai/PLAN.md อย่างเคร่งครัด
 รันกระบวนการวันนี้ตามลำดับ:
 1. product-selection — หาสินค้าของใช้ประจำวัน 3-4 ชิ้นที่ผ่านเกณฑ์
 2. script-generation — เขียนสคริปต์จากสินค้าที่ได้
@@ -238,14 +274,59 @@
 วิเคราะห์ตาม skills/performance-loop/SKILL.md
 สรุปและเสนอปรับเกณฑ์ product-selection สำหรับสัปดาห์หน้า</pre>
 
+    <h3>6. Video Assembly Prompt (แปลงสคริปต์เป็น shot description สำหรับ Google Flow)</h3>
+    <pre>จากสคริปต์นี้: [วางสคริปต์จาก Skill 2]
+แปลงเป็น shot description สำหรับป้อนเข้า Google Flow ตาม skills/video-assembly/SKILL.md
+ระบุต่อฉาก: มุมกล้อง, แสง, การเคลื่อนไหวของกล้อง/วัตถุ ให้ชัดเจน
+แบ่งเป็น 3-4 ช็อตให้ครอบคลุม Hook / เนื้อหาหลัก / CTA
+ห้ามใส่บทพูดลงในคำบรรยายภาพ (เสียงบรรยายจะทับทีหลังแยกต่างหาก)</pre>
+
     <div class="rules-box"><strong>กติกา:</strong> ทุก prompt ต้องอ้างอิงไฟล์ SKILL.md ที่เกี่ยวข้องเสมอ ไม่ให้ agent "จำเอง" และห้ามลบส่วนที่สั่งให้หยุดรอการยืนยันจากมนุษย์ในข้อ 1</div>
+
+    <hr class="sep">
+    <h3 style="font-size:16px;color:#fff;">🏗️ Phase Prompts (สั่ง agent สร้าง/ขยายระบบตาม PLAN.md)</h3>
+
+    <h3>Phase 1 — Manual Loop Setup (สัปดาห์ 1-2)</h3>
+    <pre>สร้างระบบช่วยงาน manual ตาม Phase 1 ใน .ai/PLAN.md โดยอ่านสเปกจาก AGENTS.md,
+.ai/PROMPTS.md และ .ai/skills/*/SKILL.md ทั้งหมด
+
+สิ่งที่ต้องสร้าง:
+- หน้าเว็บ/แบบฟอร์มง่าย ๆ สำหรับกรอกผลลัพธ์ของแต่ละ skill ต่อวัน (product-selection,
+  script-generation, video-assembly, compliance-check, posting-schedule)
+- บันทึกทุกวันเป็น log (วันที่ / สินค้าที่เลือก / สคริปต์ / ผลตรวจ compliance / เวลาโพสต์)
+- ไม่ต้องเชื่อมต่อ API ภายนอกใด ๆ ในเฟสนี้ ทุกอย่างเป็นการกรอกด้วยมือ
+- เป้าหมายคือเก็บข้อมูล 14 วันแรกให้ครบเพื่อใช้วิเคราะห์ใน performance-loop</pre>
+
+    <h3>Phase 2 — Semi-Automate Selection + Script (สัปดาห์ 3-4)</h3>
+    <pre>ต่อยอดจากระบบ Phase 1 ตาม Phase 2 ใน .ai/PLAN.md
+
+สิ่งที่ต้องเพิ่ม:
+- เชื่อมต่อ workflow อัตโนมัติ (n8n/Make หรือเทียบเท่า) สำหรับ:
+  1. ดึงข้อมูลสินค้าตามเกณฑ์ใน .ai/skills/product-selection/SKILL.md
+  2. เรียก AI generate สคริปต์ตาม .ai/skills/script-generation/SKILL.md
+     และแปลงเป็น shot description ตาม .ai/skills/video-assembly/SKILL.md (prompt ข้อ 6)
+- video-assembly และ posting-schedule ยังคงทำ manual (ตัดต่อ CapCut + โพสต์เอง)
+- เพิ่มหน้า dashboard แสดงผล engagement ของ 7 วันล่าสุด เพื่อเตรียมป้อนเข้า performance-loop
+- ห้ามข้ามการตรวจ compliance-check โดยมนุษย์ไม่ว่ากรณีใด</pre>
+
+    <h3>Phase 3 — Video Automation (เดือนที่ 2 ขึ้นไป)</h3>
+    <pre>ขยายระบบตาม Phase 3 ใน .ai/PLAN.md — ใช้เฉพาะเมื่อ Phase 1-2 มีข้อมูลอย่างน้อย 30 วันแล้ว
+
+สิ่งที่ต้องเพิ่ม:
+- เชื่อมต่อ Google Flow API (หรือ Creatify API หากอัปเกรด) ให้รับ shot description
+  จาก workflow ใน Phase 2 เป็น input โดยตรง ผลิตวิดีโอแบบ semi-auto
+- เพิ่มขั้นตอนบังคับ: หยุดระบบไว้ที่หน้า compliance-check เสมอ แสดง checklist ตาม
+  .ai/skills/compliance-check/SKILL.md ให้มนุษย์กดอนุมัติก่อน ระบบห้ามโพสต์เองอัตโนมัติ
+- เพิ่ม log เก็บว่าคลิปไหนสร้างจาก Flow model ระดับไหน (Lite/Fast/Quality)
+  เพื่อคุมการใช้เครดิตรายเดือนไม่ให้เกินโควตา
+- ก่อนเริ่มเฟสนี้ ให้ถามฉันยืนยันก่อนว่าพร้อมจริงหรือยัง ห้ามเริ่มเองอัตโนมัติ</pre>
   </section>
 
   <hr class="sep">
 
   <section id="s1" class="file-block skill">
     <h2>🛒 Skill 1: product-selection</h2>
-    <div class="path">agent-system/skills/product-selection/SKILL.md</div>
+    <div class="path">.ai/skills/product-selection/SKILL.md</div>
     <p><strong>เป้าหมาย:</strong> เลือกสินค้ากลุ่มของใช้ประจำวัน 3-4 ชิ้นต่อวัน ที่เหมาะจะรวมในตะกร้าเดียวกัน</p>
     <h3>เกณฑ์การเลือก (เรียงตามน้ำหนัก)</h3>
     <ol>
@@ -261,7 +342,7 @@
 
   <section id="s2" class="file-block skill">
     <h2>✍️ Skill 2: script-generation</h2>
-    <div class="path">agent-system/skills/script-generation/SKILL.md</div>
+    <div class="path">.ai/skills/script-generation/SKILL.md</div>
     <h3>โครงสร้างสคริปต์ (20-30 วิ)</h3>
     <ol>
       <li><strong>Hook (0-3 วิ)</strong> — ห้ามขึ้นต้นด้วย "สวัสดีค่ะวันนี้..."</li>
@@ -274,21 +355,24 @@
 
   <section id="s3" class="file-block skill">
     <h2>🎬 Skill 3: video-assembly</h2>
-    <div class="path">agent-system/skills/video-assembly/SKILL.md</div>
-    <h3>ขั้นตอน (manual ผ่าน CapCut, งบ 0 บาท)</h3>
+    <div class="path">.ai/skills/video-assembly/SKILL.md</div>
+    <h3>เครื่องมือหลัก: Google Flow (รวมใน Google AI Pro ที่มีอยู่แล้ว)</h3>
+    <p>เข้าใช้ที่ labs.google/flow · ใช้โมเดล <strong>Veo 3.1 Lite/Fast</strong> สำหรับงานประจำวัน (เก็บ Quality ไว้เฉพาะคลิปที่คาดว่าจะปัง) · โควตา 1,000 เครดิต/เดือนพอสำหรับ 30+ คลิป</p>
+    <div class="rules-box">Flow เป็น text-to-video เชิงฉาก/บรรยากาศ ไม่ใช่ AI avatar พูดหน้ากล้องตรง ๆ — สคริปต์จาก script-generation ต้องแปลงเป็น "shot description" ก่อนป้อนเข้า Flow</div>
+    <h3>ขั้นตอน</h3>
     <ol>
-      <li>บันทึกเสียงพูด (พากย์เอง/TTS)</li>
-      <li>ใส่ภาพ/คลิปสินค้าประกอบ (แนะนำถ่ายเองเพื่อลด reach penalty)</li>
-      <li>ใส่ auto-caption ทุกคลิป</li>
-      <li>ปักตะกร้าสินค้าให้ตรงจังหวะที่พูดถึง</li>
-      <li>ความยาวรวมไม่เกิน 30 วินาที</li>
+      <li>แปลงสคริปต์เป็น shot description ต่อฉาก ระบุมุมกล้อง แสง และการเคลื่อนไหวชัดเจน</li>
+      <li>ใช้เสียงบรรยาย (native audio ของ Veo 3.1 หรือพากย์แยกทับทีหลัง) อ่านสคริปต์เดิม</li>
+      <li>ใช้ SceneBuilder ต่อ/ขยายฉากเดิมแทนการ generate ใหม่ทุกครั้ง</li>
+      <li>นำคลิปเข้า CapCut (ฟรี) เพื่อใส่ caption, ปักตะกร้าสินค้า, ตัดความยาว ≤30 วิ</li>
     </ol>
-    <p class="note">Roadmap: เมื่อมีงบเพิ่มค่อยอัปเกรด TTS/AI avatar และเมื่อพร้อมค่อยเปลี่ยนเป็น text-to-video API — compliance-check ยังต้องมีมนุษย์ตรวจเสมอ</p>
+    <p class="note">ทางเลือกเสริม: ถ้าอยากได้คนพูดหน้ากล้องจริง ให้ถ่ายเองแทรกร่วมกับฉากจาก Flow หรืออัปเกรดเป็น Creatify ในอนาคต</p>
+    <p class="note">Roadmap: ตอนนี้ Flow + CapCut (ไม่มีต้นทุนเพิ่ม) → มีงบเพิ่มค่อยพิจารณา Creatify → พร้อม automate เต็มรูปแบบค่อยเชื่อม Flow/Creatify API รับ shot description โดยตรง — compliance-check ยังต้องมีมนุษย์ตรวจเสมอ</p>
   </section>
 
   <section id="s4" class="file-block skill">
     <h2>📅 Skill 4: posting-schedule</h2>
-    <div class="path">agent-system/skills/posting-schedule/SKILL.md</div>
+    <div class="path">.ai/skills/posting-schedule/SKILL.md</div>
     <ul>
       <li><strong>1 คลิป/วัน/บัญชีเท่านั้น</strong> — เลี่ยง Content Posting Limit</li>
       <li>เวลาที่แนะนำ: 18:00-21:00 น.</li>
@@ -299,7 +383,7 @@
 
   <section id="s5" class="file-block skill">
     <h2>✅ Skill 5: compliance-check</h2>
-    <div class="path">agent-system/skills/compliance-check/SKILL.md</div>
+    <div class="path">.ai/skills/compliance-check/SKILL.md</div>
     <p><strong>ต้องมีมนุษย์ยืนยันเสมอ ไม่ว่าระบบจะ automate ไปมากแค่ไหน</strong></p>
     <ul class="checklist">
       <li>เปิดเผยว่าเป็นคอนเทนต์โฆษณา/affiliate</li>
@@ -310,12 +394,12 @@
       <li>ฟอร์แมตตรงตามข้อกำหนดแพลตฟอร์มปัจจุบัน</li>
       <li>ไม่เกิน 1 คลิป/บัญชี/วัน</li>
     </ul>
-    <div class="output-box">ไม่ผ่านซ้ำ 2 รอบ → escalate ให้มนุษย์ตัดสินใจตาม AGENT.md</div>
+    <div class="output-box">ไม่ผ่านซ้ำ 2 รอบ → escalate ให้มนุษย์ตัดสินใจตาม AGENTS.md</div>
   </section>
 
   <section id="s6" class="file-block skill">
     <h2>📊 Skill 6: performance-loop</h2>
-    <div class="path">agent-system/skills/performance-loop/SKILL.md</div>
+    <div class="path">.ai/skills/performance-loop/SKILL.md</div>
     <h3>ข้อมูลที่ต้องรวบรวม</h3>
     <ul>
       <li>view, like, comment, share</li>
