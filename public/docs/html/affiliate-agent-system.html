@@ -285,10 +285,17 @@
 
     <hr class="sep">
     <h3 style="font-size:16px;color:#fff;">🏗️ Phase Prompts (สั่ง agent สร้าง/ขยายระบบตาม PLAN.md)</h3>
+    <p class="note"><strong>Tech stack ตลอดทั้งโปรเจกต์:</strong> ใช้ Next.js เป็น framework หลักตั้งแต่ Phase 1 เพื่อให้โครงสร้างเดียวกันขยายต่อได้ทุก phase โดยไม่ต้อง migrate ทีหลัง</p>
 
     <h3>Phase 1 — Manual Loop Setup (สัปดาห์ 1-2)</h3>
     <pre>สร้างระบบช่วยงาน manual ตาม Phase 1 ใน .ai/PLAN.md โดยอ่านสเปกจาก AGENTS.md,
 .ai/PROMPTS.md และ .ai/skills/*/SKILL.md ทั้งหมด
+
+ข้อกำหนดทางเทคนิค:
+- สร้างเป็นโปรเจกต์ Next.js (App Router) ตั้งแต่ต้น เพื่อให้ต่อยอดใน Phase 2-3 ได้โดยไม่ต้อง migrate
+- ใช้ SQLite (เช่นผ่าน Prisma หรือ better-sqlite3) เก็บข้อมูล log แทน localStorage
+  เพื่อให้ข้อมูลไม่หายตอนล้าง browser และพร้อมต่อยอดเป็น backend จริงใน Phase 2
+- ยังไม่ต้อง deploy ขึ้น production รันแค่ local (npm run dev) พอในเฟสนี้
 
 สิ่งที่ต้องสร้าง:
 - หน้าเว็บ/แบบฟอร์มง่าย ๆ สำหรับกรอกผลลัพธ์ของแต่ละ skill ต่อวัน (product-selection,
@@ -298,26 +305,29 @@
 - เป้าหมายคือเก็บข้อมูล 14 วันแรกให้ครบเพื่อใช้วิเคราะห์ใน performance-loop</pre>
 
     <h3>Phase 2 — Semi-Automate Selection + Script (สัปดาห์ 3-4)</h3>
-    <pre>ต่อยอดจากระบบ Phase 1 ตาม Phase 2 ใน .ai/PLAN.md
+    <pre>ต่อยอดจากโปรเจกต์ Next.js เดิมจาก Phase 1 ตาม Phase 2 ใน .ai/PLAN.md
+ห้ามสร้างโปรเจกต์ใหม่หรือเปลี่ยน framework
 
 สิ่งที่ต้องเพิ่ม:
-- เชื่อมต่อ workflow อัตโนมัติ (n8n/Make หรือเทียบเท่า) สำหรับ:
+- สร้าง API routes ใน Next.js (app/api/*) สำหรับ:
   1. ดึงข้อมูลสินค้าตามเกณฑ์ใน .ai/skills/product-selection/SKILL.md
   2. เรียก AI generate สคริปต์ตาม .ai/skills/script-generation/SKILL.md
      และแปลงเป็น shot description ตาม .ai/skills/video-assembly/SKILL.md (prompt ข้อ 6)
+- เชื่อม API routes เหล่านี้เข้ากับ workflow อัตโนมัติ (n8n/Make หรือเทียบเท่า) เรียกผ่าน webhook
 - video-assembly และ posting-schedule ยังคงทำ manual (ตัดต่อ CapCut + โพสต์เอง)
-- เพิ่มหน้า dashboard แสดงผล engagement ของ 7 วันล่าสุด เพื่อเตรียมป้อนเข้า performance-loop
+- เพิ่มหน้า dashboard ใน Next.js แสดงผล engagement ของ 7 วันล่าสุด เพื่อเตรียมป้อนเข้า performance-loop
 - ห้ามข้ามการตรวจ compliance-check โดยมนุษย์ไม่ว่ากรณีใด</pre>
 
     <h3>Phase 3 — Video Automation (เดือนที่ 2 ขึ้นไป)</h3>
-    <pre>ขยายระบบตาม Phase 3 ใน .ai/PLAN.md — ใช้เฉพาะเมื่อ Phase 1-2 มีข้อมูลอย่างน้อย 30 วันแล้ว
+    <pre>ขยายโปรเจกต์ Next.js เดิมตาม Phase 3 ใน .ai/PLAN.md — ใช้เฉพาะเมื่อ Phase 1-2 มีข้อมูลอย่างน้อย 30 วันแล้ว
+ห้ามสร้างโปรเจกต์ใหม่หรือเปลี่ยน framework
 
 สิ่งที่ต้องเพิ่ม:
-- เชื่อมต่อ Google Flow API (หรือ Creatify API หากอัปเกรด) ให้รับ shot description
-  จาก workflow ใน Phase 2 เป็น input โดยตรง ผลิตวิดีโอแบบ semi-auto
+- สร้าง API route ใน Next.js เชื่อมต่อ Google Flow API (หรือ Creatify API หากอัปเกรด)
+  ให้รับ shot description จาก workflow ใน Phase 2 เป็น input โดยตรง ผลิตวิดีโอแบบ semi-auto
 - เพิ่มขั้นตอนบังคับ: หยุดระบบไว้ที่หน้า compliance-check เสมอ แสดง checklist ตาม
   .ai/skills/compliance-check/SKILL.md ให้มนุษย์กดอนุมัติก่อน ระบบห้ามโพสต์เองอัตโนมัติ
-- เพิ่ม log เก็บว่าคลิปไหนสร้างจาก Flow model ระดับไหน (Lite/Fast/Quality)
+- เพิ่ม log ใน database เก็บว่าคลิปไหนสร้างจาก Flow model ระดับไหน (Lite/Fast/Quality)
   เพื่อคุมการใช้เครดิตรายเดือนไม่ให้เกินโควตา
 - ก่อนเริ่มเฟสนี้ ให้ถามฉันยืนยันก่อนว่าพร้อมจริงหรือยัง ห้ามเริ่มเองอัตโนมัติ</pre>
   </section>
