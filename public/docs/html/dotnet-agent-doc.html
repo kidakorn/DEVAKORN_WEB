@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>.NET Desktop × Agents — Phase Workflow</title>
+<style>
+  :root{
+    --bg:#0d1117;
+    --panel:#131a22;
+    --line:#22303c;
+    --ink:#dfe6ec;
+    --dim:#8ba0ad;
+    --accent:#5fd0c0;
+    --accent2:#e8b04b;
+    --mono: 'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+    --sans: 'IBM Plex Sans Thai','Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.7;
+  }
+  a{color:var(--accent)}
+
+  .wrap{display:grid; grid-template-columns:240px 1fr; min-height:100vh}
+  @media (max-width:860px){ .wrap{grid-template-columns:1fr} nav{display:none} }
+
+  nav{
+    position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+    border-right:1px solid var(--line); padding:32px 20px; background:var(--panel);
+  }
+  nav .brand{font-family:var(--mono); font-size:13px; color:var(--accent); letter-spacing:.08em; margin-bottom:28px}
+  nav a{
+    display:block; font-size:14px; color:var(--dim); text-decoration:none;
+    padding:7px 0; border-left:2px solid transparent; padding-left:12px; margin-left:-12px;
+  }
+  nav a:hover{color:var(--ink); border-color:var(--accent)}
+
+  main{padding:56px 48px 120px; max-width:880px}
+  @media (max-width:600px){ main{padding:36px 20px 80px} }
+
+  header.hero{margin-bottom:64px}
+  .eyebrow{font-family:var(--mono); font-size:12px; color:var(--accent2); letter-spacing:.14em; text-transform:uppercase}
+  h1{font-size:clamp(28px,5vw,42px); margin:14px 0 10px; line-height:1.15}
+  .sub{color:var(--dim); font-size:16px; max-width:60ch}
+
+  section{margin-bottom:56px; scroll-margin-top:24px}
+  h2{
+    font-size:20px; color:var(--ink); border-bottom:1px solid var(--line);
+    padding-bottom:12px; margin-bottom:20px; display:flex; align-items:center; gap:10px;
+  }
+  h2 .tag{font-family:var(--mono); font-size:12px; color:var(--accent); border:1px solid var(--accent); border-radius:4px; padding:2px 7px; font-weight:400}
+  h3{font-size:15px; color:var(--accent); margin:24px 0 10px; font-family:var(--mono)}
+
+  p{color:#c4ced5; margin:10px 0}
+  ul,ol{color:#c4ced5; padding-left:22px}
+  li{margin:6px 0}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top}
+  th{background:var(--panel); color:var(--accent); font-weight:600; font-size:13px}
+  td{color:#c4ced5}
+
+  code{font-family:var(--mono); background:#1a2230; color:var(--accent2); padding:1px 6px; border-radius:4px; font-size:.9em}
+  pre{
+    background:#0a0e13; border:1px solid var(--line); border-radius:8px;
+    padding:18px 20px; overflow-x:auto; font-family:var(--mono); font-size:13.5px; line-height:1.6;
+    color:#c9d6de;
+  }
+  pre code{background:none; padding:0; color:inherit}
+
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:20px 22px; margin:14px 0;
+  }
+  .card .fname{font-family:var(--mono); font-size:12.5px; color:var(--dim); margin-bottom:10px; display:flex; gap:8px; align-items:center}
+  .card .fname::before{content:"›"; color:var(--accent)}
+
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  @media (max-width:700px){ .grid3{grid-template-columns:1fr} }
+  .agent{border:1px solid var(--line); border-radius:10px; padding:16px 18px; background:var(--panel)}
+  .agent .name{font-family:var(--mono); color:var(--accent); font-size:14px; margin-bottom:6px}
+  .agent .phase{font-size:12px; color:var(--accent2); font-family:var(--mono); margin-bottom:8px}
+  .agent p{font-size:13.5px; margin:6px 0; color:var(--dim)}
+
+  .ide-badge{display:inline-block; font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:4px; margin-right:6px; margin-bottom:6px}
+  .ok{background:#123328; color:#5fd0c0; border:1px solid #1f5c48}
+  .warn{background:#332a12; color:#e8b04b; border:1px solid #5c4c1f}
+
+  .foot{color:var(--dim); font-size:13px; border-top:1px solid var(--line); padding-top:20px; margin-top:60px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <div class="brand">// dotnet-agent-workflow</div>
+    <a href="#overview">Overview</a>
+    <a href="#phases">10 Phases</a>
+    <a href="#agents">Agents</a>
+    <a href="#plan">PLAN.md Template</a>
+    <a href="#structure">โครงสร้างไฟล์ workflow</a>
+    <a href="#project-structure">โครงสร้างโปรเจ็ค .NET</a>
+    <a href="#ide">ใช้กับ IDE ไหนได้บ้าง</a>
+  </nav>
+
+  <main>
+    <header class="hero" id="overview">
+      <div class="eyebrow">.NET Desktop (WPF / MAUI) · Claude Code Subagents · Full Lifecycle</div>
+      <h1>Phase Workflow สำหรับพัฒนา Solution ตั้งแต่ต้นจนจบ</h1>
+      <p class="sub">แบ่งงานเป็น 10 phase ตามลำดับ ตั้งแต่ discovery จนถึง deploy/maintain ควบคุมด้วยไฟล์ <code>PLAN.md</code> เดียว และมอบหมายแต่ละช่วงให้ subagent 3 บทบาท: architect / implementer / reviewer</p>
+    </header>
+
+    <section id="rules">
+      <h2>กติกาบังคับ</h2>
+      <ol>
+        <li>ทุก task ใหม่ต้องเริ่มที่ <code>PLAN.md</code> — ถ้ายังไม่มี copy จาก <code>PLAN.template.md</code></li>
+        <li>ห้าม <code>implementer</code> เริ่มเขียนโค้ดจนกว่า Phase 1–2 จะถูก mark ว่า “อนุมัติแล้ว”</li>
+        <li>จบแต่ละ phase ต้องอัปเดต checklist ใน <code>PLAN.md</code> ก่อนไป phase ถัดไป</li>
+        <li>Phase 5 (Feature Implementation) เป็น loop — ทำทีละ feature จนครบ backlog ก่อนไป phase 6</li>
+        <li>ยกเว้นได้เมื่อผู้ใช้พิมพ์ “ข้าม plan” ชัดเจน หรือเป็นงานอ่าน/อธิบายโค้ดอย่างเดียว</li>
+      </ol>
+    </section>
+
+    <section id="phases">
+      <h2>10 Phases <span class="tag">ลำดับตายตัว · Full Lifecycle</span></h2>
+      <table>
+        <tr><th>#</th><th>Phase</th><th>Agent หลัก</th><th>Output</th></tr>
+        <tr><td>1</td><td>Discovery &amp; Requirements</td><td>architect</td><td>scope, user stories, non-goals, constraints</td></tr>
+        <tr><td>2</td><td>Architecture &amp; Design</td><td>architect</td><td>MVVM, DI, data layer, diagram, tech stack</td></tr>
+        <tr><td>3</td><td>Environment &amp; Scaffolding</td><td>implementer</td><td>โครงโปรเจ็ค, .editorconfig, NuGet packages</td></tr>
+        <tr><td>4</td><td>Core Infrastructure</td><td>implementer</td><td>DI container, logging, config, data access layer</td></tr>
+        <tr><td>5</td><td>Feature Implementation <em style="color:var(--dim); font-style:normal; font-size:12px">(loop)</em></td><td>implementer</td><td>โค้ดจริงทีละ feature ตาม backlog</td></tr>
+        <tr><td>6</td><td>Testing &amp; QA</td><td>reviewer</td><td>unit/integration test, manual checklist, bug list</td></tr>
+        <tr><td>7</td><td>Code Review &amp; Hardening</td><td>reviewer</td><td>MVVM review, error handling, performance, security</td></tr>
+        <tr><td>8</td><td>Documentation</td><td>architect / implementer</td><td>README, ADR, user guide, dev setup guide</td></tr>
+        <tr><td>9</td><td>Packaging &amp; Release</td><td>implementer</td><td>icon, MSIX/ClickOnce/MSI, code signing, release notes</td></tr>
+        <tr><td>10</td><td>Deployment &amp; Post-release</td><td>implementer / reviewer</td><td>install/update, crash reporting, feedback → backlog รอบใหม่</td></tr>
+      </table>
+      <p style="font-size:13.5px; color:var(--dim)">Phase 5 เป็น <strong>loop</strong> ทำทีละ feature จนครบ backlog ก่อนไป phase 6 · Phase 10 วนกลับไป Phase 1 เมื่อมี feature รอบถัดไป</p>
+
+      <h3>วิธีเรียกใช้ (Claude Code CLI)</h3>
+      <pre><code># มอบหมาย phase 1-2 ให้ architect
+&gt; ใช้ agent architect วางแผน phase 1 และ 2 สำหรับ solution "ระบบจัดการสต็อกสินค้า"
+
+# มอบหมาย phase 3-5 ให้ implementer (ต้องมี plan อนุมัติแล้วก่อน)
+&gt; ใช้ agent implementer เริ่ม phase 3 แล้วตามด้วย feature backlog ข้อ 1 ใน PLAN.md
+
+# มอบหมาย phase 6-7 ให้ reviewer
+&gt; ใช้ agent reviewer ตรวจ code ที่เพิ่ง merge, เขียน test และทำ hardening review
+
+# มอบหมาย phase 9 ให้ implementer
+&gt; ใช้ agent implementer ทำ packaging phase 9 พร้อม release notes</code></pre>
+    </section>
+
+    <section id="agents">
+      <h2>Subagents <span class="tag">.claude/agents/*.md</span></h2>
+      <div class="grid3">
+        <div class="agent">
+          <div class="name">architect</div>
+          <div class="phase">Phase 1 – 2 · (8)</div>
+          <p>ออกแบบ scope, MVVM pattern, DI, data layer. ห้ามเขียนโค้ดจริง มีหน้าที่แค่ design + document</p>
+        </div>
+        <div class="agent">
+          <div class="name">implementer</div>
+          <div class="phase">Phase 3–5 · 9–10</div>
+          <p>Scaffold + core infrastructure + implement ทีละ feature ตาม backlog, packaging, deployment ต้องเช็ค phase 1–2 อนุมัติก่อนเริ่ม</p>
+        </div>
+        <div class="agent">
+          <div class="name">reviewer</div>
+          <div class="phase">Phase 6 – 7 · (10)</div>
+          <p>Review MVVM separation, เขียน test, ทำ manual checklist, hardening (performance/security), บันทึก bug</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="plan">
+      <h2>PLAN.md Template</h2>
+      <p>Copy ไฟล์นี้เป็น <code>PLAN.md</code> ต่อ 1 feature หรือ 1 sprint แล้วให้ agent กรอก/อัปเดตทุก phase</p>
+      <div class="card">
+        <div class="fname">PLAN.template.md</div>
+<pre><code># PLAN: &lt;ชื่อ solution/feature&gt;
+
+**สถานะ:** 🟡 วางแผน / 🟢 implement / 🔵 QA / ✅ เสร็จสิ้น
+**Agent ที่รับผิดชอบตอนนี้:** -
+
+## Phase 1 — Discovery &amp; Requirements
+- [ ] สรุป scope / non-goals · User stories
+- [ ] Platform target: WPF / MAUI / ทั้งคู่
+- [ ] Constraints · Dependencies ภายนอก
+- [ ] **อนุมัติแล้ว:** [ ]
+
+## Phase 2 — Architecture &amp; Design
+- [ ] Pattern (MVVM + CommunityToolkit.Mvvm / Prism) · DI container
+- [ ] Data layer (EF Core / Dapper / SQLite)
+- [ ] Diagram โครงสร้าง · NuGet packages
+- [ ] **อนุมัติแล้ว:** [ ]
+
+## Phase 3 — Environment &amp; Scaffolding
+- [ ] โครงโปรเจ็ค (.sln, Models/ViewModels/Views/Services)
+- [ ] .editorconfig · ติดตั้ง NuGet packages
+
+## Phase 4 — Core Infrastructure
+- [ ] DI container · Logging · Configuration
+- [ ] Data access layer · Base class/interface หลัก
+
+## Phase 5 — Feature Implementation (backlog, loop)
+| # | Feature/Task | Agent | สถานะ |
+|---|---|---|---|
+| 1 | | implementer | [ ] |
+
+## Phase 6 — Testing &amp; QA
+- [ ] Unit/Integration tests · Manual test checklist · Bug list
+
+## Phase 7 — Code Review &amp; Hardening
+- [ ] MVVM/error-handling review · Performance · Security check
+
+## Phase 8 — Documentation
+- [ ] README · ADR · User guide · Dev setup guide
+
+## Phase 9 — Packaging &amp; Release
+- [ ] Icon · Packaging (MSIX/ClickOnce/MSI) · Code signing · Release notes
+
+## Phase 10 — Deployment &amp; Post-release
+- [ ] Install/update mechanism · Crash reporting
+- [ ] Feedback → backlog รอบถัดไป (วนกลับ Phase 1)
+
+## Decision Log
+- </code></pre>
+      </div>
+    </section>
+
+    <section id="structure">
+      <h2>โครงสร้างไฟล์ workflow</h2>
+      <pre><code>/PLAN.md
+/PLAN.template.md
+/docs/decisions/*.md        &lt;- ADR สั้นๆ ต่อการตัดสินใจสำคัญ
+/.claude/agents/architect.md
+/.claude/agents/implementer.md
+/.claude/agents/reviewer.md</code></pre>
+    </section>
+
+    <section id="project-structure">
+      <h2>โครงสร้างโปรเจ็ค .NET <span class="tag">Output ของ Phase 3</span></h2>
+      <p>โครงสร้างมาตรฐานแบบ multi-project แยก <code>Core</code> ออกจาก UI เพื่อให้ test ง่ายและสลับ WPF/MAUI ได้ในอนาคต</p>
+      <div class="card">
+        <div class="fname">MyApp.sln</div>
+<pre><code>MyApp.sln
+├── src/
+│   ├── MyApp.Core/                  # Business logic, ไม่ผูก UI framework
+│   │   ├── Models/
+│   │   ├── Services/                # Interfaces + implementations
+│   │   ├── Interfaces/
+│   │   └── MyApp.Core.csproj
+│   │
+│   ├── MyApp.Data/                  # Data access layer
+│   │   ├── Entities/
+│   │   ├── Repositories/
+│   │   ├── Migrations/              # ถ้าใช้ EF Core
+│   │   ├── AppDbContext.cs
+│   │   └── MyApp.Data.csproj
+│   │
+│   └── MyApp.UI.Wpf/                # หรือ MyApp.UI.Maui/
+│       ├── Views/
+│       ├── ViewModels/
+│       ├── Controls/                # UserControl ที่ reuse
+│       ├── Converters/
+│       ├── Resources/               # Styles, Themes, Images
+│       ├── App.xaml
+│       ├── App.xaml.cs              # DI container setup ตรงนี้
+│       ├── appsettings.json
+│       └── MyApp.UI.Wpf.csproj
+│
+├── tests/
+│   ├── MyApp.Core.Tests/
+│   └── MyApp.UI.Tests/
+│
+├── docs/
+│   └── decisions/                   # ADR files
+│
+├── PLAN.md
+├── PLAN.template.md
+├── SKILL.md
+├── .claude/agents/
+├── .editorconfig
+└── README.md</code></pre>
+      </div>
+
+      <h3>ทำไมแยก Core / Data / UI</h3>
+      <ul>
+        <li><code>Core</code> ไม่ reference WPF/MAUI เลย → เขียน unit test ได้เร็ว ไม่ต้อง mock UI</li>
+        <li>ถ้าอยากเพิ่มเวอร์ชัน MAUI จาก WPF เดิม แค่เพิ่ม <code>MyApp.UI.Maui</code> โดย Core/Data ใช้ซ้ำได้ทั้งหมด</li>
+        <li><code>Data</code> แยกออกมาเผื่อเปลี่ยน ORM หรือ database ในอนาคตโดยไม่กระทบ business logic</li>
+      </ul>
+
+      <p style="font-size:13.5px; color:var(--dim); border-left:2px solid var(--accent2); padding-left:14px; margin-top:18px">
+        โปรเจ็คเล็กมาก (tool ใช้ในทีมเดียว ไม่ซับซ้อน) ไม่ต้อง over-engineer — ยุบเหลือ single-project แบบ <code>Models/ViewModels/Views/Services</code> ในโปรเจ็คเดียวพอ
+      </p>
+    </section>
+
+    <section id="ide">
+      <h2>ใช้กับ IDE ไหนได้บ้าง</h2>
+
+      <h3>VS Code</h3>
+      <p><span class="ide-badge ok">รองรับผ่าน CLI</span><span class="ide-badge warn">extension panel มี bug</span></p>
+      <p>มี extension “Claude Code” อย่างเป็นทางการ ใช้ config เดียวกับ CLI (<code>~/.claude/</code>) แต่ตอนนี้ปุ่ม/panel เรียก subagent โดยตรงยังไม่รู้จัก custom agent ใน <code>.claude/agents/</code> — ให้เปิด <strong>integrated terminal แล้วรัน <code>claude</code> ผ่าน CLI</strong> ซึ่งอ่านไฟล์ agent ได้ถูกต้องครบ</p>
+
+      <h3>Antigravity (Google, VS Code fork)</h3>
+      <p><span class="ide-badge ok">รองรับผ่าน CLI</span></p>
+      <p>ติดตั้ง Claude Code extension ในนั้นได้เหมือน VS Code เพราะเป็น fork เดียวกัน และ <code>~/.claude/</code> config แชร์ข้ามสภาพแวดล้อม workflow ที่นิยม: ใช้ Gemini วางแผนคร่าวๆ แล้วสลับมา Claude Code (ผ่าน terminal) รัน subagent ตาม <code>PLAN.md</code></p>
+
+      <p style="margin-top:22px; color:var(--dim); font-size:14px">สรุป: เปิด repo ใน editor ไหนก็ได้ตามถนัด แต่รัน Claude Code ผ่าน <strong>terminal/CLI</strong> เสมอ เพื่อให้ subagent ทำงานถูกต้องเต็มรูปแบบ</p>
+    </section>
+
+    <div class="foot">อัปเดตล่าสุด: กรกฎาคม 2026 · Full Lifecycle Workflow สำหรับโปรเจ็ค .NET Desktop (WPF/MAUI) ที่พัฒนาร่วมกับ Claude Code subagents</div>
+  </main>
+</div>
+</body>
+</html>

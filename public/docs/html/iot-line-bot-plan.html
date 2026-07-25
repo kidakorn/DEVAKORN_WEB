@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IoT LINE Chatbot — Build Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #10161A;
+    --panel: #1A2226;
+    --panel-2: #1F292E;
+    --trace: #00D9A3;
+    --trace-dim: #0B4A3D;
+    --alert: #FFB454;
+    --text: #E7ECEE;
+    --muted: #7C8A90;
+    --line: #2A353A;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(0,217,163,0.08), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+  }
+  h1,h2,h3,.mono{font-family:'Space Grotesk', sans-serif;}
+  code, .code, pre, .prompt-body{font-family:'JetBrains Mono', monospace;}
+
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px 120px;}
+
+  /* HERO */
+  .hero{
+    padding:100px 24px 70px;
+    text-align:left;
+    max-width:920px;
+    margin:0 auto;
+    position:relative;
+  }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.08em;
+    color:var(--trace);
+    text-transform:uppercase;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:8px;height:8px;border-radius:50%;
+    background:var(--trace);
+    box-shadow:0 0 12px var(--trace);
+    animation:blink 2.4s ease-in-out infinite;
+  }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+  @media (prefers-reduced-motion: reduce){ .eyebrow::before{animation:none;} }
+
+  h1{
+    font-size:clamp(32px, 5vw, 48px);
+    line-height:1.15;
+    font-weight:700;
+    margin:0 0 20px;
+    letter-spacing:-0.01em;
+  }
+  h1 .accent{color:var(--trace);}
+  .hero p{
+    color:var(--muted);
+    font-size:17px;
+    max-width:640px;
+    margin:0 0 32px;
+  }
+  .flow-strip{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+  }
+  .flow-strip .node{
+    padding:6px 12px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:var(--panel);
+    color:var(--text);
+  }
+  .flow-strip .arrow{color:var(--trace);}
+
+  /* STACK TABLE */
+  .section-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--trace);
+    margin:0 0 14px;
+  }
+  .stack-grid{
+    display:grid;
+    grid-template-columns:1fr 1.2fr 2fr;
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    margin-bottom:60px;
+  }
+  .stack-grid > div{
+    background:var(--panel);
+    padding:14px 16px;
+    font-size:14px;
+  }
+  .stack-grid .head{
+    background:var(--panel-2);
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--muted);
+  }
+  .stack-grid .pick{color:var(--trace); font-weight:600;}
+  .stack-grid .why{color:var(--muted);}
+
+  /* ARCH DIAGRAM */
+  .arch{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px;
+    margin-bottom:70px;
+    overflow-x:auto;
+  }
+  .arch pre{
+    margin:0;
+    font-size:13px;
+    color:var(--trace);
+    white-space:pre;
+  }
+  .arch .caption{color:var(--muted); font-size:13px; margin-top:14px;}
+
+  /* PHASES / TRACE */
+  .phases{
+    position:relative;
+    margin-top:10px;
+  }
+  .phases::before{
+    content:"";
+    position:absolute;
+    left:23px; top:12px; bottom:12px;
+    width:2px;
+    background:linear-gradient(var(--trace), var(--trace-dim));
+    opacity:0.5;
+  }
+  .phase{
+    position:relative;
+    padding:0 0 56px 64px;
+  }
+  .phase:last-child{padding-bottom:0;}
+  .phase .dot{
+    position:relative;
+    position:absolute;
+    left:8px; top:2px;
+    width:32px; height:32px;
+    border-radius:50%;
+    background:var(--panel-2);
+    border:2px solid var(--trace);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    font-weight:600;
+    color:var(--trace);
+    box-shadow:0 0 0 4px var(--bg);
+  }
+  .phase.alert .dot{border-color:var(--alert); color:var(--alert);}
+  .phase.optional{
+    background:linear-gradient(90deg, rgba(0,217,163,0.06), transparent 75%);
+    border-radius:0 8px 8px 0;
+    padding-top:14px;
+    padding-bottom:44px;
+  }
+  .phase.optional .dot{
+    border-style:dashed;
+    font-size:9px;
+  }
+  .badge{
+    display:inline-block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.04em;
+    color:var(--bg);
+    background:var(--trace);
+    padding:2px 9px;
+    border-radius:20px;
+    margin-bottom:10px;
+  }
+  .phase-title{
+    font-size:20px;
+    font-weight:600;
+    margin:0 0 6px;
+  }
+  .phase-goal{
+    color:var(--muted);
+    font-size:14.5px;
+    margin:0 0 18px;
+    max-width:640px;
+  }
+  .deliverables{
+    font-size:13.5px;
+    color:var(--text);
+    margin:0 0 18px;
+    padding-left:0;
+    list-style:none;
+  }
+  .deliverables li{
+    padding-left:18px;
+    position:relative;
+    margin-bottom:6px;
+    color:var(--muted);
+  }
+  .deliverables li::before{
+    content:"›";
+    position:absolute;
+    left:0;
+    color:var(--trace);
+  }
+  .prompt-block{
+    background:#0D1316;
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .prompt-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 14px;
+    background:var(--panel-2);
+    border-bottom:1px solid var(--line);
+  }
+  .prompt-head span{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:0.05em;
+  }
+  .copy-btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    background:transparent;
+    color:var(--trace);
+    border:1px solid var(--trace-dim);
+    border-radius:5px;
+    padding:4px 10px;
+    cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  .copy-btn:hover{background:rgba(0,217,163,0.12);}
+  .copy-btn.copied{color:var(--alert); border-color:var(--alert);}
+  .prompt-body{
+    margin:0;
+    padding:16px;
+    font-size:12.5px;
+    line-height:1.7;
+    color:#C9D4D6;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+
+  footer{
+    margin-top:80px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    color:var(--muted);
+    font-size:13px;
+  }
+  footer strong{color:var(--text);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="eyebrow">agent build plan</div>
+  <h1>จากเซนเซอร์ตัวเดียว<br>ถึง<span class="accent">มือถือคุณ</span> ผ่าน LINE</h1>
+  <p>แผนสร้าง IoT LINE Chatbot ที่ควบคุมอุปกรณ์และแจ้งเตือนอัตโนมัติ แบ่งเป็น phase พร้อม prompt สำหรับส่งให้ coding agent ทำทีละขั้น — ยังไม่มี hardware ก็เริ่มได้ที่ Phase 1.5</p>
+  <div class="flow-strip">
+    <div class="node">LINE user</div>
+    <span class="arrow">→</span>
+    <div class="node">webhook</div>
+    <span class="arrow">→</span>
+    <div class="node">Node.js backend</div>
+    <span class="arrow">↔</span>
+    <div class="node">MQTT broker</div>
+    <span class="arrow">↔</span>
+    <div class="node">ESP32</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="section-label">recommended stack</div>
+  <div class="stack-grid">
+    <div class="head">ส่วน</div><div class="head">เลือก</div><div class="head">เหตุผล</div>
+
+    <div>Board</div><div class="pick">ESP32</div><div class="why">WiFi ในตัว, ราคาถูก, GPIO พอสำหรับ sensor + relay</div>
+    <div>Broker</div><div class="pick">MQTT (Mosquitto / HiveMQ)</div><div class="why">มาตรฐาน IoT, เบากว่า HTTP polling, pub/sub สองทาง</div>
+    <div>Backend</div><div class="pick">Node.js + Express</div><div class="why">@line/bot-sdk ทางการ + mqtt.js ต่อกันลื่นภาษาเดียวกัน</div>
+    <div>Database</div><div class="pick">SQLite → PostgreSQL</div><div class="why">เริ่มง่าย ขยายทีหลังได้เมื่อ scale ขึ้น</div>
+    <div>Deploy</div><div class="pick">Docker + ngrok / Railway</div><div class="why">ตั้งค่าเร็ว งบต่ำ เหมาะกับ side project</div>
+  </div>
+
+  <div class="section-label">architecture</div>
+  <div class="arch">
+<pre>[LINE user] --webhook/push--> [Node.js Backend] --MQTT--> [ESP32: sensor + relay]
+                                     |
+                                [Database]
+                        (device state · sensor log · threshold)</pre>
+    <div class="caption">คำสั่งไหลจาก LINE → backend → MQTT → ESP32 · ข้อมูลเซนเซอร์ไหลย้อนกลับ แล้วเช็ค threshold ก่อนแจ้งเตือนกลับ LINE</div>
+  </div>
+
+  <div class="section-label">phases &amp; agent prompts</div>
+  <div class="phases">
+
+    <div class="phase">
+      <div class="dot">0</div>
+      <div class="phase-title">Requirements &amp; Project Scaffold</div>
+      <p class="phase-goal">กำหนดขอบเขต, สร้างโครง repo, ตั้งค่า LINE Developers Console</p>
+      <ul class="deliverables">
+        <li>โครงสร้าง /firmware, /backend, /docs</li>
+        <li>README + .env.example</li>
+      </ul>
+      <div class="prompt-block">
+        <div class="prompt-head"><span>AGENT PROMPT · PHASE 0</span><button class="copy-btn" onclick="copyPrompt(this)">copy</button></div>
+        <pre class="prompt-body">สร้างโครงสร้างโปรเจ็ค IoT LINE Chatbot ดังนี้:
+- /firmware  (สำหรับโค้ด ESP32)
+- /backend   (Node.js + Express)
+- /docs      (เอกสารและ .env.example)
+เขียน README.md อธิบายภาพรวมระบบ, รายชื่ออุปกรณ์เริ่มต้น (relay-light-1, sensor-temp-1),
+และ .env.example ที่มี placeholder สำหรับ LINE_CHANNEL_SECRET, LINE_CHANNEL_ACCESS_TOKEN,
+MQTT_BROKER_URL, MQTT_USERNAME, MQTT_PASSWORD, DATABASE_URL
+ยังไม่ต้องเขียนโค้ด logic ใดๆ ในเฟสนี้</pre>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="dot">1</div>
+      <div class="phase-title">Firmware (ESP32)</div>
+      <p class="phase-goal">เชื่อม WiFi + MQTT, อ่านเซนเซอร์, ควบคุม relay ผ่านคำสั่ง MQTT</p>
+      <ul class="deliverables">
+        <li>Subscribe device/{id}/cmd → สั่ง relay</li>
+        <li>Publish device/{id}/sensor ทุก 10 วิ</li>
+      </ul>
+      <div class="prompt-block">
+        <div class="prompt-head"><span>AGENT PROMPT · PHASE 1</span><button class="copy-btn" onclick="copyPrompt(this)">copy</button></div>
+        <pre class="prompt-body">เขียนโค้ด Arduino (C++) สำหรับ ESP32 ในไฟล์ /firmware/main.ino ที่ทำสิ่งต่อไปนี้:
+1. เชื่อมต่อ WiFi (ใช้ค่าจาก config.h ที่แยกไฟล์ต่างหาก)
+2. เชื่อมต่อ MQTT broker ด้วย library PubSubClient
+3. Subscribe topic "device/{DEVICE_ID}/cmd" รับ payload เช่น "ON"/"OFF" แล้วสั่ง digitalWrite ที่ relay pin
+4. อ่านค่าจากเซนเซอร์ DHT22 (ใช้ library DHT sensor library) ทุก 10 วินาที
+5. Publish ค่าที่อ่านได้เป็น JSON ไปที่ topic "device/{DEVICE_ID}/sensor" รูปแบบ
+   {"temp": 28.5, "humidity": 60.2, "ts": 1732000000}
+6. ใส่ reconnect logic เมื่อ WiFi/MQTT หลุด
+แยก DEVICE_ID, WIFI_SSID, WIFI_PASSWORD, MQTT_BROKER, MQTT_PORT ไว้ใน /firmware/config.h</pre>
+      </div>
+    </div>
+
+    <div class="phase optional">
+      <div class="dot">1.5</div>
+      <span class="badge">ไม่มี hardware? เริ่มตรงนี้</span>
+      <div class="phase-title">Mock Device</div>
+      <p class="phase-goal">จำลอง ESP32 ด้วยสคริปต์ Node.js — ทำ Phase 2 เป็นต้นไปได้ทันที ไม่ต้องรอสั่งซื้อบอร์ด ใช้ topic เดียวกับ firmware จริงทุกประการ พอมีบอร์ดค่อยสลับ ไม่ต้องแก้ backend</p>
+      <ul class="deliverables">
+        <li>mock-device/index.js — publish sensor ทุก 10 วิ</li>
+        <li>subscribe cmd topic แล้ว log สถานะ relay</li>
+      </ul>
+      <div class="prompt-block">
+        <div class="prompt-head"><span>AGENT PROMPT · PHASE 1.5</span><button class="copy-btn" onclick="copyPrompt(this)">copy</button></div>
+        <pre class="prompt-body">สร้างสคริปต์ Node.js ใน /mock-device/index.js ที่จำลองอุปกรณ์ ESP32 โดยไม่ต้องมี hardware จริง:
+1. เชื่อมต่อ MQTT broker จาก env MQTT_BROKER_URL (ใช้ library "mqtt")
+2. ทุก 10 วินาที publish JSON ไปที่ topic "device/sensor-temp-1/sensor"
+   รูปแบบ {"temp": &lt;สุ่ม 26-38&gt;, "humidity": &lt;สุ่ม 45-75&gt;, "ts": &lt;timestamp&gt;}
+3. Subscribe topic "device/relay-light-1/cmd" เมื่อได้รับ "ON"/"OFF" ให้ log สถานะปัจจุบันออกทาง console
+4. จัดการ reconnect/error เบื้องต้น และปิดการเชื่อมต่ออย่างสะอาดตอน SIGINT
+5. สร้าง package.json ที่มี dependency "mqtt"
+ให้ topic ตรงกับที่ /firmware จะใช้ทุกตัวอักษร เพื่อให้สลับไปใช้ ESP32 จริงทีหลังได้โดยไม่แก้ backend</pre>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="dot">2</div>
+      <div class="phase-title">Backend Skeleton + MQTT Bridge</div>
+      <p class="phase-goal">Node.js server เชื่อม MQTT ได้ และเก็บ state ล่าสุดของแต่ละอุปกรณ์</p>
+      <ul class="deliverables">
+        <li>src/mqtt.js, src/deviceStore.js</li>
+        <li>GET /health, GET /devices</li>
+      </ul>
+      <div class="prompt-block">
+        <div class="prompt-head"><span>AGENT PROMPT · PHASE 2</span><button class="copy-btn" onclick="copyPrompt(this)">copy</button></div>
+        <pre class="prompt-body">สร้าง Node.js backend ใน /backend ใช้ Express โดย:
+1. ติดตั้งและตั้งค่า mqtt (npm package "mqtt") ให้เชื่อมต่อ broker จาก env MQTT_BROKER_URL
+2. สร้างไฟล์ src/mqtt.js: subscribe topic "device/+/sensor", เมื่อได้ข้อความให้ parse JSON
+   แล้วเก็บลง in-memory store (src/deviceStore.js) พร้อม timestamp ล่าสุด
+   และ export ฟังก์ชัน publishCommand(deviceId, command) สำหรับส่งคำสั่งไปที่ "device/{id}/cmd"
+3. สร้าง src/server.js เป็น Express app พร้อม endpoint GET /health และ GET /devices
+   ที่คืนสถานะอุปกรณ์ทั้งหมดจาก deviceStore
+4. ใช้ dotenv โหลดค่าจาก .env
+ยังไม่ต้องเชื่อม LINE ในเฟสนี้</pre>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="dot">3</div>
+      <div class="phase-title">LINE Bot Integration</div>
+      <p class="phase-goal">Webhook รับ-ตอบข้อความ และแปลคำสั่งภาษาไทยเป็นคำสั่งอุปกรณ์</p>
+      <ul class="deliverables">
+        <li>POST /webhook + signature validation</li>
+        <li>คำสั่งพื้นฐาน: "เปิดไฟ" / "ปิดไฟ" / "อุณหภูมิ"</li>
+      </ul>
+      <div class="prompt-block">
+        <div class="prompt-head"><span>AGENT PROMPT · PHASE 3</span><button class="copy-btn" onclick="copyPrompt(this)">copy</button></div>
+        <pre class="prompt-body">เพิ่มการเชื่อมต่อ LINE Messaging API เข้ากับ backend ที่มีอยู่:
+1. ติดตั้ง @line/bot-sdk และตั้งค่า middleware validate signature ด้วย LINE_CHANNEL_SECRET
+2. สร้าง POST /webhook ใน src/server.js ที่รับ event ประเภทข้อความ (message.text)
+3. สร้าง src/line.js ที่ export ฟังก์ชัน:
+   - replyMessage(replyToken, text)
+   - pushMessage(userId, text)  // ใช้สำหรับแจ้งเตือนภายหลัง
+4. เขียน logic แยกคำสั่งพื้นฐานในข้อความ (case-insensitive, ภาษาไทย):
+   - "เปิดไฟ" -> เรียก publishCommand("relay-light-1", "ON") แล้วตอบ "เปิดไฟเรียบร้อย"
+   - "ปิดไฟ" -> publishCommand("relay-light-1", "OFF") แล้วตอบ "ปิดไฟเรียบร้อย"
+   - "อุณหภูมิ" หรือ "อุณหภูมิตอนนี้" -> ดึงค่าล่าสุดจาก deviceStore ของ sensor-temp-1 แล้วตอบกลับ
+   - ข้อความอื่นๆ -> ตอบวิธีใช้งานสั้นๆ
+5. อย่าลืม validate ว่า channel access token/secret มาจาก .env</pre>
+      </div>
+    </div>
+
+    <div class="phase alert">
+      <div class="dot">4</div>
+      <div class="phase-title">Threshold Alerts</div>
+      <p class="phase-goal">แจ้งเตือนอัตโนมัติเมื่อค่าเซนเซอร์เกินกำหนด พร้อม cooldown กันสแปม</p>
+      <ul class="deliverables">
+        <li>src/alertRules.js + subscribers store</li>
+        <li>คำสั่ง "สมัครแจ้งเตือน" / "ยกเลิกแจ้งเตือน"</li>
+      </ul>
+      <div class="prompt-block">
+        <div class="prompt-head"><span>AGENT PROMPT · PHASE 4</span><button class="copy-btn" onclick="copyPrompt(this)">copy</button></div>
+        <pre class="prompt-body">เพิ่มระบบแจ้งเตือนอัตโนมัติในฝั่ง backend:
+1. สร้าง src/alertRules.js เก็บ config เช่น
+   { "sensor-temp-1": { metric: "temp", max: 35, min: null, cooldownMinutes: 15 } }
+2. ใน src/mqtt.js เมื่อได้รับ sensor data ใหม่ ให้เช็คกับ alertRules
+   ถ้าเกิน max หรือต่ำกว่า min ให้เรียก pushMessage ไปยัง LINE user ที่ subscribe (เก็บ userId ไว้ใน subscribers store)
+3. ต้องมี cooldown ป้องกันการแจ้งเตือนถี่เกินไป (ไม่ส่งซ้ำภายใน cooldownMinutes สำหรับ device+เงื่อนไขเดิม)
+4. เพิ่มคำสั่งใน LINE bot: "สมัครแจ้งเตือน" เพื่อบันทึก userId ผู้ใช้เข้า subscribers store
+   และ "ยกเลิกแจ้งเตือน" เพื่อลบออก</pre>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="dot">5</div>
+      <div class="phase-title">Database &amp; Persistence</div>
+      <p class="phase-goal">ย้ายจาก in-memory เป็น SQLite เพื่อเก็บข้อมูลถาวร</p>
+      <ul class="deliverables">
+        <li>ตาราง devices, sensor_logs, subscribers, alert_rules</li>
+        <li>GET /devices/:id/history</li>
+      </ul>
+      <div class="prompt-block">
+        <div class="prompt-head"><span>AGENT PROMPT · PHASE 5</span><button class="copy-btn" onclick="copyPrompt(this)">copy</button></div>
+        <pre class="prompt-body">เปลี่ยน backend จาก in-memory store ให้ใช้ SQLite ผ่าน library better-sqlite3:
+1. สร้าง src/db.js เชื่อมต่อไฟล์ data.sqlite และสร้างตารางถ้ายังไม่มี:
+   - devices(id TEXT PRIMARY KEY, name TEXT, type TEXT, last_state TEXT, updated_at INTEGER)
+   - sensor_logs(id INTEGER PRIMARY KEY AUTOINCREMENT, device_id TEXT, temp REAL, humidity REAL, ts INTEGER)
+   - subscribers(user_id TEXT PRIMARY KEY, created_at INTEGER)
+   - alert_rules(device_id TEXT PRIMARY KEY, metric TEXT, max_value REAL, min_value REAL, cooldown_minutes INTEGER)
+2. แก้ deviceStore.js, alertRules.js, subscribers logic ให้อ่าน/เขียนผ่าน db.js แทน in-memory
+3. ทุกครั้งที่ได้ sensor data ใหม่ ให้ insert ลง sensor_logs ด้วย
+4. เพิ่ม endpoint GET /devices/:id/history?limit=50 คืนค่า log ล่าสุด</pre>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="dot">6</div>
+      <div class="phase-title">Testing &amp; Deployment</div>
+      <p class="phase-goal">ทดสอบ end-to-end, containerize, deploy จริง</p>
+      <ul class="deliverables">
+        <li>docker-compose.yml (backend + mosquitto)</li>
+        <li>Unit test + คู่มือ deploy</li>
+      </ul>
+      <div class="prompt-block">
+        <div class="prompt-head"><span>AGENT PROMPT · PHASE 6</span><button class="copy-btn" onclick="copyPrompt(this)">copy</button></div>
+        <pre class="prompt-body">เตรียมโปรเจ็คสำหรับ deploy:
+1. สร้าง docker-compose.yml ที่รวม service: backend (build จาก /backend), mosquitto (image eclipse-mosquitto)
+2. เขียน Dockerfile สำหรับ /backend
+3. เขียน unit test (ใช้ jest) สำหรับ:
+   - การ parse คำสั่งข้อความภาษาไทยใน Phase 3
+   - การเช็ค threshold + cooldown ใน Phase 4
+4. เขียน /docs/deploy.md อธิบายขั้นตอน:
+   - รัน ngrok http 3000 เพื่อทดสอบ LINE webhook ตอน dev
+   - ตั้งค่า Webhook URL ใน LINE Developers Console
+   - deploy ขึ้น Railway หรือ Render พร้อม environment variables ที่ต้องตั้ง</pre>
+      </div>
+    </div>
+
+    <div class="phase alert">
+      <div class="dot">7</div>
+      <div class="phase-title">Security Hardening</div>
+      <p class="phase-goal">ปิดช่องโหว่พื้นฐานก่อนใช้งานจริง</p>
+      <ul class="deliverables">
+        <li>Rate limit webhook, MQTT TLS + auth</li>
+        <li>Validate/sanitize payload ก่อนเขียน DB</li>
+      </ul>
+      <div class="prompt-block">
+        <div class="prompt-head"><span>AGENT PROMPT · PHASE 7</span><button class="copy-btn" onclick="copyPrompt(this)">copy</button></div>
+        <pre class="prompt-body">เพิ่มมาตรการความปลอดภัยให้ backend:
+1. เพิ่ม rate limiting (เช่น express-rate-limit) ที่ endpoint /webhook
+2. เปลี่ยนการเชื่อมต่อ MQTT ให้ใช้ TLS (mqtts://) พร้อม username/password จาก env
+   และปฏิเสธ topic/device_id ที่ไม่อยู่ใน whitelist ของตาราง devices
+3. Sanitize input จาก MQTT payload ก่อน insert ลง database (validate เป็นตัวเลขจริง ไม่ crash เมื่อ payload ผิดรูปแบบ)
+4. เพิ่ม logging (เช่น winston หรือ pino) แยก error/info level แทน console.log</pre>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    วิธีใช้: วาง prompt ของแต่ละ phase ให้ agent ทำทีละขั้นตามลำดับ และ<strong>รีวิวโค้ดก่อนไป phase ถัดไปเสมอ</strong> — โดยเฉพาะ Phase 1 ที่ควรทดสอบกับบอร์ดจริงก่อน
+  </footer>
+
+</div>
+
+<script>
+function copyPrompt(btn){
+  const pre = btn.closest('.prompt-block').querySelector('.prompt-body');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    const original = btn.textContent;
+    btn.textContent = 'copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1500);
+  });
+}
+</script>
+
+</body>
+</html>
