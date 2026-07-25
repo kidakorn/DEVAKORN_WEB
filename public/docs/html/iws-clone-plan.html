@@ -222,6 +222,100 @@
   </section>
 
   <section>
+    <div class="sec-label">00b · กฎการตั้งชื่อ Field/File ของบริษัท</div>
+    <h2>Naming Convention (สำหรับตอนสร้าง table/field ใหม่บน pub400)</h2>
+
+    <p style="color:var(--text-dim); font-size:13px; margin-bottom:6px;">
+      โครงสร้างชื่อ field แบ่งเป็น 2 ส่วนเสมอ:
+    </p>
+    <div class="diagram">
+      <div class="flow">
+        <div class="box"><b>AM</b><span class="sub">Prefix 2 ตัวอักษร</span></div>
+        <div class="arrow">+</div>
+        <div class="box"><b>XXXX</b><span class="sub">Suffix / mnemonic</span></div>
+        <div class="arrow">=</div>
+        <div class="box"><b>AMTTL</b><span class="sub">ชื่อ field เต็ม (system name)</span></div>
+      </div>
+      <p style="color:var(--text-dim); font-size:12px; text-align:center; margin-top:8px;">
+        1. Prefix บอก "หมวดหมู่" ของ field (ดูตารางด้านล่าง) —
+        2. Suffix เป็นคำย่อภาษาอังกฤษบอกความหมายเฉพาะของ field นั้น
+        ให้คนอื่นอ่านแล้วเข้าใจง่าย
+      </p>
+    </div>
+
+    <table>
+      <tr><th>Prefix</th><th>ความหมาย</th><th>ตัวอย่างการใช้</th></tr>
+      <tr><td><code>AM</code></td><td>Amount</td><td>จำนวนเงิน/มูลค่ารวม</td></tr>
+      <tr><td><code>CD</code></td><td>Code</td><td>รหัสทั่วไป</td></tr>
+      <tr><td><code>CN</code></td><td>Character Number</td><td>เลขที่เป็น character เช่น Assembly Lot No.</td></tr>
+      <tr><td><code>D8 / D6 / D4 / D2</code></td><td>Date control</td><td>D8=YYYYMMDD, D6=YYYYMM/DDMMYY, D4=YYYY, D2=MM/DD</td></tr>
+      <tr><td><code>FG</code></td><td>Flag</td><td>เกี่ยวกับการเช็คสถานะการทำงานของ IC</td></tr>
+      <tr><td><code>KB</code></td><td>Status/Control</td><td>เช่น general name division</td></tr>
+      <tr><td><code>LT</code></td><td>Lead time control</td><td>—</td></tr>
+      <tr><td><code>NM</code></td><td>Name</td><td>Wafer name, Device name ฯลฯ</td></tr>
+      <tr><td><code>NR</code></td><td>No. Control</td><td>Carton No., M/C No.</td></tr>
+      <tr><td><code>PR</code></td><td>Price Control</td><td>—</td></tr>
+      <tr><td><code>QT</code></td><td>Quantity</td><td>—</td></tr>
+      <tr><td><code>RT</code></td><td>Rate Control</td><td>Money rate หรือค่าที่คำนวณเป็น %</td></tr>
+      <tr><td><code>SQ</code></td><td>Sequence Control</td><td>Process flow Seq, Journal No. Control</td></tr>
+      <tr><td><code>TM</code></td><td>Time Control</td><td>Input time, Update time</td></tr>
+      <tr><td><code>TX</code></td><td>Text/Description</td><td>—</td></tr>
+      <tr><td><code>VL</code></td><td>Value Control</td><td>IC Weight, Wafer size</td></tr>
+      <tr><td><code>WK</code></td><td>Working (SAVE_VALUE)</td><td>ใช้ในฟังก์ชัน SAVE_VALUE</td></tr>
+      <tr><td><code>PM</code></td><td>Parameter Field</td><td>—</td></tr>
+    </table>
+
+    <div class="sec-label" style="margin-top:22px;">ตัวอย่างชื่อ field ที่สร้างจริง</div>
+    <table>
+      <tr><th>ชื่อ field</th><th>แยกส่วน</th><th>ความหมาย</th></tr>
+      <tr><td><code>AMTTL</code></td><td>AM + TTL</td><td>Amount Total — ยอดรวมมูลค่า</td></tr>
+      <tr><td><code>CDITEM</code></td><td>CD + ITEM</td><td>รหัสสินค้า</td></tr>
+      <tr><td><code>CNLOTN</code></td><td>CN + LOTN</td><td>เลขที่ Lot (character)</td></tr>
+      <tr><td><code>D8CRDT</code></td><td>D8 + CRDT</td><td>วันที่สร้างข้อมูล รูปแบบ YYYYMMDD</td></tr>
+      <tr><td><code>FGACTV</code></td><td>FG + ACTV</td><td>สถานะ active/inactive</td></tr>
+      <tr><td><code>QTORD</code></td><td>QT + ORD</td><td>จำนวนสั่งซื้อ</td></tr>
+      <tr><td><code>PRUNIT</code></td><td>PR + UNIT</td><td>ราคาต่อหน่วย</td></tr>
+      <tr><td><code>TMUPDT</code></td><td>TM + UPDT</td><td>เวลาที่แก้ไขข้อมูลล่าสุด</td></tr>
+    </table>
+
+    <div class="sec-label" style="margin-top:22px;">กฎการตั้งชื่อ (บังคับทุกข้อ)</div>
+    <ol class="steps">
+      <li><strong>Prefix ต้องตรงกับตารางเท่านั้น</strong> — ห้ามคิด prefix ใหม่เอง ถ้าไม่มีในลิสต์ ให้หยุดแล้วถามผู้ใช้ก่อนเสมอ</li>
+      <li><strong>ความยาวรวมห้ามเกิน 10 ตัวอักษร</strong> — เป็นข้อจำกัดของ system name บน IBM i ถ้าต้องการชื่อสื่อความหมายยาวกว่านี้ ให้ใช้ SQL long name คู่กับ system name แบบย่อ (ดูตัวอย่าง DDL ด้านล่าง)</li>
+      <li><strong>Suffix ต้องเป็นคำย่อภาษาอังกฤษ ไม่มีเว้นวรรค/ขีดล่าง</strong> เช่น <code>TTL</code>, <code>ORD</code>, <code>UPDT</code> ไม่ใช่ <code>Total</code> หรือ <code>total_amt</code></li>
+      <li><strong>ห้ามตั้งชื่อซ้ำกันในตารางเดียวกัน</strong> ถ้ามี field หมวดเดียวกันหลายตัว ต้องใช้ suffix แยกให้ชัดเจน เช่น <code>AMTTL</code> กับ <code>AMNET</code> (ยอดรวม vs ยอดสุทธิ) ห้ามใช้ suffix เดียวกันซ้ำ</li>
+      <li><strong>D8/D6/D4/D2 ใช้กับ field วันที่เท่านั้น</strong> และต้องตรงกับ format ที่ระบุ (D8=YYYYMMDD เป็นต้น) ห้ามใช้กับ field ที่ไม่ใช่วันที่</li>
+      <li><strong>ทุก field ต้องมีคำอธิบายกำกับ (LABEL ON)</strong> — เนื่องจากชื่อจริงเป็นคำย่อ อ่านเข้าใจยากถ้าไม่มีคำอธิบาย ต้องเขียน description ที่อ่านง่ายคู่กับชื่อย่อเสมอ (ดูตัวอย่าง DDL ด้านล่าง)</li>
+      <li><strong>ถ้า user อนุมัติ prefix ใหม่ที่ไม่มีในลิสต์</strong> ให้เพิ่มแถวใหม่เข้าไปในตารางนี้ทั้งใน <code>.html</code> และ <code>SKILL.md</code> ทันที เพื่อให้ครั้งต่อไปสอดคล้องกัน ไม่ต้องถามซ้ำ</li>
+    </ol>
+
+    <div class="sec-label" style="margin-top:22px;">ตัวอย่าง DDL ที่ถูกต้อง</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">CREATE TABLE X0250661.TESTAG (
+  CDITEM   CHAR(10)      NOT NULL,
+  NMITEM   VARCHAR(30),
+  QTORD    DECIMAL(9,0),
+  PRUNIT   DECIMAL(11,2),
+  D8CRDT   DATE,
+  PRIMARY KEY (CDITEM)
+);
+
+-- เพิ่มคำอธิบายกำกับทุก field (กฎข้อ 6)
+LABEL ON COLUMN X0250661.TESTAG
+  ( CDITEM IS 'Item Code',
+    NMITEM IS 'Item Name',
+    QTORD  IS 'Quantity Ordered',
+    PRUNIT IS 'Price Per Unit',
+    D8CRDT IS 'Created Date (YYYYMMDD)' );</div>
+
+    <div class="callout" style="margin-top:14px;">
+      <b>กฎสำหรับ agent:</b> ถ้าต้องสร้างตาราง/field ใหม่บน pub400 (ไม่ใช่แค่ query
+      ของเดิม) ต้องตั้งชื่อ field ตาม prefix ในตารางนี้เสมอ ถ้า prefix ที่ต้องการไม่มี
+      ในลิสต์ ให้ถามผู้ใช้ก่อนว่าจะใช้ prefix ไหน ห้ามตั้งชื่อ field เดาเองแบบสุ่ม —
+      รายละเอียดเต็มอยู่ใน <code>.ai/skills/ibmi-pub400/SKILL.md</code>
+    </div>
+  </section>
+
+  <section>
     <div class="sec-label">01 · ภาพรวมระบบ</div>
     <h2>สถาปัตยกรรม</h2>
     <div class="diagram">
@@ -336,6 +430,12 @@
         <td>JOIN หลายตาราง + Group By + Order By แบบไม่ต้องพิมพ์ SQL</td>
         <td>ต่อยอด Schema Browser ให้เพิ่มตาราง/JOIN/filter/group/order จาก UI แล้ว
         generate SQL ที่ซับซ้อนขึ้นให้อัตโนมัติ</td>
+      </tr>
+      <tr>
+        <td><b>Phase 7</b><br><span style="color:var(--text-dim); font-size:12px;">Table Designer + Naming Convention</span></td>
+        <td>สร้างตาราง/field ใหม่บน pub400 จาก GUI โดยตั้งชื่อถูกต้องตามกฎบริษัทเสมอ</td>
+        <td>ฟอร์มออกแบบ field ทีละตัว เลือก prefix จาก dropdown (ตามตาราง Naming
+        Convention), validate ชื่อ, generate CREATE TABLE DDL, ต้องกดยืนยันก่อนรันทุกครั้ง</td>
       </tr>
     </table>
   </section>
@@ -550,6 +650,77 @@ GROUP BY, ORDER BY ได้โดยไม่ต้องพิมพ์ SQL �
 
 ห้ามแก้ logic ของ Schema Browser (Phase 5.5) หรือ Simple mode เดิม ให้ยัง
 ทำงานได้ปกติคู่กับโหมดใหม่นี้</div>
+
+    <div class="sec-label" style="margin-top:32px;">Phase 7 — Table Designer + Naming Convention Enforcement</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน CLAUDE.md, .ai/PLAN.md และ
+.ai/skills/ibmi-pub400/SKILL.md ก่อน โดยเฉพาะส่วน "Field naming convention"
+ใน SKILL.md ที่มีตาราง prefix ครบแล้ว (AM, CD, CN, D8/D6/D4/D2, FG, KB,
+LT, NM, NR, PR, QT, RT, SQ, TM, TX, VL, WK, PM)
+
+หมายเหตุสำคัญ: งานนี้เป็นครั้งแรกที่ทำ schema change (CREATE TABLE) ซึ่ง
+ต่างจากทุก Phase ก่อนหน้าที่เป็น SELECT อย่างเดียว ต้องระมัดระวังเป็นพิเศษ
+
+เพิ่มความสามารถ "ออกแบบตารางใหม่จาก GUI" ทำทีละขั้นตอน:
+
+1. เพิ่มแท็บใหม่ชื่อ "Table Designer" ข้างแท็บ Config
+
+2. ฟอร์มส่วนบน: กรอกชื่อ Library และชื่อ Table ใหม่ที่จะสร้าง (validate
+   ว่าชื่อไม่ซ้ำกับที่มีอยู่แล้ว โดยเช็คผ่าน /api/schema/tables เดิม)
+
+3. ส่วน "Fields" — ปุ่ม "+ Add Field" แต่ละแถวมี:
+   - Dropdown เลือก Prefix (โหลด list จาก SKILL.md/endpoint ใหม่ที่ hardcode
+     รายการ prefix ทั้ง 18 ตัวไว้ในโค้ด พร้อมคำอธิบายโชว์เป็น tooltip)
+   - ช่องพิมพ์ suffix (ส่วนขยายชื่อ เช่น "MOUNT" ต่อจาก prefix "AM" รวมเป็น
+     "AMMOUNT" หรือแล้วแต่ผู้ใช้ตั้ง) — auto-preview ชื่อเต็มที่จะได้ให้เห็น
+     ทันทีข้างๆ
+   - Dropdown เลือก data type (CHAR, VARCHAR, INTEGER, DECIMAL, DATE ฯลฯ)
+   - ช่องความยาว/precision (ถ้า type ต้องการ เช่น VARCHAR(n), DECIMAL(p,s))
+   - Checkbox "Primary Key", "Not Null"
+   - ช่อง "Description" (บังคับกรอก) — คำอธิบายภาษาที่อ่านง่าย จะถูกใช้เขียน
+     LABEL ON COLUMN ตอน generate DDL (ตามกฎข้อ 6 ใน SKILL.md)
+
+4. Validation ตอนกด "+ Add Field" หรือแก้ไข (ต้องครบทุกข้อ อ้างอิงกฎใน
+   .ai/skills/ibmi-pub400/SKILL.md ส่วน "กฎการตั้งชื่อ"):
+   - ชื่อ field ต้องขึ้นต้นด้วย prefix ที่เลือกจริง (กันคนพิมพ์ชื่อเต็มเอง
+     โดยไม่ผ่าน dropdown)
+   - ชื่อ field รวมห้ามเกิน 10 ตัวอักษร (ข้อจำกัดของ IBM i system name) —
+     ถ้าต้องการชื่อยาวกว่านั้น ให้เตือนว่าใช้ SQL long name แทนได้แต่ system
+     name จะถูกตัดหรือ auto-generate
+   - ห้ามตั้งชื่อ field ซ้ำกันในตารางเดียวกัน
+   - ถ้ามี field หมวดเดียวกัน (prefix เดียวกัน) มากกว่า 1 ตัว ต้องเตือนให้ตั้ง
+     suffix แยกให้ชัดเจน ไม่ให้เผลอซ้ำความหมายกัน
+   - ถ้าเลือก prefix D8/D6/D4/D2 ต้อง lock data type ให้เป็น DATE เท่านั้น
+     (ห้ามเลือก type อื่นคู่กับ prefix กลุ่มนี้)
+   - ช่อง Description ห้ามเว้นว่าง (บังคับตามกฎข้อ 6)
+   - ถ้า user เลือก prefix ที่ไม่อยู่ใน dropdown (custom) ต้องมี dialog
+     แยกถามยืนยันก่อนว่าจะเพิ่ม prefix ใหม่นี้จริงไหม ถ้ายืนยัน ให้บันทึก
+     prefix ใหม่ลงในตารางของ SKILL.md และ iws-clone-plan.html ด้วย (ตาม
+     กฎข้อ 7)
+
+5. Preview: แสดง SQL "CREATE TABLE library.tablename (...)" พร้อม
+   "LABEL ON COLUMN" ที่ generate จาก Description ของแต่ละ field (ตาม
+   ตัวอย่างใน SKILL.md) แบบ read-only ให้ตรวจสอบก่อนเสมอ
+
+
+6. ปุ่ม "Create Table" ต้องมี modal ยืนยันซ้อนอีกชั้น (ไม่ใช่กดครั้งเดียว
+   รันเลย) ข้อความเตือนชัดเจนว่า "การกระทำนี้จะสร้างตารางจริงบน pub400 
+   ยืนยันหรือไม่" พร้อมให้พิมพ์ชื่อตารางซ้ำเพื่อยืนยัน (เหมือน pattern
+   "type to confirm" ที่ใช้ป้องกันการลบข้อมูลผิดพลาด)
+
+7. Backend: เพิ่ม POST /api/schema/create-table รับ payload ที่ validate
+   แล้วจาก GUI เท่านั้น (ห้าม endpoint นี้รับ SQL string ดิบจาก client
+   โดยตรง ต้อง build DDL จาก field definition ที่ validate ผ่านแล้วในฝั่ง
+   server อีกรอบเสมอ ไม่เชื่อ validation จาก frontend อย่างเดียว)
+
+8. Log ทุกครั้งที่มีการสร้างตารางจริง (ใคร, เวลาไหน, DDL อะไร) ไว้ในไฟล์
+   แยกต่างหาก เช่น .ai/schema-changes.log
+
+9. ทดสอบสร้างตารางทดสอบเล็กๆ 1 ตัวจริงบน pub400 (เช่นชื่อ TESTAG มี field
+   2-3 ตัวตาม naming convention) แล้วเช็คผ่าน Schema Browser (Phase 5.5)
+   ว่าเห็นตารางใหม่นี้ขึ้นมาจริงไหม รายงานผล
+
+ห้ามทำ DROP TABLE หรือ ALTER TABLE ในเวอร์ชันนี้ (จำกัดแค่ CREATE เท่านั้น
+ก่อน) และห้ามลบ/แก้ table หรือ field ที่มีอยู่แล้วเดิมบน pub400 เด็ดขาด</div>
   </section>
 
   <section>
