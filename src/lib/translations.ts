@@ -40,6 +40,19 @@ export const translations: Record<string, Record<Lang, string>> = {
   about_value3_title: { th: "ประสบการณ์", en: "Experience" },
   about_value3_desc: { th: "ประสบการณ์สร้างโปรเจกต์จริง", en: "Real-world project experience." },
 
+  // ── Experience ──────────────────────────────────────────────────
+  exp_title: { th: "ประสบการณ์", en: "Experience" },
+  exp_subtitle: { th: "เส้นทางการทำงานของผม", en: "My career journey" },
+  exp1_role: { th: "Staff (Developer)", en: "Staff (Developer)" },
+  exp1_company: { th: "ปัจจุบัน", en: "Present" },
+  exp1_desc: { th: "พัฒนาระบบ Enterprise ด้วย RPG, RMDL, LANSA บน AS/400 (IBM i) และดูแลระบบฐานข้อมูล Db2", en: "Enterprise system development using RPG, RMDL, LANSA on AS/400 (IBM i) and Db2 database management." },
+  exp2_role: { th: "Web Developer", en: "Web Developer" },
+  exp2_company: { th: "Freelance", en: "Freelance" },
+  exp2_desc: { th: "ออกแบบและพัฒนาเว็บไซต์ด้วย WordPress, สร้าง Web Application ด้วย Node.js และ Angular", en: "Design and develop websites with WordPress, build Web Applications using Node.js and Angular." },
+  exp3_role: { th: "Graphic Designer", en: "Graphic Designer" },
+  exp3_company: { th: "Freelance", en: "Freelance" },
+  exp3_desc: { th: "ออกแบบโลโก้, แบนเนอร์โฆษณา, และสื่อสิ่งพิมพ์เพื่อสร้างแบรนดิ้งที่โดดเด่น", en: "Logo design, ad banners, and print media design for standout branding." },
+
   // ── Projects ────────────────────────────────────────────────────
   projects_title: { th: "ผลงาน", en: "Projects" },
   projects_subtitle: { th: "สิ่งที่ผมสร้างขึ้น", en: "Some things I've built" },

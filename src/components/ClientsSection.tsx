@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useLanguage } from "@/lib/LanguageContext";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import GsapReveal from "@/components/GsapReveal";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/useGsap";
 
 const MySwal = withReactContent(Swal);
 import { useState, useEffect, useRef } from "react";
@@ -28,11 +29,6 @@ const DEFAULT_CLIENTS: ClientItem[] = [
   },
 ];
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
-};
-
 export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean }) {
   const { t } = useLanguage();
   const [clients, setClients] = useState<ClientItem[]>([]);
@@ -51,13 +47,23 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
 
   // Parallax Setup
   const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
+  const bgBlobRef = useRef<HTMLDivElement>(null);
 
-  // Background moves down, Images move up slightly
-  const bgY = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
+  useGSAP(() => {
+    if (bgBlobRef.current && sectionRef.current) {
+      gsap.set(bgBlobRef.current, { yPercent: -20 });
+      gsap.to(bgBlobRef.current, {
+        yPercent: 20,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
+  }, { scope: sectionRef });
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -169,25 +175,19 @@ export default function ClientsSection({ isAdmin = false }: { isAdmin?: boolean 
   return (
     <section ref={sectionRef} id="clients" className="relative w-full px-6 py-28 border-t overflow-hidden noise-bg" style={{ background: "var(--bg-main)", borderColor: "var(--border-main)" }}>
       {/* Parallax Background Blob */}
-      <motion.div
-        style={{ y: bgY }}
+      <div
+        ref={bgBlobRef}
         className="absolute inset-0 z-0 pointer-events-none opacity-10 flex justify-center items-center"
       >
         <div className="w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--color-primary-red)_0%,_transparent_70%)] blur-[120px] rounded-full" />
-      </motion.div>
+      </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Heading */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={fadeUp}
-          className="mb-16 flex flex-col justify-start"
-        >
+        <GsapReveal type="fade-up" className="mb-16 flex flex-col justify-start">
           <p className="section-label">{t("clients_subtitle")}</p>
           <h2 className="section-title">{t("clients_title")}</h2>
-        </motion.div>
+        </GsapReveal>
 
         {/* Continuous Marquee */}
         <div className="relative w-full overflow-hidden py-4 marquee-container">

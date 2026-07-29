@@ -1,4 +1,10 @@
 {
+  "html/ads-platform-spec.html": {
+    "createdAt": "2026-07-29T00:19:28+07:00"
+  },
+  "html/affiliate-agent-system.html": {
+    "createdAt": "2026-07-20T21:59:00+07:00"
+  },
   "html/connect-as400-scanner-minpop-steps.html": {
     "createdAt": "2026-07-09T22:12:17+07:00"
   },
@@ -12,7 +18,7 @@
     "createdAt": "2026-06-28T20:41:36+07:00"
   },
   "html/dev-mission-brief.html": {
-    "createdAt": "2026-06-27T14:16:49+07:00"
+    "createdAt": "2026-07-16T20:39:31+07:00"
   },
   "html/dev-project-guide.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
@@ -20,8 +26,11 @@
   "html/dev-roadmap-tree.html": {
     "createdAt": "2026-06-25T22:29:44+07:00"
   },
+  "html/dotnet-agent-doc.html": {
+    "createdAt": "2026-07-25T17:50:40+07:00"
+  },
   "html/enterprise-complete-guide.html": {
-    "createdAt": "2026-06-26T23:37:02+07:00"
+    "createdAt": "2026-07-16T20:39:31+07:00"
   },
   "html/enterprise-systems.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
@@ -47,17 +56,38 @@
   "html/ibmi-tech-stacks.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
   },
+  "html/iot-line-bot-plan.html": {
+    "createdAt": "2026-07-25T17:50:40+07:00"
+  },
   "html/iws-admin-folder-guide.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
+  },
+  "html/iws-alternative-odbc-pub400-guide.html": {
+    "createdAt": "2026-07-12T22:19:44+07:00"
   },
   "html/iws-basic-fetch-qr-setup.html": {
     "createdAt": "2026-07-04T15:59:43+07:00"
   },
+  "html/iws-clone-plan.html": {
+    "createdAt": "2026-07-25T14:40:09+07:00"
+  },
   "html/iws-guide.html": {
     "createdAt": "2026-06-25T22:29:44+07:00"
   },
+  "html/iws-knowledge-handoff.html": {
+    "createdAt": "2026-07-18T15:00:21+07:00"
+  },
+  "html/iws-pub400-pc-roadmap.html": {
+    "createdAt": "2026-07-12T22:19:44+07:00"
+  },
+  "html/iws-webas400-next-company-roadmap.html": {
+    "createdAt": "2026-07-12T22:38:23+07:00"
+  },
   "html/learning-roadmap.html": {
     "createdAt": "2026-06-25T23:17:28+07:00"
+  },
+  "html/minpop-odbc-pub400-recreate.html": {
+    "createdAt": "2026-07-12T22:19:44+07:00"
   },
   "html/nextjs-react-static-deploy-summary.html": {
     "createdAt": "2026-07-09T22:12:17+07:00"
@@ -69,7 +99,10 @@
     "createdAt": "2026-06-30T23:27:35+07:00"
   },
   "html/p01-walkthrough.html": {
-    "createdAt": "2026-06-29T20:58:34+07:00"
+    "createdAt": "2026-07-16T20:39:31+07:00"
+  },
+  "html/p02-walkthrough.html": {
+    "createdAt": "2026-07-16T20:39:31+07:00"
   },
   "html/rpg-vs-iws-config-comparison.html": {
     "createdAt": "2026-07-09T22:12:17+07:00"
@@ -81,6 +114,6 @@
     "createdAt": "2026-07-04T15:42:06+07:00"
   },
   "html/zero-cost-stack.html": {
-    "createdAt": "2026-06-25T23:17:28+07:00"
+    "createdAt": "2026-07-16T20:39:31+07:00"
   }
 }

@@ -98,7 +98,7 @@
    BASE & RESET
    ───────────────────────────────────────────────────────────────── */
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; - Removed to prevent conflicts with Lenis smooth scroll */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

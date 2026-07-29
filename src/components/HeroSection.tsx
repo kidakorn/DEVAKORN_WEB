@@ -12,6 +12,9 @@ import { useLanguage } from "@/lib/LanguageContext";
 import TypingText from "@/components/TypingText";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/useGsap";
+import { useTheme } from "@/lib/ThemeContext";
 
 const SOCIAL_LINKS = [
   { id: "hero-github", href: "https://github.com/kidakorn", icon: GitFork, label: "GitHub" },
@@ -42,24 +45,100 @@ const popIn: Variants = {
 export default function HeroSection() {
   const { t, lang } = useLanguage();
   const router = useRouter();
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+  const containerRef = useRef<HTMLElement>(null);
+  const orb1Ref = useRef<HTMLDivElement>(null);
+  const orb2Ref = useRef<HTMLDivElement>(null);
+  const cta1Ref = useRef<HTMLAnchorElement>(null);
+  const cta2Ref = useRef<HTMLAnchorElement>(null);
+
+  useGSAP(() => {
+    // Parallax Orbs
+    if (orb1Ref.current && orb2Ref.current) {
+      gsap.to(orb1Ref.current, {
+        y: 150,
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+      gsap.to(orb2Ref.current, {
+        y: -150,
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
+
+    // Text Split Animation
+    gsap.from(".name-char", {
+      opacity: 0,
+      y: 50,
+      rotateX: -90,
+      stagger: 0.05,
+      duration: 0.8,
+      ease: "back.out(1.7)",
+      delay: 0.2, // Wait for initial framer motion
+    });
+
+    // Magnetic Buttons setup
+    const buttons = [cta1Ref.current, cta2Ref.current];
+    buttons.forEach((btn) => {
+      if (!btn) return;
+      const xTo = gsap.quickTo(btn, "x", { duration: 0.4, ease: "power3" });
+      const yTo = gsap.quickTo(btn, "y", { duration: 0.4, ease: "power3" });
+
+      btn.addEventListener("mousemove", (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - (rect.left + rect.width / 2);
+        const y = e.clientY - (rect.top + rect.height / 2);
+        xTo(x * 0.3);
+        yTo(y * 0.3);
+      });
+
+      btn.addEventListener("mouseleave", () => {
+        xTo(0);
+        yTo(0);
+      });
+    });
+  }, { scope: containerRef });
+
+  const nameText = t("hero_name");
 
   return (
     <section
+      ref={containerRef}
       id="hero"
       className="relative w-full min-h-[100svh] flex items-center justify-center overflow-hidden pt-20 pb-10"
       style={{ background: "var(--bg-main)" }}
     >
-      {/* ── Soft Red Glow (Clean Light Mode) ────────────────────────────── */}
+      {/* ── Soft Red Glow ───────────────────────────────────── */}
       <motion.div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <motion.div
-          className="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] rounded-full opacity-[0.08]"
+          ref={orb1Ref}
+          className="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] rounded-full"
           style={{ background: "radial-gradient(circle, var(--color-primary-red) 0%, transparent 60%)" }}
-          animate={{ scale: [1, 1.05, 1], opacity: [0.06, 0.1, 0.06] }}
+          animate={{ 
+            scale: [1, 1.05, 1], 
+            opacity: isLight ? [0.03, 0.05, 0.03] : [0.06, 0.1, 0.06] 
+          }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-[0.05]"
-          style={{ background: "radial-gradient(circle, var(--color-secondary-red) 0%, transparent 60%)" }}
+          ref={orb2Ref}
+          className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full"
+          style={{ 
+            background: "radial-gradient(circle, var(--color-secondary-red) 0%, transparent 60%)",
+            opacity: isLight ? 0.025 : 0.05
+          }}
           animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -86,18 +165,19 @@ export default function HeroSection() {
           </motion.div>
 
           <motion.h1
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={0.2}
-            className="font-black tracking-tighter leading-[1.05]"
+            className="font-black tracking-tighter leading-[1.05] flex flex-wrap justify-center lg:justify-start"
             style={{
               fontSize: "clamp(4rem, 10vw, 8rem)",
               fontFamily: "var(--font-display)",
               color: "var(--text-strong)",
+              perspective: "1000px"
             }}
           >
-            {t("hero_name")}
+            {nameText.split("").map((char, i) => (
+              <span key={i} className="name-char inline-block origin-bottom">
+                {char === " " ? "\u00A0" : char}
+              </span>
+            ))}
           </motion.h1>
 
           <motion.div
@@ -122,27 +202,33 @@ export default function HeroSection() {
             custom={0.4}
             className="flex flex-col sm:flex-row items-center gap-4 mt-4 w-full sm:w-auto"
           >
-            <a
-              href="/#projects"
-              className="btn-ref btn-solid-ref w-full sm:w-auto min-h-[52px] px-8 text-sm"
-              onClick={(e) => {
-                e.preventDefault();
-                router.push("/#projects");
-              }}
-            >
-              {t("hero_cta")}
-              <ArrowRight size={16} aria-hidden="true" />
-            </a>
-            <a
-              href="/portfolio#contact"
-              className="btn-ref btn-outline-ref w-full sm:w-auto min-h-[52px] px-8 text-sm"
-              onClick={(e) => {
-                e.preventDefault();
-                router.push("/portfolio#contact");
-              }}
-            >
-              {lang === "en" ? "Hire Me" : "ติดต่อผม"}
-            </a>
+            <div className="w-full sm:w-auto flex justify-center">
+              <a
+                ref={cta1Ref}
+                href="/#projects"
+                className="btn-ref btn-solid-ref w-full sm:w-auto min-h-[52px] px-8 text-sm inline-flex items-center justify-center gap-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push("/#projects");
+                }}
+              >
+                {t("hero_cta")}
+                <ArrowRight size={16} aria-hidden="true" />
+              </a>
+            </div>
+            <div className="w-full sm:w-auto flex justify-center">
+              <a
+                ref={cta2Ref}
+                href="/portfolio#contact"
+                className="btn-ref btn-outline-ref w-full sm:w-auto min-h-[52px] px-8 text-sm inline-flex items-center justify-center gap-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push("/portfolio#contact");
+                }}
+              >
+                {lang === "en" ? "Hire Me" : "ติดต่อผม"}
+              </a>
+            </div>
           </motion.div>
 
           {/* Social Row */}

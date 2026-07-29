@@ -10,6 +10,7 @@
 import { motion, type Variants } from "framer-motion";
 import { ExternalLink, GitFork, Pencil, Trash, Plus, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
+import GsapReveal from "@/components/GsapReveal";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
@@ -212,22 +213,18 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
       <div className="max-w-6xl mx-auto">
 
         {/* Header row */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={fadeUp}
-          className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-20"
-        >
-          <div>
-            <p className="section-label">{t("projects_title")}</p>
-            <h2
-              id="projects-heading"
-              className="section-title mt-2"
-            >
-              {t("projects_subtitle")}
-            </h2>
-          </div>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-20">
+          <GsapReveal type="clip" duration={1}>
+            <div>
+              <p className="section-label">{t("projects_title")}</p>
+              <h2
+                id="projects-heading"
+                className="section-title mt-2"
+              >
+                {t("projects_subtitle")}
+              </h2>
+            </div>
+          </GsapReveal>
           {isAdmin && (
             <button
               onClick={openAddModal}
@@ -237,159 +234,156 @@ export default function ProjectsSection({ isAdmin = false }: { isAdmin?: boolean
               {t("project_add_btn")}
             </button>
           )}
-        </motion.div>
+        </div>
 
         {/* ── Bento Box Project Grid ───────────────────────────── */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full"
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
           {projects.map((project, index) => {
             const isFeatured = index === 0; // First item spans both columns on large screens
 
             return (
-              <motion.article
-                key={project.id}
-                id={project.id}
-                variants={fadeUp}
-                className={`group relative flex flex-col justify-between p-8 md:p-12 overflow-hidden border rounded-[2rem] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(200,16,46,0.08)] ${
-                  isFeatured ? "lg:col-span-2" : "col-span-1"
-                }`}
-                style={{
-                  background: "var(--bg-card)",
-                  borderColor: "var(--border-main)",
-                }}
+              <GsapReveal 
+                key={project.id} 
+                type="fade-up" 
+                delay={0.2 + (index % 2) * 0.1} 
+                className={`${isFeatured ? "lg:col-span-2" : "col-span-1"} h-full`}
+                innerClassName="h-full"
               >
-                {/* Glowing hover aura */}
                 <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                  className={`relative flex flex-col justify-between p-8 md:p-12 rounded-[2rem] border overflow-hidden group transition-all duration-500 hover:-translate-y-2 h-full`}
                   style={{
-                    background: "radial-gradient(circle at 50% 120%, rgba(200,16,46,0.1) 0%, transparent 70%)",
+                    background: "var(--bg-card)",
+                    borderColor: "var(--border-main)",
                   }}
-                />
-
-                {/* Giant Typographic Watermark */}
-                <span
-                  className="absolute -bottom-10 -right-6 text-[10rem] md:text-[16rem] font-black leading-none select-none pointer-events-none transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-3"
-                  style={{
-                    color: "var(--text-strong)",
-                    opacity: 0.03,
-                    fontFamily: "var(--font-display)",
-                  }}
-                  aria-hidden="true"
                 >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+                  {/* Glowing hover aura */}
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                    style={{
+                      background: "radial-gradient(circle at 50% 120%, rgba(200,16,46,0.1) 0%, transparent 70%)",
+                    }}
+                  />
 
-                {/* Card Content Top */}
-                <div className="relative z-10 flex flex-col gap-4 max-w-2xl mb-12">
-                  <h3
-                    className="text-3xl md:text-5xl font-bold tracking-tight transition-colors duration-300 group-hover:text-[var(--color-primary-red)]"
-                    style={{ color: "var(--text-strong)", fontFamily: "var(--font-display)" }}
+                  {/* Giant Typographic Watermark */}
+                  <span
+                    className="absolute -bottom-10 -right-6 text-[10rem] md:text-[16rem] font-black leading-none select-none pointer-events-none transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-3"
+                    style={{
+                      color: "var(--text-strong)",
+                      opacity: 0.03,
+                      fontFamily: "var(--font-display)",
+                    }}
+                    aria-hidden="true"
                   >
-                    {t(project.nameKey)}
-                  </h3>
-                  <p
-                    className="text-lg md:text-xl leading-relaxed font-light"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    {t(project.descKey)}
-                  </p>
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
 
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs font-semibold px-4 py-1.5 rounded-full border transition-colors duration-300 group-hover:border-[var(--color-primary-red)] group-hover:text-[var(--color-primary-red)] bg-white/5 backdrop-blur-md"
-                        style={{
-                          borderColor: "var(--border-main)",
-                          color: "var(--text-muted)",
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                  {/* Card Content Top */}
+                  <div className="relative z-10 flex flex-col gap-4 max-w-2xl mb-12">
+                    <h3
+                      className="text-3xl md:text-5xl font-bold tracking-tight transition-colors duration-300 group-hover:text-[var(--color-primary-red)]"
+                      style={{ color: "var(--text-strong)", fontFamily: "var(--font-display)" }}
+                    >
+                      {t(project.nameKey)}
+                    </h3>
+                    <p
+                      className="text-lg md:text-xl leading-relaxed font-light"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      {t(project.descKey)}
+                    </p>
 
-                {/* Card Bottom: Actions & Admin Controls */}
-                <div className="relative z-10 flex items-center justify-between w-full mt-auto pt-6 border-t border-[var(--border-main)] border-opacity-50">
-                  <div className="flex items-center gap-3">
-                    {project.github && (!project.isPrivateDocs || isAdmin) && (
-                      <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 flex items-center justify-center rounded-full border transition-all duration-300 hover:bg-[var(--color-primary-red)] hover:border-[var(--color-primary-red)] hover:text-white"
-                        style={{ color: "var(--text-strong)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
-                        aria-label={t("project_view_github")}
-                      >
-                        <GitFork size={20} strokeWidth={2} />
-                      </a>
-                    )}
-                    {project.live && (!project.isPrivateDocs || isAdmin) && (
-                      <a
-                        href={project.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 flex items-center justify-center rounded-full border transition-all duration-300 hover:bg-[var(--color-primary-red)] hover:border-[var(--color-primary-red)] hover:text-white"
-                        style={{ color: "var(--text-strong)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
-                        aria-label={t("project_view_live")}
-                      >
-                        <ExternalLink size={20} strokeWidth={2} />
-                      </a>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {/* Admin Editor Buttons */}
-                    {isAdmin && (
-                      <>
-                        <button
-                          onClick={() => openEditModal(project)}
-                          className="px-4 py-2 text-sm font-semibold rounded-full border transition-colors hover:text-[var(--color-primary-red)] hover:border-[var(--color-primary-red)]"
-                          style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
-                          title={t("project_edit")}
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {project.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs font-semibold px-4 py-1.5 rounded-full border transition-colors duration-300 group-hover:border-[var(--color-primary-red)] group-hover:text-[var(--color-primary-red)] bg-white/5 backdrop-blur-md"
+                          style={{
+                            borderColor: "var(--border-main)",
+                            color: "var(--text-muted)",
+                          }}
                         >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(project.id)}
-                          className="w-10 h-10 flex items-center justify-center rounded-full border transition-colors hover:text-red-500 hover:border-red-500"
-                          style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
-                          title={t("project_delete")}
-                        >
-                          <Trash size={16} />
-                        </button>
-                      </>
-                    )}
-                    
-                    {/* "View Details" link */}
-                    {project.slug && (!project.isPrivateDocs || isAdmin) && (
-                      <Link
-                        href={`/projects/${project.slug}`}
-                        className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-                        style={{
-                          background: "var(--color-primary-red)",
-                          color: "white",
-                        }}
-                      >
-                        <span className="hidden sm:inline">
-                          {project.isPrivateDocs ? t("projects_view_details") + " 🔒" : t("projects_view_details")}
+                          {tag}
                         </span>
-                        <ArrowRight size={16} />
-                      </Link>
-                    )}
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Card Bottom: Actions & Admin Controls */}
+                  <div className="relative z-10 flex items-center justify-between w-full mt-auto pt-6 border-t border-[var(--border-main)] border-opacity-50">
+                    <div className="flex items-center gap-3">
+                      {project.github && (!project.isPrivateDocs || isAdmin) && (
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 flex items-center justify-center rounded-full border transition-all duration-300 hover:bg-[var(--color-primary-red)] hover:border-[var(--color-primary-red)] hover:text-white"
+                          style={{ color: "var(--text-strong)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                          aria-label={t("project_view_github")}
+                        >
+                          <GitFork size={20} strokeWidth={2} />
+                        </a>
+                      )}
+                      {project.live && (!project.isPrivateDocs || isAdmin) && (
+                        <a
+                          href={project.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 flex items-center justify-center rounded-full border transition-all duration-300 hover:bg-[var(--color-primary-red)] hover:border-[var(--color-primary-red)] hover:text-white"
+                          style={{ color: "var(--text-strong)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                          aria-label={t("project_view_live")}
+                        >
+                          <ExternalLink size={20} strokeWidth={2} />
+                        </a>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {/* Admin Editor Buttons */}
+                      {isAdmin && (
+                        <>
+                          <button
+                            onClick={() => openEditModal(project)}
+                            className="px-4 py-2 text-sm font-semibold rounded-full border transition-colors hover:text-[var(--color-primary-red)] hover:border-[var(--color-primary-red)]"
+                            style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                            title={t("project_edit")}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(project.id)}
+                            className="w-10 h-10 flex items-center justify-center rounded-full border transition-colors hover:text-red-500 hover:border-red-500"
+                            style={{ color: "var(--text-muted)", borderColor: "var(--border-main)", background: "var(--bg-main)" }}
+                            title={t("project_delete")}
+                          >
+                            <Trash size={16} />
+                          </button>
+                        </>
+                      )}
+                      
+                      {/* "View Details" link */}
+                      {project.slug && (!project.isPrivateDocs || isAdmin) && (
+                        <Link
+                          href={`/projects/${project.slug}`}
+                          className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                          style={{
+                            background: "var(--color-primary-red)",
+                            color: "white",
+                          }}
+                        >
+                          <span className="hidden sm:inline">
+                            {project.isPrivateDocs ? t("projects_view_details") + " 🔒" : t("projects_view_details")}
+                          </span>
+                          <ArrowRight size={16} />
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </motion.article>
+              </GsapReveal>
             );
           })}
-        </motion.div>
+        </div>
 
 
       </div>

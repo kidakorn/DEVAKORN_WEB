@@ -7,7 +7,7 @@ import { useState } from "react";
 // Full-width rows with muted index numbers + red slide-in on hover
 // ─────────────────────────────────────────────────────────────────
 
-import { motion, type Variants } from "framer-motion";
+import GsapReveal from "@/components/GsapReveal";
 import { GitFork, Globe, Briefcase, ChevronRight, User, MessageCircle, Mail, MonitorPlay, Copy, Check } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import type { LucideIcon } from "lucide-react";
@@ -70,10 +70,6 @@ const LINKS: Array<{
     },
   ];
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
-};
 
 export default function LinksSection() {
   const { t } = useLanguage();
@@ -98,13 +94,7 @@ export default function LinksSection() {
     >
       <div className="max-w-6xl mx-auto">
         {/* Heading */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={fadeUp}
-          className="mb-20"
-        >
+        <GsapReveal type="fade-up" delay={0.1} className="mb-20">
           <p className="section-label">{t("links_subtitle")}</p>
           <h2
             id="links-heading"
@@ -112,81 +102,75 @@ export default function LinksSection() {
           >
             {t("links_title")}
           </h2>
-        </motion.div>
+        </GsapReveal>
 
         {/* Clean Grid List */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6"
-        >
-          {LINKS.map(({ id, titleKey, descKey, icon: Icon, href, external }) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+          {LINKS.map(({ id, titleKey, descKey, icon: Icon, href, external }, index) => {
             const isEmail = id === "link-email";
-            const Wrapper: any = isEmail ? motion.button : motion.a;
+            const Wrapper: any = isEmail ? "button" : "a";
 
             return (
-              <Wrapper
-                key={id}
-                variants={fadeUp}
-                id={id}
-                href={isEmail ? undefined : href}
-                target={!isEmail && external ? "_blank" : undefined}
-                rel={!isEmail && external ? "noopener noreferrer" : undefined}
-                onClick={isEmail ? handleCopyEmail : undefined}
-                className="group relative flex flex-col justify-between p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_30px_rgba(200,16,46,0.1)] overflow-hidden text-left w-full cursor-pointer"
-              style={{
-                background: "var(--bg-card)",
-                borderColor: "var(--border-main)",
-              }}
-            >
-              {/* Subtle hover background glow */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+              <GsapReveal key={id} type="fade-up" delay={0.2 + index * 0.1} innerClassName="h-full">
+                <Wrapper
+                  id={id}
+                  href={isEmail ? undefined : href}
+                  target={!isEmail && external ? "_blank" : undefined}
+                  rel={!isEmail && external ? "noopener noreferrer" : undefined}
+                  onClick={isEmail ? handleCopyEmail : undefined}
+                  className="group relative flex flex-col justify-between p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_30px_rgba(200,16,46,0.1)] overflow-hidden text-left w-full h-full cursor-pointer"
                 style={{
-                  background: "radial-gradient(circle at 100% 100%, rgba(200,16,46,0.05) 0%, transparent 60%)",
+                  background: "var(--bg-card)",
+                  borderColor: "var(--border-main)",
                 }}
-              />
-
-              <div className="relative z-10 flex items-center gap-4 mb-3">
+              >
+                {/* Subtle hover background glow */}
                 <div
-                  className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full transition-all duration-300 group-hover:bg-[var(--color-primary-red)] group-hover:text-white"
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
-                    background: "var(--bg-main)",
-                    color: "var(--text-strong)",
+                    background: "radial-gradient(circle at 100% 100%, rgba(200,16,46,0.05) 0%, transparent 60%)",
                   }}
-                >
-                  <Icon size={20} strokeWidth={2} />
+                />
+
+                <div className="relative z-10 flex items-center gap-4 mb-3">
+                  <div
+                    className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full transition-all duration-300 group-hover:bg-[var(--color-primary-red)] group-hover:text-white"
+                    style={{
+                      background: "var(--bg-main)",
+                      color: "var(--text-strong)",
+                    }}
+                  >
+                    <Icon size={20} strokeWidth={2} />
+                  </div>
+                  <p
+                    className="text-lg font-bold leading-tight transition-colors duration-300 group-hover:text-[var(--color-primary-red)]"
+                    style={{ color: "var(--text-strong)", fontFamily: "var(--font-display)" }}
+                  >
+                    {t(titleKey)}
+                  </p>
                 </div>
-                <p
-                  className="text-lg font-bold leading-tight transition-colors duration-300 group-hover:text-[var(--color-primary-red)]"
-                  style={{ color: "var(--text-strong)", fontFamily: "var(--font-display)" }}
-                >
-                  {t(titleKey)}
+                <p className="relative z-10 text-sm font-medium leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                  {t(descKey)}
                 </p>
-              </div>
-              <p className="relative z-10 text-sm font-medium leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                {t(descKey)}
-              </p>
 
-              {isEmail && (
-                <div
-                  className="absolute top-4 right-4 p-2 rounded-full border transition-all duration-300 group-hover:bg-[var(--color-primary-red)] group-hover:text-white group-hover:border-[var(--color-primary-red)]"
-                  style={{
-                    borderColor: "var(--border-main)",
-                    color: copied ? "var(--color-primary-red)" : "var(--text-muted)",
-                    background: "var(--bg-main)",
-                  }}
-                  title="Copy Email"
-                >
-                  {copied ? <Check size={14} /> : <Copy size={14} />}
-                </div>
-              )}
-            </Wrapper>
+                {isEmail && (
+                  <div
+                    className="absolute top-4 right-4 p-2 rounded-full border transition-all duration-300 group-hover:bg-[var(--color-primary-red)] group-hover:text-white group-hover:border-[var(--color-primary-red)]"
+                    style={{
+                      borderColor: "var(--border-main)",
+                      color: copied ? "var(--color-primary-red)" : "var(--text-muted)",
+                      background: "var(--bg-main)",
+                    }}
+                    title="Copy Email"
+                  >
+                    {copied ? <Check size={14} /> : <Copy size={14} />}
+                  </div>
+                )}
+                </Wrapper>
+              </GsapReveal>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

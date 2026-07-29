@@ -81,6 +81,7 @@ import Preloader from "@/components/Preloader";
 import ScrollToTop from "@/components/ScrollToTop";
 import ContactWidget from "@/components/ContactWidget";
 import SmoothScrolling from "@/components/SmoothScrolling";
+import PageTransition from "@/components/PageTransition";
 
 import { Analytics } from "@vercel/analytics/react";
 
@@ -99,8 +100,8 @@ export default function RootLayout({
       <body 
         className={`${prompt.variable} ${chakra.variable} font-sans bg-main text-main min-h-screen antialiased`}
         style={{
-          '--font-sans': `${prompt.style.fontFamily}, ui-sans-serif, system-ui, sans-serif`,
-          '--font-display': `${chakra.style.fontFamily}, ${prompt.style.fontFamily}, ui-sans-serif, system-ui, sans-serif`
+          '--font-sans': 'var(--font-prompt), ui-sans-serif, system-ui, sans-serif',
+          '--font-display': 'var(--font-chakra), var(--font-prompt), ui-sans-serif, system-ui, sans-serif'
         } as React.CSSProperties}
       >
         <ThemeProvider>
@@ -108,7 +109,9 @@ export default function RootLayout({
             <SmoothScrolling>
               <Preloader />
               <ScrollToTop />
-              {children}
+              <PageTransition>
+                {children}
+              </PageTransition>
               <Analytics />
             </SmoothScrolling>
           </LanguageProvider>

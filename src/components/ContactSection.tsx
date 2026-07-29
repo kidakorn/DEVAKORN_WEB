@@ -6,9 +6,9 @@
 // ─────────────────────────────────────────────────────────────────
 
 import { useState } from "react";
-import { motion, type Variants } from "framer-motion";
 import { GitFork, Globe, Briefcase, Mail, Copy, Check, MessageCircle, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
+import GsapReveal from "@/components/GsapReveal";
 
 const EMAIL = "kidakorn.1@gmail.com";
 
@@ -19,10 +19,7 @@ const SOCIAL_LINKS = [
   { id: "contact-line", href: "https://line.me/ti/p/~hume.ry", icon: MessageCircle, label: "LINE" },
 ] as const;
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
-};
+
 
 export default function ContactSection() {
   const { t } = useLanguage();
@@ -48,14 +45,7 @@ export default function ContactSection() {
       </div>
 
       <div className="max-w-5xl mx-auto relative z-10">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.15 } },
-          }}
+        <div
           className="relative rounded-[3rem] p-10 md:p-20 flex flex-col items-center text-center border shadow-2xl overflow-hidden"
           style={{
             background: "var(--glass-bg)",
@@ -65,7 +55,7 @@ export default function ContactSection() {
           }}
         >
           {/* Tag */}
-          <motion.div variants={fadeUp}>
+          <GsapReveal type="fade-up" delay={0.1}>
             <span
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border mb-8"
               style={{
@@ -77,86 +67,93 @@ export default function ContactSection() {
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-red)] animate-pulse" />
               {t("contact_reply_time")}
             </span>
-          </motion.div>
+          </GsapReveal>
 
           {/* Heading */}
-          <motion.h2
-            variants={fadeUp}
-            id="contact-heading"
-            className="font-black leading-[1.1] tracking-tight mb-6"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(2.5rem, 6vw, 5rem)",
-              color: "var(--text-strong)",
-            }}
-          >
-            {t("contact_title")}
-          </motion.h2>
-
-          {/* Subtitle */}
-          <motion.p
-            variants={fadeUp}
-            className="text-lg md:text-2xl max-w-2xl leading-relaxed mb-12 font-medium"
-            style={{ color: "var(--text-muted)" }}
-          >
-            {t("contact_subtitle")}
-          </motion.p>
-
-          {/* Big Email Button */}
-          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <a
-              href={`mailto:${EMAIL}`}
-              className="flex items-center justify-center gap-3 w-full sm:w-auto min-h-[64px] px-10 rounded-2xl font-bold text-lg transition-all duration-300 hover:shadow-[0_10px_30px_rgba(200,16,46,0.3)] hover:-translate-y-1"
-              style={{ background: "var(--color-primary-red)", color: "white" }}
-            >
-              <Mail size={22} />
-              {t("contact_email_btn")}
-              <ArrowRight size={20} className="opacity-70 ml-2" />
-            </a>
-            
-            <button
-              onClick={handleCopyEmail}
-              className="flex items-center justify-center gap-3 w-full sm:w-auto min-h-[64px] px-8 rounded-2xl font-bold text-lg border transition-all duration-300 hover:-translate-y-1"
+          <GsapReveal type="fade-up" delay={0.2}>
+            <h2
+              id="contact-heading"
+              className="font-black leading-[1.1] tracking-tight mb-6"
               style={{
-                background: "var(--bg-main)",
-                borderColor: copied ? "var(--color-primary-red)" : "var(--border-main)",
-                color: copied ? "var(--color-primary-red)" : "var(--text-strong)",
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(2.5rem, 6vw, 5rem)",
+                color: "var(--text-strong)",
               }}
             >
-              {copied ? (
-                <>
-                  <Check size={22} />
-                  {t("contact_email_copied")}
-                </>
-              ) : (
-                <>
-                  <Copy size={22} />
-                  Copy Email
-                </>
-              )}
-            </button>
-          </motion.div>
+              {t("contact_title")}
+            </h2>
+          </GsapReveal>
 
-          <motion.div variants={fadeUp} className="w-full h-px opacity-50 my-12" style={{ background: "var(--border-main)" }} />
+          {/* Subtitle */}
+          <GsapReveal type="fade-up" delay={0.3}>
+            <p
+              className="text-lg md:text-2xl max-w-2xl leading-relaxed mb-12 font-medium"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {t("contact_subtitle")}
+            </p>
+          </GsapReveal>
+
+          {/* Big Email Button */}
+          <GsapReveal type="fade-up" delay={0.4} className="w-full sm:w-auto" innerClassName="w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <a
+                href={`mailto:${EMAIL}`}
+                className="flex items-center justify-center gap-3 w-full sm:w-auto min-h-[64px] px-10 rounded-2xl font-bold text-lg transition-all duration-300 hover:shadow-[0_10px_30px_rgba(200,16,46,0.3)] hover:-translate-y-1"
+                style={{ background: "var(--color-primary-red)", color: "white" }}
+              >
+                <Mail size={22} />
+                {t("contact_email_btn")}
+                <ArrowRight size={20} className="opacity-70 ml-2" />
+              </a>
+              
+              <button
+                onClick={handleCopyEmail}
+                className="flex items-center justify-center gap-3 w-full sm:w-auto min-h-[64px] px-8 rounded-2xl font-bold text-lg border transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  background: "var(--bg-main)",
+                  borderColor: copied ? "var(--color-primary-red)" : "var(--border-main)",
+                  color: copied ? "var(--color-primary-red)" : "var(--text-strong)",
+                }}
+              >
+                {copied ? (
+                  <>
+                    <Check size={22} />
+                    {t("contact_email_copied")}
+                  </>
+                ) : (
+                  <>
+                    <Copy size={22} />
+                    Copy Email
+                  </>
+                )}
+              </button>
+            </div>
+          </GsapReveal>
+
+          <GsapReveal type="fade-up" delay={0.5} className="w-full">
+            <div className="w-full h-px opacity-50 my-12" style={{ background: "var(--border-main)" }} />
+          </GsapReveal>
 
           {/* Social Row */}
-          <motion.div variants={fadeUp} className="flex flex-wrap justify-center items-center gap-4">
-            {SOCIAL_LINKS.map(({ id, href, icon: Icon, label }) => (
-              <a
-                key={id}
-                id={id}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg group border"
-                style={{ background: "var(--bg-main)", borderColor: "var(--border-main)" }}
-              >
-                <Icon size={22} className="transition-colors group-hover:text-[var(--color-primary-red)]" style={{ color: "var(--text-muted)" }} />
-              </a>
+          <div className="flex flex-wrap justify-center items-center gap-4">
+            {SOCIAL_LINKS.map(({ id, href, icon: Icon, label }, index) => (
+              <GsapReveal key={id} type="fade-up" delay={0.6 + index * 0.1}>
+                <a
+                  id={id}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg group border"
+                  style={{ background: "var(--bg-main)", borderColor: "var(--border-main)" }}
+                >
+                  <Icon size={22} className="transition-colors group-hover:text-[var(--color-primary-red)]" style={{ color: "var(--text-muted)" }} />
+                </a>
+              </GsapReveal>
             ))}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );
