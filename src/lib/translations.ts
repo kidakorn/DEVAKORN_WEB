@@ -43,15 +43,21 @@ export const translations: Record<string, Record<Lang, string>> = {
   // ── Experience ──────────────────────────────────────────────────
   exp_title: { th: "ประสบการณ์", en: "Experience" },
   exp_subtitle: { th: "เส้นทางการทำงานของผม", en: "My career journey" },
-  exp1_role: { th: "Staff (Developer)", en: "Staff (Developer)" },
-  exp1_company: { th: "ปัจจุบัน", en: "Present" },
-  exp1_desc: { th: "พัฒนาระบบ Enterprise ด้วย RPG, RMDL, LANSA บน AS/400 (IBM i) และดูแลระบบฐานข้อมูล Db2", en: "Enterprise system development using RPG, RMDL, LANSA on AS/400 (IBM i) and Db2 database management." },
-  exp2_role: { th: "Web Developer", en: "Web Developer" },
-  exp2_company: { th: "Freelance", en: "Freelance" },
-  exp2_desc: { th: "ออกแบบและพัฒนาเว็บไซต์ด้วย WordPress, สร้าง Web Application ด้วย Node.js และ Angular", en: "Design and develop websites with WordPress, build Web Applications using Node.js and Angular." },
-  exp3_role: { th: "Graphic Designer", en: "Graphic Designer" },
-  exp3_company: { th: "Freelance", en: "Freelance" },
-  exp3_desc: { th: "ออกแบบโลโก้, แบนเนอร์โฆษณา, และสื่อสิ่งพิมพ์เพื่อสร้างแบรนดิ้งที่โดดเด่น", en: "Logo design, ad banners, and print media design for standout branding." },
+  exp1_role: { th: "Staff Programmer", en: "Staff Programmer" },
+  exp1_company: { th: "NISSHINBO MICRO DEVICES (THAILAND) CO., LTD.", en: "NISSHINBO MICRO DEVICES (THAILAND) CO., LTD." },
+  exp1_desc: { th: "พัฒนาระบบ IBM i (AS400) เพื่อสนับสนุนการดำเนินงานของธุรกิจ", en: "Responsible for developing IBM i (AS400) systems to support business operations." },
+  
+  exp2_role: { th: "Graphic Design", en: "Graphic Design" },
+  exp2_company: { th: "Longurie Production", en: "Longurie Production" },
+  exp2_desc: { th: "สร้างสรรค์อัตลักษณ์แบรนด์, สื่อการตลาด และตัดต่อวิดีโอสำหรับแคมเปญโซเชียลมีเดีย", en: "Created compelling brand identities and marketing materials & editor video content for social media campaigns." },
+  
+  exp3_role: { th: "นักศึกษาฝึกงาน (Apprentice)", en: "Apprentice" },
+  exp3_company: { th: "บริษัท โทรคมนาคมแห่งชาติ จำกัด (มหาชน)", en: "National Telecom Public Co., Ltd." },
+  exp3_desc: { th: "ดูแลและซ่อมบำรุงเครือข่ายโทรคมนาคมในจังหวัดลำพูน", en: "Maintained and serviced telecommunication networks in Lamphun Province." },
+
+  exp4_role: { th: "นักศึกษา (Student)", en: "Student" },
+  exp4_company: { th: "มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา เชียงใหม่", en: "Rajamangala University of Technology Lanna Chiang Mai" },
+  exp4_desc: { th: "ปริญญาตรี สาขาวิศวกรรมคอมพิวเตอร์", en: "Bachelor's Degree in Computer Engineering" },
 
   // ── Projects ────────────────────────────────────────────────────
   projects_title: { th: "ผลงาน", en: "Projects" },

@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useLanguage } from "@/lib/LanguageContext";
-import { Briefcase, Code2, PenTool } from "lucide-react";
+import { Briefcase, Code2, PenTool, BookOpen } from "lucide-react";
 import GsapReveal from "@/components/GsapReveal";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/useGsap";
 
@@ -13,23 +13,31 @@ const EXPERIENCES = [
     companyKey: "exp1_company",
     descKey: "exp1_desc",
     icon: Code2,
-    date: "2021 - Present",
+    date: "June 2025 - Present",
   },
   {
     id: "exp2",
     roleKey: "exp2_role",
     companyKey: "exp2_company",
     descKey: "exp2_desc",
-    icon: Briefcase,
-    date: "2018 - 2021",
+    icon: PenTool,
+    date: "Jan 2025 - Mar 2025",
   },
   {
     id: "exp3",
     roleKey: "exp3_role",
     companyKey: "exp3_company",
     descKey: "exp3_desc",
-    icon: PenTool,
-    date: "2016 - 2018",
+    icon: Briefcase,
+    date: "Nov 2022 - Feb 2023",
+  },
+  {
+    id: "exp4",
+    roleKey: "exp4_role",
+    companyKey: "exp4_company",
+    descKey: "exp4_desc",
+    icon: BookOpen,
+    date: "2020 - 2023",
   },
 ];
 
