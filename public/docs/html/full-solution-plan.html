@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Solution Plan — HR / Purchase / Inventory บน iws-clone Gateway</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #0b1210;
+    --bg-panel: #101a17;
+    --line: #1f332c;
+    --green: #39ff88;
+    --green-dim: #1f8a52;
+    --amber: #ffb454;
+    --blue: #6fb1ff;
+    --text: #d7e6df;
+    --text-dim: #7d9a8e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: radial-gradient(ellipse at top, #0f1a17 0%, var(--bg) 60%);
+    color:var(--text);
+    font-family:'IBM Plex Sans Thai','IBM Plex Mono',monospace;
+    line-height:1.65;
+    padding-bottom:80px;
+  }
+  header{
+    padding:56px 24px 40px;
+    max-width:1000px; margin:0 auto;
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--green); opacity:0.85;
+    display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  }
+  .eyebrow::before{content:"●"; color:var(--green); animation:blink 1.6s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+  h1{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:clamp(26px,4vw,40px);
+    font-weight:700;
+    margin:0 0 12px;
+    color:#f2fbf6;
+    letter-spacing:-0.01em;
+  }
+  header p{ color:var(--text-dim); font-size:15px; max-width:680px; margin:0; }
+  main{max-width:1000px; margin:0 auto; padding:40px 24px 0;}
+  section{margin-bottom:60px;}
+  .sec-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px; color:var(--amber); letter-spacing:0.14em;
+    text-transform:uppercase; margin-bottom:10px;
+  }
+  h2{ font-size:23px; font-weight:700; color:#f2fbf6; margin:0 0 6px; }
+  h3{ font-size:16px; font-weight:600; color:var(--green); margin:28px 0 10px; }
+  .subtitle{ color:var(--text-dim); font-size:13.5px; margin-bottom:20px; }
+
+  .diagram{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:20px;
+    overflow-x:auto;
+  }
+  .mermaid{ display:flex; justify-content:center; }
+
+  table{
+    width:100%; border-collapse:collapse; font-size:13.5px;
+    background:var(--bg-panel); border:1px solid var(--line);
+    border-radius:6px; overflow:hidden; margin-top:14px;
+  }
+  th,td{ text-align:left; padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--amber); background:rgba(255,180,84,0.05);
+  }
+  tr:last-child td{ border-bottom:none; }
+  td code, li code{
+    font-family:'IBM Plex Mono',monospace; background:rgba(57,255,136,0.08);
+    color:var(--green); padding:2px 6px; border-radius:3px; font-size:12.5px;
+  }
+
+  ul.feature-list{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; }
+  ul.feature-list li{
+    padding:8px 0 8px 20px; position:relative; font-size:13.5px; border-bottom:1px solid var(--line);
+  }
+  ul.feature-list li::before{ content:"▸"; position:absolute; left:0; color:var(--green); }
+  @media (max-width:640px){ ul.feature-list{ grid-template-columns:1fr; } }
+
+  .callout{
+    border-left:3px solid var(--amber);
+    background:rgba(255,180,84,0.05);
+    padding:16px 20px; border-radius:0 6px 6px 0;
+    font-size:13.5px; color:var(--text); margin-top:16px;
+  }
+  .callout b{ color:var(--amber); }
+  .callout.green{ border-left-color:var(--green); }
+  .callout.green b{ color:var(--green); }
+
+  .card-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:16px; }
+  @media (max-width:800px){ .card-grid{ grid-template-columns:1fr; } }
+  .card{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px;
+    padding:18px 20px;
+  }
+  .card .num{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--green);
+    letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;
+  }
+  .card h4{ margin:0 0 8px; font-size:15px; color:#f2fbf6; }
+  .card p{ margin:0; font-size:12.5px; color:var(--text-dim); }
+
+  .system-badge{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px;
+    padding:4px 10px; border-radius:4px; margin-bottom:14px; letter-spacing:0.05em;
+  }
+  .badge-hr{ background:rgba(111,177,255,0.12); color:var(--blue); border:1px solid rgba(111,177,255,0.3); }
+  .badge-purchase{ background:rgba(255,180,84,0.12); color:var(--amber); border:1px solid rgba(255,180,84,0.3); }
+  .badge-inventory{ background:rgba(57,255,136,0.12); color:var(--green); border:1px solid rgba(57,255,136,0.3); }
+
+  footer{
+    max-width:1000px; margin:40px auto 0; padding:32px 24px 0;
+    color:var(--text-dim); font-size:12px; border-top:1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Full Solution Plan · Built on iws-clone Gateway</div>
+  <h1>HR · Purchase · Inventory</h1>
+  <p>แผนสถาปัตยกรรม, workflow, และ ER diagram สำหรับต่อยอด iws-clone ให้เป็น
+  AS400 Gateway กลาง ที่ทุกระบบธุรกิจเรียกใช้ร่วมกัน</p>
+</header>
+
+<main>
+
+  <!-- 01 ARCHITECTURE -->
+  <section>
+    <div class="sec-label">01 · ภาพรวมสถาปัตยกรรม</div>
+    <h2>iws-clone เปลี่ยนบทบาทเป็น "AS400 Gateway"</h2>
+    <p class="subtitle">ทุกเว็บระบบใหม่ไม่ต่อ ODBC/itoolkit เอง แต่เรียกผ่าน Gateway ตัวเดียวที่มีอยู่แล้ว —
+    ข้อมูลทั้งหมดเก็บบน AS400 ที่เดียว ไม่ต้องมี database แยก</p>
+
+    <div class="diagram">
+      <pre class="mermaid">
+flowchart LR
+  HR["HR Web"] --> GW["iws-clone Gateway"]
+  PUR["Purchase Web"] --> GW
+  INV["Inventory Web"] --> GW
+  GW --> AS400[("AS400 / pub400")]
+      </pre>
+    </div>
+
+    <h3>All-on-AS400 — กฎสำคัญที่สุดของ full solution นี้</h3>
+    <p style="font-size:13.5px; color:var(--text-dim);">
+      ไม่มี database แยกต่างหากอีกต่อไป ทั้ง master data และ workflow state
+      เก็บบน AS400 ทั้งหมด ผ่าน iws-clone ตัวเดียว:
+    </p>
+    <table>
+      <tr><th>ประเภทข้อมูล</th><th>เก็บที่ไหน</th><th>เหตุผล</th></tr>
+      <tr>
+        <td>Master data (Employee, Item, Vendor)</td>
+        <td><code>AS400</code> — ตารางที่มีอยู่แล้ว (ถ้ามี) หรือสร้างใหม่ผ่าน Phase 7</td>
+        <td>เป็นข้อมูลจริงที่ระบบเดิมของบริษัทใช้อยู่ ห้ามสร้างซ้ำถ้ามีอยู่แล้ว</td>
+      </tr>
+      <tr>
+        <td>Workflow state (PR, PO, Leave, Approval)</td>
+        <td><code>AS400</code> — สร้างเป็นตารางใหม่ (library แยกต่อระบบ)</td>
+        <td>ไม่ต้องซิงค์ข้ามระบบ อ่าน/เขียนที่เดียวกันตลอด ลดความซับซ้อน</td>
+      </tr>
+      <tr>
+        <td>Read (query ข้อมูล)</td>
+        <td>ผ่าน Phase 5/5.5/6 (Config, Schema Browser, Query Builder)</td>
+        <td>มีอยู่แล้ว ใช้ซ้ำได้ทันที</td>
+      </tr>
+      <tr>
+        <td>Write (insert/update สถานะ approve/reject)</td>
+        <td>ผ่าน Phase 6 (Write Operations) — <b>ต้องทำให้เสร็จก่อน</b> ถึงจะสร้างระบบพวกนี้ได้จริง</td>
+        <td>ทุก workflow (อนุมัติลา, สร้าง PO, รับสินค้า) ต้อง insert/update ข้อมูลจริงบน AS400</td>
+      </tr>
+    </table>
+
+    <div class="callout" style="margin-top:14px;">
+      <b>ผลที่ตามมา:</b> เพราะไม่มี database แยกแล้ว <b>Phase 6 (Write Operations)</b>
+      ที่เคยพักไว้ก่อนหน้านี้ กลายเป็นสิ่งที่ต้องทำให้เสร็จก่อนเริ่มระบบใดๆ ในแผนนี้
+      ทั้งหมด เพราะทุก workflow ต้องเขียนสถานะ (อนุมัติ/ปฏิเสธ/รับของ) กลับเข้า AS400
+      จริงทุกครั้ง
+    </div>
+
+    <h3>Library ต่อระบบ</h3>
+    <table>
+      <tr><th>ระบบ</th><th>Library แนะนำ</th></tr>
+      <tr><td>Shared Foundation (Users/Roles/Approvals/Notifications/Audit)</td><td><code>APPCORE</code></td></tr>
+      <tr><td>HR</td><td><code>APPHR</code></td></tr>
+      <tr><td>Purchase</td><td><code>APPPUR</code></td></tr>
+      <tr><td>Inventory</td><td><code>APPINV</code></td></tr>
+    </table>
+    <p style="font-size:12.5px; color:var(--text-dim); margin-top:8px;">
+      ตั้งชื่อ library ตามที่สะดวก แต่แนะนำแยก library ต่อระบบ เพื่อให้จัดการสิทธิ์/
+      backup แยกกันได้ง่าย ทุกตารางสร้างผ่าน <b>Phase 7 Table Designer</b> เพื่อบังคับ
+      ให้ตั้งชื่อ field ตาม Naming Convention เสมอ (ดู section 00b ของแผนเดิม)
+    </p>
+
+    <h3>Tech Stack ฝั่งเว็บ</h3>
+    <table>
+      <tr><th>ส่วน</th><th>แนะนำ</th></tr>
+      <tr><td>Frontend</td><td><code>Next.js</code> (React) — เหมาะกับระบบภายในองค์กร</td></tr>
+      <tr><td>Auth</td><td>JWT แบบ stateless (ไม่ต้องมี session table) ตรวจสิทธิ์จากตาราง <code>USERS</code>/<code>ROLES</code> บน AS400</td></tr>
+      <tr><td>App Database</td><td>ไม่มีแยก — ใช้ AS400 อย่างเดียวผ่าน <code>iws-clone</code></td></tr>
+      <tr><td>Backend Gateway</td><td><code>iws-clone</code> เดิม (ขยาย endpoint เพิ่มตามระบบ)</td></tr>
+      <tr><td>Notification</td><td>Email (nodemailer) + ตาราง <code>NOTIFICATIONS</code> บน AS400</td></tr>
+    </table>
+  </section>
+
+  <!-- 02 SHARED FOUNDATION -->
+  <section>
+    <div class="sec-label">02 · Shared Foundation</div>
+    <h2>ฐานรากที่ต้องทำก่อนทุกระบบ</h2>
+    <p class="subtitle">ทำครั้งเดียว ใช้ร่วมกันได้ทั้ง HR, Purchase, Inventory</p>
+
+    <ul class="feature-list">
+      <li>Login / ตรวจสิทธิ์ (JWT stateless)</li>
+      <li>Role-based Permission (ใครอนุมัติได้แค่ไหน)</li>
+      <li>User ↔ Employee mapping (เชื่อมกับ Employee master บน AS400)</li>
+      <li>Notification กลาง (email + in-app)</li>
+      <li>Audit Log กลาง (ใครทำอะไรเมื่อไหร่)</li>
+      <li>Approval Engine กลาง (ใช้ซ้ำได้ทุก workflow)</li>
+    </ul>
+
+    <p style="font-size:12.5px; color:var(--text-dim);">
+      ทุกตารางด้านล่างสร้างในไลบรารี <code>APPCORE</code> บน AS400 ผ่าน Phase 7
+      Table Designer — ชื่อ field ทั้งหมดตั้งตาม Naming Convention (2-char prefix)
+    </p>
+
+    <h3>ER Diagram — Shared Foundation (AS400 Tables)</h3>
+    <div class="diagram">
+      <pre class="mermaid">
+erDiagram
+  USERS ||--o{ USER_ROLES : has
+  ROLES ||--o{ USER_ROLES : assigned
+  ROLES ||--o{ ROLE_PERMISSIONS : has
+  PERMISSIONS ||--o{ ROLE_PERMISSIONS : granted
+  USERS ||--o{ NOTIFICATIONS : receives
+  USERS ||--o{ AUDIT_LOG : performs
+  USERS ||--o{ APPROVALS : decides
+
+  USERS {
+    char CDUSER PK "User code"
+    varchar NMUSER "Username"
+    varchar TXMAIL "Email"
+    varchar TXHASH "Password hash"
+    char CDEMP FK "Employee code (ref. Employee master)"
+  }
+  ROLES {
+    char CDROLE PK "Role code"
+    varchar NMROLE "Role name"
+  }
+  PERMISSIONS {
+    char CDPERM PK "Permission code"
+    varchar TXDESC "Description"
+  }
+  USER_ROLES {
+    char CDUSER FK
+    char CDROLE FK
+  }
+  ROLE_PERMISSIONS {
+    char CDROLE FK
+    char CDPERM FK
+  }
+  NOTIFICATIONS {
+    dec NRNOTI PK "Notification no."
+    char CDUSER FK
+    varchar TXTTL "Title"
+    varchar TXMSG "Message"
+    char FGREAD "Read flag Y/N"
+    date D8CRDT "Created date"
+    time TMCRDT "Created time"
+  }
+  AUDIT_LOG {
+    dec NRAUDT PK "Audit no."
+    char CDUSER FK
+    varchar TXACTN "Action"
+    varchar TXENTY "Entity name"
+    varchar CNENID "Entity id (character)"
+    clob TXBFOR "Before value (JSON text)"
+    clob TXAFTR "After value (JSON text)"
+    date D8CRDT
+    time TMCRDT
+  }
+  APPROVALS {
+    dec NRAPPR PK "Approval no."
+    char CDTYPE "Request type: LV/OT/PR/PO"
+    dec NRREQ "Request no. (ref. ตารางต้นทาง)"
+    char CDUSER FK "Approver"
+    char CDDECN "Decision code: PEND/APRV/REJ"
+    varchar TXCMT "Comment"
+    date D8DECD "Decided date"
+    time TMDECD "Decided time"
+  }
+      </pre>
+    </div>
+    <div class="callout green">
+      <b>APPROVALS ใช้ร่วมกันทุกระบบ:</b> ไม่ว่าจะเป็น Leave, OT, PR, หรือ PO
+      ล้วนอ้างถึงตาราง <code>APPROVALS</code> เดียวกัน ผ่าน <code>CDTYPE</code>
+      + <code>NRREQ</code> — ทำ Approval Engine ครั้งเดียว ใช้ซ้ำได้ทุก workflow
+      ข้างล่างนี้
+    </div>
+    <div class="callout" style="margin-top:12px;">
+      <b>หมายเหตุเรื่องชื่อ field:</b> <code>TXHASH</code>, <code>TXMAIL</code> เป็น
+      การเลือก prefix <code>TX</code> (Text/Description) แบบกว้างๆ เพราะยังไม่มี
+      prefix เฉพาะสำหรับ email/hash ในลิสต์เดิม — ตอนสร้างจริงผ่าน Table Designer
+      ถ้า agent เจอ field แบบนี้ควรถามยืนยันชื่อ/prefix กับผู้ใช้ก่อนเสมอ ตามกฎข้อ 7
+      ใน SKILL.md
+    </div>
+  </section>
+
+  <!-- 03 HR -->
+  <section>
+    <span class="system-badge badge-hr">SYSTEM 1</span>
+    <div class="sec-label">03 · HR (ลา / OT / เงินเดือน)</div>
+    <h2>HR Self-Service</h2>
+
+    <ul class="feature-list">
+      <li>Employee Master (ตารางบน AS400 — ใช้ของเดิมถ้ามี หรือสร้างใหม่)</li>
+      <li>Leave Request + Approval Workflow</li>
+      <li>OT Request + Approval Workflow</li>
+      <li>Attendance / Time Tracking</li>
+      <li>Payroll Calculation</li>
+      <li>ESS — พนักงานดูสลิป/ยอดลาตัวเอง</li>
+    </ul>
+
+    <p style="font-size:12.5px; color:var(--text-dim);">
+      ตารางใหม่ (LEAVE_REQUESTS, OT_REQUESTS) สร้างในไลบรารี <code>APPHR</code>
+    </p>
+
+    <h3>Workflow — Leave / OT Request</h3>
+    <div class="diagram">
+      <pre class="mermaid">
+flowchart TD
+  A["พนักงานส่งคำขอ Leave/OT ผ่านเว็บ"] --> B["iws-clone: INSERT เข้า LEAVE_REQUESTS/OT_REQUESTS (Phase 6)"]
+  B --> C{"หัวหน้างานอนุมัติ?"}
+  C -- "ปฏิเสธ" --> F["UPDATE CDSTAT = REJ + แจ้งพนักงาน"]
+  C -- "อนุมัติ" --> D{"HR ตรวจสอบ"}
+  D -- "ปฏิเสธ" --> F
+  D -- "อนุมัติ" --> E["UPDATE CDSTAT = APRV บนตาราง AS400 โดยตรง"]
+  E --> G["บันทึกลง APPROVALS + แจ้งพนักงาน: อนุมัติแล้ว"]
+      </pre>
+    </div>
+
+    <h3>ER Diagram — HR (AS400 Tables ไลบรารี APPHR)</h3>
+    <div class="diagram">
+      <pre class="mermaid">
+erDiagram
+  EMPLOYEE ||--o{ LEAVE_REQUESTS : submits
+  EMPLOYEE ||--o{ OT_REQUESTS : submits
+
+  EMPLOYEE {
+    char CDEMP PK "Employee code"
+    varchar NMEMP "Employee name"
+    char CDDEPT "Department code"
+    varchar NMPOSN "Position name"
+    date D8HIRE "Hire date"
+  }
+  LEAVE_REQUESTS {
+    dec NRLEAV PK "Leave request no."
+    char CDEMP FK
+    char CDLTYP "Leave type code"
+    date D8STRT "Start date"
+    date D8END "End date"
+    varchar TXRSN "Reason"
+    char CDSTAT "Status: PEND/APRV/REJ"
+    date D8CRDT
+    time TMCRDT
+  }
+  OT_REQUESTS {
+    dec NROTRQ PK "OT request no."
+    char CDEMP FK
+    date D8OTDT "OT date"
+    dec QTHRS "OT hours"
+    varchar TXRSN "Reason"
+    char CDSTAT "Status: PEND/APRV/REJ"
+    date D8CRDT
+    time TMCRDT
+  }
+      </pre>
+    </div>
+    <p style="font-size:12.5px; color:var(--text-dim);">
+      (ถ้าบริษัทมีตาราง Employee master อยู่แล้วบน AS400 จริง ให้ใช้ตารางเดิม
+      ไม่ต้องสร้าง <code>EMPLOYEE</code> ใหม่ — ตาราง <code>APPROVALS</code> จาก
+      Shared Foundation อ้างถึง <code>LEAVE_REQUESTS</code>/<code>OT_REQUESTS</code>
+      ผ่าน <code>CDTYPE</code>/<code>NRREQ</code>)
+    </p>
+  </section>
+
+  <!-- 04 PURCHASE -->
+  <section>
+    <span class="system-badge badge-purchase">SYSTEM 2</span>
+    <div class="sec-label">04 · Purchase (PO / ใบขอซื้อ / อนุมัติ)</div>
+    <h2>Procure-to-Pay</h2>
+
+    <ul class="feature-list">
+      <li>Purchase Requisition (PR)</li>
+      <li>Purchase Order (PO)</li>
+      <li>Multi-level Approval ตามวงเงิน</li>
+      <li>Vendor Master + Vendor Scoring</li>
+      <li>Budget Control</li>
+      <li>Receiving / GRN</li>
+      <li>Invoice Matching (3-way match)</li>
+    </ul>
+
+    <p style="font-size:12.5px; color:var(--text-dim);">
+      ตารางทั้งหมดสร้างในไลบรารี <code>APPPUR</code> (ยกเว้น <code>ITEM</code>/
+      <code>VENDOR</code> master ถ้ามีอยู่แล้วบน AS400 จริง ให้ใช้ของเดิม)
+    </p>
+
+    <h3>Workflow — PR ถึง จ่ายเงิน</h3>
+    <div class="diagram">
+      <pre class="mermaid">
+flowchart TD
+  A["สร้างใบขอซื้อ PR → INSERT PURCHASE_REQUISITIONS"] --> B{"หัวหน้าแผนกอนุมัติ?"}
+  B -- "ปฏิเสธ" --> Z["UPDATE CDSTAT = REJ + แจ้งผู้ขอ"]
+  B -- "อนุมัติ" --> C{"เช็ค Budget"}
+  C -- "เกินงบ" --> D{"ผู้บริหารอนุมัติพิเศษ?"}
+  D -- "ปฏิเสธ" --> Z
+  D -- "อนุมัติ" --> E["INSERT PURCHASE_ORDERS"]
+  C -- "อยู่ในงบ" --> E
+  E --> F["ส่ง PO ให้ Vendor"]
+  F --> G["รับสินค้า → INSERT GOODS_RECEIPTS"]
+  G --> H["Invoice Matching: PO / GRN / Invoice"]
+  H --> I{"ตรงกันไหม?"}
+  I -- "ไม่ตรง" --> J["UPDATE CDMTCH = MISMATCH แจ้งบัญชี"]
+  I -- "ตรง" --> K["UPDATE CDMTCH = MATCH อนุมัติจ่ายเงิน"]
+      </pre>
+    </div>
+
+    <h3>ER Diagram — Purchase (AS400 Tables ไลบรารี APPPUR)</h3>
+    <div class="diagram">
+      <pre class="mermaid">
+erDiagram
+  PURCHASE_REQUISITIONS ||--o{ PR_LINES : contains
+  PURCHASE_REQUISITIONS ||--o{ PURCHASE_ORDERS : converts_to
+  PURCHASE_ORDERS ||--o{ PO_LINES : contains
+  VENDOR ||--o{ PURCHASE_ORDERS : receives
+  PURCHASE_ORDERS ||--o{ GOODS_RECEIPTS : received_by
+  GOODS_RECEIPTS ||--o{ GR_LINES : contains
+  PURCHASE_ORDERS ||--o{ INVOICES : billed_by
+
+  PURCHASE_REQUISITIONS {
+    dec NRPR PK "PR no."
+    char CDEMP FK "Requester employee code"
+    char CDDEPT "Department code"
+    char CDSTAT "Status: PEND/APRV/REJ"
+    date D8CRDT
+    time TMCRDT
+  }
+  PR_LINES {
+    dec NRPRLN PK "PR line no."
+    dec NRPR FK
+    char CDITEM FK "Item code"
+    dec QTORD "Quantity ordered"
+    dec AMEST "Amount estimated"
+  }
+  PURCHASE_ORDERS {
+    dec NRPO PK "PO no."
+    dec NRPR FK
+    char CDVEND FK "Vendor code"
+    char CDSTAT "Status"
+    dec AMTTL "Amount total"
+    date D8CRDT
+    time TMCRDT
+  }
+  PO_LINES {
+    dec NRPOLN PK "PO line no."
+    dec NRPO FK
+    char CDITEM FK
+    dec QTORD
+    dec PRUNIT "Price per unit"
+  }
+  VENDOR {
+    char CDVEND PK "Vendor code"
+    varchar NMVEND "Vendor name"
+    varchar TXCONT "Contact info"
+    dec RTSCOR "Vendor score/rating"
+  }
+  GOODS_RECEIPTS {
+    dec NRGRN PK "GRN no."
+    dec NRPO FK
+    date D8RECV "Received date"
+    time TMRECV "Received time"
+  }
+  GR_LINES {
+    dec NRGRLN PK "GRN line no."
+    dec NRGRN FK
+    char CDITEM FK
+    dec QTRECV "Quantity received"
+  }
+  INVOICES {
+    dec NRINV PK "Invoice no."
+    dec NRPO FK
+    dec AMINV "Amount invoiced"
+    char CDMTCH "Match status: MATCH/MISMATCH"
+  }
+      </pre>
+    </div>
+    <p style="font-size:12.5px; color:var(--text-dim);">
+      (<code>APPROVALS</code> จาก Shared Foundation อ้างถึง <code>PURCHASE_REQUISITIONS</code>
+      และ <code>PURCHASE_ORDERS</code> ผ่าน <code>CDTYPE</code>/<code>NRREQ</code>)
+    </p>
+  </section>
+
+  <!-- 05 INVENTORY -->
+  <section>
+    <span class="system-badge badge-inventory">SYSTEM 3</span>
+    <div class="sec-label">05 · Inventory / Stock</div>
+    <h2>คลังสินค้า</h2>
+
+    <ul class="feature-list">
+      <li>Item Master</li>
+      <li>Stock In / Out Transaction</li>
+      <li>Stock Transfer ระหว่างคลัง</li>
+      <li>Reorder Point / Auto Alert</li>
+      <li>Cycle Count / Physical Count</li>
+      <li>Barcode / QR Scanning</li>
+    </ul>
+
+    <p style="font-size:12.5px; color:var(--text-dim);">
+      ตารางทั้งหมดสร้างในไลบรารี <code>APPINV</code> (ใช้ <code>ITEM</code> master
+      ร่วมกับตารางที่สร้างไว้แล้วใน Purchase ถ้าเป็นสินค้าเดียวกัน)
+    </p>
+
+    <h3>Workflow — Stock Movement</h3>
+    <div class="diagram">
+      <pre class="mermaid">
+flowchart TD
+  A["รับสินค้าเข้า Stock In"] --> B["INSERT STOCK_TRANSACTIONS + UPDATE QTCUR"]
+  C["เบิกสินค้า Stock Out"] --> B
+  B --> D{"QTCUR ต่ำกว่า QTRPT?"}
+  D -- "ใช่" --> E["แจ้งเตือนให้สั่งซื้อเพิ่ม"]
+  D -- "ไม่" --> F["ปกติ"]
+  G["Cycle Count เริ่มนับสต็อก"] --> H{"QTCNT ตรงกับ QTSYS ไหม?"}
+  H -- "ไม่ตรง" --> I["INSERT CYCLE_COUNTS (QTVAR) + UPDATE QTCUR"]
+  H -- "ตรง" --> F
+      </pre>
+    </div>
+
+    <h3>ER Diagram — Inventory (AS400 Tables ไลบรารี APPINV)</h3>
+    <div class="diagram">
+      <pre class="mermaid">
+erDiagram
+  ITEM ||--o{ STOCK_TRANSACTIONS : has
+  WAREHOUSE ||--o{ STOCK_TRANSACTIONS : located_at
+  ITEM ||--o{ STOCK_TRANSFERS : transferred
+  ITEM ||--o{ CYCLE_COUNTS : counted
+  WAREHOUSE ||--o{ CYCLE_COUNTS : located_at
+
+  ITEM {
+    char CDITEM PK "Item code"
+    varchar NMITEM "Item name"
+    char CDUNIT "Unit code"
+    dec QTRPT "Reorder point quantity"
+    dec QTCUR "Current quantity"
+  }
+  WAREHOUSE {
+    char CDWH PK "Warehouse code"
+    varchar NMWH "Warehouse name"
+    varchar TXLOC "Location"
+  }
+  STOCK_TRANSACTIONS {
+    dec NRSTXN PK "Stock transaction no."
+    char CDITEM FK
+    char CDWH FK
+    char CDTTYP "Transaction type: IN/OUT"
+    dec QTTXN "Quantity"
+    date D8CRDT
+    time TMCRDT
+  }
+  STOCK_TRANSFERS {
+    dec NRXFER PK "Transfer no."
+    char CDITEM FK
+    char CDWHFR "From warehouse"
+    char CDWHTO "To warehouse"
+    dec QTXFER "Quantity transferred"
+    date D8XFER
+    time TMXFER
+  }
+  CYCLE_COUNTS {
+    dec NRCYCL PK "Cycle count no."
+    char CDITEM FK
+    char CDWH FK
+    dec QTSYS "Quantity per system"
+    dec QTCNT "Quantity counted"
+    dec QTVAR "Variance"
+    date D8CNT
+    time TMCNT
+  }
+      </pre>
+    </div>
+  </section>
+
+  <!-- 06 ROADMAP -->
+  <section>
+    <div class="sec-label">06 · ลำดับการสร้าง</div>
+    <h2>Build Order ที่แนะนำ</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="num">Step 0 · เสร็จแล้ว ✅</div>
+        <h4>Write Operations (Phase 6)</h4>
+        <p>iws-clone ทำ INSERT/UPDATE บน AS400 ได้แล้วจากก่อนหน้านี้ — เป็นฐานที่ทุก
+        ระบบข้างล่างต้องใช้ เพราะไม่มี database แยกแล้ว</p>
+      </div>
+      <div class="card">
+        <div class="num">Step 1</div>
+        <h4>Shared Foundation</h4>
+        <p>สร้างตาราง USERS/ROLES/PERMISSIONS/NOTIFICATIONS/AUDIT_LOG/APPROVALS บน
+        AS400 (ไลบรารี APPCORE) ผ่าน Phase 7 Table Designer — ทำครั้งเดียวใช้ทุกระบบ</p>
+      </div>
+      <div class="card">
+        <div class="num">Step 2</div>
+        <h4>Purchase (นำร่อง)</h4>
+        <p>มี workflow อนุมัติชัดเจนที่สุด เหมาะทดสอบ pattern "AS400-only + approval
+        engine" ก่อนระบบอื่น</p>
+      </div>
+      <div class="card">
+        <div class="num">Step 3</div>
+        <h4>HR</h4>
+        <p>ใช้ Approval Engine เดิมจาก Purchase ได้เลย เพิ่มแค่ business logic เฉพาะของ HR</p>
+      </div>
+      <div class="card">
+        <div class="num">Step 4</div>
+        <h4>Inventory</h4>
+        <p>ผูกกับ Purchase (GRN อัปเดต stock อัตโนมัติ) เหมาะทำหลังสุดเพื่อเชื่อมกับของเดิมได้ครบ</p>
+      </div>
+      <div class="card">
+        <div class="num">Step 5</div>
+        <h4>Cross-system Reporting</h4>
+        <p>Dashboard รวมทุกระบบ (งบ Purchase, การลาพนักงาน, สต็อกคงเหลือ) หลังแต่ละระบบเสถียรแล้ว —
+        query ตรงจาก AS400 ผ่าน Query Builder (Phase 6 เดิม) ได้เลย ไม่ต้องมี data warehouse แยก</p>
+      </div>
+      <div class="card">
+        <div class="num">Step 6</div>
+        <h4>Mobile / PWA</h4>
+        <p>ต่อยอดให้อนุมัติ/เช็คสต็อกผ่านมือถือได้ เมื่อ core ทั้งหมดใช้งานจริงแล้ว</p>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:24px;">
+      <b>ทำไมต้อง Purchase ก่อน HR/Inventory:</b> PR→PO มี state และ approval
+      หลายชั้นที่ซับซ้อนที่สุดในสามระบบ ถ้า pattern "เขียนอ่านบน AS400 อย่างเดียว
+      ผ่าน iws-clone + approval engine กลาง" ใช้ได้ดีกับ Purchase ก็มั่นใจได้ว่า
+      เอาไปใช้กับ HR/Inventory ที่ workflow ง่ายกว่าได้แน่นอน
+    </div>
+    <div class="callout green" style="margin-top:14px;">
+      <b>ข้อดีของการไม่มี database แยก:</b> ไม่ต้องกังวลเรื่องข้อมูล 2 ฝั่งไม่ตรงกัน
+      (data consistency) เพราะอ่าน/เขียนที่เดียวกันตลอด แลกกับต้องพึ่ง AS400 ผ่าน
+      iws-clone ในทุก request รวมถึง report/dashboard ด้วย — ถ้าวันหลัง traffic
+      เยอะขึ้นมากจนช้า ค่อยพิจารณาเพิ่ม caching layer เฉพาะจุดที่จำเป็นทีหลังได้
+    </div>
+  </section>
+
+  <!-- 07 PROMPTS -->
+  <section>
+    <div class="sec-label">07 · Prompt สำหรับ Agent (แต่ละระบบ)</div>
+    <h2>สั่งทีละ Phase — ใช้ต่อจาก iws-clone เดิม</h2>
+    <p class="subtitle">
+      ทุก prompt ใช้ความสามารถที่ iws-clone มีอยู่แล้ว (Phase 5 Config, Phase 5.5
+      Schema Browser, Phase 6 Write Ops, Phase 7 Table Designer) ไม่ต้องเขียน
+      backend ใหม่ — งานหลักคือสร้างตาราง/endpoint ผ่าน GUI เดิม แล้วสร้างเว็บ
+      frontend คุยกับ endpoint เหล่านั้น
+    </p>
+
+    <div class="sec-label" style="margin-top:8px;">Phase A — Shared Foundation</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน CLAUDE.md, .ai/PLAN.md และ
+.ai/skills/erp-conventions/SKILL.md ก่อน (โปรเจกต์นี้เรียก iws-clone เป็น
+Gateway ภายนอก ไม่ได้เขียน backend เอง)
+
+สร้าง Shared Foundation ทำทีละขั้นตอน:
+
+1. เปิด iws-clone → แท็บ "Table Designer" (Phase 7) สร้างตารางในไลบรารี
+   APPCORE ตาม ER diagram ที่กำหนดไว้: USERS, ROLES, PERMISSIONS,
+   USER_ROLES, ROLE_PERMISSIONS, NOTIFICATIONS, AUDIT_LOG, APPROVALS
+   (ดู field ทั้งหมดใน full-solution-plan.html section 02) — สร้างทีละ
+   ตาราง ยืนยันทุกครั้งก่อน Create Table จริง
+
+2. เปิด iws-clone → แท็บ "Config" (Phase 5) สร้าง endpoint สำหรับ:
+   - GET /api/app/users?username= (login lookup)
+   - GET /api/app/permissions?role=
+   - POST /api/app/notifications (Phase 6 write)
+   - GET /api/app/notifications?user=
+   - POST /api/app/approvals (Phase 6 write — ใช้ร่วมกันทุกระบบผ่าน CDTYPE)
+   - GET /api/app/approvals?type=&reqno=
+
+3. สร้างโปรเจกต์ Next.js ใหม่ชื่อ "erp-suite" (แยกจาก iws-clone) ทำ:
+   - หน้า Login เรียก /api/app/users ตรวจสอบรหัสผ่าน (hash เทียบกับ
+     TXHASH) ออก JWT เก็บใน httpOnly cookie
+   - Middleware ตรวจ JWT ทุก request ที่ต้อง auth
+   - Layout กลาง (Sidebar/Navbar) ให้ทุกระบบ (HR/Purchase/Inventory) ใช้ร่วมกัน
+   - Component "NotificationBell" ดึงจาก /api/app/notifications
+   - Component "ApprovalWidget" ใช้ซ้ำได้ทุกระบบ (รับ props: requestType,
+     requestNo) เรียก /api/app/approvals
+
+4. ทดสอบ: login ได้จริง, เห็น notification, ยิง approval ผ่าน widget แล้ว
+   เช็คว่าเข้าตาราง APPROVALS บน AS400 จริงผ่าน Schema Browser
+
+ห้ามเริ่มเขียนโค้ดของ HR/Purchase/Inventory ในรอบนี้ ให้ทำแค่ Shared
+Foundation ให้เสร็จและทดสอบผ่านก่อน</div>
+
+    <div class="sec-label" style="margin-top:28px;">Phase B — Purchase (นำร่อง)</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน CLAUDE.md, .ai/PLAN.md และ
+.ai/skills/erp-conventions/SKILL.md ก่อน เพื่อดูว่า Phase A (Shared
+Foundation) ทำอะไรไปแล้วบ้าง (ต้องเสร็จก่อนถึงจะเริ่ม Phase นี้ได้)
+
+สร้างระบบ Purchase ทำทีละขั้นตอน:
+
+1. เปิด iws-clone → Table Designer สร้างตารางในไลบรารี APPPUR ตาม ER
+   diagram: PURCHASE_REQUISITIONS, PR_LINES, PURCHASE_ORDERS, PO_LINES,
+   VENDOR, GOODS_RECEIPTS, GR_LINES, INVOICES (ดู field ใน
+   full-solution-plan.html section 04) — ถ้ามีตาราง ITEM master อยู่แล้ว
+   จาก AS400 จริง ใช้ของเดิม ไม่ต้องสร้างใหม่
+
+2. เปิด iws-clone → Config สร้าง endpoint (อ้างอิง pattern เดียวกับ
+   Shared Foundation):
+   - POST/GET /api/app/pr (สร้าง/ดู PR)
+   - POST/GET /api/app/po (สร้าง/ดู PO)
+   - POST /api/app/grn (รับสินค้า)
+   - POST /api/app/invoice-match (ทำ 3-way match: เทียบ PO/GRN/Invoice
+     แล้ว UPDATE CDMTCH)
+
+3. ในโปรเจกต์ "erp-suite" เพิ่มโมดูล /purchase:
+   - หน้า "สร้าง PR" (ฟอร์ม + add multiple lines เลือก item จาก dropdown)
+   - หน้า "รายการ PR รออนุมัติ" ใช้ ApprovalWidget จาก Phase A
+   - Logic เช็ค Budget ก่อนสร้าง PO (เทียบ AMEST รวมกับงบที่ตั้งไว้ — เก็บ
+     ค่างบไว้เป็น constant/config ก่อน ยังไม่ต้องทำ Budget Master เต็มรูปแบบ)
+   - หน้า "แปลง PR เป็น PO" (เลือก Vendor)
+   - หน้า "รับสินค้า (GRN)" กรอกจำนวนที่รับจริงเทียบกับ PO
+   - หน้า "Invoice Matching" แสดงผลเทียบ 3 ทาง พร้อมสถานะ MATCH/MISMATCH
+
+4. ทดสอบ flow เต็ม: สร้าง PR → อนุมัติผ่าน widget → แปลงเป็น PO → รับของ
+   → matching invoice → เช็คทุกตารางบน AS400 ว่าอัปเดตถูกต้องผ่าน Schema
+   Browser
+
+ห้ามเริ่ม HR/Inventory ในรอบนี้ ให้ Purchase ทำงานได้ครบ flow ก่อน</div>
+
+    <div class="sec-label" style="margin-top:28px;">Phase C — HR</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน CLAUDE.md, .ai/PLAN.md และ
+.ai/skills/erp-conventions/SKILL.md ก่อน เพื่อดูว่า Phase A และ B ทำอะไร
+ไปแล้วบ้าง
+
+สร้างระบบ HR ทำทีละขั้นตอน:
+
+1. เปิด iws-clone → Table Designer สร้างตารางในไลบรารี APPHR: 
+   LEAVE_REQUESTS, OT_REQUESTS (ดู field ใน full-solution-plan.html
+   section 03) — ถ้ามีตาราง EMPLOYEE master อยู่แล้วจาก AS400 จริง ใช้
+   ของเดิม ไม่ต้องสร้าง EMPLOYEE ใหม่
+
+2. เปิด iws-clone → Config สร้าง endpoint:
+   - POST/GET /api/app/leave
+   - POST/GET /api/app/ot
+
+3. ในโปรเจกต์ "erp-suite" เพิ่มโมดูล /hr:
+   - หน้า "ยื่นคำขอลา/OT" (เลือกประเภท, วันที่, เหตุผล)
+   - หน้า "รายการรออนุมัติ" ใช้ ApprovalWidget เดิมจาก Phase A (ส่ง
+     requestType="LV" หรือ "OT")
+   - หน้า ESS สรุปยอดลาคงเหลือของพนักงานคนนั้น (ใช้ query จาก Schema
+     Browser/Query Builder ของ iws-clone)
+
+4. ทดสอบ flow: ยื่นคำขอ → หัวหน้าอนุมัติ → HR อนุมัติ → เช็คสถานะอัปเดต
+   ถูกต้องบน AS400
+
+ห้ามเริ่ม Inventory ในรอบนี้</div>
+
+    <div class="sec-label" style="margin-top:28px;">Phase D — Inventory</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน CLAUDE.md, .ai/PLAN.md และ
+.ai/skills/erp-conventions/SKILL.md ก่อน เพื่อดูว่า Phase A, B, C ทำอะไร
+ไปแล้วบ้าง
+
+สร้างระบบ Inventory ทำทีละขั้นตอน:
+
+1. เปิด iws-clone → Table Designer สร้างตารางในไลบรารี APPINV: ITEM (ถ้า
+   ยังไม่มีจาก Purchase), WAREHOUSE, STOCK_TRANSACTIONS, STOCK_TRANSFERS,
+   CYCLE_COUNTS (ดู field ใน full-solution-plan.html section 05)
+
+2. เปิด iws-clone → Config สร้าง endpoint:
+   - POST /api/app/stock-in, POST /api/app/stock-out
+   - POST /api/app/stock-transfer
+   - POST /api/app/cycle-count
+   - GET /api/app/items?below-reorder=true (เช็คของใกล้หมด)
+
+3. เชื่อมกับ Purchase: พอ GRN ใน Phase B บันทึกสำเร็จ ให้เรียก
+   /api/app/stock-in อัตโนมัติ (item, quantity, warehouse default) เพื่อ
+   อัปเดต stock ทันทีที่รับของเข้า
+
+4. ในโปรเจกต์ "erp-suite" เพิ่มโมดูล /inventory:
+   - หน้า Dashboard สต็อกคงเหลือ + แจ้งเตือนสินค้าใกล้หมด (ต่ำกว่า QTRPT)
+   - หน้า "โอนย้ายสินค้า" ระหว่างคลัง
+   - หน้า "Cycle Count" กรอกจำนวนนับจริงเทียบระบบ
+
+5. ทดสอบ flow เต็ม: รับของผ่าน Purchase → stock อัปเดตอัตโนมัติ → โอนย้าย
+   ระหว่างคลัง → cycle count เจอส่วนต่าง → ปรับยอดถูกต้อง
+
+พอครบ 4 Phase แล้ว ระบบทั้งหมด (Shared Foundation + HR + Purchase +
+Inventory) ควรทำงานร่วมกันได้แบบ full solution ตามที่วางแผนไว้</div>
+  </section>
+
+</main>
+
+<footer>
+  Full Solution Plan · ต่อยอดจาก iws-clone Gateway (pub400) · Diagram render ด้วย Mermaid.js
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#101a17',
+      primaryColor: '#132420',
+      primaryTextColor: '#d7e6df',
+      primaryBorderColor: '#39ff88',
+      lineColor: '#7d9a8e',
+      secondaryColor: '#1f332c',
+      tertiaryColor: '#101a17',
+      fontFamily: 'IBM Plex Mono, monospace',
+      fontSize: '13px'
+    },
+    flowchart: { curve: 'basis' }
+  });
+</script>
+
+</body>
+</html>
