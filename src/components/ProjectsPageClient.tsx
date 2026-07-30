@@ -10,6 +10,7 @@ import { ExternalLink, GitFork, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 import Breadcrumb from "@/components/Breadcrumb";
 import Link from "next/link";
+import GsapReveal from "@/components/GsapReveal";
 
 type Project = {
   id: string;
@@ -84,24 +85,20 @@ export default function ProjectsPageClient({
         </motion.div>
 
         {/* Bento Grid */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full"
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
           {projects.map((project, index) => {
             const isFeatured = index === 0;
 
             return (
-              <motion.article
+              <GsapReveal
                 key={project.id}
-                id={project.id}
-                variants={fadeUp}
-                className={`group relative flex flex-col justify-between p-8 md:p-10 overflow-hidden border rounded-[2rem] transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl ${
-                  isFeatured ? "lg:col-span-2" : "col-span-1"
-                }`}
+                type="fade-up"
+                delay={index * 0.1}
+                className={isFeatured ? "lg:col-span-2" : "col-span-1"}
+              >
+                <article
+                  id={project.id}
+                  className={`group h-full relative flex flex-col justify-between p-8 md:p-10 overflow-hidden border rounded-[2rem] transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl`}
                 style={{
                   background: "var(--bg-card)",
                   borderColor: "var(--border-main)",
@@ -215,10 +212,11 @@ export default function ProjectsPageClient({
                     <ArrowRight size={14} />
                   </Link>
                 </div>
-              </motion.article>
+                </article>
+              </GsapReveal>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </main>
   );
