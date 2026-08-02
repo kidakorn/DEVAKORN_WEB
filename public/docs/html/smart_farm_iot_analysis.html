@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Farm IoT — System Audit Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEEE6;
+    --paper-raised:#F7F8F2;
+    --ink:#1E2A22;
+    --ink-soft:#4B5850;
+    --line:#C9CDBE;
+    --board:#1B2420;
+    --blue:#2E6F8E;
+    --blue-soft:#DCE9EE;
+    --ochre:#B8863B;
+    --ochre-soft:#F3E7CE;
+    --rust:#A6432F;
+    --rust-soft:#F4E0DA;
+    --moss:#4C7A4F;
+    --moss-soft:#DEE9DD;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif;
+    line-height:1.7;
+    font-size:16px;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+  code, .mono{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.88em;
+  }
+  a{color:var(--blue);}
+
+  /* ===== Header / hero ===== */
+  .hero{
+    background:var(--board);
+    color:#EDEEE6;
+    padding:56px 8vw 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:28px 28px;
+    pointer-events:none;
+  }
+  .hero-eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:#9FB6A8;
+    margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:clamp(28px,4vw,42px);
+    margin:0 0 10px;
+    color:#F7F8F2;
+  }
+  .hero p.sub{
+    max-width:640px;
+    color:#C7CFC5;
+    font-size:15.5px;
+    margin:0 0 30px;
+  }
+
+  /* status board — signature element */
+  .status-board{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0;
+    background:#141C18;
+    border:1px solid #2C3A31;
+    border-radius:var(--radius);
+    padding:6px;
+    position:relative;
+    z-index:1;
+  }
+  .status-chip{
+    flex:1 1 170px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 16px;
+    border-right:1px solid #2C3A31;
+  }
+  .status-chip:last-child{border-right:none;}
+  .led{
+    width:11px; height:11px; border-radius:50%;
+    flex-shrink:0;
+    box-shadow:0 0 8px 1px currentColor;
+  }
+  .led.ok{background:#5FA463; color:#5FA463;}
+  .led.warn{background:#D9A441; color:#D9A441;}
+  .led.crit{background:#D2604A; color:#D2604A;}
+  .status-chip .txt{font-size:13px;}
+  .status-chip .txt b{display:block; font-size:13.5px; color:#F0F2ED;}
+  .status-chip .txt span{color:#9AA69C; font-family:'IBM Plex Mono',monospace; font-size:11.5px;}
+
+  /* ===== Layout ===== */
+  .wrap{
+    display:grid;
+    grid-template-columns:230px minmax(0,1fr);
+    gap:48px;
+    max-width:1180px;
+    margin:0 auto;
+    padding:44px 8vw 100px;
+  }
+  nav.toc{
+    position:sticky;
+    top:28px;
+    align-self:start;
+    font-size:14px;
+  }
+  nav.toc .toc-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+  nav.toc a{
+    display:block;
+    color:var(--ink-soft);
+    text-decoration:none;
+    padding:6px 0 6px 14px;
+    border-left:2px solid var(--line);
+    transition:all .15s;
+  }
+  nav.toc a:hover{color:var(--blue); border-left-color:var(--blue);}
+
+  main section{margin-bottom:64px; scroll-margin-top:24px;}
+  .kicker{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.1em;
+    color:var(--blue);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  main h2{font-size:26px; margin:0 0 4px;}
+  main h2 .num{color:var(--line); margin-right:10px; font-family:'IBM Plex Mono',monospace; font-weight:500;}
+  .section-desc{color:var(--ink-soft); max-width:680px; margin:10px 0 26px; font-size:15px;}
+
+  .card{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    margin-bottom:16px;
+  }
+
+  /* diagram */
+  .diagram-wrap{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    overflow-x:auto;
+  }
+  .diagram-legend{
+    display:flex; gap:22px; flex-wrap:wrap;
+    margin-top:14px; font-size:12.5px; color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .diagram-legend span{display:inline-flex; align-items:center; gap:6px;}
+  .diagram-legend i{width:16px; height:2px; display:inline-block;}
+
+  /* tables */
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th{
+    text-align:left;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:9px 12px;
+    border-bottom:2px solid var(--ink);
+  }
+  td{
+    padding:11px 12px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  tr:last-child td{border-bottom:none;}
+  .tag{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    font-weight:600;
+    padding:3px 9px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+  .tag.crit{background:var(--rust-soft); color:var(--rust);}
+  .tag.high{background:var(--ochre-soft); color:var(--ochre);}
+  .tag.med{background:var(--blue-soft); color:var(--blue);}
+  .tag.low{background:var(--moss-soft); color:var(--moss);}
+
+  .finding-file{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft); white-space:nowrap;}
+
+  /* roadmap */
+  .phase{
+    display:grid;
+    grid-template-columns:90px 1fr;
+    gap:18px;
+    padding:18px 0;
+    border-top:1px solid var(--line);
+  }
+  .phase:first-of-type{border-top:none;}
+  .phase .ph-num{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--blue);
+    font-size:13px;
+    padding-top:2px;
+  }
+  .phase .ph-num b{display:block; font-size:22px; color:var(--ink); font-family:'Space Grotesk',sans-serif;}
+  .phase h4{margin:0 0 6px; font-size:16px;}
+  .phase ul{margin:8px 0 0; padding-left:18px; font-size:14.5px; color:var(--ink-soft);}
+  .phase ul li{margin-bottom:4px;}
+
+  /* compare cols */
+  .compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .compare .col{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+  .compare .col h4{margin:0 0 12px; font-size:16px; display:flex; align-items:center; gap:8px;}
+  .compare ul{padding-left:18px; margin:0; font-size:14px; color:var(--ink-soft);}
+  .compare ul li{margin-bottom:8px;}
+  .recommend{
+    margin-top:16px;
+    background:var(--moss-soft);
+    border:1px solid #B9CDB6;
+    border-radius:var(--radius);
+    padding:16px 18px;
+    font-size:14.5px;
+  }
+  .recommend b{color:var(--moss);}
+
+  pre.tree{
+    background:var(--board);
+    color:#D7DED4;
+    border-radius:var(--radius);
+    padding:20px 22px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    overflow-x:auto;
+    line-height:1.75;
+  }
+  pre.tree .comment{color:#7C9083;}
+
+  .checklist{list-style:none; margin:0; padding:0;}
+  .checklist li{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:11px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14.5px;
+  }
+  .checklist li:last-child{border-bottom:none;}
+  .checklist .box{
+    width:17px; height:17px; border:1.5px solid var(--ink-soft); border-radius:4px;
+    flex-shrink:0; margin-top:2px;
+  }
+
+  footer{
+    text-align:center; padding:30px 8vw 60px;
+    color:var(--ink-soft); font-size:12.5px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  @media (max-width:860px){
+    .wrap{grid-template-columns:1fr;}
+    nav.toc{position:static; margin-bottom:8px;}
+    nav.toc .toc-list{
+      display:flex; flex-wrap:wrap; gap:4px 14px;
+    }
+    nav.toc a{border-left:none; padding:4px 0;}
+    .compare{grid-template-columns:1fr;}
+    .status-chip{border-right:none; border-bottom:1px solid #2C3A31; flex:1 1 100%;}
+    .status-chip:last-child{border-bottom:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">System Audit — สำรวจและวิเคราะห์โปรเจ็ค</div>
+  <h1>Smart Farm IoT <span class="mono" style="color:#8FA79A;">v8</span></h1>
+  <p class="sub">รายงานสำรวจโค้ดเดิมทั้ง 2 ฝั่ง — Firmware (ESP32) + Backend (Google Apps Script + LINE Messaging API) พร้อมแผนพัฒนาต่อแบบไม่ต้องมีฮาร์ดแวร์จริง — จัดทำจาก <span class="mono">smart_fram_iot_8.zip</span> (10 ไฟล์ .ino) และ <span class="mono">code.gs</span></p>
+
+  <div class="status-board">
+    <div class="status-chip"><div class="led ok"></div><div class="txt"><b>โครงสร้างฮาร์ดแวร์</b><span>ครบตามสเปกวิชา</span></div></div>
+    <div class="status-chip"><div class="led warn"></div><div class="txt"><b>คุณภาพโค้ด</b><span>พบบั๊ก 7 จุด</span></div></div>
+    <div class="status-chip"><div class="led warn"></div><div class="txt"><b>Cloud Backend</b><span>doPost/doGet ไม่ตรงกัน</span></div></div>
+    <div class="status-chip"><div class="led ok"></div><div class="txt"><b>LINE Bot ควบคุมแชท</b><span>ทำงานได้แล้ว (Messaging API)</span></div></div>
+    <div class="status-chip"><div class="led crit"></div><div class="txt"><b>แจ้งเตือนรูป/อัตโนมัติ</b><span>LINE Notify ปิดถาวรแล้ว</span></div></div>
+    <div class="status-chip"><div class="led crit"></div><div class="txt"><b>ความปลอดภัย</b><span>Token ฝังโค้ด + ไม่เช็ค signature</span></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <nav class="toc">
+    <div class="toc-label">สารบัญ</div>
+    <div class="toc-list">
+      <a href="#overview">01 · ภาพรวมระบบ</a>
+      <a href="#inventory">02 · รายการอุปกรณ์ &amp; พิน</a>
+      <a href="#backend">03 · Backend (Apps Script)</a>
+      <a href="#findings">04 · ผลตรวจโค้ด</a>
+      <a href="#plan">05 · แผนพัฒนาต่อ (ไม่ใช้ฮาร์ดแวร์)</a>
+      <a href="#submit">06 · รูปแบบการส่งงาน</a>
+      <a href="#next">07 · สิ่งที่ต้องทำต่อ</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <section id="overview">
+      <div class="kicker">01</div>
+      <h2><span class="num">§</span>ภาพรวมระบบ</h2>
+      <p class="section-desc">หลังตรวจ <code>code.gs</code> เพิ่มเติม พบว่าระบบจริงมี 2 เส้นทางคำสั่งที่แยกจากกัน: (1) <b>ESP32 poll-based</b> — บอร์ดอ่านเซนเซอร์/รีเลย์เอง แล้วไปเช็ค/รายงานสถานะกับ Google Sheet เป็นระยะ และ (2) <b>LINE Bot แบบแชท</b> — ผู้ใช้พิมพ์คำสั่งใน LINE (เช่น <code>on_off_fan</code>, <code>mode_1</code>) เข้า Webhook ของ Apps Script โดยตรง ซึ่งไปแก้ค่าในชีต &quot;control&quot; ชีตเดียวกับที่ ESP32 อ่านอยู่ — สองเส้นทางนี้ &quot;คุยกัน&quot; ผ่านชีต ไม่ได้เชื่อมตรงถึงกัน</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 1040 560" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; font-family:'IBM Plex Mono',monospace;">
+          <!-- sensors box -->
+          <rect x="20" y="40" width="190" height="175" rx="10" fill="#DCE9EE" stroke="#2E6F8E" stroke-width="1.4"/>
+          <text x="115" y="65" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E2A22">เซนเซอร์</text>
+          <text x="115" y="88" text-anchor="middle" font-size="10.5" fill="#4B5850">ดิน 12 จุด (MCP3208+ADC)</text>
+          <text x="115" y="105" text-anchor="middle" font-size="10.5" fill="#4B5850">DHT22 (อุณหภูมิ/ชื้น)</text>
+          <text x="115" y="122" text-anchor="middle" font-size="10.5" fill="#4B5850">แสง (LDR)</text>
+          <text x="115" y="139" text-anchor="middle" font-size="10.5" fill="#4B5850">ระดับน้ำถัง</text>
+          <text x="115" y="156" text-anchor="middle" font-size="10.5" fill="#4B5850">DS3231 (เวลา)</text>
+          <text x="115" y="180" text-anchor="middle" font-size="9.5" fill="#2E6F8E">SPI / I2C / Analog</text>
+
+          <!-- ESP32 center -->
+          <rect x="280" y="30" width="210" height="195" rx="10" fill="#1B2420" stroke="#1B2420" stroke-width="1.4"/>
+          <text x="385" y="58" text-anchor="middle" font-size="13.5" font-weight="700" fill="#F7F8F2">ESP32</text>
+          <text x="385" y="78" text-anchor="middle" font-size="10" fill="#9FB6A8">smart_fram_iot_8.ino</text>
+          <text x="385" y="102" text-anchor="middle" font-size="10" fill="#D7DED4">Task1 (core0): กล้อง+DHT</text>
+          <text x="385" y="119" text-anchor="middle" font-size="10" fill="#D7DED4">Task2 (core1): sensor+ควบคุม</text>
+          <text x="385" y="145" text-anchor="middle" font-size="10" fill="#D7DED4">3 โหมดปลูก: เมลอน/แตงโม/สตอ</text>
+          <text x="385" y="162" text-anchor="middle" font-size="10" fill="#D7DED4">EEPROM เก็บ mode + count_day</text>
+          <text x="385" y="188" text-anchor="middle" font-size="10" fill="#D7DED4">6 รีเลย์ออก (พัดลม/ไฟ/น้ำ/ปุ๋ย/ปั๊ม)</text>
+          <text x="385" y="210" text-anchor="middle" font-size="9.5" fill="#7C9083">WiFi STA · HTTP GET</text>
+
+          <!-- Actuators box -->
+          <rect x="20" y="245" width="190" height="145" rx="10" fill="#F3E7CE" stroke="#B8863B" stroke-width="1.4"/>
+          <text x="115" y="270" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E2A22">รีเลย์ / เอาต์พุต</text>
+          <text x="115" y="293" text-anchor="middle" font-size="10.5" fill="#4B5850">พัดลม · ไฟ 1 · ไฟ 2</text>
+          <text x="115" y="310" text-anchor="middle" font-size="10.5" fill="#4B5850">วาล์วน้ำ · วาล์วปุ๋ย</text>
+          <text x="115" y="327" text-anchor="middle" font-size="10.5" fill="#4B5850">ปั๊มน้ำ</text>
+          <text x="115" y="351" text-anchor="middle" font-size="9.5" fill="#B8863B">Digital OUT</text>
+
+          <!-- IP camera -->
+          <rect x="20" y="410" width="190" height="90" rx="10" fill="#DCE9EE" stroke="#2E6F8E" stroke-width="1.4"/>
+          <text x="115" y="435" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E2A22">กล้อง IP x2</text>
+          <text x="115" y="455" text-anchor="middle" font-size="10.5" fill="#4B5850">snapshot.cgi → SPIFFS</text>
+          <text x="115" y="475" text-anchor="middle" font-size="9.5" fill="#2E6F8E">HTTP GET ในโลคอลเน็ตเวิร์ก</text>
+
+          <!-- Google Sheet (data store) -->
+          <rect x="560" y="30" width="200" height="130" rx="10" fill="#F7F8F2" stroke="#4C7A4F" stroke-width="1.4"/>
+          <text x="660" y="55" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E2A22">Google Sheet</text>
+          <text x="660" y="77" text-anchor="middle" font-size="10.5" fill="#4B5850">ชีต &quot;sheet1&quot; — log เซนเซอร์</text>
+          <text x="660" y="96" text-anchor="middle" font-size="10.5" fill="#4B5850">ชีต &quot;control&quot; — คำสั่ง A–I</text>
+          <text x="660" y="118" text-anchor="middle" font-size="9.5" fill="#4C7A4F">จุดตัดกลางที่ ESP32 + LINE Bot</text>
+          <text x="660" y="134" text-anchor="middle" font-size="9.5" fill="#4C7A4F">อ่าน/เขียนร่วมกัน (ไม่เจอกันตรง ๆ)</text>
+
+          <!-- Apps Script (logic) -->
+          <rect x="560" y="185" width="200" height="120" rx="10" fill="#F7F8F2" stroke="#4C7A4F" stroke-width="1.4"/>
+          <text x="660" y="210" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E2A22">Apps Script</text>
+          <text x="660" y="230" text-anchor="middle" font-size="10.5" fill="#4B5850">code.gs — doPost(e)</text>
+          <text x="660" y="250" text-anchor="middle" font-size="10" fill="#4B5850">status=get/send ↔ ESP32</text>
+          <text x="660" y="267" text-anchor="middle" font-size="10" fill="#4B5850">events[0] ↔ LINE webhook</text>
+          <text x="660" y="286" text-anchor="middle" font-size="9.5" fill="#A6432F">⚠ ไม่มีการเช็ค signature</text>
+
+          <!-- LINE Messaging API bot (working) -->
+          <rect x="560" y="340" width="200" height="105" rx="10" fill="#DEE9DD" stroke="#4C7A4F" stroke-width="1.4"/>
+          <text x="660" y="365" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E2A22">LINE Bot (Messaging API)</text>
+          <text x="660" y="386" text-anchor="middle" font-size="10.5" fill="#4B5850">on_off_fan / mode_1 ฯลฯ</text>
+          <text x="660" y="403" text-anchor="middle" font-size="10.5" fill="#4B5850">reply API — ใช้งานได้จริง</text>
+          <text x="660" y="422" text-anchor="middle" font-size="9.5" fill="#4C7A4F">✓ ควบคุมแบบแชท manual</text>
+
+          <!-- LINE notify (deprecated) -->
+          <rect x="560" y="470" width="200" height="80" rx="10" fill="#F4E0DA" stroke="#A6432F" stroke-width="1.4" stroke-dasharray="5,3"/>
+          <text x="660" y="493" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1E2A22">LINE Notify (ในเฟิร์มแวร์)</text>
+          <text x="660" y="513" text-anchor="middle" font-size="10.5" fill="#A6432F">ปิดถาวร 31 มี.ค. 2025</text>
+          <text x="660" y="531" text-anchor="middle" font-size="9.5" fill="#A6432F">รูปกล้อง/แจ้งเตือนน้ำหมด — ใช้ไม่ได้แล้ว</text>
+
+          <!-- LINE user -->
+          <rect x="850" y="340" width="160" height="105" rx="10" fill="#1B2420" stroke="#1B2420" stroke-width="1.4"/>
+          <text x="930" y="380" text-anchor="middle" font-size="12" font-weight="700" fill="#F7F8F2">ผู้ใช้ในแชท</text>
+          <text x="930" y="400" text-anchor="middle" font-size="10" fill="#9FB6A8">LINE Official Account</text>
+          <text x="930" y="418" text-anchor="middle" font-size="9.5" fill="#7C9083">พิมพ์คำสั่ง / กดปุ่ม</text>
+
+          <!-- connections -->
+          <line x1="210" y1="115" x2="280" y2="105" stroke="#2E6F8E" stroke-width="1.6"/>
+          <line x1="210" y1="315" x2="280" y2="185" stroke="#B8863B" stroke-width="1.6"/>
+          <line x1="210" y1="455" x2="280" y2="200" stroke="#2E6F8E" stroke-width="1.6"/>
+          <line x1="490" y1="95" x2="560" y2="95" stroke="#4C7A4F" stroke-width="1.6" stroke-dasharray="5,3"/>
+          <text x="503" y="86" font-size="9" fill="#4C7A4F">GET</text>
+          <line x1="660" y1="160" x2="660" y2="185" stroke="#4C7A4F" stroke-width="1.6"/>
+          <line x1="760" y1="260" x2="850" y2="90" stroke="#A6432F" stroke-width="1.2" stroke-dasharray="2,3" opacity="0.5"/>
+          <line x1="660" y1="305" x2="660" y2="340" stroke="#4C7A4F" stroke-width="1.6"/>
+          <line x1="760" y1="392" x2="850" y2="392" stroke="#4C7A4F" stroke-width="1.6"/>
+          <text x="775" y="384" font-size="9" fill="#4C7A4F">POST</text>
+          <line x1="490" y1="180" x2="560" y2="460" stroke="#A6432F" stroke-width="1.4" stroke-dasharray="5,3"/>
+        </svg>
+        <div class="diagram-legend">
+          <span><i style="background:#2E6F8E;"></i> เชื่อมต่อแบบมีสาย (SPI/I2C/Digital)</span>
+          <span><i style="background:#4C7A4F; border-top:2px dashed #4C7A4F; background:none;"></i> WiFi (ใช้งานได้)</span>
+          <span><i style="background:#A6432F; border-top:2px dashed #A6432F; background:none;"></i> WiFi (บริการปิดแล้ว/ควรตรวจสอบ)</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="inventory">
+      <div class="kicker">02</div>
+      <h2><span class="num">§</span>รายการอุปกรณ์ &amp; การใช้พิน</h2>
+      <p class="section-desc">สรุปจากตัวแปรและ <code>#include</code> ในโค้ด — ใช้เป็น pin-map อ้างอิงตอนต่อวงจรจริงหรือจำลองบน Wokwi</p>
+
+      <div class="card">
+        <table>
+          <tr><th>อุปกรณ์</th><th>พิน / ช่อง</th><th>ไลบรารี</th><th>หมายเหตุ</th></tr>
+          <tr><td>ดินชื้น 12 จุด (4 โซน × 3 จุด)</td><td class="finding-file">MCP3208 ch.0–7 + GPIO 36/39/33/32</td><td class="finding-file">MCP3208.h, SPI.h</td><td>ผสมทั้ง ADC ภายนอกและขา ESP32 โดยตรง</td></tr>
+          <tr><td>DHT22 (อุณหภูมิ/ความชื้นอากาศ)</td><td class="finding-file">GPIO 16</td><td class="finding-file">DHT.h</td><td>—</td></tr>
+          <tr><td>เซนเซอร์แสง (LDR)</td><td class="finding-file">GPIO 35</td><td class="finding-file">analogRead</td><td>—</td></tr>
+          <tr><td>ระดับน้ำในถัง</td><td class="finding-file">GPIO 34</td><td class="finding-file">digitalRead</td><td>ใช้แจ้งเตือนผ่าน LINE เมื่อถัง 200L หมด</td></tr>
+          <tr><td>นาฬิกาเวลาจริง (RTC)</td><td class="finding-file">I2C (SDA/SCL)</td><td class="finding-file">DS3231.h, Wire.h</td><td>ใช้คำนวณ &quot;วันปลูก&quot;</td></tr>
+          <tr><td>พัดลม</td><td class="finding-file">GPIO 15</td><td>—</td><td>—</td></tr>
+          <tr><td>หลอดไฟ 1</td><td class="finding-file">GPIO 2</td><td>—</td><td>—</td></tr>
+          <tr><td>หลอดไฟ 2</td><td class="finding-file">GPIO 0</td><td>—</td><td>⚠ strapping pin ของ ESP32 (ดูข้อ 7 ในผลตรวจโค้ด)</td></tr>
+          <tr><td>วาล์วน้ำ</td><td class="finding-file">GPIO 4</td><td>—</td><td>—</td></tr>
+          <tr><td>วาล์วปุ๋ย</td><td class="finding-file">GPIO 13</td><td>—</td><td>—</td></tr>
+          <tr><td>ปั๊มน้ำ</td><td class="finding-file">GPIO 12</td><td>—</td><td>⚠ strapping pin เช่นกัน</td></tr>
+          <tr><td>กล้อง IP × 2</td><td class="finding-file">Wi-Fi LAN</td><td>SPIFFS, Base64.h</td><td>ดึงภาพผ่าน snapshot.cgi</td></tr>
+          <tr><td>Cloud backend</td><td class="finding-file">HTTPS</td><td>HTTPClient.h, ArduinoJson.h</td><td>Google Apps Script Web App</td></tr>
+          <tr><td>แจ้งเตือน</td><td class="finding-file">HTTPS</td><td>TridentTD_LineNotify.h</td><td>🔴 บริการปิดถาวรแล้ว</td></tr>
+        </table>
+      </div>
+      <p class="section-desc" style="margin-top:6px;">📎 ไฟล์ที่ส่งมามีเฉพาะ <code>.ino</code> 10 ไฟล์ — ยังไม่มีไฟล์ <code>.pcb</code> และโฟลเดอร์ <code>libraries</code> ที่พี่บอกว่ามี ถ้าสะดวกอัปโหลดเพิ่มเข้ามาได้ จะช่วยให้ตรวจสอบ wiring จริงและ dependency ของไลบรารีได้ครบขึ้นครับ</p>
+    </section>
+
+    <section id="backend">
+      <div class="kicker">03</div>
+      <h2><span class="num">§</span>Backend — code.gs (Google Apps Script)</h2>
+      <p class="section-desc">ไฟล์นี้ทำหน้าที่เดียวแต่ 2 บทบาท: เป็น REST endpoint ให้ ESP32 คุยด้วย และเป็น Webhook รับ/ตอบข้อความให้ LINE Bot — ทั้งสองอ่าน/เขียนชีตเดียวกันชื่อ &quot;control&quot;</p>
+
+      <div class="card">
+        <table>
+          <tr><th>ชีต</th><th>คอลัมน์</th><th>ความหมาย</th></tr>
+          <tr><td rowspan="2" class="finding-file">control</td><td class="finding-file">A–F</td><td>สถานะพัดลม / ไฟ1 / ไฟ2 / วาล์วน้ำ / วาล์วปุ๋ย / ปั๊ม (0/1) — ตรงกับ <code>root_0_data_a..f</code> ในเฟิร์มแวร์</td></tr>
+          <tr><td class="finding-file">G–I</td><td>โหมดปลูก (0–3) / สั่งดูกล้อง 1 / สั่งดูกล้อง 2 — ตรงกับ <code>root_0_data_g..i</code></td></tr>
+          <tr><td class="finding-file">sheet1</td><td class="finding-file">A–Q</td><td>Log: วันที่, เวลา, ดินชื้น 12 จุด, อุณหภูมิ, ความชื้น, แสง — เขียนทุกครั้งที่ ESP32 ส่ง <code>status=send</code></td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <table>
+          <tr><th>ข้อความในแชท</th><th>ฟังก์ชันที่ทำงาน</th><th>ผล</th></tr>
+          <tr><td class="mono">check_status</td><td class="finding-file">getdata()</td><td>ตอบสถานะทุกอุปกรณ์ + ค่าเซนเซอร์ล่าสุดกลับไปในแชท</td></tr>
+          <tr><td class="mono">on_off_fan / lamp1 / lamp2 / water / puy / pumpwater</td><td class="finding-file">update_data()</td><td>สลับ 0/1 ในชีต control — ใช้ได้เฉพาะตอนโหมด = ปิด (mode 0) เท่านั้น</td></tr>
+          <tr><td class="mono">mode_0 / 1 / 2 / 3</td><td class="finding-file">update_status('G', n)</td><td>เปลี่ยนโหมดปลูก + รีเซ็ตรีเลย์ A–F เป็น 0 ทั้งหมด</td></tr>
+          <tr><td class="mono">view_camera1 / 2</td><td class="finding-file">update_status('H'/'I', 1)</td><td>ตั้งค่าธงให้ ESP32 ไปดึงภาพกล้องตอน poll รอบถัดไป</td></tr>
+        </table>
+      </div>
+      <p class="section-desc" style="margin-top:6px;">💡 ข่าวดี: ส่วนควบคุมผ่านแชท (manual) ใช้ LINE Messaging API อยู่แล้วและทำงานได้จริง — ไม่ต้องสร้างใหม่ทั้งหมดตามที่ประเมินไว้รอบแรก เหลือแค่ปิดช่องโหว่และต่อยอดส่วนแจ้งเตือนรูปภาพเข้ากับ API ตัวเดียวกันนี้ (ดูข้อ 05)</p>
+    </section>
+
+    <section id="findings">
+      <div class="kicker">04</div>
+      <h2><span class="num">§</span>ผลตรวจโค้ด (Code Findings)</h2>
+      <p class="section-desc">ไล่จากไฟล์ .ino ทั้ง 10 ไฟล์ + <code>code.gs</code> พบ 19 จุดที่ควรแก้ก่อนพัฒนาต่อ เรียงตามความรุนแรง</p>
+
+      <div class="card">
+        <table>
+          <tr><th style="width:70px;">ระดับ</th><th>ไฟล์</th><th>ปัญหา</th></tr>
+
+          <tr><td><span class="tag crit">Critical</span></td><td class="finding-file">camera.ino<br>control.ino</td><td><b>LINE Notify ถูกยกเลิกถาวรตั้งแต่ 31 มี.ค. 2025</b> — ฟังก์ชัน <code>LINE.notify()</code> และ <code>LINE.notifyPicture()</code> ที่ใช้ไลบรารี TridentTD ใช้งานไม่ได้แล้วทั้งหมด ต้องย้ายไป LINE Messaging API</td></tr>
+
+          <tr><td><span class="tag crit">Critical</span></td><td class="finding-file">read_google_sheet.ino</td><td>Endpoint ของ Google Apps Script ไม่มีการยืนยันตัวตนใด ๆ — ถ้ารู้ <code>GOOGLE_SCRIPT_ID</code> ใครก็ยิง HTTP GET เข้าไปสั่งเปิด/ปิดรีเลย์ในแปลงได้ทันที</td></tr>
+
+          <tr><td><span class="tag crit">Critical</span></td><td class="finding-file">smart_fram_iot_8.ino</td><td>WiFi password, LINE token, และรหัสผ่านกล้อง IP ฝังตรงในซอร์สโค้ด — ถ้า push ขึ้น GitHub public จะหลุดทันที</td></tr>
+
+          <tr><td><span class="tag high">High</span></td><td class="finding-file">sensor_read.ino:4,7</td><td>ตัวแปรพินสลับกัน: <code>soil_1_3</code> อ่านจาก <code>soil_1_1_pin</code> และ <code>soil_2_3</code> อ่านจาก <code>soil_1_2_pin</code> (ควรเป็น <code>soil_1_3_pin</code> / <code>soil_2_1_pin</code> ตามชื่อตัวแปร) ทำให้ค่าดินชื้นที่อ่านได้ผิดโซน</td></tr>
+
+          <tr><td><span class="tag high">High</span></td><td class="finding-file">sensor_read.ino:33</td><td><code>sum_soil_all = soil_1_1;</code> เขียนทับค่าเฉลี่ยจาก 12 จุด (<code>cal_sum_soil_all/12</code>) ที่เพิ่งคำนวณไปบรรทัดก่อนหน้า ทำให้ระบบตัดสินใจรดน้ำจากเซนเซอร์จุดเดียว ไม่ใช่ค่าเฉลี่ยทั้งแปลงตามที่ตั้งใจ</td></tr>
+
+          <tr><td><span class="tag high">High</span></td><td class="finding-file">time.ino:6</td><td><code>now_day = now.minute();</code> (มีบรรทัด <code>now.day()</code> ถูกคอมเมนต์ทิ้งไว้ข้างบน) ทำให้ตัวนับ &quot;วันที่ปลูก&quot; เดินตามนาทีจริง ไม่ใช่วันจริง กระทบรอบการให้ปุ๋ย/น้ำใน <code>control.ino</code></td></tr>
+
+          <tr><td><span class="tag high">High</span></td><td class="finding-file">smart_fram_iot_8.ino</td><td>ใช้ GPIO 0 และ GPIO 12 เป็นเอาต์พุตรีเลย์ — พินเหล่านี้เป็น strapping pin ที่มีผลต่อโหมดบูตของ ESP32 หากมีโหลดค้างตอนเปิดเครื่อง บอร์ดอาจบูตไม่ขึ้น</td></tr>
+
+          <tr><td><span class="tag crit">Critical</span></td><td class="finding-file">code.gs<br>replyMessage()</td><td>LINE Channel Access Token ฝังตรงในโค้ดเป็นข้อความล้วน (มีคอมเมนต์ &quot;แก้ไข&quot; กำกับไว้เอง) — ถ้าไฟล์นี้หลุดหรือแชร์ต่อ ใครก็เอา token ไปส่งข้อความในนามบัญชี LINE OA ของเราได้ทันที ควรย้ายไปเก็บใน <code>PropertiesService</code></td></tr>
+
+          <tr><td><span class="tag crit">Critical</span></td><td class="finding-file">code.gs<br>doPost()</td><td>Webhook รับข้อความจาก LINE ไม่มีการตรวจสอบ <code>x-line-signature</code> เลย — ใครก็ตามที่รู้ URL ของ Web App สามารถยิง POST ปลอม (JSON รูปแบบเดียวกับ LINE event) เข้ามาสั่งเปิด/ปิดอุปกรณ์หรือเปลี่ยนโหมดได้โดยไม่ต้องผ่านแชทจริง</td></tr>
+
+          <tr><td><span class="tag high">High</span></td><td class="finding-file">code.gs</td><td>เฟิร์มแวร์ยิง <code>http.GET()</code> ไปหา endpoint เดิม แต่ <code>code.gs</code> มีแค่ <code>doPost(e)</code> ไม่มี <code>doGet(e)</code> ให้เห็นในไฟล์นี้ — ควรตรวจสอบว่ามีไฟล์ <code>.gs</code> อื่นที่มี <code>doGet</code> อยู่ในโปรเจ็ค Apps Script เดียวกันหรือไม่ ถ้าไม่มี การอ่าน/ส่งค่าเซนเซอร์จาก ESP32 จะไม่ทำงานเลย</td></tr>
+
+          <tr><td><span class="tag med">Medium</span></td><td class="finding-file">code.gs<br>update_status()</td><td>ตัวแปร <code>set_status</code> ถูกใช้โดยไม่มี <code>var</code> ประกาศไว้ก่อน (implicit global) และ Spreadsheet ID/URL ถูกพิมพ์ซ้ำตรง ๆ ใน 4 ฟังก์ชัน ควรดึงออกเป็นค่าคงที่ตัวเดียวใช้ร่วมกัน</td></tr>
+
+          <tr><td><span class="tag med">Medium</span></td><td class="finding-file">code.gs<br>update_data(), update_status(), save_data()</td><td><code>catch(error){ Logger.log(...) }</code> ดักข้อผิดพลาดแล้วแค่บันทึก log เงียบ ๆ ไม่ throw ต่อและไม่แจ้งกลับผู้ใช้ — ถ้าเขียนชีตไม่สำเร็จ ผู้ใช้ในแชทจะไม่รู้เลยว่าเปิด/ปิดอุปกรณ์สำเร็จหรือไม่</td></tr>
+
+          <tr><td><span class="tag med">Medium</span></td><td class="finding-file">smart_fram_iot_8.ino:178</td><td><code>while(1){ Read_google_sheet(); ... }</code> ใน <code>setup()</code> รอจนกว่าจะเชื่อมต่อสำเร็จ ถ้าอินเทอร์เน็ต/สคริปต์ล่ม บอร์ดจะค้างตรงนี้ตลอดไปโดยไม่มี timeout</td></tr>
+
+          <tr><td><span class="tag med">Medium</span></td><td class="finding-file">Task1code.ino<br>Task2code.ino</td><td>ไม่มีการเช็ค <code>WiFi.status()</code> ซ้ำระหว่างทำงาน — ถ้า WiFi หลุดกลางคัน โค้ดจะไม่ reconnect อัตโนมัติ</td></tr>
+
+          <tr><td><span class="tag med">Medium</span></td><td class="finding-file">control.ino</td><td>ใช้ <code>delay()</code> หลายจุดในทาสก์ที่ควรตอบสนองไว (เช่น <code>delay(100)</code>, <code>delay(500)</code>) ทำให้บล็อกการทำงานของทาสก์เดียวกันชั่วขณะ</td></tr>
+
+          <tr><td><span class="tag med">Medium</span></td><td class="finding-file">sensor_read.ino</td><td>ค่า calibrate ของเซนเซอร์ดินเป็นตัวเลขคงที่เฉพาะเครื่อง (magic numbers) ผูกกับเซนเซอร์ตัวจริงที่ใช้ตอนแคลิเบรต ถ้าเปลี่ยนเซนเซอร์ต้องแก้โค้ดใหม่ทั้งหมด</td></tr>
+
+          <tr><td><span class="tag low">Low</span></td><td class="finding-file">ทุกไฟล์</td><td>ไม่มี README หรือ comment อธิบาย pin-map รวมทั้งระบบ ต้องไล่อ่านทีละไฟล์เพื่อเข้าใจการต่อวงจร</td></tr>
+
+          <tr><td><span class="tag low">Low</span></td><td class="finding-file">ทั้งโปรเจ็ค</td><td>ไม่มีไฟล์ไลบรารี (MCP3208, DS3231, TridentTD_LineNotify, ArduinoJson) แนบมาด้วย ผู้ตรวจ/ผู้พัฒนาต่อจะคอมไพล์ไม่ผ่านถ้าไม่รู้ว่าต้องติดตั้ง lib เวอร์ชันไหน</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="plan">
+      <div class="kicker">05</div>
+      <h2><span class="num">§</span>แผนพัฒนาต่อ — ไม่ใช้ฮาร์ดแวร์จริง</h2>
+      <p class="section-desc">เนื่องจากยังไม่มีอุปกรณ์ในมือ แบ่งงานเป็น 4 ระยะ ใช้การจำลอง (simulation) แทนของจริงทุกจุด แล้วค่อยเสียบฮาร์ดแวร์จริงตอนท้ายเมื่อพร้อม</p>
+
+      <div class="card">
+        <div class="phase">
+          <div class="ph-num"><b>01</b>สัปดาห์ 1–2</div>
+          <div>
+            <h4>Refactor + Security</h4>
+            <ul>
+              <li>ย้าย WiFi password / LINE token / รหัสกล้อง ไปไว้ในไฟล์ <code>secrets.h</code> แยกต่างหาก แล้วใส่ใน <code>.gitignore</code></li>
+              <li>แก้บั๊ก 3 จุด: pin สลับกันใน <code>sensor_read.ino</code>, <code>sum_soil_all = soil_1_1</code>, และ <code>now_day = now.minute()</code></li>
+              <li>ย้ายพินรีเลย์ออกจาก GPIO 0 และ 12 ไปพินอื่นที่ไม่ใช่ strapping pin</li>
+              <li>เขียน README + pin-map diagram ให้คนอื่นเข้าใจระบบได้โดยไม่ต้องไล่โค้ดทีละไฟล์</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="ph-num"><b>02</b>สัปดาห์ 2–3</div>
+          <div>
+            <h4>ตั้งค่าสภาพแวดล้อมจำลอง (ไม่ใช้ฮาร์ดแวร์จริง)</h4>
+            <ul>
+              <li>ใช้ <b>Wokwi</b> (wokwi.com) จำลอง ESP32 — รองรับ DHT22, ตัวต้านทานปรับค่าได้แทนเซนเซอร์ดิน, LED แทนรีเลย์ และเชื่อม WiFi ออกอินเทอร์เน็ตจริงได้ จึงยิง HTTP ไป Google Apps Script ได้เหมือนของจริง</li>
+              <li>ย้ายจาก Arduino IDE มาเขียนใน <b>VS Code + PlatformIO</b> พร้อมปลั๊กอิน Wokwi (มีไฟล์ <code>wokwi.toml</code> รันจำลองในตัว) — ตอบโจทย์ที่อยากใช้ VS Code ร่วมกับ AI agent</li>
+              <li>ทดสอบ logic 3 โหมดปลูก (เมลอน/แตงโม/สตอเบอร์รี่) ด้วยค่าจำลอง เพื่อยืนยันว่ารอบให้น้ำ/ปุ๋ยถูกต้องหลังแก้บั๊ก</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="ph-num"><b>03</b>สัปดาห์ 3–4</div>
+          <div>
+            <h4>ปิดช่องโหว่ + ต่อยอด LINE Bot ที่มีอยู่แล้ว</h4>
+            <ul>
+              <li>ข่าวดี: <b>ไม่ต้องสร้าง LINE Bot ใหม่</b> — <code>code.gs</code> มี Messaging API webhook + reply ที่ใช้งานได้จริงอยู่แล้ว (คำสั่ง <code>on_off_fan</code>, <code>mode_1</code> ฯลฯ)</li>
+              <li>ย้าย Channel Access Token จากที่ฝังในโค้ดไปเก็บใน <code>PropertiesService</code> ของ Apps Script แทน</li>
+              <li>เพิ่มการตรวจสอบ <code>x-line-signature</code> ใน <code>doPost()</code> ก่อนประมวลผล event ป้องกันคนนอกยิง POST ปลอมเข้ามาสั่งงาน</li>
+              <li>ตรวจสอบ/เพิ่ม <code>doGet(e)</code> ให้ตรงกับที่เฟิร์มแวร์ยิง <code>http.GET()</code> เข้ามาจริง</li>
+              <li>เพิ่มฟังก์ชัน <code>pushMessage()</code> ใช้ token เดิมของ Messaging API แทน <code>LINE.notify</code> เดิม สำหรับส่งรูปกล้อง/แจ้งเตือนน้ำหมดเชิงรุก (เก็บ userId จาก event แรกที่ผู้ใช้ทักมา)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="ph-num"><b>04</b>สัปดาห์ 4–5</div>
+          <div>
+            <h4>เว็บแดชบอร์ด + เตรียมส่งงาน</h4>
+            <ul>
+              <li>ทำหน้าเว็บอ่านค่าจาก Google Sheet ผ่าน Apps Script Web App แสดงกราฟความชื้นดิน/อุณหภูมิย้อนหลังด้วย Chart.js พร้อมปุ่มควบคุม manual</li>
+              <li>รวบรวม README, diagram, วิดีโอสาธิตจากผลจำลอง Wokwi ให้ครบสำหรับการส่งงาน</li>
+              <li>เมื่อฮาร์ดแวร์จริงพร้อม ค่อยสลับจาก Wokwi ไปทดสอบกับบอร์ดจริงโดยแทบไม่ต้องแก้โค้ด logic เลย</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="submit">
+      <div class="kicker">06</div>
+      <h2><span class="num">§</span>รูปแบบการส่งงาน — GitHub หรือ ZIP?</h2>
+      <p class="section-desc">อาจารย์กำหนดให้ส่งเป็นไฟล์ zip อยู่แล้ว — คำแนะนำคือทำทั้งสองแบบไปพร้อมกัน โดยใช้ GitHub เป็นที่ทำงานหลัก แล้ว export เป็น zip ตอนส่งจริง</p>
+
+      <div class="compare">
+        <div class="col">
+          <h4>📦 ส่งเป็น ZIP อย่างเดียว</h4>
+          <ul>
+            <li>ตรงตามฟอร์แมตที่อาจารย์กำหนดไว้แล้ว ไม่ต้องอธิบายเพิ่ม</li>
+            <li>ไม่ต้องสมัคร/ดูแลบัญชี GitHub</li>
+            <li>❌ ไม่มีประวัติการแก้ไข (version history) เวลาแก้บั๊กหรือทำงานกับ AI agent จะย้อนดูของเก่าไม่ได้</li>
+            <li>❌ แก้ไขร่วมกับเพื่อนในกลุ่มพร้อมกันลำบาก ต้องส่งไฟล์กันเอง</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h4>🐙 ทำเป็น GitHub repo</h4>
+          <ul>
+            <li>มี commit history เห็นว่าแก้อะไรไปบ้าง เหมาะกับตอนทำงานร่วมกับ AI agent (diff ชัดเจน)</li>
+            <li>อาจารย์ตรวจโค้ดผ่านเบราว์เซอร์ได้เลย ไม่ต้องดาวน์โหลด</li>
+            <li>เก็บเป็นพอร์ตโฟลิโอต่อยอดใช้สมัครงาน/ฝึกงานได้</li>
+            <li>⚠ ต้องระวังไม่ push secrets ขึ้นไป (ใช้ <code>.gitignore</code>)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="recommend">
+        <b>คำแนะนำ:</b> ทำเป็น GitHub repo หลัก (private แล้ว add อาจารย์เป็น collaborator ก็ได้ถ้าไม่อยาก public) ใช้พัฒนาและติดตามงานทั้งหมด แล้วตอนส่งจริงกด <span class="mono">Code → Download ZIP</span> ส่งไฟล์ zip ตามฟอร์แมตเดิมที่อาจารย์กำหนด — ได้ทั้งความสะดวกตอนพัฒนาและตรงสเปกตอนส่ง
+      </div>
+
+      <p class="section-desc" style="margin-top:22px; margin-bottom:10px;">โครงสร้างโฟลเดอร์ที่แนะนำ:</p>
+      <pre class="tree">smart-farm-iot/
+├── README.md                  <span class="comment">// ภาพรวม + pin-map + วิธีรัน</span>
+├── .gitignore                 <span class="comment">// กัน secrets.h หลุด</span>
+├── firmware/
+│   ├── platformio.ini          <span class="comment">// ตั้งค่า build สำหรับ VS Code</span>
+│   ├── wokwi.toml               <span class="comment">// ตั้งค่าจำลองบน Wokwi</span>
+│   └── src/
+│       ├── main.cpp
+│       ├── sensors.cpp / .h
+│       ├── control.cpp / .h
+│       ├── secrets.example.h    <span class="comment">// เทมเพลตไม่ใส่ค่าจริง</span>
+│       └── ...
+├── backend/
+│   └── apps-script/
+│       ├── Code.gs
+│       └── appsscript.json
+├── docs/
+│   ├── architecture-diagram.png
+│   ├── pin-mapping.md
+│   └── pcb/                    <span class="comment">// ไฟล์ .pcb ที่มีอยู่</span>
+├── dashboard/                  <span class="comment">// เว็บแดชบอร์ด (เฟส 4)</span>
+└── simulation/
+    └── wokwi/
+        └── diagram.json</pre>
+    </section>
+
+    <section id="next">
+      <div class="kicker">07</div>
+      <h2><span class="num">§</span>สิ่งที่ทำต่อได้เลยตอนนี้</h2>
+      <ul class="checklist">
+        <li><span class="box"></span>อัปโหลดไฟล์ .pcb และโฟลเดอร์ libraries ที่เหลือ เพื่อให้ตรวจ wiring และ dependency ครบ</li>
+        <li><span class="box"></span>ตั้งโปรเจ็คบน Wokwi + PlatformIO ใน VS Code เพื่อรันโค้ดชุดนี้แบบจำลองครั้งแรก</li>
+        <li><span class="box"></span>แก้บั๊ก 3 จุดที่พบใน sensor_read.ino และ time.ino ก่อนทดสอบ logic โหมดปลูก</li>
+        <li><span class="box"></span>ย้าย LINE Channel Access Token ออกจาก <code>code.gs</code> ไปเก็บใน Script Properties แล้วเพิ่มการเช็ค signature ใน <code>doPost()</code></li>
+        <li><span class="box"></span>เช็คในโปรเจ็ค Apps Script ว่ามีไฟล์ที่มี <code>doGet(e)</code> อยู่จริงหรือไม่ (เพราะ <code>code.gs</code> ที่ส่งมามีแต่ <code>doPost</code>)</li>
+        <li><span class="box"></span>สร้าง GitHub repo ตามโครงสร้างที่แนะนำ แล้วเริ่ม commit แรก</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>SMART FARM IOT — SYSTEM AUDIT REPORT · จัดทำโดย Claude จากไฟล์ smart_fram_iot_8.zip</footer>
+
+</body>
+</html>

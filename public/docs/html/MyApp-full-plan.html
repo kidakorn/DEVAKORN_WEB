@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyApp — Full Project Plan</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#131a22; --line:#22303c;
+    --ink:#dfe6ec; --dim:#8ba0ad; --accent:#5fd0c0; --accent2:#e8b04b;
+    --wpf:#7aa2f7; --api:#f7768e; --warn:#e8b04b;
+    --mono:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+    --sans:'IBM Plex Sans Thai','Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.7}
+  a{color:var(--accent)}
+  .wrap{display:grid; grid-template-columns:240px 1fr; min-height:100vh}
+  @media (max-width:860px){ .wrap{grid-template-columns:1fr} nav{display:none} }
+  nav{position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto; border-right:1px solid var(--line); padding:32px 20px; background:var(--panel)}
+  nav .brand{font-family:var(--mono); font-size:13px; color:var(--accent); letter-spacing:.08em; margin-bottom:28px}
+  nav a{display:block; font-size:13.5px; color:var(--dim); text-decoration:none; padding:6px 0; border-left:2px solid transparent; padding-left:12px; margin-left:-12px}
+  nav a:hover{color:var(--ink); border-color:var(--accent)}
+  main{padding:56px 48px 120px; max-width:920px}
+  @media (max-width:600px){ main{padding:36px 20px 80px} }
+  header.hero{margin-bottom:48px}
+  .eyebrow{font-family:var(--mono); font-size:12px; color:var(--accent2); letter-spacing:.14em; text-transform:uppercase}
+  h1{font-size:clamp(26px,5vw,38px); margin:14px 0 10px; line-height:1.15}
+  .sub{color:var(--dim); font-size:15.5px; max-width:65ch}
+  .status-bar{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
+  .pill{font-family:var(--mono); font-size:12px; padding:4px 10px; border-radius:20px; border:1px solid var(--line); color:var(--dim)}
+
+  .disclaimer{background:#241d10; border:1px solid #5c4c1f; border-radius:10px; padding:16px 20px; margin-bottom:48px; font-size:13.5px; color:var(--accent2)}
+
+  section{margin-bottom:52px; scroll-margin-top:24px}
+  .phase-head{display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:18px}
+  .phase-num{font-family:var(--mono); font-size:13px; color:var(--bg); background:var(--accent); border-radius:6px; padding:3px 9px; font-weight:700}
+  .phase-title{font-size:20px; font-weight:600}
+  .phase-status{margin-left:auto; font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:20px}
+  .st-approved{background:#123328; color:var(--accent); border:1px solid #1f5c48}
+  .st-draft{background:#332a12; color:var(--accent2); border:1px solid #5c4c1f}
+
+  h3{font-size:14px; color:var(--accent); margin:20px 0 8px; font-family:var(--mono)}
+  p{color:#c4ced5; margin:8px 0}
+  ul,ol{color:#c4ced5; padding-left:22px}
+  li{margin:5px 0}
+  code{font-family:var(--mono); background:#1a2230; color:var(--accent2); padding:1px 6px; border-radius:4px; font-size:.88em}
+  pre{background:#0a0e13; border:1px solid var(--line); border-radius:8px; padding:16px 18px; overflow-x:auto; font-family:var(--mono); font-size:12.8px; line-height:1.6; color:#c9d6de}
+
+  table{width:100%; border-collapse:collapse; margin:12px 0; font-size:13.5px}
+  th,td{border:1px solid var(--line); padding:8px 11px; text-align:left; vertical-align:top}
+  th{background:var(--panel); color:var(--accent); font-weight:600; font-size:12.5px}
+  td{color:#c4ced5}
+
+  .checklist{list-style:none; padding-left:0}
+  .checklist li{display:flex; gap:10px; align-items:flex-start; padding:5px 0}
+  .box{flex-shrink:0; width:16px; height:16px; border:1.5px solid var(--dim); border-radius:4px; margin-top:2px}
+  .box.checked{background:var(--accent); border-color:var(--accent); position:relative}
+  .box.checked::after{content:"✓"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--bg); font-weight:700}
+
+  .track-tag{font-family:var(--mono); font-size:10.5px; padding:1px 7px; border-radius:4px; margin-right:6px}
+  .t-wpf{background:#1a2740; color:var(--wpf); border:1px solid #2d4470}
+  .t-api{background:#3a1c26; color:var(--api); border:1px solid #5c2c3a}
+  .t-shared{background:#332a12; color:var(--accent2); border:1px solid #5c4c1f}
+
+  .decision{border-left:3px solid var(--accent); background:var(--panel); padding:10px 16px; margin:10px 0; font-size:13.5px}
+  .decision b{color:var(--ink)}
+
+  .foot{color:var(--dim); font-size:13px; border-top:1px solid var(--line); padding-top:20px; margin-top:60px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <div class="brand">// PLAN.md — MyApp</div>
+    <a href="#p1">1. Discovery &amp; Requirements</a>
+    <a href="#p2">2. Architecture &amp; Design</a>
+    <a href="#p3">3. Environment &amp; Scaffolding</a>
+    <a href="#p4">4. Core Infrastructure</a>
+    <a href="#p5">5. Feature Implementation</a>
+    <a href="#p6">6. Testing &amp; QA</a>
+    <a href="#p7">7. Code Review &amp; Hardening</a>
+    <a href="#p8">8. Documentation</a>
+    <a href="#p9">9. Packaging &amp; Release</a>
+    <a href="#p10">10. Deployment &amp; Post-release</a>
+    <a href="#decisions">Decision Log</a>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <div class="eyebrow">.NET Desktop (WPF) + ASP.NET Core API</div>
+      <h1>MyApp — Full Project Plan</h1>
+      <p class="sub">PLAN.md ฉบับเต็ม ครอบคลุมทั้ง 10 phase สำหรับ solution ที่มี 2 track (WPF Desktop และ ASP.NET Core API) ใช้ Core/Data ร่วมกัน</p>
+      <div class="status-bar">
+        <span class="pill">Agent ปัจจุบัน: architect</span>
+        <span class="pill">Track: WPF + API</span>
+        <span class="pill">Solution: MyApp.sln</span>
+      </div>
+    </header>
+
+    <div class="disclaimer">
+      ⚠️ เอกสารนี้เป็น <b>ตัวอย่างที่กรอกไว้ล่วงหน้า</b> (placeholder plan) เพื่อให้เห็นภาพว่า PLAN.md ฉบับเต็มหน้าตาเป็นแบบไหนเมื่อกรอกครบ ยังไม่ใช่แผนจริงของโปรเจ็คคุณ — เมื่อมี requirement จริง ให้ agent <code>architect</code> อ่านไฟล์นี้แล้วแทนที่เนื้อหาตัวอย่างด้วยข้อมูลจริงทั้งหมด
+    </div>
+
+    <!-- PHASE 1 -->
+    <section id="p1">
+      <div class="phase-head">
+        <span class="phase-num">01</span>
+        <span class="phase-title">Discovery &amp; Requirements</span>
+        <span class="phase-status st-draft">🟡 ตัวอย่าง — รออนุมัติจริง</span>
+      </div>
+      <h3>Scope</h3>
+      <p><b>ทำ:</b> ระบบจัดการงานภายในทีมขนาดเล็ก มี desktop app ให้พนักงานใช้บันทึก/ติดตามงาน และ API กลางให้ระบบอื่นดึงข้อมูลได้</p>
+      <p><b>ไม่ทำ (non-goals):</b> ไม่ทำ mobile app, ไม่ทำ real-time chat, ไม่รองรับ multi-tenant ในเวอร์ชันแรก</p>
+      <h3>User Stories</h3>
+      <ul>
+        <li>ในฐานะพนักงาน ฉันต้องการสร้าง/แก้ไขงานของตัวเองผ่านหน้าต่าง desktop ได้</li>
+        <li>ในฐานะหัวหน้าทีม ฉันต้องการดู dashboard สรุปงานทั้งทีมผ่าน API ที่เชื่อมกับระบบอื่น</li>
+      </ul>
+      <h3>Platform Target</h3>
+      <p>WPF (Windows only) สำหรับ desktop + ASP.NET Core Web API สำหรับ backend กลาง</p>
+      <h3>Constraints</h3>
+      <ul><li>ต้องใช้งาน offline ได้บางส่วนฝั่ง desktop (sync ทีหลัง)</li><li>Data ต้องอยู่ใน on-prem database ตาม policy บริษัท</li></ul>
+      <h3>Dependencies ภายนอก</h3>
+      <p>SQL Server on-prem, Active Directory สำหรับ auth (พิจารณาใน Phase 2)</p>
+      <ul class="checklist">
+        <li><span class="box checked"></span> อนุมัติแล้ว (ตัวอย่าง)</li>
+      </ul>
+    </section>
+
+    <!-- PHASE 2 -->
+    <section id="p2">
+      <div class="phase-head">
+        <span class="phase-num">02</span>
+        <span class="phase-title">Architecture &amp; Design</span>
+        <span class="phase-status st-draft">🟡 ตัวอย่าง</span>
+      </div>
+      <h3>Pattern</h3>
+      <p>MVVM ด้วย <code>CommunityToolkit.Mvvm</code> (ฝั่ง WPF) + Controller-based REST (ฝั่ง API)</p>
+      <h3>DI Container</h3>
+      <p><code>Microsoft.Extensions.DependencyInjection</code> ใช้ร่วมกันทั้ง 2 track</p>
+      <h3>Data Layer</h3>
+      <p>EF Core + SQL Server, migration แบบ code-first</p>
+      <h3>Diagram โครงสร้าง</h3>
+      <pre><code>┌────────────┐     ┌────────────┐
+│ MyApp.UI   │     │ MyApp.Api  │
+│   .Wpf     │     │ (REST)     │
+└─────┬──────┘     └─────┬──────┘
+      │                  │
+      └────────┬─────────┘
+               ▼
+       ┌───────────────┐
+       │  MyApp.Core    │  (business logic, ไม่ผูก UI)
+       └───────┬────────┘
+               ▼
+       ┌───────────────┐
+       │  MyApp.Data    │  (EF Core + SQL Server)
+       └───────────────┘</code></pre>
+      <h3>NuGet Packages</h3>
+      <table>
+        <tr><th>Package</th><th>เหตุผล</th></tr>
+        <tr><td>CommunityToolkit.Mvvm</td><td>ลด boilerplate ของ ObservableObject/RelayCommand</td></tr>
+        <tr><td>Microsoft.EntityFrameworkCore.SqlServer</td><td>ORM เชื่อม SQL Server on-prem</td></tr>
+        <tr><td>Microsoft.Extensions.DependencyInjection</td><td>DI container กลาง ใช้ร่วมทั้ง WPF/API</td></tr>
+        <tr><td>Serilog.AspNetCore</td><td>structured logging ฝั่ง API</td></tr>
+      </table>
+      <ul class="checklist"><li><span class="box checked"></span> อนุมัติแล้ว (ตัวอย่าง)</li></ul>
+    </section>
+
+    <!-- PHASE 3 -->
+    <section id="p3">
+      <div class="phase-head">
+        <span class="phase-num">03</span>
+        <span class="phase-title">Environment &amp; Scaffolding</span>
+        <span class="phase-status st-draft">⬜ ยังไม่เริ่ม</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="box"></span> โครงโปรเจ็ค (.sln, Models/ViewModels/Views/Services)</li>
+        <li><span class="box"></span> ตั้งค่า .editorconfig / code style</li>
+        <li><span class="box"></span> ติดตั้ง NuGet packages ตาม Phase 2</li>
+        <li><span class="box"></span> ตั้งค่า solution structure (Core/Data/UI.Wpf/Api)</li>
+      </ul>
+    </section>
+
+    <!-- PHASE 4 -->
+    <section id="p4">
+      <div class="phase-head">
+        <span class="phase-num">04</span>
+        <span class="phase-title">Core Infrastructure</span>
+        <span class="phase-status st-draft">⬜ ยังไม่เริ่ม</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="box"></span> ตั้งค่า DI container ใน App.xaml.cs และ Program.cs</li>
+        <li><span class="box"></span> Logging (Serilog)</li>
+        <li><span class="box"></span> Configuration (appsettings.json / connection string)</li>
+        <li><span class="box"></span> Data access layer เชื่อมต่อจริง (DbContext, migration แรก)</li>
+        <li><span class="box"></span> Base class/interface หลัก (ViewModelBase, IRepository)</li>
+      </ul>
+    </section>
+
+    <!-- PHASE 5 -->
+    <section id="p5">
+      <div class="phase-head">
+        <span class="phase-num">05</span>
+        <span class="phase-title">Feature Implementation</span>
+        <span class="phase-status st-draft">⬜ backlog (loop)</span>
+      </div>
+      <table>
+        <tr><th>#</th><th>Feature / Task</th><th>Track</th><th>Agent</th><th>สถานะ</th></tr>
+        <tr><td>1</td><td>สร้าง/แก้ไข/ลบ งาน (CRUD)</td><td><span class="track-tag t-wpf">WPF</span></td><td>implementer</td><td>⬜</td></tr>
+        <tr><td>2</td><td>Endpoint ดึงรายการงานทั้งทีม</td><td><span class="track-tag t-api">API</span></td><td>implementer</td><td>⬜</td></tr>
+        <tr><td>3</td><td>Login ด้วย Active Directory</td><td><span class="track-tag t-shared">SHARED</span></td><td>implementer</td><td>⬜</td></tr>
+        <tr><td>4</td><td>Dashboard สรุปงานทีม (UI)</td><td><span class="track-tag t-wpf">WPF</span></td><td>implementer</td><td>⬜</td></tr>
+      </table>
+      <p style="font-size:13px; color:var(--dim)">ทำทีละแถวจนครบ backlog ก่อนขยับไป Phase 6 — เพิ่มแถวใหม่ได้เรื่อยๆ ระหว่างพัฒนา</p>
+    </section>
+
+    <!-- PHASE 6 -->
+    <section id="p6">
+      <div class="phase-head">
+        <span class="phase-num">06</span>
+        <span class="phase-title">Testing &amp; QA</span>
+        <span class="phase-status st-draft">⬜ ยังไม่เริ่ม</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="box"></span> Unit test ViewModel/Service logic (MyApp.Core.Tests)</li>
+        <li><span class="box"></span> Integration test API ผ่าน WebApplicationFactory (MyApp.Api.Tests)</li>
+        <li><span class="box"></span> Manual test checklist: สร้างงาน → แก้ไข → ปิดงาน (WPF)</li>
+        <li><span class="box"></span> Bug list / known issues</li>
+      </ul>
+    </section>
+
+    <!-- PHASE 7 -->
+    <section id="p7">
+      <div class="phase-head">
+        <span class="phase-num">07</span>
+        <span class="phase-title">Code Review &amp; Hardening</span>
+        <span class="phase-status st-draft">⬜ ยังไม่เริ่ม</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="box"></span> Review MVVM separation / null safety / async correctness</li>
+        <li><span class="box"></span> Input validation ฝั่ง API (model validation, [ApiController] auto 400)</li>
+        <li><span class="box"></span> Performance: startup time WPF, response time API endpoint หลัก</li>
+        <li><span class="box"></span> Security: connection string ไม่ hardcode, AD token handling ปลอดภัย</li>
+      </ul>
+    </section>
+
+    <!-- PHASE 8 -->
+    <section id="p8">
+      <div class="phase-head">
+        <span class="phase-num">08</span>
+        <span class="phase-title">Documentation</span>
+        <span class="phase-status st-draft">⬜ ยังไม่เริ่ม</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="box"></span> README (build/run instructions)</li>
+        <li><span class="box"></span> ADR สรุปการตัดสินใจสำคัญ (อ้างอิง Decision Log)</li>
+        <li><span class="box"></span> User guide สำหรับพนักงานที่ใช้ WPF app</li>
+        <li><span class="box"></span> API reference (Swagger หรือ Postman collection)</li>
+      </ul>
+    </section>
+
+    <!-- PHASE 9 -->
+    <section id="p9">
+      <div class="phase-head">
+        <span class="phase-num">09</span>
+        <span class="phase-title">Packaging &amp; Release</span>
+        <span class="phase-status st-draft">⬜ ยังไม่เริ่ม</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="box"></span> Icon / branding สำหรับ WPF app</li>
+        <li><span class="box"></span> Packaging WPF: MSIX สำหรับแจกในองค์กร</li>
+        <li><span class="box"></span> Packaging API: Docker image + publish profile</li>
+        <li><span class="box"></span> Version bump + release notes</li>
+      </ul>
+    </section>
+
+    <!-- PHASE 10 -->
+    <section id="p10">
+      <div class="phase-head">
+        <span class="phase-num">10</span>
+        <span class="phase-title">Deployment &amp; Post-release</span>
+        <span class="phase-status st-draft">⬜ ยังไม่เริ่ม</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="box"></span> Auto-update mechanism สำหรับ WPF (เช่น Squirrel หรือ MSIX auto-update)</li>
+        <li><span class="box"></span> Deploy API ขึ้น server/CI pipeline + health check endpoint</li>
+        <li><span class="box"></span> Crash reporting / telemetry</li>
+        <li><span class="box"></span> รวบรวม feedback → เพิ่มลง backlog รอบถัดไป (วนกลับ Phase 1)</li>
+      </ul>
+    </section>
+
+    <section id="decisions">
+      <div class="phase-head"><span class="phase-title" style="font-size:18px">Decision Log</span></div>
+      <div class="decision"><b>เลือก EF Core แทน Dapper</b> — ทีมคุ้นเคยกับ EF Core มากกว่า และ migration แบบ code-first ช่วยลดเวลา setup ในช่วงแรก แลกกับ raw performance ที่ Dapper ทำได้ดีกว่าเล็กน้อย</div>
+      <div class="decision"><b>แยก MyApp.Api เป็นโปรเจ็คเสริม ไม่บังคับ</b> — เผื่อทีมที่ต้องการแค่ desktop app อย่างเดียวไม่ต้องแบก dependency ของ ASP.NET Core</div>
+    </section>
+
+    <div class="foot">อัปเดตล่าสุด: กรกฎาคม 2026 · PLAN.md ฉบับเต็ม (ตัวอย่าง) สำหรับ MyApp — แทนที่เนื้อหาด้วยข้อมูลจริงก่อนเริ่ม Phase 3</div>
+  </main>
+</div>
+</body>
+</html>

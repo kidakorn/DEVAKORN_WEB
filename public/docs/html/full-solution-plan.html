@@ -676,7 +676,50 @@ erDiagram
       frontend คุยกับ endpoint เหล่านั้น
     </p>
 
-    <div class="sec-label" style="margin-top:8px;">Phase A — Shared Foundation</div>
+    <div class="sec-label" style="margin-top:8px;">Phase 0 — Project Setup</div>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">สร้างโปรเจกต์ Next.js ใหม่ชื่อ "erp-suite" (แยกออกจาก iws-clone โดยสิ้นเชิง
+เป็นคนละ process/คนละ repo) ทำทีละขั้นตอน — งานนี้เป็นแค่ scaffold ยังไม่ต้อง
+สร้างฟีเจอร์ของระบบใดๆ:
+
+1. รัน npx create-next-app@latest erp-suite (เลือก TypeScript, Tailwind CSS,
+   App Router)
+
+2. ติดตั้ง dependencies เพิ่ม: jsonwebtoken, bcryptjs (เทียบ password hash),
+   zod (validation ฟอร์ม)
+
+3. สร้าง .env.local:
+   IWS_CLONE_URL=http://localhost:3000
+   JWT_SECRET=<generate ค่าแบบสุ่ม ห้าม hardcode ค่าจริงในโค้ด>
+
+4. สร้างโครงสร้างโฟลเดอร์:
+   src/
+     app/
+       (auth)/login/
+       hr/
+       purchase/
+       inventory/
+     components/
+       NotificationBell.tsx   (ยังเป็น placeholder เปล่าก่อน)
+       ApprovalWidget.tsx     (ยังเป็น placeholder เปล่าก่อน)
+     lib/
+       api.ts                 (wrapper สำหรับเรียก iws-clone REST API)
+       auth.ts                (จัดการ JWT)
+
+5. เขียน src/lib/api.ts เป็นฟังก์ชันกลาง เช่น
+   callGateway(path, options) ที่แนบ IWS_CLONE_URL ให้อัตโนมัติ ทุกที่ใน
+   โปรเจกต์เรียกผ่านฟังก์ชันนี้ฟังก์ชันเดียว ห้าม hardcode URL กระจายอยู่
+   หลายที่
+
+6. คัดลอกไฟล์ CLAUDE.md, AGENTS.md, .ai/PLAN.md,
+   .ai/skills/erp-conventions/SKILL.md เข้าไปที่ root ของโปรเจกต์ (ผู้ใช้
+   จะวางให้เองแล้ว แค่ตรวจสอบว่าอยู่ครบตามตำแหน่งที่ถูกต้อง)
+
+7. รัน npm run dev ทดสอบว่าเปิดหน้าเปล่าได้ ไม่มี error
+
+ห้ามเริ่มเขียนหน้า Login จริงหรือ business logic ใดๆ ในรอบนี้ เป็นแค่
+scaffold โครงโปรเจกต์เท่านั้น</div>
+
+    <div class="sec-label" style="margin-top:28px;">Phase A — Shared Foundation</div>
     <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน CLAUDE.md, .ai/PLAN.md และ
 .ai/skills/erp-conventions/SKILL.md ก่อน (โปรเจกต์นี้เรียก iws-clone เป็น
 Gateway ภายนอก ไม่ได้เขียน backend เอง)
@@ -807,6 +850,32 @@ Foundation) ทำอะไรไปแล้วบ้าง (ต้องเส
 
 พอครบ 4 Phase แล้ว ระบบทั้งหมด (Shared Foundation + HR + Purchase +
 Inventory) ควรทำงานร่วมกันได้แบบ full solution ตามที่วางแผนไว้</div>
+
+    <div class="sec-label" style="margin-top:28px;">Audit Prompt — ใช้ซ้ำได้ก่อนขึ้น Phase ถัดไป</div>
+    <p style="font-size:12.5px; color:var(--text-dim); margin-bottom:10px;">
+      ใช้ prompt นี้ระหว่าง Phase ทุกครั้งที่บอก agent ว่า "ทำเสร็จแล้ว" ก่อนจะ
+      วาง prompt ของ Phase ถัดไป เพื่อตรวจสอบว่าของเดิมยังทำงานถูกต้องจริง
+      ไม่ใช่แค่เชื่อคำรายงาน
+    </p>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">อ่าน .ai/PLAN.md ก่อน (ห้ามแก้ไขไฟล์หรือเขียนโค้ดใดๆ ในรอบนี้ เป็นแค่การ
+ตรวจสอบ/audit เท่านั้น) แล้วตรวจสอบและรายงานผลกลับมาเป็นข้อๆ:
+
+1. เปิดทุก endpoint ที่ Phase ล่าสุดสร้างไว้ ยิง request จริงทดสอบ (ไม่ใช่
+   แค่ดูโค้ด) รายงานว่า endpoint ไหนตอบกลับถูกต้อง ไหนมี error
+
+2. เช็คผ่าน Schema Browser ของ iws-clone ว่าตารางที่สร้างไว้ใน Phase นี้
+   มี field ครบตาม ER diagram ใน full-solution-plan.html จริงไหม มี field
+   ไหนขาด/เกิน/data type ไม่ตรงบ้าง
+
+3. เช็คว่า Approval flow (ถ้า Phase นี้เกี่ยวข้อง) เขียนเข้าตาราง APPROVALS
+   กลางจริง ไม่ได้สร้างตาราง approval แยกใหม่โดยไม่ตั้งใจ
+
+4. เช็คว่า .ai/PLAN.md ติ๊ก checklist ตรงกับสถานะจริงหรือไม่ ถ้าไม่ตรง ให้
+   ระบุว่าข้อไหนติ๊กเกินจริงหรือยังไม่ได้ติ๊กทั้งที่ทำเสร็จแล้ว
+
+5. สรุปว่าพร้อมขึ้น Phase ถัดไปหรือยัง มีอะไรต้องแก้ก่อนไหม
+
+ห้ามเริ่มเขียนโค้ด Phase ถัดไปในรอบนี้ รอให้ตรวจสอบเสร็จแล้วรายงานผลก่อน</div>
   </section>
 
 </main>

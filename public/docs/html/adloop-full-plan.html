@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adloop — Full Project Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A0F1E;
+    --bg-alt: #0E1526;
+    --surface: #131B30;
+    --surface-2: #182242;
+    --border: #232F4E;
+    --text: #E7EAF3;
+    --text-dim: #8C96B3;
+    --text-faint: #5D6690;
+    --gold: #F0A93D;
+    --gold-dim: #7A5B23;
+    --teal: #33D9C4;
+    --teal-dim: #1C5A54;
+    --danger: #F16B5C;
+    --font-display: 'Sora', 'Noto Sans Thai', sans-serif;
+    --font-body: 'Inter', 'Noto Sans Thai', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:
+      radial-gradient(1100px 500px at 85% -5%, rgba(240,169,61,0.09), transparent 60%),
+      radial-gradient(900px 500px at -5% 15%, rgba(51,217,196,0.07), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{ background:var(--gold); color:#100C02; }
+
+  a{ color:var(--teal); text-decoration:none; }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 28px; }
+
+  /* ---------- Header / Hero ---------- */
+  header.hero{
+    border-bottom:1px solid var(--border);
+    padding:64px 0 56px;
+    position:relative;
+    overflow:hidden;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px; height:7px; border-radius:50%;
+    background:var(--teal);
+    box-shadow:0 0 0 4px rgba(51,217,196,0.15);
+  }
+  h1.title{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:clamp(34px, 5vw, 54px);
+    line-height:1.12;
+    letter-spacing:-0.01em;
+    max-width:820px;
+  }
+  h1.title span{ color:var(--gold); }
+  .subtitle{
+    margin-top:20px;
+    font-size:17px;
+    color:var(--text-dim);
+    max-width:640px;
+  }
+
+  .hero-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:28px;
+    margin-top:40px;
+    padding-top:28px;
+    border-top:1px solid var(--border);
+  }
+  .hero-meta div{ min-width:120px; }
+  .hero-meta .k{
+    font-family:var(--font-mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--text-faint);
+    margin-bottom:6px;
+  }
+  .hero-meta .v{ font-size:15px; font-weight:600; color:var(--text); }
+
+  /* ---------- Live-metric signature panel ---------- */
+  .metric-panel{
+    margin-top:44px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:22px 24px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:0;
+    overflow:hidden;
+  }
+  .metric-panel .cell{
+    padding:6px 20px;
+    border-right:1px solid var(--border);
+  }
+  .metric-panel .cell:last-child{ border-right:none; }
+  .metric-panel .label{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin-bottom:8px;
+  }
+  .metric-panel .value{
+    font-family:var(--font-mono);
+    font-size:24px;
+    font-weight:600;
+    color:var(--text);
+  }
+  .metric-panel .delta{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    margin-top:6px;
+  }
+  .delta.up{ color:var(--teal); }
+  .delta.down{ color:var(--danger); }
+
+  @media (max-width:720px){
+    .metric-panel{ grid-template-columns:repeat(2,1fr); }
+    .metric-panel .cell{ border-right:none; border-bottom:1px solid var(--border); padding:16px 14px; }
+  }
+
+  /* ---------- Section scaffolding ---------- */
+  section{ padding:64px 0; border-bottom:1px solid var(--border); }
+  section:last-of-type{ border-bottom:none; }
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+    margin-bottom:36px;
+  }
+  .section-num{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--gold);
+    background:rgba(240,169,61,0.08);
+    border:1px solid var(--gold-dim);
+    border-radius:6px;
+    padding:3px 9px;
+  }
+  h2.section-title{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(22px, 3vw, 30px);
+    letter-spacing:-0.005em;
+  }
+  .section-desc{
+    color:var(--text-dim);
+    max-width:680px;
+    margin-bottom:8px;
+    font-size:15px;
+  }
+
+  /* ---------- Feature cards ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+  }
+  @media (max-width:720px){ .grid{ grid-template-columns:1fr; } }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px;
+    transition:border-color .2s ease;
+  }
+  .card:hover{ border-color:var(--gold-dim); }
+  .card .icon-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .card h3{
+    font-family:var(--font-display);
+    font-size:17px;
+    font-weight:600;
+  }
+  .tag{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:3px 8px;
+    border-radius:20px;
+    border:1px solid var(--teal-dim);
+    color:var(--teal);
+    white-space:nowrap;
+  }
+  .card p{ color:var(--text-dim); font-size:14px; }
+  .card ul{ margin-top:12px; padding-left:0; list-style:none; }
+  .card li{
+    font-size:13.5px;
+    color:var(--text-dim);
+    padding-left:18px;
+    position:relative;
+    margin-bottom:7px;
+  }
+  .card li::before{
+    content:"—";
+    position:absolute; left:0; color:var(--text-faint);
+  }
+
+  /* ---------- Architecture diagram ---------- */
+  .arch{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:32px;
+    font-family:var(--font-mono);
+    font-size:13.5px;
+    overflow-x:auto;
+  }
+  .arch-row{ display:flex; align-items:center; gap:14px; margin-bottom:0; }
+  .arch-box{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 18px;
+    white-space:nowrap;
+    color:var(--text);
+  }
+  .arch-box.accent{ border-color:var(--gold-dim); color:var(--gold); }
+  .arch-box.teal{ border-color:var(--teal-dim); color:var(--teal); }
+  .arch-arrow{ color:var(--text-faint); }
+  .arch-tree{ line-height:2.1; color:var(--text-dim); white-space:pre; }
+  .arch-tree .n1{ color:var(--gold); }
+  .arch-tree .n2{ color:var(--teal); }
+  .arch-tree .n3{ color:var(--text); }
+
+  /* ---------- Timeline / roadmap ---------- */
+  .roadmap{ position:relative; padding-left:32px; }
+  .roadmap::before{
+    content:"";
+    position:absolute; left:6px; top:6px; bottom:6px;
+    width:1px; background:var(--border);
+  }
+  .phase{ position:relative; margin-bottom:36px; }
+  .phase:last-child{ margin-bottom:0; }
+  .phase::before{
+    content:"";
+    position:absolute; left:-32px; top:4px;
+    width:13px; height:13px; border-radius:50%;
+    background:var(--bg); border:2px solid var(--gold);
+  }
+  .phase .ph-label{
+    font-family:var(--font-mono);
+    font-size:11px; color:var(--gold);
+    text-transform:uppercase; letter-spacing:0.08em;
+    margin-bottom:6px;
+  }
+  .phase h3{ font-family:var(--font-display); font-size:18px; margin-bottom:8px; }
+  .phase p{ color:var(--text-dim); font-size:14px; max-width:640px; }
+  .phase .duration{
+    font-family:var(--font-mono); font-size:12px; color:var(--text-faint); margin-top:8px;
+  }
+
+  /* ---------- Table ---------- */
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th{
+    text-align:left;
+    font-family:var(--font-mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--text-faint);
+    padding:10px 14px;
+    border-bottom:1px solid var(--border);
+  }
+  td{
+    padding:14px;
+    border-bottom:1px solid var(--border);
+    color:var(--text-dim);
+    vertical-align:top;
+  }
+  td.strong{ color:var(--text); font-weight:600; }
+  tr:last-child td{ border-bottom:none; }
+  .table-wrap{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    overflow:hidden;
+  }
+
+  /* ---------- Callout ---------- */
+  .callout{
+    background:rgba(240,169,61,0.06);
+    border:1px solid var(--gold-dim);
+    border-radius:12px;
+    padding:20px 22px;
+    display:flex;
+    gap:14px;
+    margin-top:28px;
+  }
+  .callout .mark{
+    font-family:var(--font-mono);
+    color:var(--gold);
+    font-weight:600;
+    flex-shrink:0;
+  }
+  .callout p{ color:var(--text-dim); font-size:14px; }
+  .callout strong{ color:var(--text); }
+
+  /* ---------- Stack chips ---------- */
+  .chips{ display:flex; flex-wrap:wrap; gap:10px; }
+  .chip{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px 14px;
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--text);
+  }
+  .chip .chip-role{ display:block; font-size:10.5px; color:var(--text-faint); margin-bottom:3px; text-transform:uppercase; letter-spacing:0.06em;}
+
+  /* ---------- TOC nav ---------- */
+  .toc-nav{
+    position:sticky; top:0; z-index:40;
+    background:rgba(10,15,30,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+  }
+  .toc-nav .wrap{ display:flex; gap:4px; overflow-x:auto; padding:12px 28px; }
+  .toc-nav a{
+    font-family:var(--font-mono); font-size:12px; color:var(--text-dim);
+    padding:6px 12px; border-radius:7px; white-space:nowrap; flex-shrink:0;
+  }
+  .toc-nav a:hover{ background:var(--surface); color:var(--gold); }
+
+  /* ---------- Status overview ---------- */
+  .status-badge{
+    font-family:var(--font-mono); font-size:11px; font-weight:600;
+    padding:4px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:6px;
+    white-space:nowrap;
+  }
+  .status-badge::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .status-badge.done{ background:rgba(51,217,196,0.1); color:var(--teal); }
+  .status-badge.inprogress{ background:rgba(240,169,61,0.1); color:var(--gold); }
+  .status-badge.pending{ background:rgba(140,150,179,0.08); color:var(--text-faint); }
+
+  /* ---------- Agent plan accordion ---------- */
+  .plan-note{
+    background:rgba(51,217,196,0.06);
+    border:1px solid var(--teal-dim);
+    border-radius:12px;
+    padding:20px 22px;
+    margin-bottom:28px;
+    display:flex;
+    gap:14px;
+  }
+  .plan-note .mark{ font-family:var(--font-mono); color:var(--teal); font-weight:600; flex-shrink:0; }
+  .plan-note p{ color:var(--text-dim); font-size:14px; }
+  .plan-note strong{ color:var(--text); }
+
+  details.phase-acc{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  details.phase-acc[open]{ border-color:var(--gold-dim); }
+  details.phase-acc summary{
+    list-style:none;
+    cursor:pointer;
+    padding:18px 22px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:15px;
+  }
+  details.phase-acc summary::-webkit-details-marker{ display:none; }
+  details.phase-acc summary .chev{
+    margin-left:auto;
+    font-family:var(--font-mono);
+    color:var(--text-faint);
+    transition:transform .15s ease;
+    font-size:13px;
+  }
+  details.phase-acc[open] summary .chev{ transform:rotate(180deg); }
+  details.phase-acc summary .ph-tag{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--gold);
+    background:rgba(240,169,61,0.08);
+    border:1px solid var(--gold-dim);
+    border-radius:6px;
+    padding:3px 9px;
+    flex-shrink:0;
+  }
+  .acc-body{ padding:0 22px 22px; }
+  .acc-body .mini-label{
+    font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint);
+    text-transform:uppercase; letter-spacing:.06em; margin:16px 0 8px;
+  }
+  .acc-body ul{ padding-left:18px; color:var(--text-dim); font-size:13.5px; }
+  .acc-body ul li{ margin-bottom:5px; }
+  .acc-body .scope-cols{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:720px){ .acc-body .scope-cols{ grid-template-columns:1fr; } }
+
+  .code-block{
+    position:relative;
+    background:var(--bg-alt);
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin-top:8px;
+  }
+  .code-block pre{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    line-height:1.75;
+    color:var(--text-dim);
+    padding:18px 20px;
+    overflow-x:auto;
+    white-space:pre-wrap;
+  }
+  .copy-btn{
+    position:absolute;
+    top:10px; right:10px;
+    font-family:var(--font-mono);
+    font-size:11px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    border-radius:6px;
+    padding:5px 10px;
+  }
+  .copy-btn:hover{ border-color:var(--gold-dim); color:var(--gold); }
+  .copy-btn.copied{ color:var(--teal); border-color:var(--teal-dim); }
+
+  footer{
+    padding:48px 0 64px;
+    text-align:center;
+    color:var(--text-faint);
+    font-size:13px;
+    font-family:var(--font-mono);
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Full Project Plan · Facebook Ads Automation Platform</div>
+    <h1 class="title"><span>Adloop</span><br>ระบบยิงและบริหาร Facebook Ads สำหรับสายอาชีพ Agency</h1>
+    <p class="subtitle">
+      เอกสารรวมทุกอย่างของโปรเจ็ค — สเปกฟีเจอร์, สถาปัตยกรรม, tech stack, UI guidelines,
+      โครงสร้างโปรเจ็ค และ prompt สำหรับสั่ง agent ทำงานทีละเฟส ใช้เป็น single source of truth
+      ตลอดการพัฒนา
+    </p>
+
+    <div class="hero-meta">
+      <div><div class="k">ชื่อโปรเจ็ค</div><div class="v">Adloop</div></div>
+      <div><div class="k">ประเภทระบบ</div><div class="v">Web App (Multi-tenant SaaS)</div></div>
+      <div><div class="k">ผู้ใช้งานหลัก</div><div class="v">Media Buyer / Agency</div></div>
+      <div><div class="k">แกนหลัก</div><div class="v">Facebook Marketing API</div></div>
+    </div>
+
+    <div class="metric-panel">
+      <div class="cell">
+        <div class="label">Ad Spend วันนี้</div>
+        <div class="value">฿48,210</div>
+        <div class="delta up">▲ 12.4% จากเมื่อวาน</div>
+      </div>
+      <div class="cell">
+        <div class="label">CTR เฉลี่ย</div>
+        <div class="value">2.87%</div>
+        <div class="delta up">▲ 0.3 pt</div>
+      </div>
+      <div class="cell">
+        <div class="label">CPC เฉลี่ย</div>
+        <div class="value">฿3.42</div>
+        <div class="delta down">▼ 0.18</div>
+      </div>
+      <div class="cell">
+        <div class="label">Active Campaigns</div>
+        <div class="value">27</div>
+        <div class="delta up">6 บัญชีลูกค้า</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc-nav">
+  <div class="wrap">
+    <a href="#status">00 สถานะ</a>
+    <a href="#overview">01 ภาพรวม</a>
+    <a href="#features">02 ฟีเจอร์</a>
+    <a href="#architecture">03 โครงสร้าง</a>
+    <a href="#appreview">04 App Review</a>
+    <a href="#techstack">05 Tech Stack</a>
+    <a href="#roadmap">06 Roadmap</a>
+    <a href="#agent-plan">07 Agent Prompts</a>
+  </div>
+</nav>
+
+<!-- ============ 0. Status ============ -->
+<section id="status">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">00</span>
+      <h2 class="section-title">สถานะปัจจุบัน</h2>
+    </div>
+    <p class="section-desc">อัปเดตด้วยมือทุกครั้งที่ความคืบหน้าเปลี่ยน ใช้เช็คก่อนสั่ง agent ทำงานต่อ</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>รายการ</th><th>สถานะ</th><th>หมายเหตุ</th></tr>
+        <tr>
+          <td class="strong">Phase 0 — Foundation &amp; Scaffold</td>
+          <td><span class="status-badge inprogress">กำลังดำเนินการ</span></td>
+          <td>Monorepo, Prisma schema, AdsProvider/MockAdsProvider ตั้งค่าแล้ว — รอตรวจ Acceptance Criteria ครบ 5 ข้อ</td>
+        </tr>
+        <tr>
+          <td class="strong">ตั้งชื่อโปรเจ็ค + .gitignore</td>
+          <td><span class="status-badge done">เสร็จแล้ว</span></td>
+          <td>เปลี่ยนชื่อจาก AdOps → Adloop ทุกไฟล์ และตั้งค่า .gitignore มาตรฐานแล้ว</td>
+        </tr>
+        <tr>
+          <td class="strong">UI Guidelines (โทนสว่าง มืออาชีพ)</td>
+          <td><span class="status-badge inprogress">กำลังดำเนินการ</span></td>
+          <td>วางทิศทาง: light theme, shadcn/ui, Framer Motion, sonner, Recharts/visx, lucide-react — รอ agent สรุปเป็น design tokens ให้ตรวจ</td>
+        </tr>
+        <tr>
+          <td class="strong">Phase 1 — Dashboard UI</td>
+          <td><span class="status-badge pending">รอดำเนินการ</span></td>
+          <td>รอ Phase 0 + UI Guidelines อนุมัติก่อนเริ่มเขียนโค้ดจริง</td>
+        </tr>
+        <tr>
+          <td class="strong">Phase 2-6</td>
+          <td><span class="status-badge pending">รอดำเนินการ</span></td>
+          <td>ยังไม่เริ่ม</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 1. ภาพรวม ============ -->
+<section id="overview">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">ภาพรวมระบบ</h2>
+    </div>
+    <p class="section-desc">
+      ระบบไม่ได้เป็นเพียง dashboard แสดงผลอย่างเดียว แต่เป็นเครื่องมือที่ <strong style="color:var(--text)">สร้างและควบคุมแคมเปญโฆษณาจริงบน Facebook</strong>
+      โดยเรียกใช้ Facebook Marketing API เบื้องหลัง ผู้ใช้ตั้งค่าทุกอย่าง — งบประมาณ กลุ่มเป้าหมาย ครีเอทีฟ — จากหน้าเว็บของเราเอง
+      แล้วระบบจะส่งคำสั่งไปสร้าง/แก้ไข/หยุด campaign บน Facebook ให้อัตโนมัติ พร้อมดึงผลลัพธ์กลับมาแสดงผลแบบละเอียด
+    </p>
+  </div>
+</section>
+
+<!-- ============ 2. ฟีเจอร์หลัก ============ -->
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">ฟีเจอร์หลัก</h2>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="icon-row"><h3>สร้าง &amp; จัดการแคมเปญ</h3><span class="tag">Write API</span></div>
+        <p>สร้างโครงสร้าง Campaign → Ad Set → Ad ได้ทั้งหมดจากในระบบ ไม่ต้องสลับไปหน้า Ads Manager</p>
+        <ul>
+          <li>เลือกวัตถุประสงค์แคมเปญ (Traffic, Conversion, Engagement ฯลฯ)</li>
+          <li>อัปโหลดรูป/วิดีโอ และจัดการครีเอทีฟหลายชุด</li>
+          <li>เปิด/ปิด/พักแคมเปญได้จากปุ่มเดียว พร้อมยืนยันก่อนทำจริง</li>
+          <li>ทำสำเนา (duplicate) แคมเปญที่เคยได้ผลดี</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="icon-row"><h3>งบประมาณแบบยืดหยุ่น</h3><span class="tag">Budget Engine</span></div>
+        <p>ตั้งงบได้ละเอียดกว่ามาตรฐานของ Facebook เอง</p>
+        <ul>
+          <li>รายวัน / lifetime — ใช้ค่ามาตรฐานจาก API โดยตรง</li>
+          <li>รายชั่วโมง / รายสัปดาห์ — ระบบคำนวณและปรับ daily budget อัตโนมัติผ่าน scheduler</li>
+          <li>ตั้งเพดานงบรวมต่อลูกค้า พร้อมแจ้งเตือนก่อนงบหมด</li>
+          <li>Pacing report เทียบงบที่ตั้งไว้กับงบที่ใช้จริง</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="icon-row"><h3>เลือกกลุ่มเป้าหมาย</h3><span class="tag">Targeting API</span></div>
+        <p>เข้าถึงกลุ่มลูกค้าที่ต้องการอย่างละเอียด</p>
+        <ul>
+          <li>อายุ, เพศ, สถานะ</li>
+          <li>ตำแหน่งที่ตั้งระดับจังหวัด / อำเภอ / รัศมีรอบจุด</li>
+          <li>ความสนใจ, พฤติกรรม, Custom Audience และ Lookalike</li>
+          <li>บันทึกกลุ่มเป้าหมายเป็นเทมเพลตใช้ซ้ำได้</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="icon-row"><h3>Dashboard วิเคราะห์ผล</h3><span class="tag">Insights API</span></div>
+        <p>ข้อมูลตัวเลขละเอียดระดับมืออาชีพ อัปเดตใกล้เรียลไทม์</p>
+        <ul>
+          <li>Reach, Impressions, CTR, CPC, CPM, Conversion, ROAS</li>
+          <li>Breakdown ตามอายุ / จังหวัด / placement / อุปกรณ์</li>
+          <li>เปรียบเทียบหลายแคมเปญ/หลายลูกค้าในกราฟเดียว</li>
+          <li>Export รายงานเป็น PDF / Excel ส่งลูกค้าได้ทันที</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="icon-row"><h3>บริหารหลายลูกค้า</h3><span class="tag">Multi-tenant</span></div>
+        <p>ออกแบบมาให้ agency ดูแลได้หลายบัญชีพร้อมกันโดยไม่ปนกัน</p>
+        <ul>
+          <li>เชื่อม Business Manager / Ad Account ของลูกค้าแต่ละราย</li>
+          <li>สลับมุมมองระหว่างลูกค้าได้เร็ว</li>
+          <li>แบ่งสิทธิ์ทีมงาน (แอดมิน / มีเดียบายเออร์ / ดูอย่างเดียว)</li>
+          <li>Activity log บันทึกทุกการเปลี่ยนแปลงในแต่ละบัญชี</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="icon-row"><h3>แจ้งเตือนอัจฉริยะ</h3><span class="tag">Automation</span></div>
+        <p>ลดเวลาที่ต้องนั่งเฝ้าหน้าจอ</p>
+        <ul>
+          <li>แจ้งเตือนเมื่อ CPC/CPM พุ่งผิดปกติ</li>
+          <li>แจ้งเตือนเมื่องบใกล้หมดหรือแคมเปญหยุดทำงาน</li>
+          <li>กติกาอัตโนมัติ เช่น หยุด ad set ที่ CPA เกินเพดานที่ตั้งไว้</li>
+          <li>สรุปผลประจำวัน/สัปดาห์ส่งเข้า LINE หรืออีเมล</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. สถาปัตยกรรมข้อมูล ============ -->
+<section id="architecture">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2 class="section-title">โครงสร้างข้อมูล &amp; การเชื่อมต่อ API</h2>
+    </div>
+    <p class="section-desc">โครงสร้างโฟลเดอร์โปรเจ็ค (monorepo) และลำดับชั้นข้อมูลที่ระบบต้องรองรับ</p>
+
+    <div class="mini-label" style="margin-bottom:8px">โครงสร้างโฟลเดอร์ (Monorepo)</div>
+    <div class="arch" style="margin-bottom:22px">
+      <div class="arch-tree">adloop/
+├─ apps/
+│    ├─ <span class="n2">web</span>            → Next.js frontend (Dashboard UI 5 หน้า)
+│    └─ <span class="n2">api</span>            → Backend service (REST API)
+├─ packages/
+│    ├─ <span class="n2">ads-provider</span>   → AdsProvider interface + MockAdsProvider + FacebookAdsProvider
+│    └─ <span class="n2">ui</span>             → shared UI components (shadcn/ui-based)
+├─ <span class="n1">.ai/</span>
+│    ├─ plan.md                 → แผนงานรวมทุกเฟส
+│    ├─ phase-0..6-*.md         → รายละเอียด + prompt ต่อเฟส
+│    └─ reference/
+│         ├─ spec.html
+│         ├─ dashboard-mockup.html
+│         └─ ui-guidelines.md
+├─ AGENTS.md
+├─ CLAUDE.md
+└─ .gitignore</div>
+    </div>
+
+    <div class="mini-label" style="margin-bottom:8px">ลำดับชั้นข้อมูล (Database Hierarchy)</div>
+    <div class="arch">
+      <div class="arch-tree"><span class="n1">Agency</span> (1 บริษัท)
+  └─ <span class="n2">Client / Business Manager</span> (ลูกค้าแต่ละราย)
+       └─ <span class="n2">Ad Account</span> (บัญชีโฆษณา)
+            └─ <span class="n3">Facebook Page</span> (เพจที่ใช้ยิง)
+                 └─ <span class="n3">Campaign</span> → <span class="n3">Ad Set</span> → <span class="n3">Ad</span></div>
+    </div>
+
+    <div class="callout">
+      <span class="mark">→</span>
+      <p><strong>เส้นทางการเรียก API:</strong> ระบบของเรา (Backend) ↔ Facebook Graph API / Marketing API ↔ Facebook Business Manager ของลูกค้า
+      โดยต้องขอสิทธิ์ผ่าน OAuth และ System User Token สำหรับแต่ละ Business Manager ที่เชื่อมเข้ามา</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. App Review ============ -->
+<section id="appreview">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <h2 class="section-title">ขั้นตอนขอสิทธิ์จาก Meta</h2>
+    </div>
+    <p class="section-desc">
+      เพราะระบบต้อง <em>สร้างและแก้ไขโฆษณาแทนผู้ใช้</em> จึงต้องขอ permission ระดับสูงจาก Meta ก่อนใช้กับลูกค้าจริงได้
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <tr>
+          <th>ขั้นตอน</th><th>รายละเอียด</th><th>สิ่งที่ต้องเตรียม</th>
+        </tr>
+        <tr>
+          <td class="strong">1. สร้าง Meta App</td>
+          <td>ลงทะเบียนแอปประเภท Business ใน Meta for Developers</td>
+          <td>บัญชี Business Manager, โดเมนเว็บไซต์</td>
+        </tr>
+        <tr>
+          <td class="strong">2. ขอ Permission</td>
+          <td>ขอสิทธิ์ <code>ads_management</code>, <code>business_management</code>, <code>pages_read_engagement</code></td>
+          <td>Privacy Policy, คำอธิบาย use case ชัดเจน</td>
+        </tr>
+        <tr>
+          <td class="strong">3. App Review</td>
+          <td>ส่งวิดีโอสาธิตการใช้งานฟีเจอร์จริงให้ Meta ตรวจสอบ</td>
+          <td>ระบบต้องพัฒนาเสร็จในระดับ demo ก่อน</td>
+        </tr>
+        <tr>
+          <td class="strong">4. Business Verification</td>
+          <td>ยืนยันตัวตนธุรกิจ (เอกสารบริษัท) เพื่อปลดล็อกการใช้งานระดับ production</td>
+          <td>เอกสารจดทะเบียนบริษัท</td>
+        </tr>
+        <tr>
+          <td class="strong">5. Go live</td>
+          <td>เชื่อมต่อ Business Manager ของลูกค้าแต่ละรายผ่าน OAuth ได้จริง</td>
+          <td>—</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="callout">
+      <span class="mark">⚠</span>
+      <p><strong>ข้อควรระวัง:</strong> ก่อนผ่าน App Review ระบบใช้ได้เฉพาะกับ ad account ของนักพัฒนาเอง (สูงสุด 5 บัญชีทดสอบ)
+      ควรวางแผนขั้นตอนนี้ตั้งแต่ต้น เพราะใช้เวลาตรวจสอบหลายสัปดาห์และอาจถูกตีกลับให้แก้ไข</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. Tech stack แนะนำ ============ -->
+<section id="techstack">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">05</span>
+      <h2 class="section-title">แนวทาง Tech Stack</h2>
+    </div>
+    <p class="section-desc">ตัวเลือกที่เหมาะกับระบบ dashboard + automation ที่ต้องอัปเดตข้อมูลบ่อยและประมวลผลเบื้องหลัง</p>
+
+    <div class="chips">
+      <div class="chip"><span class="chip-role">Frontend</span>Next.js + React + TypeScript</div>
+      <div class="chip"><span class="chip-role">Styling</span>Tailwind CSS</div>
+      <div class="chip"><span class="chip-role">Component Library</span>shadcn/ui (Radix UI)</div>
+      <div class="chip"><span class="chip-role">Icons</span>lucide-react</div>
+      <div class="chip"><span class="chip-role">Animation</span>Framer Motion</div>
+      <div class="chip"><span class="chip-role">Toast/Alert</span>sonner</div>
+      <div class="chip"><span class="chip-role">Charts</span>Recharts / visx</div>
+      <div class="chip"><span class="chip-role">Backend</span>Node.js (NestJS หรือ Express)</div>
+      <div class="chip"><span class="chip-role">Database</span>PostgreSQL + Prisma ORM</div>
+      <div class="chip"><span class="chip-role">Job Scheduler</span>BullMQ + Redis</div>
+      <div class="chip"><span class="chip-role">Auth</span>JWT (mock) → Facebook Login for Business (Phase 5)</div>
+      <div class="chip"><span class="chip-role">Core External API</span>Facebook Marketing API / Insights API</div>
+      <div class="chip"><span class="chip-role">Export</span>Puppeteer / pdf-lib (PDF), exceljs (Excel)</div>
+    </div>
+
+    <div class="callout" style="margin-top:20px">
+      <span class="mark">✎</span>
+      <p><strong>ทิศทาง UI:</strong> ธีมสว่าง (light theme) มืออาชีพ สะอาดตา หรูหรา —
+      ไม่ใช่ dark mode เหมือนเอกสารนี้ (เอกสารนี้เป็นโทนมืดสำหรับอ่าน spec เท่านั้น
+      ไม่ใช่หน้าตาของตัวโปรดักต์จริง) รายละเอียด design tokens เต็มจะอยู่ที่
+      <code>.ai/reference/ui-guidelines.md</code> เมื่อ agent สรุปเสร็จ</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. Roadmap ============ -->
+<section id="roadmap">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">06</span>
+      <h2 class="section-title">แผนพัฒนาเป็นเฟส</h2>
+    </div>
+
+    <p class="section-desc">
+      แนวทางคือ <strong style="color:var(--text)">สร้าง solution ให้ทำงานได้เต็มรูปแบบด้วย mock data ก่อน</strong>
+      แล้วค่อยเชื่อม Facebook Marketing API จริงในภายหลัง (Phase 5) เพื่อให้ทีมพัฒนา/agent
+      ทำงานคู่ขนานกับการรอ App Review ได้ — ดูรายละเอียด prompt สำหรับแต่ละเฟสที่ใช้สั่งงาน agent ได้ใน
+      <a href="#agent-plan">หัวข้อ 07</a>
+    </p>
+
+    <div class="roadmap">
+      <div class="phase">
+        <div class="ph-label">Phase 0</div>
+        <h3>Project Foundation &amp; Scaffold</h3>
+        <p>วางโครงสร้าง monorepo, database schema, และ interface <code>AdsProvider</code> พร้อม <code>MockAdsProvider</code> ยังไม่ต่อ Facebook API</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 1-2 สัปดาห์</div>
+      </div>
+      <div class="phase">
+        <div class="ph-label">Phase 1</div>
+        <h3>Dashboard UI</h3>
+        <p>แปลง UI mockup เป็นโค้ดจริงด้วย mock data ครบทั้ง 5 หน้า (ภาพรวม, แคมเปญ, targeting, งบประมาณ, รายงาน)</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 2-3 สัปดาห์</div>
+      </div>
+      <div class="phase">
+        <div class="ph-label">Phase 2</div>
+        <h3>Campaign Builder + Targeting</h3>
+        <p>ทำ wizard สร้างแคมเปญและหน้ากลุ่มเป้าหมายให้บันทึกข้อมูลจริงลงฐานข้อมูล (ยังผ่าน mock provider)</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 2-3 สัปดาห์</div>
+      </div>
+      <div class="phase">
+        <div class="ph-label">Phase 3</div>
+        <h3>Budget Engine &amp; Automation</h3>
+        <p>ระบบคำนวณ/ปรับงบรายชั่วโมง-สัปดาห์อัตโนมัติ พร้อมกติกาแจ้งเตือนและหยุดแคมเปญอัตโนมัติ</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 2-3 สัปดาห์</div>
+      </div>
+      <div class="phase">
+        <div class="ph-label">Phase 4</div>
+        <h3>Reports &amp; Analytics</h3>
+        <p>Breakdown ข้อมูลตามอายุ/จังหวัด/placement พร้อม export PDF/Excel จริง</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 1-2 สัปดาห์</div>
+      </div>
+      <div class="phase">
+        <div class="ph-label">Phase 5</div>
+        <h3>เชื่อม Facebook Marketing API จริง</h3>
+        <p>สลับจาก MockAdsProvider เป็น FacebookAdsProvider จริง พร้อมเตรียมเอกสารยื่น App Review</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 3-5 สัปดาห์ (รวมรอ Meta ตรวจสอบ)</div>
+      </div>
+      <div class="phase">
+        <div class="ph-label">Phase 6</div>
+        <h3>Multi-tenant &amp; Production Readiness</h3>
+        <p>รองรับหลาย Business Manager, สิทธิ์ผู้ใช้ในทีม, activity log, monitoring และ Business Verification</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 3-4 สัปดาห์</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. Agent Plan & Prompts ============ -->
+<section id="agent-plan">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">07</span>
+      <h2 class="section-title">แผนงานสำหรับ Agent &amp; Prompt ต่อเฟส</h2>
+    </div>
+    <p class="section-desc">
+      ใช้เมื่อพัฒนาโปรเจ็คร่วมกับ coding agent (เช่น Claude Code) เป็นเฟสๆ
+      แต่ละกล่องด้านล่างกดเพื่อดู Goal, Scope, Prompt พร้อมใช้ และ Acceptance Criteria ของเฟสนั้น
+    </p>
+
+    <div class="plan-note">
+      <span class="mark">i</span>
+      <p>
+        <strong>กติกาสำคัญ:</strong> ทำทีละเฟสตามลำดับ ห้ามข้าม — Phase 0-4 ห้ามเรียก Facebook API จริงเด็ดขาด
+        ทุกจุดที่ต้องคุยกับ Facebook ให้ผ่าน interface <code>AdsProvider</code> และ mock ไว้ก่อน
+        Phase 5 คือจุดเดียวที่เปลี่ยนจาก <code>MockAdsProvider</code> เป็น <code>FacebookAdsProvider</code> จริง
+      </p>
+    </div>
+
+    <!-- Phase 0 -->
+    <details class="phase-acc">
+      <summary><span class="ph-tag">Phase 0</span> Project Foundation &amp; Scaffold <span class="chev">▾</span></summary>
+      <div class="acc-body">
+        <p><strong style="color:var(--text)">Goal:</strong> วางโครงสร้างโปรเจ็คทั้งหมด (frontend, backend, database, monorepo) ให้พร้อมสำหรับเฟสถัดไป ยังไม่มีฟีเจอร์จริง</p>
+        <div class="scope-cols">
+          <div>
+            <div class="mini-label">ทำ</div>
+            <ul>
+              <li>Setup monorepo (web, api, ads-provider, ui)</li>
+              <li>Next.js + Tailwind, backend service (NestJS/Express)</li>
+              <li>Database schema (Prisma): Agency, Client, AdAccount, Campaign, AdSet, Ad, User, TargetingPreset</li>
+              <li>Interface <code>AdsProvider</code> + <code>MockAdsProvider</code></li>
+              <li>Auth แบบง่าย (ยังไม่ใช่ Facebook Login)</li>
+            </ul>
+          </div>
+          <div>
+            <div class="mini-label">ไม่ทำ</div>
+            <ul>
+              <li>ห้ามต่อ Facebook API จริงใดๆ</li>
+              <li>ยังไม่ต้องมี UI ที่สวยงาม</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-label">Prompt สำหรับ Agent</div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
+          <pre>อ่าน AGENTS.md, CLAUDE.md, และ .ai/plan.md ก่อนเริ่มงาน
+จากนั้นทำ Phase 0 ตาม .ai/phase-0-foundation.md:
+
+1. สร้าง monorepo ด้วยโครงสร้าง /apps/web (Next.js + Tailwind), /apps/api (NestJS หรือ Express),
+   /packages/ads-provider, /packages/ui
+2. ออกแบบ Prisma schema ตาม entity: Agency, Client, AdAccount, Campaign, AdSet, Ad, User,
+   TargetingPreset — ใส่ field ที่จำเป็นสำหรับ budget (type: hourly/daily/weekly/monthly, amount),
+   targeting (age_min, age_max, provinces, interests)
+3. สร้าง interface AdsProvider ใน /packages/ads-provider พร้อม MockAdsProvider ที่มี method:
+   createCampaign, updateCampaignStatus, updateBudget, getInsights(campaignId, dateRange)
+   — ให้คืนข้อมูลปลอมที่มีรูปแบบสมจริง
+4. ตั้งค่า auth แบบง่าย (session/JWT) ยังไม่ต้องเป็น Facebook Login
+5. ทำให้ frontend เรียก backend ผ่าน API ได้จริง (ทดสอบด้วย endpoint ping/health check)
+
+ห้ามเรียก Facebook API จริงในเฟสนี้เด็ดขาด
+จบงานแล้วอัปเดตสถานะ Phase 0 ใน .ai/plan.md เป็น "เสร็จแล้ว" และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
+        </div>
+        <div class="mini-label">Acceptance Criteria</div>
+        <ul>
+          <li>รัน <code>npm run dev</code> แล้ว frontend/backend ทำงานพร้อมกันได้</li>
+          <li>Prisma schema สร้าง migration ได้ไม่มี error</li>
+          <li>เรียก MockAdsProvider แล้วได้ข้อมูลปลอมกลับมาถูก format</li>
+          <li>มีระบบ login แบบง่ายใช้งานได้</li>
+          <li>ไม่มีการเรียก Facebook API จริงที่ไหนในโค้ดเลย</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Phase 1 -->
+    <details class="phase-acc">
+      <summary><span class="ph-tag">Phase 1</span> Dashboard UI (Mockup → โค้ดจริง) <span class="chev">▾</span></summary>
+      <div class="acc-body">
+        <p><strong style="color:var(--text)">Goal:</strong> แปลง UI mockup ให้เป็นหน้าเว็บจริงด้วย Next.js + Tailwind โดยใช้ mock data จาก MockAdsProvider แทนที่ข้อมูล hardcode</p>
+        <div class="scope-cols">
+          <div>
+            <div class="mini-label">ทำ</div>
+            <ul>
+              <li>แปลง layout เป็น React components (Sidebar, Topbar, KPI cards, Chart, Table)</li>
+              <li>ครบ 5 หน้า: ภาพรวม, แคมเปญ, targeting, งบประมาณ, รายงาน</li>
+              <li>Client switcher ดึงจาก mock data จริง</li>
+              <li>ใช้ design token สี/ฟอนต์ตรงกับ mockup</li>
+            </ul>
+          </div>
+          <div>
+            <div class="mini-label">ไม่ทำ</div>
+            <ul>
+              <li>ยังไม่ต้องมี business logic ของ campaign builder จริง</li>
+              <li>ยังไม่เชื่อม Facebook API</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-label">Prompt สำหรับ Agent</div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
+          <pre>อ่าน .ai/plan.md เพื่อยืนยันว่า Phase 0 เสร็จแล้ว จากนั้นทำ Phase 1 ตาม
+.ai/phase-1-dashboard-ui.md:
+
+1. เปิดดู .ai/reference/dashboard-mockup.html เป็นต้นแบบ แปลง layout ทั้งหมดเป็น
+   React components ใน /apps/web (Sidebar, Topbar, KpiCard, ChartPanel, DataTable, Modal)
+2. ทำหน้าให้ครบ 5 หน้า: Dashboard, แคมเปญ, กลุ่มเป้าหมาย, งบประมาณ, รายงาน
+   ตามที่เห็นใน mockup แต่ดึงข้อมูลจาก MockAdsProvider ผ่าน backend API จริง
+3. Client switcher ต้องดึงรายชื่อลูกค้าจริงจาก database (Prisma) ไม่ hardcode
+4. ใช้ Tailwind config ให้ตรงกับ design tokens ใน mockup (สี, ฟอนต์ Sora/Inter/IBM Plex Mono)
+5. Component ที่ reusable ให้แยกไว้ใน /packages/ui
+
+จบงานแล้วอัปเดตสถานะ Phase 1 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
+        </div>
+        <div class="mini-label">Acceptance Criteria</div>
+        <ul>
+          <li>มีครบ 5 หน้าตาม mockup และหน้าตาตรงกับ design tokens</li>
+          <li>ข้อมูลทุกหน้าดึงจาก backend/mock ไม่ hardcode</li>
+          <li>Client switcher เปลี่ยนข้อมูลบนหน้าจอได้จริง</li>
+          <li>Responsive ใช้งานได้บนจอเล็ก</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Phase 2 -->
+    <details class="phase-acc">
+      <summary><span class="ph-tag">Phase 2</span> Campaign Builder + Targeting (Mock) <span class="chev">▾</span></summary>
+      <div class="acc-body">
+        <p><strong style="color:var(--text)">Goal:</strong> ทำให้ modal wizard สร้างแคมเปญทำงานได้จริง บันทึกลง database ผ่าน MockAdsProvider และหน้ากลุ่มเป้าหมายบันทึกค่าจริงได้</p>
+        <div class="scope-cols">
+          <div>
+            <div class="mini-label">ทำ</div>
+            <ul>
+              <li>Wizard 4 ขั้นตอนเชื่อม state จริง</li>
+              <li>บันทึกแคมเปญผ่าน MockAdsProvider.createCampaign()</li>
+              <li>บันทึก TargetingPreset ใช้ซ้ำได้</li>
+              <li>Toggle เปิด/ปิดแคมเปญเรียก API จริง + validation ฟอร์ม</li>
+            </ul>
+          </div>
+          <div>
+            <div class="mini-label">ไม่ทำ</div>
+            <ul>
+              <li>ยังไม่มี budget engine อัตโนมัติ (อยู่ Phase 3)</li>
+              <li>ยังไม่อัปโหลดไฟล์จริงขึ้น storage</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-label">Prompt สำหรับ Agent</div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
+          <pre>ยืนยันว่า Phase 1 เสร็จแล้วใน .ai/plan.md จากนั้นทำ Phase 2 ตาม
+.ai/phase-2-campaign-builder.md:
+
+1. ทำให้ modal wizard สร้างแคมเปญ (4 ขั้นตอน) เชื่อม state และ validation จริง
+2. เมื่อกด "เสร็จสิ้น" ให้เรียก backend API ที่ไปเรียก MockAdsProvider.createCampaign()
+   แล้วบันทึกผลลง database จริง
+3. หน้ากลุ่มเป้าหมาย: บันทึกค่า age range, province, interests เป็น TargetingPreset
+   ที่ผูกกับแคมเปญ และเลือกใช้ซ้ำกับแคมเปญอื่นได้
+4. Toggle สถานะแคมเปญในตารางให้เรียก MockAdsProvider.updateCampaignStatus() จริง
+   พร้อม optimistic update และ error handling
+5. เพิ่ม validation: งบต้อง > 0, ต้องเลือกอย่างน้อย 1 จังหวัด, ชื่อแคมเปญห้ามว่าง
+
+จบงานแล้วอัปเดตสถานะ Phase 2 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
+        </div>
+        <div class="mini-label">Acceptance Criteria</div>
+        <ul>
+          <li>สร้างแคมเปญผ่าน wizard แล้วเห็นแคมเปญใหม่ในตารางจริง</li>
+          <li>Toggle เปิด/ปิดมีผลจริงใน database</li>
+          <li>Targeting preset บันทึกและเรียกใช้ซ้ำได้</li>
+          <li>Validation ป้องกันข้อมูลผิดพลาดครบ</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Phase 3 -->
+    <details class="phase-acc">
+      <summary><span class="ph-tag">Phase 3</span> Budget Engine + Automation (Mock) <span class="chev">▾</span></summary>
+      <div class="acc-body">
+        <p><strong style="color:var(--text)">Goal:</strong> ทำระบบคำนวณ/ปรับงบประมาณอัตโนมัติ และกติกาแจ้งเตือน/หยุดแคมเปญอัตโนมัติ ผ่าน MockAdsProvider</p>
+        <div class="scope-cols">
+          <div>
+            <div class="mini-label">ทำ</div>
+            <ul>
+              <li>Scheduler (BullMQ + Redis) ปรับ budget ตามรอบเวลา</li>
+              <li>Pacing calculation (งบตั้งไว้ vs ใช้จริง)</li>
+              <li>Rule engine (เช่น หยุดถ้า CPA เกินกำหนด)</li>
+              <li>แจ้งเตือน in-app เมื่องบใกล้หมด/rule ทำงาน</li>
+            </ul>
+          </div>
+          <div>
+            <div class="mini-label">ไม่ทำ</div>
+            <ul>
+              <li>ยังไม่ส่งแจ้งเตือนผ่าน LINE/Email จริง</li>
+              <li>ยังไม่เชื่อม Facebook API</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-label">Prompt สำหรับ Agent</div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
+          <pre>ยืนยันว่า Phase 2 เสร็จแล้วใน .ai/plan.md จากนั้นทำ Phase 3 ตาม
+.ai/phase-3-budget-engine.md:
+
+1. ตั้งค่า job scheduler (BullMQ + Redis แนะนำ) ให้รันงานปรับ budget ตามรอบเวลาที่ตั้งไว้
+   ต่อแคมเปญ (hourly/daily/weekly/monthly) โดยเรียกผ่าน MockAdsProvider.updateBudget()
+2. เขียน logic คำนวณ pacing: เทียบงบที่ตั้งไว้กับงบที่ใช้จริง (จาก mock insights)
+   แสดงเป็น percentage และสถานะ (ปกติ/ใกล้หมด/เกินงบ)
+3. สร้าง rule engine ง่ายๆ ให้ผู้ใช้ตั้งกติกาจากหน้า UI ได้ เช่น
+   "หยุดแคมเปญถ้า CPA เกิน [ตัวเลข] บาท" แล้วให้ scheduler ตรวจสอบและสั่ง
+   updateCampaignStatus() อัตโนมัติเมื่อเงื่อนไขเป็นจริง
+4. ทำระบบแจ้งเตือนแบบ in-app เมื่อ: งบใกล้หมด (>90%), rule ทำงานจริง,
+   แคมเปญถูกระบบหยุดอัตโนมัติ
+5. เขียน unit test ให้ budget calculation logic
+
+จบงานแล้วอัปเดตสถานะ Phase 3 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
+        </div>
+        <div class="mini-label">Acceptance Criteria</div>
+        <ul>
+          <li>ตั้งงบรายชั่วโมงแล้ว scheduler ปรับค่าจริงตามรอบเวลา</li>
+          <li>Pacing progress bar แสดงค่าตรงกับข้อมูลจริง</li>
+          <li>ตั้ง rule แล้วระบบหยุดแคมเปญอัตโนมัติได้จริง</li>
+          <li>มี notification แจ้งเตือนเมื่อเงื่อนไขเกิดขึ้น</li>
+          <li>Unit test ของ budget calculation ผ่านทั้งหมด</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Phase 4 -->
+    <details class="phase-acc">
+      <summary><span class="ph-tag">Phase 4</span> Reports &amp; Analytics (Mock) <span class="chev">▾</span></summary>
+      <div class="acc-body">
+        <p><strong style="color:var(--text)">Goal:</strong> ทำหน้ารายงานให้วิเคราะห์ข้อมูลได้ละเอียดจริง พร้อม export PDF/Excel จากข้อมูล MockAdsProvider</p>
+        <div class="scope-cols">
+          <div>
+            <div class="mini-label">ทำ</div>
+            <ul>
+              <li>Aggregate breakdown: อายุ, จังหวัด, placement, อุปกรณ์</li>
+              <li>เปรียบเทียบหลายแคมเปญ/ลูกค้าในกราฟเดียว</li>
+              <li>Export PDF/Excel จริง</li>
+              <li>Date range filter ใช้งานได้จริง</li>
+            </ul>
+          </div>
+          <div>
+            <div class="mini-label">ไม่ทำ</div>
+            <ul>
+              <li>ยังไม่เชื่อม Facebook Insights API จริง</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-label">Prompt สำหรับ Agent</div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
+          <pre>ยืนยันว่า Phase 3 เสร็จแล้วใน .ai/plan.md จากนั้นทำ Phase 4 ตาม .ai/phase-4-reports.md:
+
+1. เขียน backend endpoint สำหรับ aggregate ข้อมูล insights จาก mock data
+   ตาม breakdown: อายุ, จังหวัด, placement, อุปกรณ์ — รองรับ query parameter
+   สำหรับช่วงวันที่และตัวกรองแคมเปญ/ลูกค้า
+2. ทำกราฟเปรียบเทียบหลายแคมเปญ/หลายลูกค้าในกราฟเดียวได้ (multi-series)
+3. ทำปุ่ม Export ให้ทำงานจริง: PDF (Puppeteer หรือ pdf-lib) และ Excel (exceljs)
+   โดยดึงข้อมูลจริงจาก mock data มาใส่ในไฟล์
+4. ทำ date range picker ที่ filter ข้อมูลได้จริงในทุกตาราง/กราฟของหน้ารายงาน
+
+จบงานแล้วอัปเดตสถานะ Phase 4 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
+        </div>
+        <div class="mini-label">Acceptance Criteria</div>
+        <ul>
+          <li>Breakdown แสดงข้อมูลถูกต้องตาม filter</li>
+          <li>เปรียบเทียบหลายแคมเปญในกราฟเดียวได้จริง</li>
+          <li>Export ได้ไฟล์ PDF/Excel จริงที่เปิดได้และข้อมูลถูกต้อง</li>
+          <li>Date range filter มีผลกับทุก component ในหน้า</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Phase 5 -->
+    <details class="phase-acc">
+      <summary><span class="ph-tag">Phase 5</span> เชื่อม Facebook Marketing API จริง <span class="chev">▾</span></summary>
+      <div class="acc-body">
+        <p><strong style="color:var(--text)">Goal:</strong> สลับจาก MockAdsProvider เป็น FacebookAdsProvider จริง โดยไม่แก้โค้ดฝั่ง UI/business logic</p>
+        <div class="scope-cols">
+          <div>
+            <div class="mini-label">ทำ</div>
+            <ul>
+              <li>สร้าง Meta App, ตั้งค่า OAuth (Facebook Login for Business)</li>
+              <li>Implement FacebookAdsProvider ตาม interface เดิม</li>
+              <li>จัดการ token อย่างปลอดภัย (encrypted)</li>
+              <li>Error handling เฉพาะ Facebook API + feature flag สลับ provider</li>
+            </ul>
+          </div>
+          <div>
+            <div class="mini-label">ไม่ทำ</div>
+            <ul>
+              <li>ยังไม่ต้องรองรับหลาย Business Manager (อยู่ Phase 6)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-label">Prompt สำหรับ Agent</div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
+          <pre>ยืนยันว่า Phase 4 เสร็จแล้วใน .ai/plan.md จากนั้นทำ Phase 5 ตาม
+.ai/phase-5-facebook-integration.md:
+
+⚠️ เฟสนี้เป็นจุดเดียวที่อนุญาตให้เรียก Facebook API จริง
+
+1. Implement FacebookAdsProvider ใน /packages/ads-provider ให้ตรงกับ interface
+   AdsProvider เดิมทุกเมธอด โดยเรียก Facebook Marketing API / Graph API จริง
+2. ทำ OAuth flow (Facebook Login for Business) สำหรับเชื่อม Business Manager ของลูกค้า
+3. เก็บ access token อย่างปลอดภัย (เข้ารหัสก่อนเก็บลง database) พร้อม refresh mechanism
+4. เพิ่ม error handling เฉพาะของ Facebook: rate limit (retry with backoff),
+   permission error, token expired (แจ้งผู้ใช้ให้ re-authenticate)
+5. ทำ feature flag ให้สลับ MockAdsProvider กับ FacebookAdsProvider ได้โดยไม่แก้โค้ดส่วนอื่น
+6. เขียน integration test ที่ยิงไปหา Facebook sandbox/test ad account เท่านั้น
+   ห้ามยิงเข้าบัญชีจริงของลูกค้าในขั้นตอนทดสอบ
+
+จบงานแล้วอัปเดตสถานะ Phase 5 ใน .ai/plan.md และสรุปผลลัพธ์ พร้อมบันทึกรายการ
+permission ที่ต้องยื่นขอ App Review ไว้ในไฟล์นี้ด้วย</pre>
+        </div>
+        <div class="mini-label">Acceptance Criteria</div>
+        <ul>
+          <li>FacebookAdsProvider ทำงานครบทุกเมธอดกับ test ad account</li>
+          <li>OAuth เชื่อม Business Manager ได้จริง token เก็บอย่างปลอดภัย</li>
+          <li>สลับ provider ด้วย environment variable ได้โดยไม่แก้โค้ด UI</li>
+          <li>มี error handling ครบสำหรับ rate limit / token expired / permission error</li>
+          <li>เอกสารสำหรับยื่น App Review พร้อม</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Phase 6 -->
+    <details class="phase-acc">
+      <summary><span class="ph-tag">Phase 6</span> Multi-tenant &amp; Production Readiness <span class="chev">▾</span></summary>
+      <div class="acc-body">
+        <p><strong style="color:var(--text)">Goal:</strong> รองรับ agency บริหารหลายลูกค้า/หลาย Business Manager เต็มรูปแบบ แบ่งสิทธิ์ทีมงาน เตรียมระบบให้พร้อม production</p>
+        <div class="scope-cols">
+          <div>
+            <div class="mini-label">ทำ</div>
+            <ul>
+              <li>เชื่อมหลาย Business Manager ต่อหนึ่ง agency</li>
+              <li>Role-based access control (แอดมิน/มีเดียบายเออร์/ดูอย่างเดียว)</li>
+              <li>Activity log + monitoring/alerting</li>
+              <li>Business Verification กับ Meta + rate limit handling ระดับ agency</li>
+            </ul>
+          </div>
+          <div>
+            <div class="mini-label">ไม่ทำ</div>
+            <ul>
+              <li>ไม่เพิ่มฟีเจอร์ใหม่นอกเหนือจากที่ระบุใน spec นี้</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-label">Prompt สำหรับ Agent</div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
+          <pre>ยืนยันว่า Phase 5 เสร็จแล้วใน .ai/plan.md จากนั้นทำ Phase 6 ตาม
+.ai/phase-6-multitenant-appreview.md:
+
+1. ขยายระบบให้ 1 agency เชื่อมได้หลาย Business Manager/Ad Account พร้อมกัน
+   ปรับ client switcher ในหน้า UI ให้รองรับโดยไม่กระทบ UX เดิม
+2. ทำ role-based access control: แอดมิน, มีเดียบายเออร์, ดูอย่างเดียว — ผูกกับ database
+   และ middleware ตรวจสิทธิ์ทุก endpoint
+3. ทำ Activity log เก็บทุก action สำคัญ พร้อมหน้า UI ดู log ย้อนหลังได้
+4. เพิ่ม rate limit handling ระดับ agency สำหรับ Facebook API
+5. ตั้งค่า monitoring (error tracking, uptime check) สำหรับ production
+6. รวบรวมเอกสารที่ต้องใช้ยื่น Business Verification ตามที่ระบุใน spec.html
+
+จบงานแล้วอัปเดตสถานะ Phase 6 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
+        </div>
+        <div class="mini-label">Acceptance Criteria</div>
+        <ul>
+          <li>เชื่อมและสลับได้จริงระหว่างหลาย Business Manager ในบัญชี agency เดียว</li>
+          <li>Role-based access control บล็อกสิทธิ์ผิดได้จริง</li>
+          <li>Activity log บันทึกและแสดงผลถูกต้องครบ</li>
+          <li>ระบบไม่ล่มเมื่อโดน Facebook rate limit</li>
+          <li>Monitoring ทำงานและแจ้งเตือนเมื่อเกิด error จริง</li>
+        </ul>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<footer>
+  Adloop — Full Project Plan · จัดทำเพื่อใช้วางแผนพัฒนาโปรเจ็คภายใน
+</footer>
+
+<script>
+  function copyPrompt(btn){
+    const pre = btn.parentElement.querySelector('pre');
+    navigator.clipboard.writeText(pre.textContent).then(()=>{
+      const original = btn.textContent;
+      btn.textContent = 'คัดลอกแล้ว ✓';
+      btn.classList.add('copied');
+      setTimeout(()=>{ btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+    });
+  }
+</script>
+
+</body>
+</html>

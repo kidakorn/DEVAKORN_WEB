@@ -721,6 +721,56 @@ LT, NM, NR, PR, QT, RT, SQ, TM, TX, VL, WK, PM)
 
 ห้ามทำ DROP TABLE หรือ ALTER TABLE ในเวอร์ชันนี้ (จำกัดแค่ CREATE เท่านั้น
 ก่อน) และห้ามลบ/แก้ table หรือ field ที่มีอยู่แล้วเดิมบน pub400 เด็ดขาด</div>
+
+    <div class="sec-label" style="margin-top:32px;">Bugfix — Data Type ใน Table Designer ไม่ตรงกับ AS400</div>
+    <p style="font-size:12.5px; color:var(--text-dim); margin-bottom:10px;">
+      แก้ปัญหาที่พบว่า dropdown data type ของ Table Designer (Phase 7) generate
+      DDL ที่ไม่ตรงกับ SQL type จริงที่ DB2 for i รองรับ — ดูตาราง type อ้างอิง
+      เต็มใน <code>.ai/skills/ibmi-pub400/SKILL.md</code> ส่วน "DB2 for i Data
+      Type Reference"
+    </p>
+    <div class="diagram" style="color:var(--text); white-space:pre-wrap;">ก่อนเริ่มทำอะไรทั้งหมด อ่าน .ai/skills/ibmi-pub400/SKILL.md ส่วน "DB2 for i
+Data Type Reference" ให้ครบก่อน (มีตาราง type ที่อนุญาตพร้อมพารามิเตอร์
+บังคับของแต่ละ type)
+
+แก้ไข Table Designer (จาก Phase 7) ทำทีละขั้นตอน:
+
+1. เปลี่ยน dropdown "Data Type" ให้มีเฉพาะตัวเลือกในตาราง SKILL.md เท่านั้น:
+   Character (fixed), Character (variable), Small Integer, Integer,
+   Big Integer, Decimal, Date, Time, Timestamp, Large Text
+   — ลบตัวเลือกเดิมที่ไม่ตรงมาตรฐาน เช่น "TEXT", "STRING", "NUMBER",
+   "FLOAT" ออกทั้งหมด ถ้ามีอยู่
+
+2. ทำ validation ตาม type ที่เลือก (บังคับ ห้ามกด Create Table ถ้าไม่ครบ):
+   - เลือก Character (fixed/variable) → ต้องกรอกความยาว (1–32766 สำหรับ
+     fixed, 1–32740 สำหรับ variable) ห้ามเว้นว่าง
+   - เลือก Decimal → ต้องกรอก precision (1–63) และ scale (0 ถึง precision)
+     ทั้งคู่ ห้ามเว้นว่างอันใดอันหนึ่ง
+   - เลือก Small Integer/Integer/Big Integer/Date/Time/Timestamp → ไม่ต้อง
+     กรอกพารามิเตอร์เพิ่ม (ซ่อนช่องกรอกความยาวไปเลยถ้าเลือก type กลุ่มนี้)
+   - เลือก Large Text → ต้องกรอกความยาว เช่น "1M", "100K"
+
+3. เพิ่ม checkbox/toggle "มีข้อความภาษาไทย" ที่แสดงเฉพาะตอนเลือก type
+   Character/Large Text — ถ้าติ๊กไว้ ให้ generate DDL แนบ `CCSID 1208`
+   ต่อท้าย column นั้นเสมอ (ป้องกันข้อความไทยเพี้ยนตอนเก็บลง AS400)
+
+4. เพิ่ม validation: ถ้า field ที่ตั้งเป็น Primary Key ถูกเลือก type เป็น
+   Large Text (CLOB) ให้ block ทันทีพร้อมข้อความอธิบายว่า primary key
+   เป็น CLOB ไม่ได้ ให้เปลี่ยนเป็น Character/Integer แทน
+
+5. อัปเดต SQL preview (read-only) ให้แสดง DDL ที่ generate ใหม่ตามกฎ
+   ทั้งหมดข้างต้น ให้ตรงกับตัวอย่างใน SKILL.md เช่น
+   `NMITEM VARCHAR(30) CCSID 1208`
+
+6. Migration: เช็คว่ามีตารางที่สร้างไปแล้วก่อนหน้านี้ด้วย data type แบบเก่า
+   (ไม่ตรง SKILL.md) อยู่บน pub400 หรือไม่ ถ้ามี ให้แค่รายงานรายชื่อตาราง/
+   field ที่ควรแก้ไว้ ไม่ต้องรัน ALTER TABLE เองในรอบนี้ (ให้ user ตัดสินใจ
+   ก่อนว่าจะแก้ของเดิมหรือปล่อยไว้)
+
+7. ทดสอบสร้างตารางทดสอบใหม่ 1 ตัว ที่มี field ครบทุกกลุ่ม type (Character
+   มี CCSID, Decimal มี precision/scale, Date) ผ่าน Table Designer ที่แก้
+   แล้ว เช็คผ่าน Schema Browser ว่า data type จริงบน pub400 ตรงกับที่เลือก
+   ไว้ รายงานผล</div>
   </section>
 
   <section>
