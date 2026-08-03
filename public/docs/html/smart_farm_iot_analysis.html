@@ -33,6 +33,9 @@
     font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif;
     line-height:1.7;
     font-size:16px;
+    word-wrap:break-word;
+    overflow-wrap:anywhere;
+    word-break:break-word;
   }
   h1,h2,h3{
     font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif;
@@ -168,6 +171,7 @@
     padding:22px 24px;
     margin-bottom:16px;
   }
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
 
   /* diagram */
   .diagram-wrap{
@@ -217,7 +221,7 @@
   .tag.med{background:var(--blue-soft); color:var(--blue);}
   .tag.low{background:var(--moss-soft); color:var(--moss);}
 
-  .finding-file{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft); white-space:nowrap;}
+  .finding-file{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft);}
 
   /* roadmap */
   .phase{
@@ -445,7 +449,7 @@
       <p class="section-desc">สรุปจากตัวแปรและ <code>#include</code> ในโค้ด — ใช้เป็น pin-map อ้างอิงตอนต่อวงจรจริงหรือจำลองบน Wokwi</p>
 
       <div class="card">
-        <table>
+        <div class="table-scroll"><table>
           <tr><th>อุปกรณ์</th><th>พิน / ช่อง</th><th>ไลบรารี</th><th>หมายเหตุ</th></tr>
           <tr><td>ดินชื้น 12 จุด (4 โซน × 3 จุด)</td><td class="finding-file">MCP3208 ch.0–7 + GPIO 36/39/33/32</td><td class="finding-file">MCP3208.h, SPI.h</td><td>ผสมทั้ง ADC ภายนอกและขา ESP32 โดยตรง</td></tr>
           <tr><td>DHT22 (อุณหภูมิ/ความชื้นอากาศ)</td><td class="finding-file">GPIO 16</td><td class="finding-file">DHT.h</td><td>—</td></tr>
@@ -461,7 +465,7 @@
           <tr><td>กล้อง IP × 2</td><td class="finding-file">Wi-Fi LAN</td><td>SPIFFS, Base64.h</td><td>ดึงภาพผ่าน snapshot.cgi</td></tr>
           <tr><td>Cloud backend</td><td class="finding-file">HTTPS</td><td>HTTPClient.h, ArduinoJson.h</td><td>Google Apps Script Web App</td></tr>
           <tr><td>แจ้งเตือน</td><td class="finding-file">HTTPS</td><td>TridentTD_LineNotify.h</td><td>🔴 บริการปิดถาวรแล้ว</td></tr>
-        </table>
+        </table></div>
       </div>
       <p class="section-desc" style="margin-top:6px;">📎 ไฟล์ที่ส่งมามีเฉพาะ <code>.ino</code> 10 ไฟล์ — ยังไม่มีไฟล์ <code>.pcb</code> และโฟลเดอร์ <code>libraries</code> ที่พี่บอกว่ามี ถ้าสะดวกอัปโหลดเพิ่มเข้ามาได้ จะช่วยให้ตรวจสอบ wiring จริงและ dependency ของไลบรารีได้ครบขึ้นครับ</p>
     </section>
@@ -472,22 +476,22 @@
       <p class="section-desc">ไฟล์นี้ทำหน้าที่เดียวแต่ 2 บทบาท: เป็น REST endpoint ให้ ESP32 คุยด้วย และเป็น Webhook รับ/ตอบข้อความให้ LINE Bot — ทั้งสองอ่าน/เขียนชีตเดียวกันชื่อ &quot;control&quot;</p>
 
       <div class="card">
-        <table>
+        <div class="table-scroll"><table>
           <tr><th>ชีต</th><th>คอลัมน์</th><th>ความหมาย</th></tr>
           <tr><td rowspan="2" class="finding-file">control</td><td class="finding-file">A–F</td><td>สถานะพัดลม / ไฟ1 / ไฟ2 / วาล์วน้ำ / วาล์วปุ๋ย / ปั๊ม (0/1) — ตรงกับ <code>root_0_data_a..f</code> ในเฟิร์มแวร์</td></tr>
           <tr><td class="finding-file">G–I</td><td>โหมดปลูก (0–3) / สั่งดูกล้อง 1 / สั่งดูกล้อง 2 — ตรงกับ <code>root_0_data_g..i</code></td></tr>
           <tr><td class="finding-file">sheet1</td><td class="finding-file">A–Q</td><td>Log: วันที่, เวลา, ดินชื้น 12 จุด, อุณหภูมิ, ความชื้น, แสง — เขียนทุกครั้งที่ ESP32 ส่ง <code>status=send</code></td></tr>
-        </table>
+        </table></div>
       </div>
 
       <div class="card">
-        <table>
+        <div class="table-scroll"><table>
           <tr><th>ข้อความในแชท</th><th>ฟังก์ชันที่ทำงาน</th><th>ผล</th></tr>
           <tr><td class="mono">check_status</td><td class="finding-file">getdata()</td><td>ตอบสถานะทุกอุปกรณ์ + ค่าเซนเซอร์ล่าสุดกลับไปในแชท</td></tr>
           <tr><td class="mono">on_off_fan / lamp1 / lamp2 / water / puy / pumpwater</td><td class="finding-file">update_data()</td><td>สลับ 0/1 ในชีต control — ใช้ได้เฉพาะตอนโหมด = ปิด (mode 0) เท่านั้น</td></tr>
           <tr><td class="mono">mode_0 / 1 / 2 / 3</td><td class="finding-file">update_status('G', n)</td><td>เปลี่ยนโหมดปลูก + รีเซ็ตรีเลย์ A–F เป็น 0 ทั้งหมด</td></tr>
           <tr><td class="mono">view_camera1 / 2</td><td class="finding-file">update_status('H'/'I', 1)</td><td>ตั้งค่าธงให้ ESP32 ไปดึงภาพกล้องตอน poll รอบถัดไป</td></tr>
-        </table>
+        </table></div>
       </div>
       <p class="section-desc" style="margin-top:6px;">💡 ข่าวดี: ส่วนควบคุมผ่านแชท (manual) ใช้ LINE Messaging API อยู่แล้วและทำงานได้จริง — ไม่ต้องสร้างใหม่ทั้งหมดตามที่ประเมินไว้รอบแรก เหลือแค่ปิดช่องโหว่และต่อยอดส่วนแจ้งเตือนรูปภาพเข้ากับ API ตัวเดียวกันนี้ (ดูข้อ 05)</p>
     </section>
@@ -498,7 +502,7 @@
       <p class="section-desc">ไล่จากไฟล์ .ino ทั้ง 10 ไฟล์ + <code>code.gs</code> พบ 19 จุดที่ควรแก้ก่อนพัฒนาต่อ เรียงตามความรุนแรง</p>
 
       <div class="card">
-        <table>
+        <div class="table-scroll"><table>
           <tr><th style="width:70px;">ระดับ</th><th>ไฟล์</th><th>ปัญหา</th></tr>
 
           <tr><td><span class="tag crit">Critical</span></td><td class="finding-file">camera.ino<br>control.ino</td><td><b>LINE Notify ถูกยกเลิกถาวรตั้งแต่ 31 มี.ค. 2025</b> — ฟังก์ชัน <code>LINE.notify()</code> และ <code>LINE.notifyPicture()</code> ที่ใช้ไลบรารี TridentTD ใช้งานไม่ได้แล้วทั้งหมด ต้องย้ายไป LINE Messaging API</td></tr>
@@ -536,7 +540,7 @@
           <tr><td><span class="tag low">Low</span></td><td class="finding-file">ทุกไฟล์</td><td>ไม่มี README หรือ comment อธิบาย pin-map รวมทั้งระบบ ต้องไล่อ่านทีละไฟล์เพื่อเข้าใจการต่อวงจร</td></tr>
 
           <tr><td><span class="tag low">Low</span></td><td class="finding-file">ทั้งโปรเจ็ค</td><td>ไม่มีไฟล์ไลบรารี (MCP3208, DS3231, TridentTD_LineNotify, ArduinoJson) แนบมาด้วย ผู้ตรวจ/ผู้พัฒนาต่อจะคอมไพล์ไม่ผ่านถ้าไม่รู้ว่าต้องติดตั้ง lib เวอร์ชันไหน</td></tr>
-        </table>
+        </table></div>
       </div>
     </section>
 

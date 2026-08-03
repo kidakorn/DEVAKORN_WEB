@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Farm IoT — Full Development Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F7F1;
+    --paper-raised:#FFFFFF;
+    --ink:#1E2A22;
+    --ink-soft:#57645C;
+    --line:#DDE1D3;
+    --board:#1B2420;
+    --blue:#256B8C;
+    --blue-soft:#E4F0F4;
+    --ochre:#A5752E;
+    --ochre-soft:#F8EFD9;
+    --rust:#A6432F;
+    --rust-soft:#FAE5DF;
+    --moss:#437245;
+    --moss-soft:#E6F0E4;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif; line-height:1.7; font-size:16px; word-wrap:break-word; overflow-wrap:anywhere; word-break:break-word;}
+  h1,h2,h3{font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif; letter-spacing:-0.01em; color:var(--ink);}
+  code,.mono{font-family:'IBM Plex Mono',monospace; font-size:0.88em;}
+  a{color:var(--blue);}
+
+  .hero{background:var(--board); color:#EDEEE6; padding:56px 8vw 40px; position:relative; overflow:hidden;}
+  .hero::after{content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size:28px 28px; pointer-events:none;}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:#9FB6A8; margin-bottom:14px;}
+  .hero h1{font-size:clamp(28px,4vw,42px); margin:0 0 10px; color:#F7F8F2;}
+  .hero p.sub{max-width:680px; color:#C7CFC5; font-size:15.5px; margin:0 0 30px;}
+
+  .status-board{display:flex; flex-wrap:wrap; gap:0; background:#141C18; border:1px solid #2C3A31; border-radius:var(--radius); padding:6px; position:relative; z-index:1;}
+  .status-chip{flex:1 1 190px; display:flex; align-items:center; gap:10px; padding:14px 16px; border-right:1px solid #2C3A31;}
+  .status-chip:last-child{border-right:none;}
+  .led{width:11px; height:11px; border-radius:50%; flex-shrink:0; box-shadow:0 0 8px 1px currentColor;}
+  .led.ok{background:#5FA463; color:#5FA463;}
+  .led.warn{background:#D9A441; color:#D9A441;}
+  .led.crit{background:#D2604A; color:#D2604A;}
+  .status-chip .txt{font-size:13px;}
+  .status-chip .txt b{display:block; font-size:13.5px; color:#F0F2ED;}
+  .status-chip .txt span{color:#9AA69C; font-family:'IBM Plex Mono',monospace; font-size:11.5px;}
+
+  .wrap{display:grid; grid-template-columns:230px minmax(0,1fr); gap:48px; max-width:1180px; margin:0 auto; padding:44px 8vw 100px;}
+  nav.toc{position:sticky; top:28px; align-self:start; font-size:14px;}
+  nav.toc .toc-label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px;}
+  nav.toc a{display:block; color:var(--ink-soft); text-decoration:none; padding:6px 0 6px 14px; border-left:2px solid var(--line); transition:all .15s;}
+  nav.toc a:hover{color:var(--blue); border-left-color:var(--blue);}
+
+  main section{margin-bottom:64px; scroll-margin-top:24px;}
+  .kicker{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.1em; color:var(--blue); text-transform:uppercase; margin-bottom:6px;}
+  main h2{font-size:26px; margin:0 0 4px;}
+  main h2 .num{color:var(--line); margin-right:10px; font-family:'IBM Plex Mono',monospace; font-weight:500;}
+  .section-desc{color:var(--ink-soft); max-width:700px; margin:10px 0 26px; font-size:15px;}
+
+  .card{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin-bottom:16px; box-shadow:0 1px 3px rgba(30,42,34,0.06);}
+
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); padding:9px 12px; border-bottom:2px solid var(--ink);}
+  td{padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  .tag{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; padding:3px 9px; border-radius:100px; white-space:nowrap;}
+  .tag.dead{background:var(--rust-soft); color:var(--rust);}
+  .tag.limited{background:var(--ochre-soft); color:var(--ochre);}
+  .tag.ok{background:var(--moss-soft); color:var(--moss);}
+  .finding-file{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft);}
+
+  /* option cards */
+  .options{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .opt-card{background:var(--paper-raised); border:1.5px solid var(--line); border-radius:var(--radius); padding:20px; display:flex; flex-direction:column;}
+  .opt-card.recommend{border-color:var(--moss); box-shadow:0 0 0 3px var(--moss-soft);}
+  .opt-badge{display:inline-block; align-self:flex-start; font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; padding:3px 9px; border-radius:100px; margin-bottom:12px; background:var(--moss-soft); color:var(--moss);}
+  .opt-card h4{margin:0 0 4px; font-size:17px;}
+  .opt-card .opt-sub{font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-bottom:14px;}
+  .opt-card ul{margin:0 0 12px; padding-left:18px; font-size:13.5px; color:var(--ink-soft); flex:1;}
+  .opt-card ul li{margin-bottom:7px;}
+  .opt-card .quota{font-size:12px; background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:9px 11px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+  .opt-card .quota b{color:var(--ink); font-family:'IBM Plex Sans Thai',sans-serif;}
+
+  .callout{background:var(--blue-soft); border:1px solid #B7D2DC; border-radius:var(--radius); padding:16px 18px; font-size:14.5px; margin:16px 0;}
+  .callout b{color:var(--blue);}
+  .callout.warn{background:var(--ochre-soft); border-color:#E0C48D;}
+  .callout.warn b{color:var(--ochre);}
+
+  .phase{display:grid; grid-template-columns:100px 1fr; gap:18px; padding:18px 0; border-top:1px solid var(--line);}
+  .phase:first-of-type{border-top:none;}
+  .phase .ph-num{font-family:'IBM Plex Mono',monospace; color:var(--blue); font-size:13px; padding-top:2px;}
+  .phase .ph-num b{display:block; font-size:22px; color:var(--ink); font-family:'Space Grotesk',sans-serif;}
+  .phase h4{margin:0 0 6px; font-size:16px;}
+  .phase .track-tag{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px; padding:2px 7px; border-radius:100px; margin-left:8px; vertical-align:middle;}
+  .phase .track-tag.a{background:var(--moss-soft); color:var(--moss);}
+  .phase .track-tag.b{background:var(--blue-soft); color:var(--blue);}
+  .phase ul{margin:8px 0 0; padding-left:18px; font-size:14.5px; color:var(--ink-soft);}
+  .phase ul li{margin-bottom:4px;}
+
+  .checklist{list-style:none; margin:0; padding:0;}
+  .checklist li{display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-bottom:1px solid var(--line); font-size:14.5px;}
+  .checklist li:last-child{border-bottom:none;}
+  .checklist .box{width:17px; height:17px; border:1.5px solid var(--ink-soft); border-radius:4px; flex-shrink:0; margin-top:2px;}
+
+  footer{text-align:center; padding:30px 8vw 60px; color:var(--ink-soft); font-size:12.5px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:960px){
+    .wrap{grid-template-columns:1fr; padding:32px 6vw 80px; gap:28px;}
+    nav.toc{position:static; margin-bottom:4px; background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;}
+    nav.toc .toc-list{display:flex; flex-wrap:wrap; gap:6px 16px;}
+    nav.toc a{border-left:none; padding:5px 0;}
+    .options{grid-template-columns:1fr;}
+    .status-board{flex-direction:column;}
+    .status-chip{border-right:none; border-bottom:1px solid #2C3A31; flex:1 1 100%;}
+    .status-chip:last-child{border-bottom:none;}
+  }
+
+  @media (max-width:600px){
+    body{font-size:15.5px;}
+    .hero{padding:40px 6vw 30px;}
+    .hero h1{font-size:26px;}
+    .hero p.sub{font-size:14.5px;}
+    main h2{font-size:22px;}
+    .card{padding:18px 16px;}
+    th, td{padding:9px 10px; font-size:13px;}
+    .phase{grid-template-columns:1fr; gap:6px;}
+    .phase .ph-num{display:flex; align-items:baseline; gap:8px;}
+    .phase .ph-num b{display:inline; font-size:16px;}
+    .opt-card{padding:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Full Development Plan — เฟสถัดไป</div>
+  <h1>Smart Farm IoT <span class="mono" style="color:#8FA79A;">Dev Plan</span></h1>
+  <p class="sub">แผนพัฒนาต่อแบบเต็ม เริ่มจากเช็คสถานะบริการที่ใช้อยู่ว่าอันไหนใช้ได้/เลิกใช้/มี limit แล้วเสนอทางเลือกสถาปัตยกรรมให้เลือก ก่อนลงรายละเอียด roadmap — ทำทั้งหมดโดยไม่ต้องมีฮาร์ดแวร์จริง</p>
+
+  <div class="status-board">
+    <div class="status-chip"><div class="led crit"></div><div class="txt"><b>LINE Notify</b><span>ปิดถาวร 31 มี.ค. 2025</span></div></div>
+    <div class="status-chip"><div class="led ok"></div><div class="txt"><b>Google Apps Script</b><span>ใช้งานได้ โควตาเหลือเฟือ</span></div></div>
+    <div class="status-chip"><div class="led warn"></div><div class="txt"><b>LINE Messaging API — Push</b><span>ฟรี ~500 ข้อความ/เดือน</span></div></div>
+    <div class="status-chip"><div class="led ok"></div><div class="txt"><b>LINE Messaging API — Reply</b><span>ฟรีไม่จำกัด</span></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <nav class="toc">
+    <div class="toc-label">สารบัญ</div>
+    <div class="toc-list">
+      <a href="#goals">01 · เป้าหมายเฟสนี้</a>
+      <a href="#status">02 · เช็คสถานะบริการ</a>
+      <a href="#backend">03 · เลือกสถาปัตยกรรม Backend</a>
+      <a href="#notify">04 · เลือกช่องทางแจ้งเตือน</a>
+      <a href="#sim">05 · สภาพแวดล้อมจำลอง</a>
+      <a href="#roadmap">06 · Roadmap เต็ม</a>
+      <a href="#decide">07 · เช็คลิสต์ตัดสินใจ</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <section id="goals">
+      <div class="kicker">01</div>
+      <h2><span class="num">§</span>เป้าหมายเฟสนี้</h2>
+      <p class="section-desc">จากรายงานสำรวจรอบแรก ตอนนี้รู้แล้วว่าอะไรพังจริง (LINE Notify) อะไรใช้ได้จริง (LINE Bot แชท) และอะไรเป็นแค่ &quot;ข้อจำกัดที่ต้องรู้ไว้&quot; ไม่ใช่ปัญหาเร่งด่วน (โควตา Apps Script) เป้าหมายเฟสนี้คือ 3 อย่าง:</p>
+      <div class="card">
+        <ul style="margin:0; padding-left:20px; font-size:14.5px; color:var(--ink-soft);">
+          <li style="margin-bottom:8px;">ตัดสินใจว่าจะ &quot;อยู่กับของเดิม + ปะรู&quot; หรือ &quot;ย้ายสถาปัตยกรรมใหม่บางส่วน&quot; โดยมีข้อมูลโควตา/ข้อจำกัดจริงประกอบการตัดสินใจ ไม่ใช่เดา</li>
+          <li style="margin-bottom:8px;">ปิดช่องโหว่ความปลอดภัยที่เจอไปแล้ว (token ฝังโค้ด, ไม่เช็ค signature) ไม่ว่าจะเลือกทางไหน</li>
+          <li>ทำทุกอย่างได้บนคอมพิวเตอร์ล้วน ๆ ผ่านการจำลอง จนกว่าฮาร์ดแวร์จริงจะพร้อม</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="status">
+      <div class="kicker">02</div>
+      <h2><span class="num">§</span>เช็คสถานะบริการที่ใช้อยู่</h2>
+      <p class="section-desc">ไล่ทีละบริการที่โปรเจ็คพึ่งพา ว่าตอนนี้ (สิงหาคม 2026) สถานะเป็นยังไง — ข้อมูลจากการค้นล่าสุด ไม่ใช่ความจำเก่า เพราะบริการพวกนี้เปลี่ยนนโยบายกันบ่อย</p>
+      <div class="card">
+        <div class="table-scroll"><table>
+          <tr><th style="width:100px;">สถานะ</th><th>บริการ</th><th>รายละเอียด</th></tr>
+          <tr><td><span class="tag dead">เลิกใช้แล้ว</span></td><td class="finding-file">LINE Notify</td><td>ปิดถาวรตั้งแต่ 31 มี.ค. 2025 — ฟังก์ชัน <code>LINE.notify()</code> ในเฟิร์มแวร์ใช้ไม่ได้อีกต่อไป ต้องแทนที่ทั้งหมด ไม่มีทางเลือกอื่นนอกจากย้าย</td></tr>
+          <tr><td><span class="tag ok">ใช้งานได้</span></td><td class="finding-file">Google Apps Script (Web App)</td><td>ยังใช้งานได้ปกติ ฟรี ไม่มีค่าใช้จ่าย โควตาบัญชีทั่วไป: URL Fetch 20,000 ครั้ง/วัน, รันสคริปต์ต่อครั้งไม่เกิน 6 นาที, trigger รวม 90 นาที/วัน — ระบบปัจจุบัน poll ทุก 60 วิ ≈ 1,440 ครั้ง/วัน ใช้ไปแค่ ~7% ของโควตา <b>ยังไม่ใช่คอขวดสำหรับสเกลนี้</b></td></tr>
+          <tr><td><span class="tag ok">ใช้งานได้</span></td><td class="finding-file">LINE Messaging API — Reply</td><td>ข้อความตอบกลับผ่าน <code>replyToken</code> (ที่ <code>code.gs</code> ใช้อยู่ตอนนี้) <b>ฟรีไม่จำกัดจำนวน</b> ไม่นับรวมโควตารายเดือน — ส่วนควบคุมแบบแชทที่มีอยู่แล้วปลอดภัยเรื่องโควตา 100%</td></tr>
+          <tr><td><span class="tag limited">มี limit</span></td><td class="finding-file">LINE Messaging API — Push/Broadcast</td><td>ข้อความที่บอทส่งเองโดยไม่มีคนทักมาก่อน (เช่น แจ้งเตือนน้ำหมด, ส่งรูปกล้องอัตโนมัติ) นับรวมโควตาฟรีแผน Communication ~500 ข้อความ/เดือน (ประเทศไทย) — ถ้าส่งรูปกล้องอัตโนมัติทุกชั่วโมงจะเกินโควตา (720/เดือน) ต้องคุมความถี่</td></tr>
+        </table></div>
+      </div>
+      <div class="callout warn"><b>สรุปสำหรับคำถามเรื่องโควตา:</b> Apps Script ไม่ใช่ปัญหาจริงในสเกลของโปรเจ็คนี้ (ฟาร์มเดียว บอร์ดเดียว) ตัวที่ต้องระวังโควตาจริง ๆ คือ LINE Push API ถ้าจะใช้แจ้งเตือนถี่ ๆ — เหตุผลหลักที่ควรพิจารณาย้าย backend คือเรื่อง <b>ความปลอดภัยและการตอบสนองแบบ real-time</b> ไม่ใช่เพราะโควตาฟรีหมด</div>
+    </section>
+
+    <section id="backend">
+      <div class="kicker">03</div>
+      <h2><span class="num">§</span>เลือกสถาปัตยกรรม Backend</h2>
+      <p class="section-desc">3 ทางเลือก เรียงจากเปลี่ยนน้อยสุดไปเปลี่ยนเยอะสุด — เลือกได้เลยว่าอยากไปทางไหน แต่ละทางมี Roadmap ในข้อ 06 รองรับ</p>
+
+      <div class="options">
+        <div class="opt-card recommend">
+          <span class="opt-badge">แนะนำ — เริ่มจากตรงนี้</span>
+          <h4>A. Apps Script (เดิม) + ปะรู</h4>
+          <div class="opt-sub">เปลี่ยนน้อยสุด · ใช้ของเดิมต่อ</div>
+          <ul>
+            <li>คงสถาปัตยกรรม ESP32 poll + Google Sheet ไว้ทั้งหมด</li>
+            <li>ปิดช่องโหว่: ย้าย token ไป Script Properties, เช็ค LINE signature</li>
+            <li>เพิ่ม <code>pushMessage()</code> reuse token เดิมแทน LINE Notify</li>
+            <li>เหมาะกับงานส่งอาจารย์ที่มีเวลาจำกัด ไม่ต้องเรียนเทคโนโลยีใหม่</li>
+          </ul>
+          <div class="quota"><b>ใช้ได้ฟรีต่อไป</b> — โควตาปัจจุบันเหลือเฟือ (ดูข้อ 02)</div>
+        </div>
+
+        <div class="opt-card">
+          <h4>B. Firebase (Realtime DB + Functions)</h4>
+          <div class="opt-sub">เปลี่ยนปานกลาง · ได้ real-time จริง</div>
+          <ul>
+            <li>ESP32 subscribe การเปลี่ยนแปลงค่าแบบ real-time แทนการ poll ทุก 60 วิ (สั่งงานหน่วงน้อยลงมาก)</li>
+            <li>Cloud Functions รับ Webhook จาก LINE แทน Apps Script</li>
+            <li>มี Firebase Hosting ทำเว็บแดชบอร์ดได้ในระบบเดียวกัน</li>
+            <li>ต้องเรียนรู้ Firebase SDK เพิ่ม — ใช้เวลามากกว่าทาง A</li>
+          </ul>
+          <div class="quota"><b>Spark Plan ฟรี:</b> Firestore 50k reads/20k writes ต่อวัน, Realtime DB 1GB เก็บ+10GB โอนย้าย/เดือน, เชื่อมต่อพร้อมกันได้ 100</div>
+        </div>
+
+        <div class="opt-card">
+          <h4>C. Node.js + MQTT Broker</h4>
+          <div class="opt-sub">เปลี่ยนมากสุด · ควบคุมได้เต็มที่</div>
+          <ul>
+            <li>ESP32 เชื่อม MQTT broker (HiveMQ Cloud ฟรี) รับคำสั่งทันทีแบบ push จริง ไม่ต้อง poll เลย</li>
+            <li>เขียน backend เอง (Node.js/Express) host ฟรีบน Railway/Render — ควบคุม logic ได้ทุกจุด</li>
+            <li>เหมาะถ้าตั้งใจต่อยอดเป็นพอร์ตโฟลิโอ/โปรเจ็คจริงจังหลังเรียนจบ</li>
+            <li>ใช้เวลาพัฒนามากที่สุด ต้องดูแล backend เองทั้งหมด (ไม่มี Google ช่วยดูแล)</li>
+          </ul>
+          <div class="quota"><b>HiveMQ Cloud ฟรี:</b> เชื่อมต่อ 100 อุปกรณ์, โอนข้อมูล 10GB/เดือน, เก็บข้อมูลย้อนหลัง 3 วัน — Node.js hosting ฟรีมักจำกัดชั่วโมงรันต่อเดือน</div>
+        </div>
+      </div>
+
+      <div class="callout"><b>คำแนะนำ:</b> ถ้าเวลาเหลือน้อยและงานหลักคือส่งวิชานี้ให้เสร็จ ไปทาง <b>A</b> ก่อน เพราะของเดิมทำงานได้ 80% อยู่แล้ว แค่ปะรู ถ้าอยากได้ประสบการณ์ทำระบบ real-time จริงจังและมีเวลาเพิ่ม ไปทาง <b>B</b> เพราะ Firebase เรียนง่ายกว่า MQTT และให้ dashboard มาในตัว ทาง C เหมาะเป็นโปรเจ็คแยกต่างหากหลังจบวิชานี้มากกว่า</div>
+    </section>
+
+    <section id="notify">
+      <div class="kicker">04</div>
+      <h2><span class="num">§</span>เลือกช่องทางแจ้งเตือน/ส่งรูปกล้อง</h2>
+      <p class="section-desc">ส่วนนี้แยกจาก backend เพราะเลือกผสมกันได้ — คำถามหลักคือจะแทน LINE Notify เดิมด้วยอะไร</p>
+      <div class="card">
+        <div class="table-scroll"><table>
+          <tr><th>ทางเลือก</th><th>ข้อดี</th><th>ข้อจำกัด</th></tr>
+          <tr><td class="finding-file">LINE Push API<br>(ใช้ token เดิมที่มีอยู่)</td><td>ผู้ใช้เห็นแจ้งเตือนทันทีในแชทเดิม ไม่ต้องเปิดแอปอื่น ทำได้เร็วเพราะ setup ไว้แล้ว</td><td>ฟรี ~500 ครั้ง/เดือน — ต้องส่งเฉพาะ event สำคัญ (น้ำหมด, ค่าผิดปกติ) ไม่ใช่ทุกรอบ poll</td></tr>
+          <tr><td class="finding-file">เว็บแดชบอร์ด</td><td>ดูรูปกล้อง/กราฟย้อนหลังได้ไม่จำกัดจำนวนครั้ง ไม่กินโควตา LINE เลย</td><td>ต้องเปิดเบราว์เซอร์เข้าดูเอง ไม่มีการแจ้งเตือนเชิงรุก</td></tr>
+          <tr><td class="finding-file">ผสมทั้งคู่ (แนะนำ)</td><td>LINE Push แจ้งเฉพาะ alert วิกฤต + แดชบอร์ดไว้ดูภาพรวม/กราฟ/รูปกล้องแบบละเอียด</td><td>ต้องทำ 2 อย่าง ใช้เวลาพัฒนาเพิ่มขึ้นเล็กน้อย</td></tr>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="sim">
+      <div class="kicker">05</div>
+      <h2><span class="num">§</span>สภาพแวดล้อมจำลอง (ไม่ใช้ฮาร์ดแวร์จริง)</h2>
+      <p class="section-desc">ใช้ได้กับทุกทางเลือกใน backend เพราะจำลองแค่ฝั่งเฟิร์มแวร์ ไม่เกี่ยวกับว่าปลายทางเป็น Apps Script, Firebase หรือ MQTT</p>
+      <div class="card">
+        <div class="table-scroll"><table>
+          <tr><th>เครื่องมือ</th><th>ใช้ทำอะไร</th></tr>
+          <tr><td class="finding-file">Wokwi (wokwi.com)</td><td>จำลอง ESP32 เต็มรูปแบบ — DHT22 จริง, ตัวต้านทานปรับค่าแทนเซนเซอร์ดิน, LED แทนรีเลย์ เชื่อม WiFi ออกอินเทอร์เน็ตจริงได้ ยิง HTTP/MQTT ไปปลายทางจริงได้เลย</td></tr>
+          <tr><td class="finding-file">VS Code + PlatformIO + Wokwi plugin</td><td>ย้ายจาก Arduino IDE มาเขียนใน VS Code พร้อมรันจำลองในตัวผ่านไฟล์ <code>wokwi.toml</code> — ใช้ AI agent ช่วยเขียน/รีแฟกเตอร์โค้ดได้สะดวกกว่า Arduino IDE มาก</td></tr>
+          <tr><td class="finding-file">Postman / curl</td><td>ยิงทดสอบ endpoint ของ Apps Script หรือ Firebase Functions แยกจากเฟิร์มแวร์ เพื่อดีบัก backend ได้เร็วโดยไม่ต้องรอจำลองบอร์ด</td></tr>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <div class="kicker">06</div>
+      <h2><span class="num">§</span>Roadmap เต็ม</h2>
+      <p class="section-desc">Phase 0 ทำเหมือนกันทุกทางเลือก จากนั้น Phase 1-2 แยกตามว่าเลือกทาง <span class="track-tag a">A</span> หรือ <span class="track-tag b">B</span> — ถ้าเลือกทาง C (MQTT) ใช้โครงเดียวกับ B แต่สลับ Firebase เป็น Node.js+MQTT ในขั้นเชื่อมต่ออุปกรณ์</p>
+
+      <div class="card">
+        <div class="phase">
+          <div class="ph-num"><b>00</b>สัปดาห์ 1</div>
+          <div>
+            <h4>Refactor + Security (ทำก่อนเสมอ ไม่ว่าจะเลือกทางไหน)</h4>
+            <ul>
+              <li>แก้บั๊ก 3 จุดในเฟิร์มแวร์: pin สลับกัน, <code>sum_soil_all</code> ถูกเขียนทับ, <code>now_day</code> นับผิดหน่วย</li>
+              <li>ย้าย WiFi password / LINE token / รหัสกล้อง ออกจากโค้ด ไปเก็บใน <code>secrets.h</code> (เฟิร์มแวร์) และ Script Properties (Apps Script)</li>
+              <li>ย้ายพินรีเลย์ออกจาก GPIO 0 และ 12 (strapping pin)</li>
+              <li>เพิ่มการเช็ค <code>x-line-signature</code> ใน webhook ก่อนประมวลผลคำสั่ง</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="ph-num"><b>01</b>สัปดาห์ 2</div>
+          <div>
+            <h4>ตั้งสภาพแวดล้อมจำลอง <span class="track-tag a">A/B/C</span></h4>
+            <ul>
+              <li>ตั้งโปรเจ็ค Wokwi + PlatformIO ใน VS Code รันเฟิร์มแวร์ที่แก้แล้วแบบจำลอง</li>
+              <li>ทดสอบ logic 3 โหมดปลูกด้วยค่าจำลอง ยืนยันว่ารอบน้ำ/ปุ๋ยถูกต้องหลังแก้บั๊ก</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="ph-num"><b>02a</b>สัปดาห์ 3</div>
+          <div>
+            <h4>ทาง A: ต่อยอด Apps Script <span class="track-tag a">A</span></h4>
+            <ul>
+              <li>เพิ่มฟังก์ชัน <code>pushMessage()</code> ใน <code>code.gs</code> ใช้ token เดิม ส่งเฉพาะ alert สำคัญ (น้ำหมด/ค่าผิดปกติ) เพื่อไม่ให้เกินโควตา 500/เดือน</li>
+              <li>เก็บ userId ของผู้ทักบอทครั้งแรกไว้ใน Script Properties สำหรับใช้ push</li>
+              <li>ตรวจสอบว่ามี/เพิ่ม <code>doGet(e)</code> ให้ตรงกับที่เฟิร์มแวร์ยิง GET เข้ามา</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="ph-num"><b>02b</b>สัปดาห์ 3–4</div>
+          <div>
+            <h4>ทาง B/C: ย้ายไป Firebase หรือ MQTT <span class="track-tag b">B/C</span></h4>
+            <ul>
+              <li>สร้างโปรเจ็ค Firebase (Spark plan ฟรี) หรือ HiveMQ Cloud cluster (ฟรี)</li>
+              <li>ปรับเฟิร์มแวร์ให้ subscribe ค่าจาก Realtime DB / MQTT topic แทนการ poll HTTP GET</li>
+              <li>เขียน Cloud Function หรือ Node.js server รับ LINE Webhook แทน Apps Script</li>
+              <li>ย้ายข้อมูล log เซนเซอร์จาก Google Sheet ไป Firestore/ฐานข้อมูลใหม่ (หรือคงคู่ขนานไว้ก่อนก็ได้)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="ph-num"><b>03</b>สัปดาห์ 4–5</div>
+          <div>
+            <h4>เว็บแดชบอร์ด <span class="track-tag a">A/B/C</span></h4>
+            <ul>
+              <li>หน้าเว็บอ่านค่าจากปลายทางที่เลือก (Sheet/Firestore) แสดงกราฟความชื้นดิน/อุณหภูมิย้อนหลังด้วย Chart.js</li>
+              <li>ปุ่มควบคุม manual + ปุ่มดูรูปกล้องล่าสุด ลดจำนวนครั้งที่ต้องพึ่ง LINE Push</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="ph-num"><b>04</b>สัปดาห์ 5–6</div>
+          <div>
+            <h4>เตรียมขึ้นฮาร์ดแวร์จริง <span class="track-tag a">A/B/C</span></h4>
+            <ul>
+              <li>สลับจากค่าจำลอง Wokwi ไปใช้เซนเซอร์/รีเลย์จริงทีละตัว ทดสอบแยกก่อนประกอบรวม</li>
+              <li>ตรวจ pin-map กับ PCB จริงอีกครั้งตามที่แก้ไว้ในเฟิร์มแวร์</li>
+              <li>รวบรวม README, diagram, วิดีโอสาธิตจากผลจำลองไว้ประกอบการนำเสนอ</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="decide">
+      <div class="kicker">07</div>
+      <h2><span class="num">§</span>เช็คลิสต์ตัดสินใจ</h2>
+      <p class="section-desc">ตอบคำถามพวกนี้แล้วจะรู้ว่าควรเลือกทางไหนในข้อ 03</p>
+      <ul class="checklist">
+        <li><span class="box"></span>มีเวลาถึงกำหนดส่งเหลือน้อยกว่า 3 สัปดาห์? → ไปทาง <b>A</b></li>
+        <li><span class="box"></span>อยากได้ประสบการณ์ทำระบบ real-time / อยากใส่ในพอร์ตโฟลิโอ? → ไปทาง <b>B</b> หรือ <b>C</b></li>
+        <li><span class="box"></span>ยังไม่เคยใช้ Firebase/MQTT มาก่อนและไม่มีใครในกลุ่มถนัด? → เริ่มทาง <b>A</b> ก่อน แล้วค่อยลองทาง B เป็นโปรเจ็คเสริมถ้ามีเวลา</li>
+        <li><span class="box"></span>ต้องการส่งรูปกล้อง/แจ้งเตือนถี่กว่าทุกชั่วโมง? → อย่าพึ่ง LINE Push อย่างเดียว ต้องมีเว็บแดชบอร์ดร่วมด้วย (ข้อ 04)</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>SMART FARM IOT — FULL DEVELOPMENT PLAN · จัดทำโดย Claude</footer>
+
+</body>
+</html>

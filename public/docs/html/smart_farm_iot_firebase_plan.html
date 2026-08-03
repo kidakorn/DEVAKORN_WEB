@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Farm IoT — Firebase Migration Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F7F1;
+    --paper-raised:#FFFFFF;
+    --ink:#1E2A22;
+    --ink-soft:#57645C;
+    --line:#DDE1D3;
+    --board:#1B2420;
+    --blue:#256B8C;
+    --blue-soft:#E4F0F4;
+    --ochre:#A5752E;
+    --ochre-soft:#F8EFD9;
+    --rust:#A6432F;
+    --rust-soft:#FAE5DF;
+    --moss:#437245;
+    --moss-soft:#E6F0E4;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif; line-height:1.7; font-size:16px; word-wrap:break-word; overflow-wrap:anywhere; word-break:break-word;}
+  h1,h2,h3{font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif; letter-spacing:-0.01em; color:var(--ink);}
+  code,.mono{font-family:'IBM Plex Mono',monospace; font-size:0.88em;}
+  a{color:var(--blue);}
+
+  .hero{background:var(--board); color:#EDEEE6; padding:56px 8vw 40px; position:relative; overflow:hidden;}
+  .hero::after{content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size:28px 28px; pointer-events:none;}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:#9FB6A8; margin-bottom:14px;}
+  .hero h1{font-size:clamp(26px,4vw,42px); margin:0 0 10px; color:#F7F8F2;}
+  .hero p.sub{max-width:680px; color:#C7CFC5; font-size:15.5px; margin:0 0 30px;}
+
+  .status-board{display:flex; flex-wrap:wrap; gap:0; background:#141C18; border:1px solid #2C3A31; border-radius:var(--radius); padding:6px; position:relative; z-index:1;}
+  .status-chip{flex:1 1 190px; display:flex; align-items:center; gap:10px; padding:14px 16px; border-right:1px solid #2C3A31;}
+  .status-chip:last-child{border-right:none;}
+  .led{width:11px; height:11px; border-radius:50%; flex-shrink:0; box-shadow:0 0 8px 1px currentColor;}
+  .led.ok{background:#5FA463; color:#5FA463;}
+  .led.warn{background:#D9A441; color:#D9A441;}
+  .status-chip .txt{font-size:13px;}
+  .status-chip .txt b{display:block; font-size:13.5px; color:#F0F2ED;}
+  .status-chip .txt span{color:#9AA69C; font-family:'IBM Plex Mono',monospace; font-size:11.5px;}
+
+  .wrap{display:grid; grid-template-columns:230px minmax(0,1fr); gap:48px; max-width:1180px; margin:0 auto; padding:44px 8vw 100px;}
+  nav.toc{position:sticky; top:28px; align-self:start; font-size:14px;}
+  nav.toc .toc-label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px;}
+  nav.toc a{display:block; color:var(--ink-soft); text-decoration:none; padding:6px 0 6px 14px; border-left:2px solid var(--line); transition:all .15s;}
+  nav.toc a:hover{color:var(--blue); border-left-color:var(--blue);}
+
+  main section{margin-bottom:64px; scroll-margin-top:24px;}
+  .kicker{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.1em; color:var(--blue); text-transform:uppercase; margin-bottom:6px;}
+  main h2{font-size:26px; margin:0 0 4px;}
+  main h2 .num{color:var(--line); margin-right:10px; font-family:'IBM Plex Mono',monospace; font-weight:500;}
+  .section-desc{color:var(--ink-soft); max-width:700px; margin:10px 0 26px; font-size:15px;}
+
+  .card{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin-bottom:16px; box-shadow:0 1px 3px rgba(30,42,34,0.06);}
+
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); padding:9px 12px; border-bottom:2px solid var(--ink);}
+  td{padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  .finding-file{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft);}
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+
+  .tag{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; padding:3px 9px; border-radius:100px; white-space:nowrap;}
+  .tag.free{background:var(--moss-soft); color:var(--moss);}
+  .tag.paid{background:var(--rust-soft); color:var(--rust);}
+  .tag.card{background:var(--ochre-soft); color:var(--ochre);}
+
+  /* options */
+  .options{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .opt-card{background:var(--paper-raised); border:1.5px solid var(--line); border-radius:var(--radius); padding:20px; display:flex; flex-direction:column;}
+  .opt-card.recommend{border-color:var(--moss); box-shadow:0 0 0 3px var(--moss-soft);}
+  .opt-badge{display:inline-block; align-self:flex-start; font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; padding:3px 9px; border-radius:100px; margin-bottom:12px; background:var(--moss-soft); color:var(--moss);}
+  .opt-card h4{margin:0 0 4px; font-size:17px;}
+  .opt-card .opt-sub{font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-bottom:14px;}
+  .opt-card ul{margin:0 0 12px; padding-left:18px; font-size:13.5px; color:var(--ink-soft); flex:1;}
+  .opt-card ul li{margin-bottom:7px;}
+  .opt-card .quota{font-size:12px; background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:9px 11px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+
+  .pros-cons{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pc-col{border-radius:var(--radius); padding:18px 20px;}
+  .pc-col.pros{background:var(--moss-soft); border:1px solid #C6DBC3;}
+  .pc-col.cons{background:var(--rust-soft); border:1px solid #E9C4BA;}
+  .pc-col h4{margin:0 0 10px; font-size:14.5px;}
+  .pc-col.pros h4{color:var(--moss);}
+  .pc-col.cons h4{color:var(--rust);}
+  .pc-col ul{margin:0; padding-left:18px; font-size:13.5px; color:var(--ink-soft);}
+  .pc-col ul li{margin-bottom:7px;}
+
+  .callout{background:var(--blue-soft); border:1px solid #B7D2DC; border-radius:var(--radius); padding:16px 18px; font-size:14.5px; margin:16px 0;}
+  .callout b{color:var(--blue);}
+  .callout.warn{background:var(--ochre-soft); border-color:#E0C48D;}
+  .callout.warn b{color:var(--ochre);}
+  .callout.good{background:var(--moss-soft); border-color:#C6DBC3;}
+  .callout.good b{color:var(--moss);}
+
+  pre.tree{background:var(--board); color:#D7DED4; border-radius:var(--radius); padding:20px 22px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; overflow-x:auto; line-height:1.75;}
+  pre.tree .comment{color:#7C9083;}
+
+  .phase{display:grid; grid-template-columns:100px 1fr; gap:18px; padding:18px 0; border-top:1px solid var(--line);}
+  .phase:first-of-type{border-top:none;}
+  .phase .ph-num{font-family:'IBM Plex Mono',monospace; color:var(--blue); font-size:13px; padding-top:2px;}
+  .phase .ph-num b{display:block; font-size:22px; color:var(--ink); font-family:'Space Grotesk',sans-serif;}
+  .phase h4{margin:0 0 6px; font-size:16px;}
+  .phase .track-tag{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px; padding:2px 7px; border-radius:100px; margin-left:8px; vertical-align:middle;}
+  .phase .track-tag.b1{background:var(--moss-soft); color:var(--moss);}
+  .phase .track-tag.b2{background:var(--blue-soft); color:var(--blue);}
+  .phase ul{margin:8px 0 0; padding-left:18px; font-size:14.5px; color:var(--ink-soft);}
+  .phase ul li{margin-bottom:4px;}
+
+  .checklist{list-style:none; margin:0; padding:0;}
+  .checklist li{display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-bottom:1px solid var(--line); font-size:14.5px;}
+  .checklist li:last-child{border-bottom:none;}
+  .checklist .box{width:17px; height:17px; border:1.5px solid var(--ink-soft); border-radius:4px; flex-shrink:0; margin-top:2px;}
+
+  footer{text-align:center; padding:30px 8vw 60px; color:var(--ink-soft); font-size:12.5px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:960px){
+    .wrap{grid-template-columns:1fr; padding:32px 6vw 80px; gap:28px;}
+    nav.toc{position:static; margin-bottom:4px; background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;}
+    nav.toc .toc-list{display:flex; flex-wrap:wrap; gap:6px 16px;}
+    nav.toc a{border-left:none; padding:5px 0;}
+    .options{grid-template-columns:1fr;}
+    .pros-cons{grid-template-columns:1fr;}
+    .status-board{flex-direction:column;}
+    .status-chip{border-right:none; border-bottom:1px solid #2C3A31; flex:1 1 100%;}
+    .status-chip:last-child{border-bottom:none;}
+  }
+  @media (max-width:600px){
+    body{font-size:15.5px;}
+    .hero{padding:40px 6vw 30px;}
+    .hero h1{font-size:24px;}
+    .hero p.sub{font-size:14.5px;}
+    main h2{font-size:21px;}
+    .card{padding:16px 14px;}
+    th, td{padding:9px 10px; font-size:12.5px;}
+    .phase{grid-template-columns:1fr; gap:6px;}
+    .phase .ph-num{display:flex; align-items:baseline; gap:8px;}
+    .phase .ph-num b{display:inline; font-size:16px;}
+    .opt-card{padding:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Track B — Full Plan</div>
+  <h1>ย้ายไป Firebase <span class="mono" style="color:#8FA79A;">(Realtime)</span></h1>
+  <p class="sub">แผนเจาะลึกเฉพาะเส้นทาง Firebase — โครงสร้างข้อมูล, กฎความปลอดภัย, โครงโค้ด, Roadmap และค่าใช้จ่ายจริงแบบเข้าใจง่าย สำหรับปั้นโปรเจ็คต่อหลังเรียนจบโดยไม่มีเดดไลน์</p>
+
+  <div class="status-board">
+    <div class="status-chip"><div class="led ok"></div><div class="txt"><b>Firebase Spark (ฟรี)</b><span>ไม่ต้องผูกบัตรเครดิต</span></div></div>
+    <div class="status-chip"><div class="led warn"></div><div class="txt"><b>Cloud Functions</b><span>ต้องอัปเกรด Blaze ถึงจะใช้ได้</span></div></div>
+    <div class="status-chip"><div class="led ok"></div><div class="txt"><b>ค่าใช้จ่ายจริงโดยประมาณ</b><span>~$0/เดือน สำหรับสเกลนี้</span></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <nav class="toc">
+    <div class="toc-label">สารบัญ</div>
+    <div class="toc-list">
+      <a href="#arch">01 · สถาปัตยกรรม 2 แบบให้เลือก</a>
+      <a href="#data">02 · โครงสร้างข้อมูล</a>
+      <a href="#security">03 · กฎความปลอดภัย</a>
+      <a href="#code">04 · โครงสร้างโค้ด</a>
+      <a href="#proscons">05 · ข้อดี-ข้อเสีย</a>
+      <a href="#cost">06 · ค่าใช้จ่าย</a>
+      <a href="#roadmap">07 · Roadmap</a>
+      <a href="#checklist">08 · เช็คลิสต์</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <section id="arch">
+      <div class="kicker">01</div>
+      <h2><span class="num">§</span>สถาปัตยกรรม — เลือกได้ 2 แบบ</h2>
+      <p class="section-desc">จุดตัดสินใจแรกคือ &quot;จะทิ้ง Apps Script ทั้งหมดเลยไหม&quot; — คำตอบส่งผลถึงค่าใช้จ่ายโดยตรง เพราะ Cloud Functions (ตัวรับ LINE Webhook แบบ Firebase) ต้องผูกบัตรเครดิตถึงจะใช้ได้ ในขณะที่ Realtime Database ใช้ฟรีได้เลยไม่ต้องผูกบัตร</p>
+
+      <div class="options">
+        <div class="opt-card recommend">
+          <span class="opt-badge">แนะนำ — เริ่มจากตรงนี้</span>
+          <h4>B1 — แบบผสม (Hybrid)</h4>
+          <div class="opt-sub">ไม่ต้องผูกบัตรเครดิตเลย</div>
+          <ul>
+            <li>เปลี่ยนแค่ &quot;ที่เก็บสถานะ/คำสั่ง&quot; จาก Google Sheet ไปเป็น Firebase Realtime Database</li>
+            <li>คง Apps Script ไว้เป็นตัวรับ LINE Webhook เหมือนเดิม แค่แก้ให้เขียนค่าไปที่ Firebase แทน Sheet (ยิง REST API ของ Firebase ได้ตรง ๆ)</li>
+            <li>ESP32 subscribe ค่าจาก Firebase แบบ real-time แทนการ poll ทุก 60 วิ</li>
+            <li>เก็บ log เซนเซอร์ไว้ที่ Google Sheet เหมือนเดิมก็ได้ (ของถนัดอยู่แล้ว)</li>
+          </ul>
+          <div class="quota">Realtime Database + Apps Script อยู่ในแผนฟรีทั้งคู่ — ไม่ต้องกรอกบัตรเครดิตที่ไหนเลย</div>
+        </div>
+
+        <div class="opt-card">
+          <h4>B2 — Full Firebase</h4>
+          <div class="opt-sub">ต้องผูกบัตรเครดิต (Blaze plan)</div>
+          <ul>
+            <li>ย้าย LINE Webhook จาก Apps Script ไปเป็น Cloud Functions ทั้งหมด</li>
+            <li>เก็บ log เซนเซอร์ใน Firestore แทน Google Sheet</li>
+            <li>ทำเว็บแดชบอร์ดโฮสต์บน Firebase Hosting ในโปรเจ็คเดียวกัน จบทุกอย่างในระบบเดียว</li>
+            <li>ดูแลง่ายกว่าระยะยาวเพราะไม่ต้องสลับไปมาระหว่าง Google Apps Script กับ Firebase Console</li>
+          </ul>
+          <div class="quota">ต้องอัปเกรดเป็น Blaze (ใส่บัตรเครดิต) ถึงจะ deploy Cloud Functions ได้ แม้ใช้งานจริงจะยังฟรีอยู่ก็ตาม — ดูรายละเอียดข้อ 06</div>
+        </div>
+      </div>
+
+      <div class="callout good"><b>คำแนะนำ:</b> เริ่มจาก B1 ก่อนเสมอ เพราะได้ real-time control มาใช้จริงโดยไม่ต้องเสี่ยงเรื่องบัตรเครดิตเลย พอทำ B1 จนคล่องแล้วค่อยพิจารณาย้ายไป B2 ทีหลังถ้าอยากได้ระบบที่จบในที่เดียว — เอกสารนี้ครอบคลุมทั้งสองทาง ส่วนไหนต่างกันจะกำกับด้วยแท็ก B1/B2</div>
+    </section>
+
+    <section id="data">
+      <div class="kicker">02</div>
+      <h2><span class="num">§</span>โครงสร้างข้อมูล (Data Model)</h2>
+      <p class="section-desc">Realtime Database เก็บข้อมูลเป็นต้นไม้ JSON ต้นเดียว ออกแบบให้ ESP32 subscribe เฉพาะกิ่ง <code>control/</code> พอ ไม่ต้องโหลดข้อมูลทั้งหมด</p>
+      <pre class="tree">smart-farm-8/                        <span class="comment">// รากของฐานข้อมูล</span>
+├── control/                         <span class="comment">// ESP32 ฟังกิ่งนี้แบบ real-time</span>
+│   ├── fan: 0
+│   ├── lamp1: 0
+│   ├── lamp2: 0
+│   ├── valve_water: 0
+│   ├── valve_fertilizer: 0
+│   ├── pump: 0
+│   ├── mode: 0                      <span class="comment">// 0=ปิด 1=เมลอน 2=แตงโม 3=สตอเบอรี่</span>
+│   └── camera_request: { cam1: 0, cam2: 0 }
+├── sensors/
+│   ├── latest/                      <span class="comment">// ค่าล่าสุดอย่างเดียว อ่านเร็ว</span>
+│   │   ├── soil: { z1_1: 0, z1_2: 0, ... z4_3: 0 }
+│   │   ├── temp: 0, humidity: 0, lux: 0
+│   │   └── updated_at: 1722600000
+│   └── log/{timestamp}/             <span class="comment">// ประวัติย้อนหลัง ใช้ทำกราฟ</span>
+│       └── { soil, temp, humidity, lux }
+└── meta/
+    └── line_user_id: "Uxxxxxxxx"    <span class="comment">// เก็บไว้ส่ง Push แจ้งเตือน</span></pre>
+      <p class="section-desc" style="margin-top:14px;">💡 เหตุผลที่แยก <code>latest/</code> กับ <code>log/</code>: ESP32 กับแดชบอร์ดต้องการแค่ค่าล่าสุดบ่อย ๆ ถ้าไปอ่านจาก <code>log/</code> ที่มีข้อมูลสะสมเยอะจะโหลดช้าและกินโควตาดาวน์โหลดเกินจำเป็น</p>
+    </section>
+
+    <section id="security">
+      <div class="kicker">03</div>
+      <h2><span class="num">§</span>กฎความปลอดภัย (Security Rules)</h2>
+      <p class="section-desc">ปัญหาที่เจอในรายงานก่อนหน้าคือ endpoint เดิมไม่มีการยืนยันตัวตนเลย — Firebase แก้ปัญหานี้ได้ตรงจุดด้วย Security Rules ที่เขียนแยกจากโค้ด ไม่ต้องเช็คเองในทุกฟังก์ชันเหมือนที่ผ่านมา</p>
+      <div class="card">
+        <p style="margin:0 0 12px; font-size:14.5px; color:var(--ink-soft);">แนวคิดง่าย ๆ: อนุญาตให้อ่านได้ทุกคนที่มีลิงก์ (เพราะไม่ใช่ข้อมูลลับ) แต่ &quot;เขียน&quot; ได้เฉพาะคนที่ผ่านการยืนยันตัวตนแล้วเท่านั้น</p>
+        <pre class="tree">{
+  "rules": {
+    "control": {
+      ".read": true,
+      ".write": "auth != null"        <span class="comment">// ต้อง login/มี token ก่อนเขียนได้</span>
+    },
+    "sensors": {
+      ".read": true,
+      ".write": "auth != null"
+    }
+  }
+}</pre>
+      </div>
+      <p class="section-desc">ฝั่ง ESP32 และ Apps Script ใช้ <b>Firebase Auth แบบ Anonymous</b> หรือ <b>Legacy Database Secret</b> เพื่อให้ผ่านเงื่อนไข <code>auth != null</code> ได้ — ไม่ต้องทำระบบ login ผู้ใช้จริงจังแบบเว็บทั่วไป เพราะอุปกรณ์ในระบบมีแค่ไม่กี่ตัว</p>
+    </section>
+
+    <section id="code">
+      <div class="kicker">04</div>
+      <h2><span class="num">§</span>โครงสร้างโค้ดที่แนะนำ</h2>
+      <pre class="tree">smart-farm-iot/
+├── firmware/
+│   ├── platformio.ini
+│   ├── wokwi.toml                   <span class="comment">// จำลองแบบไม่ใช้ฮาร์ดแวร์จริง</span>
+│   └── src/
+│       ├── main.cpp
+│       ├── firebase_client.cpp/.h   <span class="comment">// ใช้ไลบรารี Firebase-ESP-Client</span>
+│       ├── sensors.cpp/.h
+│       ├── control.cpp/.h
+│       └── secrets.example.h
+├── backend/
+│   └── apps-script/                 <span class="comment">// B1: ยังใช้ตัวนี้รับ LINE Webhook</span>
+│       └── Code.gs
+│   └── functions/                   <span class="comment">// B2: ถ้าย้ายมา Cloud Functions</span>
+│       └── index.js
+├── dashboard/                       <span class="comment">// เว็บอ่านค่าจาก Firebase + Chart.js</span>
+│   └── index.html
+├── firebase.json                    <span class="comment">// ตั้งค่า Realtime DB rules + Hosting</span>
+├── database.rules.json
+└── docs/
+    ├── architecture-diagram.png
+    └── data-model.md</pre>
+    </section>
+
+    <section id="proscons">
+      <div class="kicker">05</div>
+      <h2><span class="num">§</span>ข้อดี — ข้อเสีย ของการย้ายมา Firebase</h2>
+      <div class="pros-cons">
+        <div class="pc-col pros">
+          <h4>✓ ข้อดี</h4>
+          <ul>
+            <li>ควบคุมอุปกรณ์แบบ real-time จริง (ไม่หน่วง 60 วิเหมือนเดิม)</li>
+            <li>Security Rules แยกออกจากโค้ด ปิดช่องโหว่เรื่อง auth ได้เป็นระบบมากกว่าเช็คเองทีละฟังก์ชัน</li>
+            <li>เป็นสกิลที่ใช้ได้จริงในงาน mobile/web dev ทั่วไป ไม่ใช่แค่ในวง Google Workspace</li>
+            <li>สเกลได้ถ้าอยากเพิ่มเซนเซอร์/อุปกรณ์ในอนาคต โดยไม่ต้องออกแบบฐานข้อมูลใหม่</li>
+            <li>มี Hosting + Cloud Messaging + Analytics ให้ในระบบเดียว เผื่อทำแอปมือถือคู่กันทีหลัง</li>
+          </ul>
+        </div>
+        <div class="pc-col cons">
+          <h4>✕ ข้อเสีย</h4>
+          <ul>
+            <li>ต้องเรียนรู้เพิ่ม: Firebase SDK ฝั่ง ESP32, แนวคิด Security Rules, Firebase Console</li>
+            <li>B2 (Cloud Functions) ต้องผูกบัตรเครดิตแม้บิลจะเป็น $0 ก็ตาม — บางคนไม่สบายใจเรื่องนี้</li>
+            <li>Blaze plan ไม่มีเพดานค่าใช้จ่ายตายตัว (no hard cap) ถ้าตั้งค่าโค้ดผิดเป็น loop ไม่มีที่สิ้นสุดอาจมีบิลไม่คาดคิดได้ ต้องตั้ง Budget Alert กันไว้</li>
+            <li>เอกสาร/ตัวอย่างส่วนใหญ่เป็นภาษาอังกฤษ และเปลี่ยนแปลง UI ของ Console บ่อย</li>
+            <li>ย้ายของเดิมที่ทำงานได้อยู่แล้ว (LINE Bot ผ่าน Apps Script) มีความเสี่ยงต้องดีบักใหม่ช่วงเปลี่ยนผ่าน</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="cost">
+      <div class="kicker">06</div>
+      <h2><span class="num">§</span>ค่าใช้จ่าย — ตัวเลขจริง ไม่ประมาณเอง</h2>
+      <p class="section-desc">Firebase มี 2 แผน: <b>Spark</b> (ฟรี ไม่ต้องผูกบัตร) และ <b>Blaze</b> (จ่ายตามการใช้งานจริง แต่ยังมีโควตาฟรีในตัวเหมือนกัน) ตัวเลขด้านล่างเช็คแล้ว ณ ปี 2026</p>
+
+      <div class="card">
+        <div class="table-scroll"><table>
+          <tr><th>บริการ</th><th>Spark (ฟรี)</th><th>Blaze — ราคาเมื่อเกินโควตาฟรี</th></tr>
+          <tr><td class="finding-file">Realtime Database</td><td>1GB เก็บข้อมูล + 10GB ดาวน์โหลด/เดือน</td><td>$5/GB เก็บ, $1/GB ดาวน์โหลด</td></tr>
+          <tr><td class="finding-file">Firestore</td><td>50,000 อ่าน + 20,000 เขียน/วัน, 1GB เก็บ</td><td>$0.06/100k อ่าน, $0.18/100k เขียน</td></tr>
+          <tr><td class="finding-file">Cloud Functions</td><td><span class="tag card">ต้อง Blaze ถึง deploy ได้</span></td><td>ฟรี 2 ล้านครั้งเรียก/เดือน แล้วจึงเริ่มคิดเงิน</td></tr>
+          <tr><td class="finding-file">Hosting</td><td>10GB เก็บ+ส่งข้อมูล/เดือน</td><td>คิดตามการใช้งานจริงถ้าเกิน</td></tr>
+        </table></div>
+      </div>
+
+      <div class="callout good"><b>ประมาณการสำหรับโปรเจ็คนี้:</b> ฟาร์มเดียว บอร์ดเดียว ส่งข้อมูลเซนเซอร์ไม่กี่ KB ต่อครั้ง — ทาง <b>B1 ไม่ต้องผูกบัตรเลยและไม่มีค่าใช้จ่าย 0 บาทแน่นอน</b> เพราะใช้แค่ Realtime Database (ฟรีในตัว Spark) ทาง <b>B2 ต้องผูกบัตร แต่การใช้งานจริงยังอยู่ในโควตาฟรีของ Blaze สบาย ๆ (ห่างไกลจาก 2 ล้านครั้ง/เดือนมาก) ค่าใช้จ่ายจริงก็ยังเป็น ~$0/เดือน</b></div>
+
+      <div class="callout warn"><b>ข้อควรระวังถ้าเลือก B2:</b> Blaze ไม่มีเพดานตัดอัตโนมัติ แนะนำตั้ง <code>Budget Alert</code> ใน Google Cloud Console แจ้งเตือนทางอีเมลถ้ายอดใช้จ่ายเกิน $1 ไว้เป็นเซฟตี้ตั้งแต่วันแรกที่อัปเกรด กันเผลอเขียนโค้ด loop ผิดพลาดจนบิลบาน</div>
+    </section>
+
+    <section id="roadmap">
+      <div class="kicker">07</div>
+      <h2><span class="num">§</span>Roadmap</h2>
+      <div class="card">
+        <div class="phase">
+          <div class="ph-num"><b>01</b>เริ่มต้น</div>
+          <div>
+            <h4>ตั้งโปรเจ็ค Firebase <span class="track-tag b1">B1</span></h4>
+            <ul>
+              <li>สร้างโปรเจ็คใน Firebase Console (Spark plan ฟรี ไม่ต้องผูกบัตร)</li>
+              <li>เปิดใช้ Realtime Database เลือก region ที่ใกล้ที่สุด</li>
+              <li>ตั้ง Security Rules ตามข้อ 03 และเปิด Anonymous Auth</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="ph-num"><b>02</b>ต่อ ESP32</div>
+          <div>
+            <h4>เชื่อมเฟิร์มแวร์เข้า Firebase <span class="track-tag b1">B1</span></h4>
+            <ul>
+              <li>ติดตั้งไลบรารี Firebase-ESP-Client ผ่าน PlatformIO</li>
+              <li>แก้โค้ดจากที่เคย <code>http.GET()</code> ไปหา Apps Script เป็น subscribe stream จาก <code>control/</code> แทน</li>
+              <li>ทดสอบผ่าน Wokwi ก่อน ยังไม่ต้องมีบอร์ดจริง</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="ph-num"><b>03</b>ต่อ LINE Bot</div>
+          <div>
+            <h4>แก้ code.gs ให้เขียนลง Firebase <span class="track-tag b1">B1</span></h4>
+            <ul>
+              <li>แก้ฟังก์ชัน <code>update_data()</code> / <code>update_status()</code> ให้ยิง REST API ของ Firebase RTDB แทนการเขียน Google Sheet</li>
+              <li>เก็บ <code>line_user_id</code> ไว้ที่ <code>meta/</code> สำหรับใช้ Push แจ้งเตือนภายหลัง</li>
+              <li>ทดสอบว่าพิมพ์ <code>on_off_fan</code> ในแชทแล้วค่าใน Firebase เปลี่ยนจริง</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="ph-num"><b>04</b>แดชบอร์ด</div>
+          <div>
+            <h4>ทำเว็บอ่านค่าจาก Firebase <span class="track-tag b1">B1</span></h4>
+            <ul>
+              <li>หน้าเว็บง่าย ๆ ใช้ Firebase JS SDK อ่าน <code>sensors/latest</code> แบบ real-time ขึ้นจอทันทีไม่ต้องรีเฟรช</li>
+              <li>กราฟย้อนหลังจาก <code>sensors/log</code> ด้วย Chart.js</li>
+              <li>โฮสต์ฟรีบน Firebase Hosting หรือ GitHub Pages ก็ได้ (ยังไม่ต้อง Blaze)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="ph-num"><b>05</b>ถ้าอยากไปต่อ</div>
+          <div>
+            <h4>ย้ายเป็น Full Firebase <span class="track-tag b2">B2</span></h4>
+            <ul>
+              <li>อัปเกรดเป็น Blaze + ตั้ง Budget Alert ทันที</li>
+              <li>เขียน Cloud Function รับ LINE Webhook แทน Apps Script ทั้งหมด</li>
+              <li>ย้าย log เซนเซอร์จาก Google Sheet ไป Firestore ถ้าต้องการ query ที่ซับซ้อนขึ้น</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="checklist">
+      <div class="kicker">08</div>
+      <h2><span class="num">§</span>เช็คลิสต์เริ่มต้น</h2>
+      <ul class="checklist">
+        <li><span class="box"></span>สมัคร Firebase project ใหม่ (ใช้ Google account เดียวกับที่มี Google Sheet เดิมก็ได้)</li>
+        <li><span class="box"></span>เปิด Realtime Database + ตั้ง Security Rules ตามข้อ 03</li>
+        <li><span class="box"></span>ลองยิง REST API ของ Firebase ด้วย Postman/curl ก่อน ให้เข้าใจการอ่าน/เขียนก่อนไปแตะโค้ด ESP32</li>
+        <li><span class="box"></span>ตั้งโปรเจ็ค Wokwi จำลอง ESP32 เชื่อม Firebase ทดสอบ <code>control/</code> ให้ทำงานก่อนมีบอร์ดจริง</li>
+        <li><span class="box"></span>แก้ <code>code.gs</code> ให้เขียนลง Firebase แทน Sheet ทีละฟังก์ชัน ทดสอบทีละคำสั่งไป</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>SMART FARM IOT — FIREBASE MIGRATION PLAN (TRACK B) · จัดทำโดย Claude</footer>
+
+</body>
+</html>

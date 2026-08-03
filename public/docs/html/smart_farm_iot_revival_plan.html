@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Farm IoT — Revival Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F7F1;
+    --paper-raised:#FFFFFF;
+    --ink:#1E2A22;
+    --ink-soft:#57645C;
+    --line:#DDE1D3;
+    --board:#1B2420;
+    --blue:#256B8C;
+    --blue-soft:#E4F0F4;
+    --ochre:#A5752E;
+    --ochre-soft:#F8EFD9;
+    --rust:#A6432F;
+    --rust-soft:#FAE5DF;
+    --moss:#437245;
+    --moss-soft:#E6F0E4;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif; line-height:1.7; font-size:16px; word-wrap:break-word; overflow-wrap:anywhere; word-break:break-word;}
+  h1,h2,h3{font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif; letter-spacing:-0.01em; color:var(--ink);}
+  code,.mono{font-family:'IBM Plex Mono',monospace; font-size:0.88em;}
+  a{color:var(--blue);}
+
+  .hero{background:var(--board); color:#EDEEE6; padding:56px 8vw 40px; position:relative; overflow:hidden;}
+  .hero::after{content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size:28px 28px; pointer-events:none;}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:#9FB6A8; margin-bottom:14px;}
+  .hero h1{font-size:clamp(26px,4vw,42px); margin:0 0 10px; color:#F7F8F2;}
+  .hero p.sub{max-width:680px; color:#C7CFC5; font-size:15.5px; margin:0 0 30px;}
+
+  .status-board{display:flex; flex-wrap:wrap; gap:0; background:#141C18; border:1px solid #2C3A31; border-radius:var(--radius); padding:6px; position:relative; z-index:1;}
+  .status-chip{flex:1 1 190px; display:flex; align-items:center; gap:10px; padding:14px 16px; border-right:1px solid #2C3A31;}
+  .status-chip:last-child{border-right:none;}
+  .led{width:11px; height:11px; border-radius:50%; flex-shrink:0; box-shadow:0 0 8px 1px currentColor;}
+  .led.ok{background:#5FA463; color:#5FA463;}
+  .led.warn{background:#D9A441; color:#D9A441;}
+  .led.skip{background:#8B95A1; color:#8B95A1;}
+  .status-chip .txt{font-size:13px;}
+  .status-chip .txt b{display:block; font-size:13.5px; color:#F0F2ED;}
+  .status-chip .txt span{color:#9AA69C; font-family:'IBM Plex Mono',monospace; font-size:11.5px;}
+
+  .wrap{display:grid; grid-template-columns:230px minmax(0,1fr); gap:48px; max-width:1180px; margin:0 auto; padding:44px 8vw 100px;}
+  nav.toc{position:sticky; top:28px; align-self:start; font-size:14px;}
+  nav.toc .toc-label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px;}
+  nav.toc a{display:block; color:var(--ink-soft); text-decoration:none; padding:6px 0 6px 14px; border-left:2px solid var(--line); transition:all .15s;}
+  nav.toc a:hover{color:var(--blue); border-left-color:var(--blue);}
+
+  main section{margin-bottom:64px; scroll-margin-top:24px;}
+  .kicker{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.1em; color:var(--blue); text-transform:uppercase; margin-bottom:6px;}
+  main h2{font-size:26px; margin:0 0 4px;}
+  main h2 .num{color:var(--line); margin-right:10px; font-family:'IBM Plex Mono',monospace; font-weight:500;}
+  .section-desc{color:var(--ink-soft); max-width:700px; margin:10px 0 26px; font-size:15px;}
+
+  .card{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin-bottom:16px; box-shadow:0 1px 3px rgba(30,42,34,0.06);}
+
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); padding:9px 12px; border-bottom:2px solid var(--ink);}
+  td{padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  .finding-file{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft);}
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+
+  .tag{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; padding:3px 9px; border-radius:100px; white-space:nowrap;}
+  .tag.dead{background:var(--rust-soft); color:var(--rust);}
+  .tag.skip{background:#E7E9E2; color:#5C665F;}
+  .tag.fix{background:var(--ochre-soft); color:var(--ochre);}
+  .tag.go{background:var(--moss-soft); color:var(--moss);}
+
+  pre.tree{background:var(--board); color:#D7DED4; border-radius:var(--radius); padding:20px 22px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; overflow-x:auto; line-height:1.75;}
+  pre.tree .comment{color:#7C9083;}
+  pre.tree .skip{color:#D9A441;}
+
+  .callout{background:var(--blue-soft); border:1px solid #B7D2DC; border-radius:var(--radius); padding:16px 18px; font-size:14.5px; margin:16px 0;}
+  .callout b{color:var(--blue);}
+  .callout.warn{background:var(--ochre-soft); border-color:#E0C48D;}
+  .callout.warn b{color:var(--ochre);}
+  .callout.good{background:var(--moss-soft); border-color:#C6DBC3;}
+  .callout.good b{color:var(--moss);}
+  .callout.skip{background:#ECEEE6; border-color:#D7DBCC;}
+  .callout.skip b{color:#5C665F;}
+
+  .phase{padding:18px 0; border-top:1px solid var(--line);}
+  .phase:first-of-type{border-top:none;}
+  .phase-head{display:flex; align-items:center; gap:12px; margin-bottom:8px;}
+  .phase-head .ph-num{font-family:'Space Grotesk',sans-serif; font-size:20px; color:var(--blue); font-weight:700;}
+  .phase-head h4{margin:0; font-size:16px;}
+  .phase ul{margin:8px 0 0; padding-left:18px; font-size:14.5px; color:var(--ink-soft);}
+  .phase ul li{margin-bottom:5px;}
+  .phase .goal{font-size:13px; color:var(--ink-soft); font-style:italic; margin-bottom:8px;}
+
+  .checklist{list-style:none; margin:0; padding:0;}
+  .checklist li{display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-bottom:1px solid var(--line); font-size:14.5px;}
+  .checklist li:last-child{border-bottom:none;}
+  .checklist .box{width:17px; height:17px; border:1.5px solid var(--ink-soft); border-radius:4px; flex-shrink:0; margin-top:2px;}
+
+  footer{text-align:center; padding:30px 8vw 60px; color:var(--ink-soft); font-size:12.5px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:960px){
+    .wrap{grid-template-columns:1fr; padding:32px 6vw 80px; gap:28px;}
+    nav.toc{position:static; margin-bottom:4px; background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;}
+    nav.toc .toc-list{display:flex; flex-wrap:wrap; gap:6px 16px;}
+    nav.toc a{border-left:none; padding:5px 0;}
+    .status-board{flex-direction:column;}
+    .status-chip{border-right:none; border-bottom:1px solid #2C3A31; flex:1 1 100%;}
+    .status-chip:last-child{border-bottom:none;}
+  }
+  @media (max-width:600px){
+    body{font-size:15.5px;}
+    .hero{padding:40px 6vw 30px;}
+    .hero h1{font-size:24px;}
+    .hero p.sub{font-size:14.5px;}
+    main h2{font-size:21px;}
+    .card{padding:16px 14px;}
+    th, td{padding:9px 10px; font-size:12.5px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Revival Plan — เฟส 0</div>
+  <h1>ปลุกของเดิมให้ใช้งานได้ก่อน</h1>
+  <p class="sub">ไม่รื้อสถาปัตยกรรม ไม่ย้ายไปเทคโนโลยีใหม่ — จัดโครงสร้างโปรเจ็คให้เป็นระเบียบ แก้เฉพาะบั๊กที่กันไม่ให้รันได้ เว้นส่วนที่ตายแล้วไว้ก่อน แล้วทดสอบทีละส่วนจนมั่นใจว่าของเดิมทำงานได้จริง ค่อยกลับมาเปลี่ยนอะไหล่ที่เหลือ</p>
+
+  <div class="status-board">
+    <div class="status-chip"><div class="led ok"></div><div class="txt"><b>เป้าหมายเฟสนี้</b><span>Compile ได้ + ทดสอบผ่านทีละส่วน</span></div></div>
+    <div class="status-chip"><div class="led skip"></div><div class="txt"><b>เว้นไว้ก่อน</b><span>ทุกอย่างที่พึ่ง LINE Notify</span></div></div>
+    <div class="status-chip"><div class="led warn"></div><div class="txt"><b>ต้องแก้ก่อนเทส</b><span>บั๊ก 3 จุดในเฟิร์มแวร์</span></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <nav class="toc">
+    <div class="toc-label">สารบัญ</div>
+    <div class="toc-list">
+      <a href="#goal">01 · เป้าหมาย &amp; หลักคิด</a>
+      <a href="#structure">02 · จัดโครงสร้างโปรเจ็คใหม่</a>
+      <a href="#skip">03 · เว้นไว้ก่อน (ของที่ตายแล้ว)</a>
+      <a href="#fix">04 · แก้ก่อนถึงจะรันได้</a>
+      <a href="#test">05 · ลำดับการทดสอบ</a>
+      <a href="#swap">06 · กลับมาหาอะไหล่เปลี่ยน</a>
+      <a href="#checklist">07 · เช็คลิสต์</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <section id="goal">
+      <div class="kicker">01</div>
+      <h2><span class="num">§</span>เป้าหมาย &amp; หลักคิด</h2>
+      <p class="section-desc">เฟสนี้ตอบคำถามเดียว: <b>&quot;ของเดิมที่มีอยู่ ยังใช้งานได้จริงแค่ไหน?&quot;</b> โดยไม่เอาเรื่องย้าย Firebase หรือแก้ security ทั้งหมดมาปนกัน — แยกทีละชั้นแบบนี้:</p>
+      <div class="card">
+        <table>
+          <tr><th>ลำดับ</th><th>ทำอะไร</th><th>ไม่ทำอะไร</th></tr>
+          <tr><td class="finding-file">1</td><td>จัดไฟล์เข้าโครงสร้างที่อ่านง่าย</td><td>ไม่แก้ logic ใด ๆ</td></tr>
+          <tr><td class="finding-file">2</td><td>แก้เฉพาะบั๊กที่ทำให้ผลลัพธ์ผิด/รันไม่ได้</td><td>ไม่แตะเรื่อง security/ย้าย backend</td></tr>
+          <tr><td class="finding-file">3</td><td>เว้นส่วนที่พึ่งบริการตายแล้วไว้ (stub เฉย ๆ)</td><td>ไม่หาทางแทนที่ตอนนี้</td></tr>
+          <tr><td class="finding-file">4</td><td>ทดสอบทีละส่วนแบบแยกอิสระ</td><td>ไม่รอให้ทุกอย่างพร้อมพร้อมกันแล้วค่อยเทสรวด</td></tr>
+        </table>
+      </div>
+      <div class="callout"><b>ทำไมต้องแยกแบบนี้:</b> ถ้าพยายามแก้ทุกอย่างพร้อมกันจะไม่รู้ว่าอะไรพังเพราะบั๊กเดิม อะไรพังเพราะของใหม่ที่เพิ่งแก้ — เฟสนี้จบแล้วควรได้ระบบที่ &quot;เหมือนเดิมทุกอย่าง ยกเว้นส่วนที่ตายไปแล้วจริง ๆ&quot; เป็น baseline ที่เชื่อถือได้ก่อนค่อยไปพัฒนาต่อ</div>
+    </section>
+
+    <section id="structure">
+      <div class="kicker">02</div>
+      <h2><span class="num">§</span>จัดโครงสร้างโปรเจ็คใหม่</h2>
+      <p class="section-desc">10 ไฟล์ <code>.ino</code> เดิมกระจัดกระจายอยู่ระดับเดียวกันหมด ไม่มีการแยกส่วน — จัดใหม่ตามหน้าที่ ไม่เปลี่ยน logic ข้างในเลย แค่ย้ายและเปลี่ยนนามสกุลให้ทำงานกับ PlatformIO ได้</p>
+
+      <div class="card">
+        <div class="table-scroll"><table>
+          <tr><th>ไฟล์เดิม</th><th>ย้ายไปที่</th></tr>
+          <tr><td class="finding-file">smart_fram_iot_8.ino</td><td class="finding-file">firmware/src/main.cpp</td></tr>
+          <tr><td class="finding-file">Task1code.ino + Task2code.ino</td><td class="finding-file">firmware/src/tasks.cpp / tasks.h</td></tr>
+          <tr><td class="finding-file">sensor_read.ino + dht.ino</td><td class="finding-file">firmware/src/sensors.cpp / sensors.h</td></tr>
+          <tr><td class="finding-file">control.ino</td><td class="finding-file">firmware/src/control.cpp / control.h</td></tr>
+          <tr><td class="finding-file">camera.ino</td><td class="finding-file">firmware/src/camera.cpp / camera.h</td></tr>
+          <tr><td class="finding-file">read_google_sheet.ino + send_google_sheet.ino</td><td class="finding-file">firmware/src/cloud_sync.cpp / cloud_sync.h</td></tr>
+          <tr><td class="finding-file">time.ino</td><td class="finding-file">firmware/src/rtc_time.cpp / rtc_time.h</td></tr>
+          <tr><td class="finding-file">(ค่า WiFi/token ที่เคยฝังในโค้ด)</td><td class="finding-file">firmware/src/secrets.h <span class="tag fix">ไฟล์ใหม่ ไม่ commit</span></td></tr>
+          <tr><td class="finding-file">code.gs</td><td class="finding-file">backend/apps-script/Code.gs</td></tr>
+        </table></div>
+      </div>
+
+      <p class="section-desc" style="margin-top:6px;">โครงสร้างเต็มหลังจัดใหม่:</p>
+      <pre class="tree">smart-farm-iot/
+├── README.md                      <span class="comment">// ภาพรวม + วิธีรัน + สถานะแต่ละส่วน</span>
+├── .gitignore                     <span class="comment">// กัน secrets.h หลุด</span>
+├── firmware/
+│   ├── platformio.ini
+│   ├── wokwi.toml                 <span class="comment">// จำลองแบบไม่ใช้ฮาร์ดแวร์จริง</span>
+│   └── src/
+│       ├── main.cpp
+│       ├── tasks.cpp / .h
+│       ├── sensors.cpp / .h
+│       ├── control.cpp / .h
+│       ├── camera.cpp / .h        <span class="skip">// ส่วน LINE notify ถูก stub ไว้ (ดูข้อ 03)</span>
+│       ├── cloud_sync.cpp / .h
+│       ├── rtc_time.cpp / .h      <span class="comment">// แก้บั๊กนับวันตรงนี้</span>
+│       └── secrets.example.h      <span class="comment">// เทมเพลตไม่ใส่ค่าจริง</span>
+├── backend/
+│   └── apps-script/
+│       └── Code.gs
+├── docs/
+│   ├── pin-mapping.md
+│   └── pcb/
+└── simulation/
+    └── wokwi/
+        └── diagram.json</pre>
+      <p class="section-desc" style="margin-top:10px;">💡 หลักการจัดโครงสร้างที่ใช้: แยกตาม &quot;หน้าที่&quot; (sensors ≠ control ≠ cloud sync) ไม่ใช่แยกตาม &quot;ลำดับที่เขียน&quot; แบบเดิม (Task1/Task2) — ทำให้เวลากลับมาแก้ทีหลัง หาไฟล์เจอทันทีว่าเรื่องอะไรอยู่ตรงไหน</p>
+    </section>
+
+    <section id="skip">
+      <div class="kicker">03</div>
+      <h2><span class="num">§</span>เว้นไว้ก่อน — ของที่ตายแล้ว</h2>
+      <p class="section-desc">มีจุดเดียวที่ต้อง &quot;เว้น&quot; จริง ๆ เพราะบริการปิดไปแล้ว ไม่มีทางทำให้กลับมาใช้ได้ ต้อง stub เฉย ๆ ไม่ใช่แก้บั๊ก</p>
+      <div class="card">
+        <table>
+          <tr><th>จุดที่ต้องเว้น</th><th>อยู่ไฟล์ไหน</th><th>ทำยังไงตอนนี้</th></tr>
+          <tr><td><span class="tag dead">ตายแล้ว</span> LINE Notify</td><td class="finding-file">camera.cpp, control.cpp</td><td>คอมเมนต์ฟังก์ชัน <code>LINE.notify()</code> / <code>LINE.notifyPicture()</code> ออกทั้งหมด แทนที่ด้วย <code>Serial.println()</code> หรือเขียน log ลง SPIFFS แทนชั่วคราว เพื่อให้ยังเห็นว่าระบบ &quot;อยากจะ&quot; แจ้งเตือนตอนไหนบ้าง โดยไม่ต้องพึ่งบริการนี้</td></tr>
+        </table>
+      </div>
+      <div class="callout skip"><b>ทำไมแค่จุดเดียว:</b> จากรายงานสำรวจก่อนหน้า ส่วนอื่นทั้งหมด (Google Sheet, Apps Script endpoint, LINE Bot แบบแชท) ยังใช้งานได้จริงในปัจจุบัน ไม่มีอะไรตายเพิ่ม — เว้นเฉพาะจุดนี้จุดเดียวก็พอ ไม่ต้อง over-engineer เผื่อกรณีอื่นที่ยังไม่ได้เกิดขึ้นจริง</div>
+    </section>
+
+    <section id="fix">
+      <div class="kicker">04</div>
+      <h2><span class="num">§</span>แก้ก่อนถึงจะรันได้ถูกต้อง</h2>
+      <p class="section-desc">3 บั๊กนี้ไม่เกี่ยวกับบริการภายนอกเลย เป็นความผิดพลาดในโค้ดล้วน ๆ ต้องแก้ก่อนเริ่มทดสอบ ไม่งั้นผลทดสอบจะเชื่อถือไม่ได้</p>
+      <div class="card">
+        <table>
+          <tr><th>ไฟล์</th><th>บั๊ก</th><th>วิธีแก้</th></tr>
+          <tr><td class="finding-file">sensors.cpp</td><td>ตัวแปรพินสลับกัน <code>soil_1_3</code> อ่านจาก <code>soil_1_1_pin</code></td><td>แก้ให้ตรงชื่อตัวแปร <code>soil_1_3_pin</code> / <code>soil_2_1_pin</code></td></tr>
+          <tr><td class="finding-file">sensors.cpp</td><td><code>sum_soil_all = soil_1_1;</code> เขียนทับค่าเฉลี่ย</td><td>ลบบรรทัดนี้ทิ้ง ใช้ผลจาก <code>cal_sum_soil_all/12</code> ที่คำนวณไว้แล้ว</td></tr>
+          <tr><td class="finding-file">rtc_time.cpp</td><td><code>now_day = now.minute();</code> นับวันผิดหน่วย</td><td>เปลี่ยนกลับเป็น <code>now.day()</code> ตามที่คอมเมนต์ไว้เดิม</td></tr>
+        </table>
+      </div>
+      <div class="callout warn"><b>ไม่บังคับแต่แนะนำทำไปพร้อมกัน:</b> ย้าย WiFi password / รหัสกล้อง ไปไว้ใน <code>secrets.h</code> เพราะแค่จัดโครงสร้างไฟล์ใหม่ (ข้อ 02) ก็ต้องเปิดไฟล์เหล่านี้อยู่แล้ว ถือโอกาสทำเลยจะประหยัดเวลากว่ากลับมาทำทีหลัง — แต่เรื่อง auth/signature ของ Apps Script ยังไม่ต้องแตะในเฟสนี้</div>
+    </section>
+
+    <section id="test">
+      <div class="kicker">05</div>
+      <h2><span class="num">§</span>ลำดับการทดสอบ — ทีละส่วน ไม่รอครบ</h2>
+      <p class="section-desc">เรียงจากส่วนที่ทดสอบได้ง่ายสุด/ไม่พึ่งอะไรเลย ไปหาส่วนที่ต้องพึ่งหลายอย่าง — แต่ละข้อทดสอบผ่านได้โดยไม่ต้องรอข้ออื่น</p>
+
+      <div class="card">
+        <div class="phase">
+          <div class="phase-head"><span class="ph-num">1</span><h4>Sensors (แยกอิสระ)</h4> <span class="tag go">ทดสอบได้เลย</span></div>
+          <div class="goal">ไม่พึ่งอะไรนอกจากตัวบอร์ดจำลอง</div>
+          <ul>
+            <li>จำลอง DHT22 + ตัวต้านทานปรับค่าแทนดินชื้นบน Wokwi</li>
+            <li>เช็คว่าค่าที่อ่านได้ตรงโซนถูกต้องหลังแก้บั๊ก pin สลับกัน</li>
+            <li>เช็คว่า <code>sum_soil_all</code> เป็นค่าเฉลี่ยจริง ไม่ใช่ค่าจุดเดียว</li>
+          </ul>
+        </div>
+
+        <div class="phase">
+          <div class="phase-head"><span class="ph-num">2</span><h4>Control logic + Actuators</h4> <span class="tag go">ทดสอบได้เลย</span></div>
+          <div class="goal">ทดสอบด้วย LED แทนรีเลย์ ไม่ต้องมีอินเทอร์เน็ตด้วยซ้ำ</div>
+          <ul>
+            <li>ป้อนค่าเซนเซอร์จำลองสูง/ต่ำ เช็คว่าพัดลม/วาล์วเปิด-ปิดถูกเงื่อนไข</li>
+            <li>ทดสอบทั้ง 3 โหมดปลูก (เมลอน/แตงโม/สตอเบอรี่) แยกทีละโหมด</li>
+          </ul>
+        </div>
+
+        <div class="phase">
+          <div class="phase-head"><span class="ph-num">3</span><h4>วันปลูก (RTC + day counter)</h4> <span class="tag fix">ทดสอบหลังแก้บั๊กข้อ 04</span></div>
+          <div class="goal">ยืนยันว่ารอบให้น้ำ/ปุ๋ยตามจำนวนวันคำนวณถูก</div>
+          <ul>
+            <li>ตั้งเวลาจำลองใน Wokwi ให้เดินเร็ว เช็คว่า <code>count_day</code> เพิ่มตามวันจริง ไม่ใช่ตามนาที</li>
+          </ul>
+        </div>
+
+        <div class="phase">
+          <div class="phase-head"><span class="ph-num">4</span><h4>เชื่อม Google Sheet (GET/POST)</h4> <span class="tag fix">ต้องเช็คก่อน</span></div>
+          <div class="goal">ยืนยันว่า ESP32 คุยกับ code.gs ได้จริง</div>
+          <ul>
+            <li>ตรวจว่า Apps Script มี <code>doGet(e)</code> จริงหรือไม่ (ที่เคยตั้งข้อสังเกตไว้) ถ้าไม่มีต้องเพิ่มก่อนถึงจะทดสอบต่อได้</li>
+            <li>ยิง <code>status=send</code> ทดสอบว่าเขียนแถวใหม่ใน Google Sheet ได้</li>
+            <li>ยิง <code>status=get</code> ทดสอบว่าดึงค่า control กลับมาได้ครบ</li>
+          </ul>
+        </div>
+
+        <div class="phase">
+          <div class="phase-head"><span class="ph-num">5</span><h4>LINE Bot แบบแชท</h4> <span class="tag go">น่าจะทำงานได้อยู่แล้ว</span></div>
+          <div class="goal">ยืนยันซ้ำว่ายังทำงานเหมือนตอนสำรวจครั้งก่อน</div>
+          <ul>
+            <li>พิมพ์ <code>check_status</code>, <code>on_off_fan</code>, <code>mode_1</code> ในแชทจริง เช็คว่า Google Sheet เปลี่ยนค่าตาม</li>
+          </ul>
+        </div>
+
+        <div class="phase">
+          <div class="phase-head"><span class="ph-num">6</span><h4>กล้อง (ไม่พึ่ง LINE)</h4> <span class="tag skip">ทดสอบแบบตัด LINE ออก</span></div>
+          <div class="goal">ทดสอบแค่การถ่าย/บันทึกภาพ ไม่ต้องส่งไปไหน</div>
+          <ul>
+            <li>ทดสอบว่าดึงภาพจากกล้อง IP มาเก็บใน SPIFFS ได้ (ส่วนที่ยังไม่ตาย)</li>
+            <li>ส่วนส่งภาพผ่าน LINE ข้ามไปก่อนตามข้อ 03</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="swap">
+      <div class="kicker">06</div>
+      <h2><span class="num">§</span>กลับมาหาอะไหล่เปลี่ยน (หลังทุกอย่างในข้อ 05 ผ่านหมด)</h2>
+      <p class="section-desc">พอมั่นใจว่าของเดิมรันได้จริงครบทุกส่วนที่ยังไม่ตายแล้ว ค่อยกลับมาตัดสินใจเรื่องเดียวที่เหลือ: จะแทน LINE Notify ด้วยอะไร — มีตัวเลือกและรายละเอียดเชิงลึกอยู่ในเอกสารที่ทำไว้ก่อนหน้านี้แล้ว ไม่ต้องทำซ้ำในเอกสารนี้:</p>
+      <div class="card">
+        <table>
+          <tr><th>ทางเลือก</th><th>สรุปสั้น ๆ</th></tr>
+          <tr><td class="finding-file">Apps Script <code>pushMessage()</code></td><td>ใช้ token เดิมที่มีอยู่แล้วใน Code.gs เพิ่มฟังก์ชันเดียว เปลี่ยนน้อยสุด</td></tr>
+          <tr><td class="finding-file">Firebase (ดูไฟล์ Firebase Migration Plan)</td><td>ย้ายทั้งระบบไปใช้ real-time database คุ้มค่าถ้าตั้งใจพัฒนาต่อยาว ๆ</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="checklist">
+      <div class="kicker">07</div>
+      <h2><span class="num">§</span>เช็คลิสต์เฟสนี้</h2>
+      <ul class="checklist">
+        <li><span class="box"></span>ย้ายไฟล์ .ino ทั้งหมดเข้าโครงสร้างใหม่ตามข้อ 02 (แค่ย้าย ไม่แก้ logic)</li>
+        <li><span class="box"></span>คอมเมนต์ <code>LINE.notify()</code> ทุกจุดออก แทนด้วย <code>Serial.println()</code> ชั่วคราว</li>
+        <li><span class="box"></span>แก้บั๊ก 3 จุดตามข้อ 04</li>
+        <li><span class="box"></span>ทดสอบตามลำดับข้อ 05 ทีละข้อ ห้ามข้าม แม้ข้อก่อนหน้ายังไม่ผ่าน 100%</li>
+        <li><span class="box"></span>บันทึกผลแต่ละข้อไว้ใน README ว่าผ่าน/ไม่ผ่าน เพื่อรู้สถานะ baseline ก่อนพัฒนาต่อ</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>SMART FARM IOT — REVIVAL PLAN (PHASE 0) · จัดทำโดย Claude</footer>
+
+</body>
+</html>
