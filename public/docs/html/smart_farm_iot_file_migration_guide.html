@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Farm IoT — File Migration Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F7F1; --paper-raised:#FFFFFF; --ink:#1E2A22; --ink-soft:#57645C;
+    --line:#DDE1D3; --board:#1B2420; --blue:#256B8C; --blue-soft:#E4F0F4;
+    --ochre:#A5752E; --ochre-soft:#F8EFD9; --rust:#A6432F; --rust-soft:#FAE5DF;
+    --moss:#437245; --moss-soft:#E6F0E4; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif; line-height:1.7; font-size:16px; word-wrap:break-word; overflow-wrap:anywhere; word-break:break-word;}
+  h1,h2,h3{font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif; letter-spacing:-0.01em; color:var(--ink);}
+  code,.mono{font-family:'IBM Plex Mono',monospace; font-size:0.88em;}
+  a{color:var(--blue);}
+
+  .hero{background:var(--board); color:#EDEEE6; padding:48px 8vw 36px; position:relative; overflow:hidden;}
+  .hero::after{content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size:28px 28px; pointer-events:none;}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:#9FB6A8; margin-bottom:14px;}
+  .hero h1{font-size:clamp(24px,4vw,38px); margin:0 0 10px; color:#F7F8F2;}
+  .hero p.sub{max-width:680px; color:#C7CFC5; font-size:15px; margin:0;}
+
+  .legend{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; position:relative; z-index:1;}
+  .legend .tag{font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:600; padding:6px 12px; border-radius:100px;}
+  .tag.move{background:#2E4A38; color:#8FD6A8;}
+  .tag.merge{background:#2E3E4A; color:#8FBBD6;}
+  .tag.new{background:#4A3A2E; color:#D6B48F;}
+  .tag.keep{background:#3A2E4A; color:#C08FD6;}
+
+  .wrap{max-width:880px; margin:0 auto; padding:40px 8vw 100px;}
+  main section{margin-bottom:52px;}
+  .kicker{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.1em; color:var(--blue); text-transform:uppercase; margin-bottom:6px;}
+  main h2{font-size:24px; margin:0 0 4px;}
+  .section-desc{color:var(--ink-soft); margin:10px 0 22px; font-size:15px;}
+
+  .card{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px; box-shadow:0 1px 3px rgba(30,42,34,0.06);}
+
+  /* file mapping rows */
+  .fmap{display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid var(--line);}
+  .fmap:first-child{border-top:none; padding-top:4px;}
+  .fmap .old{flex:1; min-width:0;}
+  .fmap .old .have{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); background:var(--paper); border:1px solid var(--line); border-radius:5px; padding:2px 7px; margin-bottom:4px;}
+  .fmap .old code{font-size:13.5px; display:block;}
+  .fmap .arrow{flex-shrink:0; color:var(--line); font-size:18px;}
+  .fmap .new{flex:1; min-width:0;}
+  .fmap .new code{font-size:13.5px; display:block; color:var(--ink); font-weight:600;}
+  .fmap .badge{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:700; padding:2px 8px; border-radius:100px; margin-top:5px;}
+  .badge.move{background:var(--moss-soft); color:var(--moss);}
+  .badge.merge{background:var(--blue-soft); color:var(--blue);}
+  .badge.new{background:var(--ochre-soft); color:var(--ochre);}
+  .badge.keep{background:#F0E7F5; color:#7A4C94;}
+
+  @media (max-width:560px){
+    .fmap{flex-direction:column; align-items:flex-start; gap:6px;}
+    .fmap .arrow{transform:rotate(90deg); align-self:center; margin:2px 0;}
+  }
+
+  .callout{background:var(--blue-soft); border:1px solid #B7D2DC; border-radius:var(--radius); padding:16px 18px; font-size:14.5px; margin:16px 0;}
+  .callout b{color:var(--blue);}
+  .callout.warn{background:var(--ochre-soft); border-color:#E0C48D;}
+  .callout.warn b{color:var(--ochre);}
+
+  .steps{list-style:none; margin:0; padding:0; counter-reset:step;}
+  .steps li{counter-increment:step; position:relative; padding:14px 0 14px 42px; border-top:1px solid var(--line); font-size:14.5px;}
+  .steps li:first-child{border-top:none;}
+  .steps li::before{content:counter(step); position:absolute; left:0; top:12px; width:26px; height:26px; border-radius:50%; background:var(--board); color:#F0F2ED; font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;}
+  .steps code{display:inline-block; margin-top:4px;}
+
+  pre.tree{background:var(--board); color:#D7DED4; border-radius:var(--radius); padding:18px 20px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; overflow-x:auto; line-height:1.75;}
+  pre.tree .comment{color:#7C9083;}
+  pre.tree .m{color:#8FD6A8;}
+  pre.tree .n{color:#D6B48F;}
+
+  footer{text-align:center; padding:30px 8vw 60px; color:var(--ink-soft); font-size:12.5px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:600px){
+    body{font-size:15.5px;}
+    .hero{padding:36px 6vw 28px;}
+    .hero h1{font-size:22px;}
+    .wrap{padding:30px 6vw 80px;}
+    main h2{font-size:20px;}
+    .card{padding:16px 14px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">คู่มือย้ายไฟล์ทีละตัว</div>
+  <h1>ของเดิมมีอะไรบ้าง → ไปไว้ตรงไหน</h1>
+  <p class="sub">ตอนนี้พี่มีไฟล์อยู่ 11 ไฟล์ (10 .ino + code.gs) — ด้านล่างคือคำตอบตรง ๆ ว่าแต่ละไฟล์ต้องทำยังไง พร้อมไฟล์ใหม่ที่ต้องสร้างเองที่ยังไม่มีอยู่เลย</p>
+  <div class="legend">
+    <span class="tag move">🟢 MOVE — ย้าย+เปลี่ยนนามสกุลเฉย ๆ</span>
+    <span class="tag merge">🔵 MERGE — รวม 2 ไฟล์เดิมเข้าด้วยกัน</span>
+    <span class="tag new">🟠 NEW — ต้องสร้างเนื้อหาใหม่เอง</span>
+    <span class="tag keep">🟣 KEEP — ใช้ไฟล์เดิมได้เลยไม่ต้องแตะ</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <main>
+
+    <section id="have">
+      <div class="kicker">สิ่งที่มีอยู่แล้วตอนนี้</div>
+      <h2>11 ไฟล์จาก zip + code.gs</h2>
+      <p class="section-desc">นี่คือของทั้งหมดที่พี่อัปโหลดมาให้ผมดูก่อนหน้านี้ — เช็คว่าครบตามนี้ก่อนเริ่มย้าย</p>
+      <div class="card">
+        <code>smart_fram_iot_8.ino</code> · <code>control.ino</code> · <code>camera.ino</code> · <code>dht.ino</code> · <code>sensor_read.ino</code> · <code>read_google_sheet.ino</code> · <code>send_google_sheet.ino</code> · <code>time.ino</code> · <code>Task1code.ino</code> · <code>Task2code.ino</code> · <code>code.gs</code>
+      </div>
+    </section>
+
+    <section id="firmware">
+      <div class="kicker">01</div>
+      <h2>ไฟล์เฟิร์มแวร์ (.ino → .cpp/.h)</h2>
+      <p class="section-desc">ไปไว้ใต้ <code>firmware/src/</code> ทั้งหมด</p>
+      <div class="card">
+
+        <div class="fmap">
+          <div class="old"><span class="have">มีอยู่แล้ว</span><code>smart_fram_iot_8.ino</code></div>
+          <div class="arrow">→</div>
+          <div class="new"><code>main.cpp</code><span class="badge move">MOVE</span></div>
+        </div>
+
+        <div class="fmap">
+          <div class="old"><span class="have">มีอยู่แล้ว</span><code>Task1code.ino</code><br><code>Task2code.ino</code></div>
+          <div class="arrow">→</div>
+          <div class="new"><code>tasks.cpp</code> + <code>tasks.h</code><span class="badge merge">MERGE</span></div>
+        </div>
+
+        <div class="fmap">
+          <div class="old"><span class="have">มีอยู่แล้ว</span><code>sensor_read.ino</code><br><code>dht.ino</code></div>
+          <div class="arrow">→</div>
+          <div class="new"><code>sensors.cpp</code> + <code>sensors.h</code><span class="badge merge">MERGE</span></div>
+        </div>
+
+        <div class="fmap">
+          <div class="old"><span class="have">มีอยู่แล้ว</span><code>control.ino</code></div>
+          <div class="arrow">→</div>
+          <div class="new"><code>control.cpp</code> + <code>control.h</code><span class="badge move">MOVE</span></div>
+        </div>
+
+        <div class="fmap">
+          <div class="old"><span class="have">มีอยู่แล้ว</span><code>camera.ino</code></div>
+          <div class="arrow">→</div>
+          <div class="new"><code>camera.cpp</code> + <code>camera.h</code><span class="badge move">MOVE</span></div>
+        </div>
+
+        <div class="fmap">
+          <div class="old"><span class="have">มีอยู่แล้ว</span><code>read_google_sheet.ino</code><br><code>send_google_sheet.ino</code></div>
+          <div class="arrow">→</div>
+          <div class="new"><code>cloud_sync.cpp</code> + <code>cloud_sync.h</code><span class="badge merge">MERGE</span></div>
+        </div>
+
+        <div class="fmap">
+          <div class="old"><span class="have">มีอยู่แล้ว</span><code>time.ino</code></div>
+          <div class="arrow">→</div>
+          <div class="new"><code>rtc_time.cpp</code> + <code>rtc_time.h</code><span class="badge move">MOVE</span></div>
+        </div>
+
+      </div>
+      <div class="callout warn"><b>จุดที่งงบ่อยสุด:</b> ไฟล์ <code>.h</code> ที่โผล่มาคู่กันทุกไฟล์ <b>ไม่ได้คัดลอกมาจากไหน</b> — เป็นไฟล์ใหม่ที่ต้องเขียนเอง (แค่ &quot;ประกาศหัวฟังก์ชัน&quot; ไม่ใช่ logic จริง) เพราะ Arduino IDE เดิมมันประกาศให้อัตโนมัติเวลาไฟล์อยู่ในสเก็ตช์เดียวกัน แต่ PlatformIO ไม่ทำให้ ตัวอย่าง:
+        <pre class="tree" style="margin-top:10px;">// sensors.h
+#ifndef SENSORS_H
+#define SENSORS_H
+void readAllSensors();      <span class="comment">// แค่บรรทัดประกาศ ไม่มี { }</span>
+float getSoilAverage();
+#endif</pre>
+      </div>
+    </section>
+
+    <section id="backend">
+      <div class="kicker">02</div>
+      <h2>ไฟล์ Backend</h2>
+      <div class="card">
+        <div class="fmap">
+          <div class="old"><span class="have">มีอยู่แล้ว</span><code>code.gs</code></div>
+          <div class="arrow">→</div>
+          <div class="new"><code>backend/apps-script/Code.gs</code><span class="badge move">MOVE</span></div>
+        </div>
+      </div>
+      <p class="section-desc">ย้ายไฟล์เดียว ไม่ต้องแยกอะไร — เนื้อหาข้างในค่อยแก้ทีหลังตาม <code>PLAN.md</code> Phase 1 (auth/signature)</p>
+    </section>
+
+    <section id="new">
+      <div class="kicker">03</div>
+      <h2>ไฟล์ใหม่ที่ต้องสร้างเอง (ยังไม่มีในของเดิมเลย)</h2>
+      <p class="section-desc">พวกนี้ไม่มีต้นฉบับให้ย้าย — ต้องพิมพ์ขึ้นมาใหม่ทั้งหมด ส่วนใหญ่สั้นและไม่ยาก</p>
+      <div class="card">
+        <div class="fmap">
+          <div class="old"><span class="have">ไม่มีของเดิม</span>ค่า WiFi/token/รหัสกล้อง ที่เคยฝังในโค้ด</div>
+          <div class="arrow">→</div>
+          <div class="new"><code>firmware/src/secrets.h</code><span class="badge new">NEW</span></div>
+        </div>
+        <div class="fmap">
+          <div class="old"><span class="have">ไม่มีของเดิม</span>เทมเพลตเปล่า ไม่ใส่ค่าจริง สำหรับแนบขึ้น GitHub</div>
+          <div class="arrow">→</div>
+          <div class="new"><code>firmware/src/secrets.example.h</code><span class="badge new">NEW</span></div>
+        </div>
+        <div class="fmap">
+          <div class="old"><span class="have">ไม่มีของเดิม</span>บอก build tool ว่าใช้บอร์ดอะไร ไลบรารีอะไรบ้าง</div>
+          <div class="arrow">→</div>
+          <div class="new"><code>firmware/platformio.ini</code><span class="badge new">NEW</span></div>
+        </div>
+        <div class="fmap">
+          <div class="old"><span class="have">ไม่มีของเดิม</span>ตั้งค่าจำลองบน Wokwi</div>
+          <div class="arrow">→</div>
+          <div class="new"><code>firmware/wokwi.toml</code><span class="badge new">NEW</span></div>
+        </div>
+        <div class="fmap">
+          <div class="old"><span class="have">ไม่มีของเดิม</span>กัน secrets หลุดตอน push GitHub</div>
+          <div class="arrow">→</div>
+          <div class="new"><code>.gitignore</code><span class="badge new">NEW</span></div>
+        </div>
+        <div class="fmap">
+          <div class="old"><span class="have">ไม่มีของเดิม</span>ภาพรวมโปรเจ็ค วิธีรัน</div>
+          <div class="arrow">→</div>
+          <div class="new"><code>README.md</code><span class="badge new">NEW</span></div>
+        </div>
+        <div class="fmap">
+          <div class="old"><span class="have">ให้ไปแล้วในแชทก่อนหน้า</span>บริบท/แผน/สถาปัตยกรรมสำหรับ agent</div>
+          <div class="arrow">→</div>
+          <div class="new"><code>CLAUDE.md</code> · <code>PLAN.md</code> · <code>DESIGN.md</code><span class="badge keep">KEEP</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="order">
+      <div class="kicker">04</div>
+      <h2>ทำตามลำดับนี้ จะไม่งง</h2>
+      <ol class="steps">
+        <li>สร้างโฟลเดอร์เปล่าตามผังในข้อ 05 ก่อน (ยังไม่ต้องใส่ไฟล์)</li>
+        <li>ลากไฟล์ <span class="badge move" style="margin:0;">MOVE</span> เข้าไปก่อน — แค่ย้าย+เปลี่ยนนามสกุลจาก <code>.ino</code> เป็น <code>.cpp</code> เนื้อหาข้างในเหมือนเดิมทุกตัวอักษร ยังไม่ต้องแก้อะไร</li>
+        <li>ทำไฟล์ <span class="badge merge" style="margin:0;">MERGE</span> — เปิด 2 ไฟล์เดิม copy เนื้อหาทั้งคู่มาแปะรวมในไฟล์ใหม่ไฟล์เดียว (ยังไม่ต้องแก้ logic แค่รวมไฟล์)</li>
+        <li>เขียนไฟล์ <code>.h</code> คู่กันทุกไฟล์ — ใส่แค่บรรทัดประกาศฟังก์ชัน (ดูตัวอย่างในข้อ 01)</li>
+        <li>สร้างไฟล์ <span class="badge new" style="margin:0;">NEW</span> ทั้งหมดในข้อ 03 — เริ่มจาก <code>secrets.h</code> กับ <code>platformio.ini</code> ก่อน เพราะจำเป็นต่อการ build</li>
+        <li>วาง <code>CLAUDE.md</code>, <code>PLAN.md</code>, <code>DESIGN.md</code> ที่ root (มีให้แล้ว ไม่ต้องเขียนใหม่)</li>
+        <li>ลองสั่ง <code>pio run</code> ดูว่า build ผ่านไหม — ถ้า error ส่วนใหญ่จะเป็นเพราะ <code>.h</code> ประกาศฟังก์ชันไม่ครบ แก้ตรงนั้นไปทีละจุด</li>
+      </ol>
+    </section>
+
+    <section id="tree">
+      <div class="kicker">05</div>
+      <h2>หน้าตาสุดท้ายที่ควรได้</h2>
+      <pre class="tree">smart-farm-iot/
+├── CLAUDE.md                        <span class="comment">// มีให้แล้ว</span>
+├── PLAN.md                          <span class="comment">// มีให้แล้ว</span>
+├── DESIGN.md                        <span class="comment">// มีให้แล้ว</span>
+├── README.md                        <span class="n">// NEW</span>
+├── .gitignore                       <span class="n">// NEW</span>
+├── firmware/
+│   ├── platformio.ini               <span class="n">// NEW</span>
+│   ├── wokwi.toml                   <span class="n">// NEW</span>
+│   └── src/
+│       ├── main.cpp                 <span class="m">// MOVE ← smart_fram_iot_8.ino</span>
+│       ├── tasks.cpp / .h           <span class="m">// MERGE ← Task1code + Task2code</span>
+│       ├── sensors.cpp / .h         <span class="m">// MERGE ← sensor_read + dht</span>
+│       ├── control.cpp / .h         <span class="m">// MOVE ← control.ino</span>
+│       ├── camera.cpp / .h          <span class="m">// MOVE ← camera.ino</span>
+│       ├── cloud_sync.cpp / .h      <span class="m">// MERGE ← read/send_google_sheet</span>
+│       ├── rtc_time.cpp / .h        <span class="m">// MOVE ← time.ino</span>
+│       ├── secrets.h                <span class="n">// NEW — ไม่ commit</span>
+│       └── secrets.example.h        <span class="n">// NEW</span>
+├── backend/
+│   └── apps-script/
+│       └── Code.gs                  <span class="m">// MOVE ← code.gs</span>
+└── docs/
+    └── pcb/                         <span class="comment">// ถ้ามีไฟล์ .pcb ค่อยใส่ทีหลัง</span></pre>
+    </section>
+
+  </main>
+</div>
+
+<footer>SMART FARM IOT — FILE MIGRATION GUIDE · จัดทำโดย Claude</footer>
+
+</body>
+</html>
