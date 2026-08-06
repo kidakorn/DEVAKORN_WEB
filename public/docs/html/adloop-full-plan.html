@@ -541,9 +541,14 @@
       <table>
         <tr><th>รายการ</th><th>สถานะ</th><th>หมายเหตุ</th></tr>
         <tr>
-          <td class="strong">Phase 0 — Foundation &amp; Scaffold</td>
+          <td class="strong">แนวทางโปรเจ็ค</td>
+          <td><span class="status-badge done">อัปเดตแล้ว</span></td>
+          <td>เปลี่ยนจาก mock-first เป็น <strong>full-feature + เชื่อม Facebook API จริงตั้งแต่ Phase 0</strong> (ดูหัวข้อ 06-07)</td>
+        </tr>
+        <tr>
+          <td class="strong">Phase 0 — Foundation + Facebook API จริง</td>
           <td><span class="status-badge inprogress">กำลังดำเนินการ</span></td>
-          <td>Monorepo, Prisma schema, AdsProvider/MockAdsProvider ตั้งค่าแล้ว — รอตรวจ Acceptance Criteria ครบ 5 ข้อ</td>
+          <td>Monorepo, Prisma schema ตั้งค่าแล้ว — อยู่ระหว่างต่อ FacebookAdsProvider จริงกับ test ad account และเตรียมยื่น App Review</td>
         </tr>
         <tr>
           <td class="strong">ตั้งชื่อโปรเจ็ค + .gitignore</td>
@@ -556,14 +561,9 @@
           <td>วางทิศทาง: light theme, shadcn/ui, Framer Motion, sonner, Recharts/visx, lucide-react — รอ agent สรุปเป็น design tokens ให้ตรวจ</td>
         </tr>
         <tr>
-          <td class="strong">Phase 1 — Dashboard UI</td>
+          <td class="strong">Phase 1-5</td>
           <td><span class="status-badge pending">รอดำเนินการ</span></td>
-          <td>รอ Phase 0 + UI Guidelines อนุมัติก่อนเริ่มเขียนโค้ดจริง</td>
-        </tr>
-        <tr>
-          <td class="strong">Phase 2-6</td>
-          <td><span class="status-badge pending">รอดำเนินการ</span></td>
-          <td>ยังไม่เริ่ม</td>
+          <td>ยังไม่เริ่ม — รอ Phase 0 (รวมเชื่อม API จริง) + UI Guidelines อนุมัติก่อน</td>
         </tr>
       </table>
     </div>
@@ -681,7 +681,7 @@
 │    ├─ <span class="n2">web</span>            → Next.js frontend (Dashboard UI 5 หน้า)
 │    └─ <span class="n2">api</span>            → Backend service (REST API)
 ├─ packages/
-│    ├─ <span class="n2">ads-provider</span>   → AdsProvider interface + MockAdsProvider + FacebookAdsProvider
+│    ├─ <span class="n2">ads-provider</span>   → AdsProvider interface + FacebookAdsProvider (เชื่อมจริงตั้งแต่ Phase 0)
 │    └─ <span class="n2">ui</span>             → shared UI components (shadcn/ui-based)
 ├─ <span class="n1">.ai/</span>
 │    ├─ plan.md                 → แผนงานรวมทุกเฟส
@@ -784,7 +784,7 @@
       <div class="chip"><span class="chip-role">Backend</span>Node.js (NestJS หรือ Express)</div>
       <div class="chip"><span class="chip-role">Database</span>PostgreSQL + Prisma ORM</div>
       <div class="chip"><span class="chip-role">Job Scheduler</span>BullMQ + Redis</div>
-      <div class="chip"><span class="chip-role">Auth</span>JWT (mock) → Facebook Login for Business (Phase 5)</div>
+      <div class="chip"><span class="chip-role">Auth</span>JWT (staff login) + Facebook Login for Business (client OAuth, Phase 0)</div>
       <div class="chip"><span class="chip-role">Core External API</span>Facebook Marketing API / Insights API</div>
       <div class="chip"><span class="chip-role">Export</span>Puppeteer / pdf-lib (PDF), exceljs (Excel)</div>
     </div>
@@ -808,53 +808,56 @@
     </div>
 
     <p class="section-desc">
-      แนวทางคือ <strong style="color:var(--text)">สร้าง solution ให้ทำงานได้เต็มรูปแบบด้วย mock data ก่อน</strong>
-      แล้วค่อยเชื่อม Facebook Marketing API จริงในภายหลัง (Phase 5) เพื่อให้ทีมพัฒนา/agent
-      ทำงานคู่ขนานกับการรอ App Review ได้ — ดูรายละเอียด prompt สำหรับแต่ละเฟสที่ใช้สั่งงาน agent ได้ใน
+      แนวทางปัจจุบัน: <strong style="color:var(--text)">Full-feature จากทุกเฟส ไม่มีเวอร์ชันตัดทอน + เชื่อม Facebook Marketing API จริงตั้งแต่ Phase 0</strong>
+      ไม่ผ่านขั้น mock data อีกต่อไป — ดูรายละเอียด prompt สำหรับแต่ละเฟสที่ใช้สั่งงาน agent ได้ใน
       <a href="#agent-plan">หัวข้อ 07</a>
     </p>
+
+    <div class="callout" style="margin-bottom:24px">
+      <span class="mark">⚠</span>
+      <p><strong>ข้อจำกัดที่ต้องรับไว้:</strong> ก่อนผ่าน Facebook App Review และ Business Verification
+      ระบบใช้ได้เฉพาะกับ ad account ทดสอบของนักพัฒนาเอง (สูงสุด 5 บัญชี) เท่านั้น — ยังเปิดให้ลูกค้าจริงของ agency
+      ใช้งานไม่ได้จนกว่าจะผ่านทั้งสองขั้นตอนนี้ จึงแนะนำให้ <strong style="color:var(--text)">ยื่น App Review ตั้งแต่ Phase 0-1</strong>
+      (ทันทีที่มีฟีเจอร์พื้นฐานสาธิตได้) เพื่อให้เวลารอ Meta ตรวจสอบ (มักใช้หลายสัปดาห์) วิ่งขนานไปกับการพัฒนาเฟสถัดๆ ไป
+      แทนที่จะไปรอตอนท้ายสุด</p>
+    </div>
 
     <div class="roadmap">
       <div class="phase">
         <div class="ph-label">Phase 0</div>
-        <h3>Project Foundation &amp; Scaffold</h3>
-        <p>วางโครงสร้าง monorepo, database schema, และ interface <code>AdsProvider</code> พร้อม <code>MockAdsProvider</code> ยังไม่ต่อ Facebook API</p>
-        <div class="duration">ระยะเวลาโดยประมาณ: 1-2 สัปดาห์</div>
+        <h3>Foundation + เชื่อม Facebook API จริง</h3>
+        <p>วางโครงสร้าง monorepo, database schema, สร้าง Meta App และต่อ OAuth จริง implement
+          <code>FacebookAdsProvider</code> ทำงานกับ test ad account ได้ทันที พร้อม<strong style="color:var(--text)">ยื่น App Review รอบแรก</strong>คู่ขนาน</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 2-3 สัปดาห์ (+ เริ่มนับเวลารอ Meta ตรวจสอบ)</div>
       </div>
       <div class="phase">
         <div class="ph-label">Phase 1</div>
-        <h3>Dashboard UI</h3>
-        <p>แปลง UI mockup เป็นโค้ดจริงด้วย mock data ครบทั้ง 5 หน้า (ภาพรวม, แคมเปญ, targeting, งบประมาณ, รายงาน)</p>
+        <h3>Dashboard UI + Live Data</h3>
+        <p>แปลง UI mockup เป็นโค้ดจริงครบทั้ง 5 หน้า (ภาพรวม, แคมเปญ, targeting, งบประมาณ, รายงาน) ดึงข้อมูลจริงจาก Facebook Insights API ผ่าน test ad account</p>
         <div class="duration">ระยะเวลาโดยประมาณ: 2-3 สัปดาห์</div>
       </div>
       <div class="phase">
         <div class="ph-label">Phase 2</div>
-        <h3>Campaign Builder + Targeting</h3>
-        <p>ทำ wizard สร้างแคมเปญและหน้ากลุ่มเป้าหมายให้บันทึกข้อมูลจริงลงฐานข้อมูล (ยังผ่าน mock provider)</p>
-        <div class="duration">ระยะเวลาโดยประมาณ: 2-3 สัปดาห์</div>
+        <h3>Campaign Builder + Targeting (เต็มรูปแบบ)</h3>
+        <p>สร้าง/แก้ไข Campaign, Ad Set, Ad จริงผ่าน Facebook API ครบทุก targeting option (อายุ, จังหวัด, ความสนใจ, Custom Audience, Lookalike) พร้อมอัปโหลดครีเอทีฟจริง</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 3-4 สัปดาห์</div>
       </div>
       <div class="phase">
         <div class="ph-label">Phase 3</div>
-        <h3>Budget Engine &amp; Automation</h3>
-        <p>ระบบคำนวณ/ปรับงบรายชั่วโมง-สัปดาห์อัตโนมัติ พร้อมกติกาแจ้งเตือนและหยุดแคมเปญอัตโนมัติ</p>
-        <div class="duration">ระยะเวลาโดยประมาณ: 2-3 สัปดาห์</div>
+        <h3>Budget Engine + Automation เต็มรูปแบบ</h3>
+        <p>ปรับงบรายชั่วโมง/วัน/สัปดาห์/เดือนอัตโนมัติผ่าน API จริง, rule engine ครบ, แจ้งเตือนครบทุกช่องทาง (in-app, LINE, Email) ไม่ใช่แค่ in-app</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 3-4 สัปดาห์</div>
       </div>
       <div class="phase">
         <div class="ph-label">Phase 4</div>
-        <h3>Reports &amp; Analytics</h3>
-        <p>Breakdown ข้อมูลตามอายุ/จังหวัด/placement พร้อม export PDF/Excel จริง</p>
-        <div class="duration">ระยะเวลาโดยประมาณ: 1-2 สัปดาห์</div>
+        <h3>Reports &amp; Analytics เต็มรูปแบบ</h3>
+        <p>Breakdown ข้อมูลตามอายุ/จังหวัด/placement/อุปกรณ์จาก Facebook Insights API จริง พร้อม export PDF/Excel</p>
+        <div class="duration">ระยะเวลาโดยประมาณ: 2 สัปดาห์</div>
       </div>
       <div class="phase">
         <div class="ph-label">Phase 5</div>
-        <h3>เชื่อม Facebook Marketing API จริง</h3>
-        <p>สลับจาก MockAdsProvider เป็น FacebookAdsProvider จริง พร้อมเตรียมเอกสารยื่น App Review</p>
-        <div class="duration">ระยะเวลาโดยประมาณ: 3-5 สัปดาห์ (รวมรอ Meta ตรวจสอบ)</div>
-      </div>
-      <div class="phase">
-        <div class="ph-label">Phase 6</div>
-        <h3>Multi-tenant &amp; Production Readiness</h3>
-        <p>รองรับหลาย Business Manager, สิทธิ์ผู้ใช้ในทีม, activity log, monitoring และ Business Verification</p>
+        <h3>Multi-tenant, RBAC &amp; Production Launch</h3>
+        <p>รองรับหลาย Business Manager/ลูกค้าจริง, สิทธิ์ผู้ใช้ในทีมครบ, activity log, monitoring, ปิดจ๊อบ Business Verification และเปิดใช้งานกับลูกค้าจริงได้</p>
         <div class="duration">ระยะเวลาโดยประมาณ: 3-4 สัปดาห์</div>
       </div>
     </div>
@@ -876,17 +879,20 @@
     <div class="plan-note">
       <span class="mark">i</span>
       <p>
-        <strong>กติกาสำคัญ:</strong> ทำทีละเฟสตามลำดับ ห้ามข้าม — Phase 0-4 ห้ามเรียก Facebook API จริงเด็ดขาด
-        ทุกจุดที่ต้องคุยกับ Facebook ให้ผ่าน interface <code>AdsProvider</code> และ mock ไว้ก่อน
-        Phase 5 คือจุดเดียวที่เปลี่ยนจาก <code>MockAdsProvider</code> เป็น <code>FacebookAdsProvider</code> จริง
+        <strong>กติกาสำคัญ (อัปเดต):</strong> ทำทีละเฟสตามลำดับ ห้ามข้าม — เปลี่ยนจากแนวทาง mock-first
+        เดิมแล้ว ตอนนี้ทุกเฟส<strong style="color:var(--text)">เชื่อม Facebook Marketing API จริง</strong>
+        ตั้งแต่ Phase 0 (ผ่าน test ad account ของนักพัฒนา) และทุกฟีเจอร์ต้อง<strong style="color:var(--text)">สมบูรณ์เต็มรูปแบบ
+        ไม่ตัดทอน</strong> เช่น การแจ้งเตือนต้องมีครบ in-app + LINE + Email ไม่ใช่แค่ in-app เพียงอย่างเดียว
+        — ยังคงห้ามใช้ ad account ของลูกค้าจริงจนกว่าจะผ่าน App Review และ Business Verification (ใช้ test ad account
+        ของนักพัฒนาไปก่อนได้ถึง 5 บัญชี)
       </p>
     </div>
 
     <!-- Phase 0 -->
     <details class="phase-acc">
-      <summary><span class="ph-tag">Phase 0</span> Project Foundation &amp; Scaffold <span class="chev">▾</span></summary>
+      <summary><span class="ph-tag">Phase 0</span> Foundation + เชื่อม Facebook API จริง <span class="chev">▾</span></summary>
       <div class="acc-body">
-        <p><strong style="color:var(--text)">Goal:</strong> วางโครงสร้างโปรเจ็คทั้งหมด (frontend, backend, database, monorepo) ให้พร้อมสำหรับเฟสถัดไป ยังไม่มีฟีเจอร์จริง</p>
+        <p><strong style="color:var(--text)">Goal:</strong> วางโครงสร้างโปรเจ็คทั้งหมด และเชื่อม Facebook Marketing API จริงได้ตั้งแต่ต้น พร้อมเริ่มยื่น App Review คู่ขนาน</p>
         <div class="scope-cols">
           <div>
             <div class="mini-label">ทำ</div>
@@ -894,15 +900,17 @@
               <li>Setup monorepo (web, api, ads-provider, ui)</li>
               <li>Next.js + Tailwind, backend service (NestJS/Express)</li>
               <li>Database schema (Prisma): Agency, Client, AdAccount, Campaign, AdSet, Ad, User, TargetingPreset</li>
-              <li>Interface <code>AdsProvider</code> + <code>MockAdsProvider</code></li>
-              <li>Auth แบบง่าย (ยังไม่ใช่ Facebook Login)</li>
+              <li>สร้าง Meta App, ตั้งค่า OAuth (Facebook Login for Business)</li>
+              <li>Implement <code>AdsProvider</code> interface + <code>FacebookAdsProvider</code> จริง (ทำงานกับ test ad account)</li>
+              <li>เตรียมและยื่น App Review รอบแรก (permission: ads_management, business_management, pages_read_engagement)</li>
+              <li>Auth แบบง่าย (session/JWT) สำหรับผู้ใช้ในระบบ</li>
             </ul>
           </div>
           <div>
             <div class="mini-label">ไม่ทำ</div>
             <ul>
-              <li>ห้ามต่อ Facebook API จริงใดๆ</li>
-              <li>ยังไม่ต้องมี UI ที่สวยงาม</li>
+              <li>ยังไม่ต่อ ad account ของลูกค้าจริง (รอผ่าน App Review + Business Verification)</li>
+              <li>ยังไม่ต้องมี UI ที่สวยงามครบ (เฟสถัดไปทำ)</li>
             </ul>
           </div>
         </div>
@@ -912,74 +920,85 @@
           <pre>อ่าน AGENTS.md, CLAUDE.md, และ .ai/plan.md ก่อนเริ่มงาน
 จากนั้นทำ Phase 0 ตาม .ai/phase-0-foundation.md:
 
+⚠️ แนวทางอัปเดต: เชื่อม Facebook Marketing API จริงตั้งแต่เฟสนี้เลย ไม่ใช้ mock data
+แต่ใช้ได้เฉพาะ test ad account ของนักพัฒนาเท่านั้น (ห้ามแตะ ad account ลูกค้าจริง)
+
 1. สร้าง monorepo ด้วยโครงสร้าง /apps/web (Next.js + Tailwind), /apps/api (NestJS หรือ Express),
    /packages/ads-provider, /packages/ui
 2. ออกแบบ Prisma schema ตาม entity: Agency, Client, AdAccount, Campaign, AdSet, Ad, User,
    TargetingPreset — ใส่ field ที่จำเป็นสำหรับ budget (type: hourly/daily/weekly/monthly, amount),
-   targeting (age_min, age_max, provinces, interests)
-3. สร้าง interface AdsProvider ใน /packages/ads-provider พร้อม MockAdsProvider ที่มี method:
-   createCampaign, updateCampaignStatus, updateBudget, getInsights(campaignId, dateRange)
-   — ให้คืนข้อมูลปลอมที่มีรูปแบบสมจริง
-4. ตั้งค่า auth แบบง่าย (session/JWT) ยังไม่ต้องเป็น Facebook Login
-5. ทำให้ frontend เรียก backend ผ่าน API ได้จริง (ทดสอบด้วย endpoint ping/health check)
+   targeting (age_min, age_max, provinces, interests, custom_audience, lookalike)
+3. สร้าง Meta App ใน Meta for Developers ตั้งค่า OAuth (Facebook Login for Business)
+   และสร้าง test ad account สำหรับพัฒนา/ทดสอบ
+4. Implement interface AdsProvider ใน /packages/ads-provider พร้อม FacebookAdsProvider จริง
+   ที่มี method: createCampaign, updateCampaignStatus, updateBudget, getInsights(campaignId, dateRange)
+   โดยเรียก Facebook Marketing API / Graph API จริงกับ test ad account
+5. เก็บ access token อย่างปลอดภัย (เข้ารหัสก่อนเก็บลง database)
+6. ตั้งค่า auth แบบง่าย (session/JWT) สำหรับผู้ใช้ระบบ (agency staff)
+7. ทำให้ frontend เรียก backend ผ่าน API ได้จริง (ทดสอบด้วย endpoint ping/health check
+   และเรียก getInsights กับ test ad account จริงให้เห็นข้อมูลจริงกลับมา)
+8. เตรียมเอกสาร/วิดีโอ demo และยื่น App Review รอบแรกกับ Meta ทันทีที่ทำข้อ 1-7 เสร็จ
+   เพื่อให้เวลารอตรวจสอบวิ่งขนานกับการพัฒนาเฟสถัดไป
 
-ห้ามเรียก Facebook API จริงในเฟสนี้เด็ดขาด
-จบงานแล้วอัปเดตสถานะ Phase 0 ใน .ai/plan.md เป็น "เสร็จแล้ว" และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
+จบงานแล้วอัปเดตสถานะ Phase 0 ใน .ai/plan.md เป็น "เสร็จแล้ว" และสรุปผลลัพธ์ท้ายไฟล์นี้
+พร้อมบันทึกสถานะการยื่น App Review ไว้ด้วย</pre>
         </div>
         <div class="mini-label">Acceptance Criteria</div>
         <ul>
           <li>รัน <code>npm run dev</code> แล้ว frontend/backend ทำงานพร้อมกันได้</li>
           <li>Prisma schema สร้าง migration ได้ไม่มี error</li>
-          <li>เรียก MockAdsProvider แล้วได้ข้อมูลปลอมกลับมาถูก format</li>
-          <li>มีระบบ login แบบง่ายใช้งานได้</li>
-          <li>ไม่มีการเรียก Facebook API จริงที่ไหนในโค้ดเลย</li>
+          <li>เรียก FacebookAdsProvider.getInsights() กับ test ad account แล้วได้ข้อมูลจริงกลับมา</li>
+          <li>มีระบบ login ใช้งานได้</li>
+          <li>ยื่น App Review รอบแรกไปแล้ว (มีสถานะติดตามได้)</li>
         </ul>
       </div>
     </details>
 
     <!-- Phase 1 -->
     <details class="phase-acc">
-      <summary><span class="ph-tag">Phase 1</span> Dashboard UI (Mockup → โค้ดจริง) <span class="chev">▾</span></summary>
+      <summary><span class="ph-tag">Phase 1</span> Dashboard UI + Live Data <span class="chev">▾</span></summary>
       <div class="acc-body">
-        <p><strong style="color:var(--text)">Goal:</strong> แปลง UI mockup ให้เป็นหน้าเว็บจริงด้วย Next.js + Tailwind โดยใช้ mock data จาก MockAdsProvider แทนที่ข้อมูล hardcode</p>
+        <p><strong style="color:var(--text)">Goal:</strong> แปลง UI mockup ให้เป็นหน้าเว็บจริงด้วย Next.js + Tailwind โดยดึงข้อมูลจริงจาก Facebook Insights API ผ่าน test ad account</p>
         <div class="scope-cols">
           <div>
             <div class="mini-label">ทำ</div>
             <ul>
-              <li>แปลง layout เป็น React components (Sidebar, Topbar, KPI cards, Chart, Table)</li>
+              <li>แปลง layout เป็น React components (Sidebar, Topbar, KPI cards, Chart, Table) ตาม ui-guidelines.md</li>
               <li>ครบ 5 หน้า: ภาพรวม, แคมเปญ, targeting, งบประมาณ, รายงาน</li>
-              <li>Client switcher ดึงจาก mock data จริง</li>
-              <li>ใช้ design token สี/ฟอนต์ตรงกับ mockup</li>
+              <li>Client switcher ดึงจาก database จริง</li>
+              <li>ข้อมูล KPI/กราฟดึงจาก Facebook Insights API จริง (test ad account)</li>
             </ul>
           </div>
           <div>
             <div class="mini-label">ไม่ทำ</div>
             <ul>
-              <li>ยังไม่ต้องมี business logic ของ campaign builder จริง</li>
-              <li>ยังไม่เชื่อม Facebook API</li>
+              <li>ยังไม่ต้องมี business logic ของ campaign builder ที่ครบทุกเงื่อนไข (Phase 2 ทำต่อ)</li>
             </ul>
           </div>
         </div>
         <div class="mini-label">Prompt สำหรับ Agent</div>
         <div class="code-block">
           <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
-          <pre>อ่าน .ai/plan.md เพื่อยืนยันว่า Phase 0 เสร็จแล้ว จากนั้นทำ Phase 1 ตาม
-.ai/phase-1-dashboard-ui.md:
+          <pre>อ่าน .ai/plan.md เพื่อยืนยันว่า Phase 0 เสร็จแล้ว (รวมถึงเชื่อม FacebookAdsProvider
+กับ test ad account ได้จริง) จากนั้นทำ Phase 1 ตาม .ai/phase-1-dashboard-ui.md:
 
-1. เปิดดู .ai/reference/dashboard-mockup.html เป็นต้นแบบ แปลง layout ทั้งหมดเป็น
-   React components ใน /apps/web (Sidebar, Topbar, KpiCard, ChartPanel, DataTable, Modal)
+1. เปิดดู .ai/reference/dashboard-mockup.html และ .ai/reference/ui-guidelines.md เป็นต้นแบบ
+   แปลง layout ทั้งหมดเป็น React components ใน /apps/web (Sidebar, Topbar, KpiCard,
+   ChartPanel, DataTable, Modal) ด้วย shadcn/ui + lucide-react ตาม guidelines
 2. ทำหน้าให้ครบ 5 หน้า: Dashboard, แคมเปญ, กลุ่มเป้าหมาย, งบประมาณ, รายงาน
-   ตามที่เห็นใน mockup แต่ดึงข้อมูลจาก MockAdsProvider ผ่าน backend API จริง
+   ดึงข้อมูลจริงจาก FacebookAdsProvider.getInsights() ผ่าน backend API (ไม่ hardcode)
 3. Client switcher ต้องดึงรายชื่อลูกค้าจริงจาก database (Prisma) ไม่ hardcode
-4. ใช้ Tailwind config ให้ตรงกับ design tokens ใน mockup (สี, ฟอนต์ Sora/Inter/IBM Plex Mono)
+4. ใช้ Framer Motion สำหรับ transition และ sonner สำหรับ alert/notification ตาม guidelines
 5. Component ที่ reusable ให้แยกไว้ใน /packages/ui
+
+ยังใช้ได้แค่ test ad account เท่านั้น ห้ามต่อ ad account ลูกค้าจริงในเฟสนี้
 
 จบงานแล้วอัปเดตสถานะ Phase 1 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
         </div>
         <div class="mini-label">Acceptance Criteria</div>
         <ul>
-          <li>มีครบ 5 หน้าตาม mockup และหน้าตาตรงกับ design tokens</li>
-          <li>ข้อมูลทุกหน้าดึงจาก backend/mock ไม่ hardcode</li>
+          <li>มีครบ 5 หน้าตาม mockup/ui-guidelines และหน้าตาตรงกับ design tokens</li>
+          <li>ข้อมูลทุกหน้าดึงจาก Facebook API จริง (test ad account) ไม่ hardcode</li>
           <li>Client switcher เปลี่ยนข้อมูลบนหน้าจอได้จริง</li>
           <li>Responsive ใช้งานได้บนจอเล็ก</li>
         </ul>
@@ -988,24 +1007,24 @@
 
     <!-- Phase 2 -->
     <details class="phase-acc">
-      <summary><span class="ph-tag">Phase 2</span> Campaign Builder + Targeting (Mock) <span class="chev">▾</span></summary>
+      <summary><span class="ph-tag">Phase 2</span> Campaign Builder + Targeting (เต็มรูปแบบ) <span class="chev">▾</span></summary>
       <div class="acc-body">
-        <p><strong style="color:var(--text)">Goal:</strong> ทำให้ modal wizard สร้างแคมเปญทำงานได้จริง บันทึกลง database ผ่าน MockAdsProvider และหน้ากลุ่มเป้าหมายบันทึกค่าจริงได้</p>
+        <p><strong style="color:var(--text)">Goal:</strong> สร้าง/แก้ไขแคมเปญจริงผ่าน Facebook API ครบทุก targeting option พร้อมอัปโหลดครีเอทีฟจริง</p>
         <div class="scope-cols">
           <div>
             <div class="mini-label">ทำ</div>
             <ul>
-              <li>Wizard 4 ขั้นตอนเชื่อม state จริง</li>
-              <li>บันทึกแคมเปญผ่าน MockAdsProvider.createCampaign()</li>
+              <li>Wizard 4 ขั้นตอนเชื่อม Facebook API จริง (สร้าง/แก้ไข Campaign, Ad Set, Ad)</li>
+              <li>Targeting ครบ: อายุ, จังหวัด, ความสนใจ, Custom Audience, Lookalike Audience</li>
+              <li>อัปโหลดรูป/วิดีโอครีเอทีฟจริงขึ้น storage แล้วส่งเข้า Facebook</li>
+              <li>Toggle เปิด/ปิดแคมเปญเรียก API จริง + validation ฟอร์มครบ</li>
               <li>บันทึก TargetingPreset ใช้ซ้ำได้</li>
-              <li>Toggle เปิด/ปิดแคมเปญเรียก API จริง + validation ฟอร์ม</li>
             </ul>
           </div>
           <div>
             <div class="mini-label">ไม่ทำ</div>
             <ul>
-              <li>ยังไม่มี budget engine อัตโนมัติ (อยู่ Phase 3)</li>
-              <li>ยังไม่อัปโหลดไฟล์จริงขึ้น storage</li>
+              <li>ยังไม่มี budget engine อัตโนมัติแบบเต็ม (Phase 3 ทำต่อ)</li>
             </ul>
           </div>
         </div>
@@ -1016,46 +1035,49 @@
 .ai/phase-2-campaign-builder.md:
 
 1. ทำให้ modal wizard สร้างแคมเปญ (4 ขั้นตอน) เชื่อม state และ validation จริง
-2. เมื่อกด "เสร็จสิ้น" ให้เรียก backend API ที่ไปเรียก MockAdsProvider.createCampaign()
-   แล้วบันทึกผลลง database จริง
-3. หน้ากลุ่มเป้าหมาย: บันทึกค่า age range, province, interests เป็น TargetingPreset
-   ที่ผูกกับแคมเปญ และเลือกใช้ซ้ำกับแคมเปญอื่นได้
-4. Toggle สถานะแคมเปญในตารางให้เรียก MockAdsProvider.updateCampaignStatus() จริง
-   พร้อม optimistic update และ error handling
-5. เพิ่ม validation: งบต้อง > 0, ต้องเลือกอย่างน้อย 1 จังหวัด, ชื่อแคมเปญห้ามว่าง
+2. เมื่อกด "เสร็จสิ้น" ให้เรียก FacebookAdsProvider.createCampaign() จริง
+   (กับ test ad account) แล้วบันทึกผลลง database ด้วย
+3. ทำ targeting ให้ครบทุก option ที่ Facebook API รองรับ: อายุ, จังหวัด, ความสนใจ,
+   Custom Audience, Lookalike Audience — บันทึกเป็น TargetingPreset ที่ใช้ซ้ำได้
+4. ทำระบบอัปโหลดไฟล์ครีเอทีฟจริง (รูป/วิดีโอ) ขึ้น storage แล้วส่งต่อเข้า Facebook
+   ผ่าน Marketing API
+5. Toggle สถานะแคมเปญในตารางให้เรียก FacebookAdsProvider.updateCampaignStatus() จริง
+   พร้อม optimistic update และ error handling (rate limit, permission error)
+6. เพิ่ม validation: งบต้อง > 0, ต้องเลือกอย่างน้อย 1 จังหวัด, ชื่อแคมเปญห้ามว่าง
+
+ยังใช้ได้แค่ test ad account เท่านั้น
 
 จบงานแล้วอัปเดตสถานะ Phase 2 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
         </div>
         <div class="mini-label">Acceptance Criteria</div>
         <ul>
-          <li>สร้างแคมเปญผ่าน wizard แล้วเห็นแคมเปญใหม่ในตารางจริง</li>
-          <li>Toggle เปิด/ปิดมีผลจริงใน database</li>
-          <li>Targeting preset บันทึกและเรียกใช้ซ้ำได้</li>
-          <li>Validation ป้องกันข้อมูลผิดพลาดครบ</li>
+          <li>สร้างแคมเปญผ่าน wizard แล้วเห็นแคมเปญจริงเกิดขึ้นบน Facebook test ad account</li>
+          <li>Toggle เปิด/ปิดมีผลจริงทั้งใน Facebook และ database</li>
+          <li>ครีเอทีฟอัปโหลดขึ้น Facebook ได้จริง</li>
+          <li>Targeting preset บันทึกและเรียกใช้ซ้ำได้ ครบทุก option</li>
         </ul>
       </div>
     </details>
 
     <!-- Phase 3 -->
     <details class="phase-acc">
-      <summary><span class="ph-tag">Phase 3</span> Budget Engine + Automation (Mock) <span class="chev">▾</span></summary>
+      <summary><span class="ph-tag">Phase 3</span> Budget Engine + Automation เต็มรูปแบบ <span class="chev">▾</span></summary>
       <div class="acc-body">
-        <p><strong style="color:var(--text)">Goal:</strong> ทำระบบคำนวณ/ปรับงบประมาณอัตโนมัติ และกติกาแจ้งเตือน/หยุดแคมเปญอัตโนมัติ ผ่าน MockAdsProvider</p>
+        <p><strong style="color:var(--text)">Goal:</strong> ปรับงบประมาณอัตโนมัติผ่าน Facebook API จริง พร้อม rule engine และแจ้งเตือนครบทุกช่องทาง</p>
         <div class="scope-cols">
           <div>
             <div class="mini-label">ทำ</div>
             <ul>
-              <li>Scheduler (BullMQ + Redis) ปรับ budget ตามรอบเวลา</li>
-              <li>Pacing calculation (งบตั้งไว้ vs ใช้จริง)</li>
-              <li>Rule engine (เช่น หยุดถ้า CPA เกินกำหนด)</li>
-              <li>แจ้งเตือน in-app เมื่องบใกล้หมด/rule ทำงาน</li>
+              <li>Scheduler (BullMQ + Redis) ปรับ budget จริงผ่าน Facebook API ตามรอบเวลา</li>
+              <li>Pacing calculation จากข้อมูล spend จริง</li>
+              <li>Rule engine เต็มรูปแบบ (หยุด/แจ้งเตือนตามเงื่อนไขที่ผู้ใช้ตั้ง)</li>
+              <li>แจ้งเตือนครบ 3 ช่องทาง: in-app, LINE Notify/Messaging API, Email</li>
             </ul>
           </div>
           <div>
             <div class="mini-label">ไม่ทำ</div>
             <ul>
-              <li>ยังไม่ส่งแจ้งเตือนผ่าน LINE/Email จริง</li>
-              <li>ยังไม่เชื่อม Facebook API</li>
+              <li>ยังไม่ทำ reports ละเอียด (Phase 4 ทำต่อ)</li>
             </ul>
           </div>
         </div>
@@ -1065,25 +1087,28 @@
           <pre>ยืนยันว่า Phase 2 เสร็จแล้วใน .ai/plan.md จากนั้นทำ Phase 3 ตาม
 .ai/phase-3-budget-engine.md:
 
-1. ตั้งค่า job scheduler (BullMQ + Redis แนะนำ) ให้รันงานปรับ budget ตามรอบเวลาที่ตั้งไว้
-   ต่อแคมเปญ (hourly/daily/weekly/monthly) โดยเรียกผ่าน MockAdsProvider.updateBudget()
-2. เขียน logic คำนวณ pacing: เทียบงบที่ตั้งไว้กับงบที่ใช้จริง (จาก mock insights)
+1. ตั้งค่า job scheduler (BullMQ + Redis) ให้รันงานปรับ budget จริงตามรอบเวลาที่ตั้งไว้
+   ต่อแคมเปญ (hourly/daily/weekly/monthly) โดยเรียก FacebookAdsProvider.updateBudget() จริง
+2. เขียน logic คำนวณ pacing: เทียบงบที่ตั้งไว้กับงบที่ใช้จริง (จาก Facebook Insights API)
    แสดงเป็น percentage และสถานะ (ปกติ/ใกล้หมด/เกินงบ)
-3. สร้าง rule engine ง่ายๆ ให้ผู้ใช้ตั้งกติกาจากหน้า UI ได้ เช่น
-   "หยุดแคมเปญถ้า CPA เกิน [ตัวเลข] บาท" แล้วให้ scheduler ตรวจสอบและสั่ง
+3. สร้าง rule engine เต็มรูปแบบให้ผู้ใช้ตั้งกติกาจากหน้า UI ได้ เช่น
+   "หยุดแคมเปญถ้า CPA เกิน [ตัวเลข] บาท" แล้วให้ scheduler ตรวจสอบข้อมูลจริงและสั่ง
    updateCampaignStatus() อัตโนมัติเมื่อเงื่อนไขเป็นจริง
-4. ทำระบบแจ้งเตือนแบบ in-app เมื่อ: งบใกล้หมด (>90%), rule ทำงานจริง,
-   แคมเปญถูกระบบหยุดอัตโนมัติ
-5. เขียน unit test ให้ budget calculation logic
+4. ทำระบบแจ้งเตือนให้ครบ 3 ช่องทาง: in-app notification, LINE (Messaging API/LINE Notify),
+   และ Email — ผู้ใช้เลือกเปิด/ปิดแต่ละช่องทางได้ต่อ event (งบใกล้หมด, rule ทำงาน,
+   แคมเปญถูกหยุดอัตโนมัติ)
+5. เพิ่ม error handling สำหรับ Facebook API rate limit (retry with backoff)
+6. เขียน unit test ให้ budget calculation logic และ integration test สำหรับ
+   scheduler กับ test ad account
 
 จบงานแล้วอัปเดตสถานะ Phase 3 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
         </div>
         <div class="mini-label">Acceptance Criteria</div>
         <ul>
-          <li>ตั้งงบรายชั่วโมงแล้ว scheduler ปรับค่าจริงตามรอบเวลา</li>
-          <li>Pacing progress bar แสดงค่าตรงกับข้อมูลจริง</li>
-          <li>ตั้ง rule แล้วระบบหยุดแคมเปญอัตโนมัติได้จริง</li>
-          <li>มี notification แจ้งเตือนเมื่อเงื่อนไขเกิดขึ้น</li>
+          <li>ตั้งงบรายชั่วโมงแล้ว scheduler ปรับค่าจริงบน Facebook ตามรอบเวลาที่กำหนด</li>
+          <li>Pacing progress bar แสดงค่าตรงกับข้อมูล spend จริงจาก Facebook</li>
+          <li>ตั้ง rule แล้วระบบหยุดแคมเปญจริงบน Facebook ได้เมื่อเงื่อนไขตรง</li>
+          <li>แจ้งเตือนทำงานครบทั้ง in-app, LINE, และ Email</li>
           <li>Unit test ของ budget calculation ผ่านทั้งหมด</li>
         </ul>
       </div>
@@ -1091,23 +1116,23 @@
 
     <!-- Phase 4 -->
     <details class="phase-acc">
-      <summary><span class="ph-tag">Phase 4</span> Reports &amp; Analytics (Mock) <span class="chev">▾</span></summary>
+      <summary><span class="ph-tag">Phase 4</span> Reports &amp; Analytics เต็มรูปแบบ <span class="chev">▾</span></summary>
       <div class="acc-body">
-        <p><strong style="color:var(--text)">Goal:</strong> ทำหน้ารายงานให้วิเคราะห์ข้อมูลได้ละเอียดจริง พร้อม export PDF/Excel จากข้อมูล MockAdsProvider</p>
+        <p><strong style="color:var(--text)">Goal:</strong> ทำหน้ารายงานให้วิเคราะห์ข้อมูลจริงได้ละเอียด พร้อม export PDF/Excel จากข้อมูล Facebook Insights API จริง</p>
         <div class="scope-cols">
           <div>
             <div class="mini-label">ทำ</div>
             <ul>
-              <li>Aggregate breakdown: อายุ, จังหวัด, placement, อุปกรณ์</li>
+              <li>Aggregate breakdown จริง: อายุ, จังหวัด, placement, อุปกรณ์</li>
               <li>เปรียบเทียบหลายแคมเปญ/ลูกค้าในกราฟเดียว</li>
-              <li>Export PDF/Excel จริง</li>
-              <li>Date range filter ใช้งานได้จริง</li>
+              <li>Export PDF/Excel จริงจากข้อมูลจริง</li>
+              <li>Date range filter ใช้งานได้จริงกับข้อมูล Facebook</li>
             </ul>
           </div>
           <div>
             <div class="mini-label">ไม่ทำ</div>
             <ul>
-              <li>ยังไม่เชื่อม Facebook Insights API จริง</li>
+              <li>—</li>
             </ul>
           </div>
         </div>
@@ -1116,93 +1141,42 @@
           <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
           <pre>ยืนยันว่า Phase 3 เสร็จแล้วใน .ai/plan.md จากนั้นทำ Phase 4 ตาม .ai/phase-4-reports.md:
 
-1. เขียน backend endpoint สำหรับ aggregate ข้อมูล insights จาก mock data
+1. เขียน backend endpoint สำหรับ aggregate ข้อมูล insights จาก Facebook Insights API จริง
    ตาม breakdown: อายุ, จังหวัด, placement, อุปกรณ์ — รองรับ query parameter
    สำหรับช่วงวันที่และตัวกรองแคมเปญ/ลูกค้า
-2. ทำกราฟเปรียบเทียบหลายแคมเปญ/หลายลูกค้าในกราฟเดียวได้ (multi-series)
+2. ทำกราฟเปรียบเทียบหลายแคมเปญ/หลายลูกค้าในกราฟเดียวได้ (multi-series) จากข้อมูลจริง
 3. ทำปุ่ม Export ให้ทำงานจริง: PDF (Puppeteer หรือ pdf-lib) และ Excel (exceljs)
-   โดยดึงข้อมูลจริงจาก mock data มาใส่ในไฟล์
+   โดยดึงข้อมูลจริงจาก Facebook API มาใส่ในไฟล์
 4. ทำ date range picker ที่ filter ข้อมูลได้จริงในทุกตาราง/กราฟของหน้ารายงาน
+5. เพิ่ม caching ที่เหมาะสมสำหรับ insights query ที่ซ้ำบ่อย เพื่อลดการยิง Facebook API เกิน rate limit
 
 จบงานแล้วอัปเดตสถานะ Phase 4 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
         </div>
         <div class="mini-label">Acceptance Criteria</div>
         <ul>
-          <li>Breakdown แสดงข้อมูลถูกต้องตาม filter</li>
-          <li>เปรียบเทียบหลายแคมเปญในกราฟเดียวได้จริง</li>
+          <li>Breakdown แสดงข้อมูลจริงถูกต้องตาม filter</li>
+          <li>เปรียบเทียบหลายแคมเปญในกราฟเดียวได้จริงจากข้อมูลจริง</li>
           <li>Export ได้ไฟล์ PDF/Excel จริงที่เปิดได้และข้อมูลถูกต้อง</li>
           <li>Date range filter มีผลกับทุก component ในหน้า</li>
+          <li>ไม่โดน Facebook API rate limit จากการ query ซ้ำถี่เกินไป</li>
         </ul>
       </div>
     </details>
 
     <!-- Phase 5 -->
     <details class="phase-acc">
-      <summary><span class="ph-tag">Phase 5</span> เชื่อม Facebook Marketing API จริง <span class="chev">▾</span></summary>
+      <summary><span class="ph-tag">Phase 5</span> Multi-tenant, RBAC &amp; Production Launch <span class="chev">▾</span></summary>
       <div class="acc-body">
-        <p><strong style="color:var(--text)">Goal:</strong> สลับจาก MockAdsProvider เป็น FacebookAdsProvider จริง โดยไม่แก้โค้ดฝั่ง UI/business logic</p>
+        <p><strong style="color:var(--text)">Goal:</strong> รองรับ agency บริหารหลายลูกค้า/หลาย Business Manager จริงเต็มรูปแบบ แบ่งสิทธิ์ทีมงาน และเปิดใช้งานจริงกับลูกค้า</p>
         <div class="scope-cols">
           <div>
             <div class="mini-label">ทำ</div>
             <ul>
-              <li>สร้าง Meta App, ตั้งค่า OAuth (Facebook Login for Business)</li>
-              <li>Implement FacebookAdsProvider ตาม interface เดิม</li>
-              <li>จัดการ token อย่างปลอดภัย (encrypted)</li>
-              <li>Error handling เฉพาะ Facebook API + feature flag สลับ provider</li>
-            </ul>
-          </div>
-          <div>
-            <div class="mini-label">ไม่ทำ</div>
-            <ul>
-              <li>ยังไม่ต้องรองรับหลาย Business Manager (อยู่ Phase 6)</li>
-            </ul>
-          </div>
-        </div>
-        <div class="mini-label">Prompt สำหรับ Agent</div>
-        <div class="code-block">
-          <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
-          <pre>ยืนยันว่า Phase 4 เสร็จแล้วใน .ai/plan.md จากนั้นทำ Phase 5 ตาม
-.ai/phase-5-facebook-integration.md:
-
-⚠️ เฟสนี้เป็นจุดเดียวที่อนุญาตให้เรียก Facebook API จริง
-
-1. Implement FacebookAdsProvider ใน /packages/ads-provider ให้ตรงกับ interface
-   AdsProvider เดิมทุกเมธอด โดยเรียก Facebook Marketing API / Graph API จริง
-2. ทำ OAuth flow (Facebook Login for Business) สำหรับเชื่อม Business Manager ของลูกค้า
-3. เก็บ access token อย่างปลอดภัย (เข้ารหัสก่อนเก็บลง database) พร้อม refresh mechanism
-4. เพิ่ม error handling เฉพาะของ Facebook: rate limit (retry with backoff),
-   permission error, token expired (แจ้งผู้ใช้ให้ re-authenticate)
-5. ทำ feature flag ให้สลับ MockAdsProvider กับ FacebookAdsProvider ได้โดยไม่แก้โค้ดส่วนอื่น
-6. เขียน integration test ที่ยิงไปหา Facebook sandbox/test ad account เท่านั้น
-   ห้ามยิงเข้าบัญชีจริงของลูกค้าในขั้นตอนทดสอบ
-
-จบงานแล้วอัปเดตสถานะ Phase 5 ใน .ai/plan.md และสรุปผลลัพธ์ พร้อมบันทึกรายการ
-permission ที่ต้องยื่นขอ App Review ไว้ในไฟล์นี้ด้วย</pre>
-        </div>
-        <div class="mini-label">Acceptance Criteria</div>
-        <ul>
-          <li>FacebookAdsProvider ทำงานครบทุกเมธอดกับ test ad account</li>
-          <li>OAuth เชื่อม Business Manager ได้จริง token เก็บอย่างปลอดภัย</li>
-          <li>สลับ provider ด้วย environment variable ได้โดยไม่แก้โค้ด UI</li>
-          <li>มี error handling ครบสำหรับ rate limit / token expired / permission error</li>
-          <li>เอกสารสำหรับยื่น App Review พร้อม</li>
-        </ul>
-      </div>
-    </details>
-
-    <!-- Phase 6 -->
-    <details class="phase-acc">
-      <summary><span class="ph-tag">Phase 6</span> Multi-tenant &amp; Production Readiness <span class="chev">▾</span></summary>
-      <div class="acc-body">
-        <p><strong style="color:var(--text)">Goal:</strong> รองรับ agency บริหารหลายลูกค้า/หลาย Business Manager เต็มรูปแบบ แบ่งสิทธิ์ทีมงาน เตรียมระบบให้พร้อม production</p>
-        <div class="scope-cols">
-          <div>
-            <div class="mini-label">ทำ</div>
-            <ul>
-              <li>เชื่อมหลาย Business Manager ต่อหนึ่ง agency</li>
+              <li>เชื่อมหลาย Business Manager/ลูกค้าจริงต่อหนึ่ง agency</li>
               <li>Role-based access control (แอดมิน/มีเดียบายเออร์/ดูอย่างเดียว)</li>
-              <li>Activity log + monitoring/alerting</li>
-              <li>Business Verification กับ Meta + rate limit handling ระดับ agency</li>
+              <li>Activity log + monitoring/alerting สำหรับ production</li>
+              <li>ปิดจ๊อบ Business Verification กับ Meta</li>
+              <li>Rate limit handling ระดับ agency (หลายลูกค้าพร้อมกัน)</li>
             </ul>
           </div>
           <div>
@@ -1215,27 +1189,33 @@ permission ที่ต้องยื่นขอ App Review ไว้ในไ
         <div class="mini-label">Prompt สำหรับ Agent</div>
         <div class="code-block">
           <button class="copy-btn" onclick="copyPrompt(this)">คัดลอก</button>
-          <pre>ยืนยันว่า Phase 5 เสร็จแล้วใน .ai/plan.md จากนั้นทำ Phase 6 ตาม
-.ai/phase-6-multitenant-appreview.md:
+          <pre>ยืนยันว่า Phase 4 เสร็จแล้วใน .ai/plan.md และสถานะ App Review/Business Verification
+ที่ยื่นไว้ตั้งแต่ Phase 0 คืบหน้าไปถึงไหนแล้ว จากนั้นทำ Phase 5 ตาม
+.ai/phase-5-multitenant-launch.md:
 
-1. ขยายระบบให้ 1 agency เชื่อมได้หลาย Business Manager/Ad Account พร้อมกัน
-   ปรับ client switcher ในหน้า UI ให้รองรับโดยไม่กระทบ UX เดิม
-2. ทำ role-based access control: แอดมิน, มีเดียบายเออร์, ดูอย่างเดียว — ผูกกับ database
-   และ middleware ตรวจสิทธิ์ทุก endpoint
-3. ทำ Activity log เก็บทุก action สำคัญ พร้อมหน้า UI ดู log ย้อนหลังได้
-4. เพิ่ม rate limit handling ระดับ agency สำหรับ Facebook API
-5. ตั้งค่า monitoring (error tracking, uptime check) สำหรับ production
-6. รวบรวมเอกสารที่ต้องใช้ยื่น Business Verification ตามที่ระบุใน spec.html
+1. ขยายระบบให้ 1 agency เชื่อมได้หลาย Business Manager/Ad Account ของลูกค้าจริงพร้อมกัน
+   (หลังผ่าน App Review + Business Verification แล้วเท่านั้น) ปรับ client switcher
+   ในหน้า UI ให้รองรับโดยไม่กระทบ UX เดิม
+2. ทำ role-based access control: แอดมิน (จัดการทุกอย่าง), มีเดียบายเออร์ (จัดการแคมเปญ
+   ของลูกค้าที่ได้รับมอบหมาย), ดูอย่างเดียว (read-only) — ผูกกับ database และ middleware
+   ตรวจสิทธิ์ทุก endpoint
+3. ทำ Activity log เก็บทุก action สำคัญ (สร้าง/แก้ไข/หยุดแคมเปญ, เปลี่ยน budget)
+   พร้อมหน้า UI ดู log ย้อนหลังได้
+4. เพิ่ม rate limit handling ระดับ agency สำหรับ Facebook API (queue request,
+   backoff เมื่อโดน limit รวมจากหลายลูกค้า)
+5. ตั้งค่า monitoring (error tracking เช่น Sentry, uptime check) สำหรับ production
+6. ถ้า Business Verification ยังไม่ผ่าน ให้สรุปสถานะและสิ่งที่ต้องทำเพิ่มเติมให้ชัดเจน
+   ก่อนประกาศว่าพร้อม launch จริงกับลูกค้า
 
-จบงานแล้วอัปเดตสถานะ Phase 6 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
+จบงานแล้วอัปเดตสถานะ Phase 5 ใน .ai/plan.md และสรุปผลลัพธ์ท้ายไฟล์นี้</pre>
         </div>
         <div class="mini-label">Acceptance Criteria</div>
         <ul>
           <li>เชื่อมและสลับได้จริงระหว่างหลาย Business Manager ในบัญชี agency เดียว</li>
           <li>Role-based access control บล็อกสิทธิ์ผิดได้จริง</li>
           <li>Activity log บันทึกและแสดงผลถูกต้องครบ</li>
-          <li>ระบบไม่ล่มเมื่อโดน Facebook rate limit</li>
-          <li>Monitoring ทำงานและแจ้งเตือนเมื่อเกิด error จริง</li>
+          <li>ระบบไม่ล่มเมื่อโดน Facebook rate limit (มี retry/queue)</li>
+          <li>App Review + Business Verification ผ่านแล้ว หรือมีสถานะชัดเจนว่าติดขั้นตอนไหน</li>
         </ul>
       </div>
     </details>

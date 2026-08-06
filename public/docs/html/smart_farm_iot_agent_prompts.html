@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Farm IoT — Agent Prompts by Phase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F7F1; --paper-raised:#FFFFFF; --ink:#1E2A22; --ink-soft:#57645C;
+    --line:#DDE1D3; --board:#1B2420; --blue:#256B8C; --blue-soft:#E4F0F4;
+    --ochre:#A5752E; --ochre-soft:#F8EFD9; --rust:#A6432F; --rust-soft:#FAE5DF;
+    --moss:#437245; --moss-soft:#E6F0E4; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif; line-height:1.7; font-size:16px; word-wrap:break-word; overflow-wrap:anywhere; word-break:break-word;}
+  h1,h2,h3{font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif; letter-spacing:-0.01em; color:var(--ink);}
+  code,.mono{font-family:'IBM Plex Mono',monospace; font-size:0.88em;}
+  a{color:var(--blue);}
+
+  .hero{background:var(--board); color:#EDEEE6; padding:48px 8vw 36px; position:relative; overflow:hidden;}
+  .hero::after{content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size:28px 28px; pointer-events:none;}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:#9FB6A8; margin-bottom:14px;}
+  .hero h1{font-size:clamp(24px,4vw,38px); margin:0 0 10px; color:#F7F8F2;}
+  .hero p.sub{max-width:680px; color:#C7CFC5; font-size:15px; margin:0;}
+
+  .wrap{display:grid; grid-template-columns:220px minmax(0,1fr); gap:44px; max-width:1140px; margin:0 auto; padding:40px 8vw 100px;}
+  nav.toc{position:sticky; top:24px; align-self:start; font-size:13.5px;}
+  nav.toc .toc-label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px;}
+  nav.toc a{display:block; color:var(--ink-soft); text-decoration:none; padding:5px 0 5px 14px; border-left:2px solid var(--line);}
+  nav.toc a:hover{color:var(--blue); border-left-color:var(--blue);}
+
+  main section{margin-bottom:46px;}
+  .phase-title{display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;}
+  .phase-title h2{font-size:22px; margin:0;}
+  .kicker{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.1em; color:var(--blue); text-transform:uppercase;}
+  .section-desc{color:var(--ink-soft); margin:8px 0 18px; font-size:14.5px;}
+
+  .status{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:700; padding:3px 10px; border-radius:100px; white-space:nowrap;}
+  .status.done{background:var(--moss-soft); color:var(--moss);}
+  .status.now{background:var(--ochre-soft); color:var(--ochre);}
+  .status.next{background:var(--blue-soft); color:var(--blue);}
+  .status.future{background:#E7E9E2; color:#5C665F;}
+
+  details{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); margin-bottom:10px; box-shadow:0 1px 3px rgba(30,42,34,0.05); overflow:hidden;}
+  details[open]{box-shadow:0 2px 8px rgba(30,42,34,0.08);}
+  summary{cursor:pointer; padding:14px 18px; display:flex; align-items:center; gap:12px; font-weight:600; font-size:14.5px; list-style:none;}
+  summary::-webkit-details-marker{display:none;}
+  summary::before{content:"▸"; color:var(--ink-soft); font-size:12px; transition:transform .15s; flex-shrink:0;}
+  details[open] summary::before{transform:rotate(90deg);}
+  summary .step-title{flex:1;}
+  .prompt-body{padding:0 18px 18px;}
+  .prompt-body p{font-size:13.5px; color:var(--ink-soft); margin:0 0 10px;}
+  pre.prompt{background:var(--board); color:#D7DED4; border-radius:8px; padding:16px 18px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; overflow-x:auto; line-height:1.7; margin:0; white-space:pre-wrap;}
+
+  .callout{background:var(--blue-soft); border:1px solid #B7D2DC; border-radius:var(--radius); padding:14px 16px; font-size:13.5px; margin:14px 0;}
+  .callout b{color:var(--blue);}
+  .callout.warn{background:var(--ochre-soft); border-color:#E0C48D;}
+  .callout.warn b{color:var(--ochre);}
+
+  footer{text-align:center; padding:30px 8vw 60px; color:var(--ink-soft); font-size:12.5px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:900px){
+    .wrap{grid-template-columns:1fr; padding:30px 6vw 80px; gap:24px;}
+    nav.toc{position:static; background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;}
+    nav.toc .toc-list{display:flex; flex-wrap:wrap; gap:4px 14px;}
+    nav.toc a{border-left:none; padding:4px 0;}
+  }
+  @media (max-width:600px){
+    body{font-size:15.5px;}
+    .hero{padding:36px 6vw 28px;}
+    .hero h1{font-size:22px;}
+    main h2{font-size:19px;}
+    summary{padding:12px 14px; font-size:13.5px;}
+    .prompt-body{padding:0 14px 14px;}
+    pre.prompt{font-size:11.5px; padding:12px 14px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Agent Command Reference</div>
+  <h1>Prompt สั่ง Agent แยกตามเฟส</h1>
+  <p class="sub">รวม prompt ทุกขั้นตอนตาม PLAN.md ไว้ที่เดียว กดเปิดทีละอันตอนถึงคิว คัดลอกไปวางใน Claude Code ได้เลย — ทำทีละข้อ อย่าข้าม ห้ามเริ่มข้อถัดไปก่อนข้อก่อนหน้าผ่าน</p>
+</div>
+
+<div class="wrap">
+  <nav class="toc">
+    <div class="toc-label">เฟส</div>
+    <div class="toc-list">
+      <a href="#p0a">Phase 0 — เตรียมโค้ด</a>
+      <a href="#p0b">Phase 0 — ทดสอบ 6 ข้อ</a>
+      <a href="#p1">Phase 1 — Security</a>
+      <a href="#p2">Phase 2 — Firebase</a>
+      <a href="#p3">Phase 3 — ฮาร์ดแวร์จริง</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <section id="p0a">
+      <div class="phase-title"><span class="kicker">Phase 0</span></div>
+      <h2>เตรียมโค้ด</h2>
+      <p class="section-desc">จัดโครงสร้าง + แก้บั๊ก + ตัด LINE Notify ออก — ทำก่อนเริ่มทดสอบ</p>
+
+      <details open>
+        <summary><span class="status done">ทำแล้ว</span><span class="step-title">0.1 — ย้ายไฟล์เข้าโครงสร้างใหม่</span></summary>
+        <div class="prompt-body">
+          <p>ย้าย/รวมไฟล์จาก legacy/ ตาม MIGRATION.md ยังไม่แก้ logic</p>
+          <pre class="prompt">โปรเจ็คนี้ไม่มีฮาร์ดแวร์จริงในมือ ทุกอย่างต้องทดสอบผ่าน Wokwi
+simulation เท่านั้น
+
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md, MIGRATION.md ที่ root ให้ครบก่อน
+
+ไฟล์เดิมทั้งหมด (10 .ino + code.gs) อยู่ที่ legacy/ — ใช้เป็นต้นทาง
+อย่างเดียว ห้ามแก้ไขไฟล์ใน legacy/ เอง พอย้ายครบและ build ผ่านแล้ว
+ค่อยลบ legacy/ ทิ้งเป็นขั้นตอนสุดท้าย
+
+งานของ session นี้คือ PLAN.md Phase 0 ข้อ "ย้ายไฟล์ .ino ทั้งหมดเข้า
+โครงสร้างใหม่" เท่านั้น ทำตาม MIGRATION.md ทีละหมวด (MOVE → MERGE →
+เขียน .h → สร้างไฟล์ NEW) ห้ามแก้บั๊กที่รู้อยู่แล้วในขั้นนี้
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนั้น สรุปว่า .h ไฟล์ไหนต้องเดาการประกาศ
+ฟังก์ชันเอง รอผมยืนยันก่อนไปข้อถัดไป</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status done">ทำแล้ว</span><span class="step-title">0.2 — แก้บั๊ก 3 จุด + ตัด LINE Notify + แยก secrets</span></summary>
+        <div class="prompt-body">
+          <p>ทำ 3 อย่างในคราวเดียวเพราะเป็นการแก้ไฟล์เดิมทั้งหมด ไม่เกี่ยวกับสิ่งแวดล้อมภายนอก</p>
+          <pre class="prompt">งานของ session นี้คือ 3 ข้อถัดไปใน PLAN.md Phase 0:
+
+1. แก้บั๊กใน firmware/src/sensors.cpp:
+   - ตัวแปรพินสลับกัน (soil_1_3 อ่านจาก soil_1_1_pin ที่ถูกต้องคือ
+     soil_1_3_pin, soil_2_3 อ่านจาก soil_1_2_pin ที่ถูกต้องคือ
+     soil_2_1_pin)
+   - sum_soil_all = soil_1_1 เขียนทับค่าเฉลี่ยที่คำนวณไว้แล้ว — ลบ
+     บรรทัดนี้ทิ้ง
+
+2. แก้บั๊กใน firmware/src/rtc_time.cpp:
+   - now_day = now.minute() ควรเป็น now.day()
+
+3. คอมเมนต์ทุกจุดที่เรียก LINE.notify() / LINE.notifyPicture() ออก
+   ใน camera.cpp และ control.cpp แทนด้วย Serial.println() ชั่วคราว
+   (ห้ามลบไลบรารี TridentTD_LineNotify ออกจาก platformio.ini เลย
+   เผื่อยังมีโค้ดอ้างอิงอยู่ที่อื่น — ค่อยลบตอนแน่ใจว่าไม่เหลือแล้ว)
+
+4. ย้าย WiFi password / รหัสกล้อง จากที่ฝังในโค้ด (ถ้ายังมี) ไปที่
+   firmware/src/secrets.h ตามที่ secrets.example.h กำหนดไว้
+
+ห้ามแก้อย่างอื่นนอกจาก 4 ข้อนี้ ห้ามเริ่มทดสอบใน session นี้
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ครบ 4 ข้อ สรุปรายการไฟล์ที่แก้ทั้งหมดให้ผมดู</pre>
+        </div>
+      </details>
+    </section>
+
+    <section id="p0b">
+      <div class="phase-title"><span class="kicker">Phase 0</span></div>
+      <h2>ทดสอบทีละส่วน (6 ข้อ)</h2>
+      <p class="section-desc">เรียงจากง่าย/อิสระที่สุดไปหายากสุด — ห้ามข้าม แม้ข้อก่อนหน้าจะดูผ่านแล้วก็ตาม ให้บันทึกผลใน PLAN.md ทุกครั้ง</p>
+
+      <details open>
+        <summary><span class="status now">กำลังทำ</span><span class="step-title">ทดสอบ 1 — Sensors</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 1 เท่านั้น: "Sensors
+บน Wokwi (DHT22 + ตัวต้านทานปรับค่าแทนดินชื้น)"
+
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md ให้ครบอีกครั้งก่อนเริ่ม
+
+1. เปิด firmware/src/sensors.cpp ยืนยันว่าบั๊ก 2 จุด (pin สลับกัน,
+   sum_soil_all) ถูกแก้แล้วจริง ถ้ายังไม่แก้ให้แก้ก่อน
+2. pio run แก้ error ระดับ compile เท่านั้น
+3. รันจำลองผ่าน Wokwi ป้อนค่า potentiometer หลายค่า (ต่ำสุด/กลาง/
+   สูงสุด) เช็คว่าค่าที่อ่านได้ตรงโซนจริง และ sum_soil_all เป็นค่า
+   เฉลี่ยจริงของทั้ง 12 จุด และ DHT22 อ่านค่าที่สมเหตุสมผล
+
+ห้ามแตะไฟล์อื่นนอกจาก sensors.cpp/.h ห้ามเริ่มข้อทดสอบถัดไป
+
+เมื่อเสร็จ: บันทึกผลลง PLAN.md หัวข้อ "Log ผลการทดสอบ Phase 0"
+ติ๊ก checklist ข้อนี้ สรุปผลแล้วรอผมยืนยันก่อนไปข้อ 2</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status next">คิวถัดไป</span><span class="step-title">ทดสอบ 2 — Control logic + Actuators</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 2 เท่านั้น: "Control
+logic + Actuators (LED แทนรีเลย์) ทั้ง 3 โหมดปลูก"
+
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม โดยเฉพาะผลทดสอบข้อ 1
+ใน Log ของ PLAN.md ว่าผ่านหรือมีข้อสังเกตอะไรทิ้งไว้
+
+1. เปิด firmware/src/control.cpp ทำความเข้าใจเงื่อนไขเปิด/ปิดแต่ละ
+   อุปกรณ์ในแต่ละโหมด (เมลอน/แตงโม/สตอเบอรี่) ยังไม่ต้องแก้อะไร
+2. รันจำลองผ่าน Wokwi ป้อนค่าเซนเซอร์จำลอง (จาก sensors.cpp ที่
+   ทดสอบผ่านแล้ว) ให้สูง/ต่ำกว่า threshold ที่กำหนดในแต่ละโหมด
+3. เช็คทีละโหมดแยกกัน ว่า LED ที่แทนพัดลม/ไฟ/วาล์ว/ปั๊ม เปิด-ปิด
+   ตรงตามเงื่อนไขที่ควรจะเป็นหรือไม่ บันทึกว่าโหมดไหนผ่าน/ไม่ผ่าน
+
+ห้ามแตะไฟล์อื่นนอกจาก control.cpp/.h ห้ามแก้ logic ถ้าไม่ผ่าน —
+แค่บันทึกไว้ว่าไม่ผ่านตรงไหน แล้วรอผมตัดสินใจว่าจะแก้ยังไง
+
+เมื่อเสร็จ: บันทึกผลลง PLAN.md ติ๊ก checklist สรุปผลแล้วรอผมยืนยัน
+ก่อนไปข้อ 3</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">ทดสอบ 3 — วันปลูก (RTC + day counter)</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 3 เท่านั้น: "วันปลูก
+(RTC + day counter) หลังแก้บั๊ก"
+
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม
+
+1. เปิด firmware/src/rtc_time.cpp ยืนยันว่าบั๊ก now_day = now.minute()
+   ถูกแก้เป็น now.day() แล้วจริง
+2. รันจำลองผ่าน Wokwi ตั้งเวลาโมดูล RTC ให้เดินเร็ว (เช่นข้าม 3-4
+   วันจำลอง) เช็คว่า count_day ใน EEPROM เพิ่มตามจำนวนวันจริง ไม่ใช่
+   ตามนาที
+3. ยืนยันว่าค่า count_day ที่ได้ ส่งผลถูกต้องต่อรอบให้น้ำ/ปุ๋ยใน
+   control.cpp (เชื่อมกับผลทดสอบข้อ 2)
+
+ห้ามแตะไฟล์อื่นนอกจาก rtc_time.cpp/.h ห้ามเริ่มข้อทดสอบถัดไป
+
+เมื่อเสร็จ: บันทึกผลลง PLAN.md ติ๊ก checklist สรุปผลแล้วรอผมยืนยัน
+ก่อนไปข้อ 4</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">ทดสอบ 4 — เชื่อม Google Sheet (GET/POST)</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 4 เท่านั้น: "เชื่อม
+Google Sheet — ยืนยันว่า Code.gs มี doGet จริงหรือไม่ก่อน"
+
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม โดยเฉพาะหมายเหตุใน
+CLAUDE.md เรื่อง Code.gs มีแค่ doPost
+
+1. เปิด backend/apps-script/Code.gs ในโปรเจ็ค Apps Script จริง
+   (ไม่ใช่แค่ไฟล์ในเครื่อง) เช็คว่ามีไฟล์ .gs อื่นในโปรเจ็คเดียวกัน
+   ที่มี doGet(e) หรือไม่
+2. ถ้าไม่มี — เพิ่ม doGet(e) ที่ทำงานเหมือน doPost (รับ e.parameter
+   แทน e.parameters เพราะ GET ส่ง query string) อย่าเปลี่ยน logic
+   อื่นในไฟล์
+3. Deploy เป็น Web App ใหม่ (execute as me, anyone can access)
+   ทดสอบยิง status=send และ status=get ด้วย curl/Postman ก่อน ยังไม่
+   ต้องต่อกับ ESP32 จริง
+4. ถ้าผ่าน ค่อยทดสอบผ่าน Wokwi ให้ ESP32 จำลองยิง HTTP ไปจริง เช็ค
+   ว่าเขียนแถวใหม่ใน sheet1 ได้ และดึงค่า control กลับมาได้ครบ
+
+ห้ามแก้ logic อื่นใน Code.gs นอกจากเพิ่ม doGet ห้ามเริ่มข้อทดสอบถัดไป
+
+เมื่อเสร็จ: บันทึกผลลง PLAN.md ติ๊ก checklist สรุปผลแล้วรอผมยืนยัน
+ก่อนไปข้อ 5</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">ทดสอบ 5 — LINE Bot แบบแชท</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 5 เท่านั้น: "LINE
+Bot แบบแชท (ยืนยันซ้ำว่ายังทำงาน)"
+
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม ส่วน "คำสั่งแชท LINE →
+ฟังก์ชันที่ทำงาน" ใน DESIGN.md
+
+1. ยืนยันว่า Webhook URL ของ Code.gs ที่ deploy ไว้ (ข้อทดสอบ 4)
+   ถูกตั้งไว้ใน LINE Developers Console ถูกต้อง
+2. พิมพ์ check_status, on_off_fan, mode_1 ในแชทจริงทีละคำสั่ง
+3. เช็คว่า Google Sheet ชีต control เปลี่ยนค่าตามจริง และบอทตอบ
+   กลับในแชทถูกต้อง
+4. ทดสอบกรณี on_off_fan ตอนโหมด ≠ 0 (ควรตอบว่าเปิด-ปิดไม่ได้เพราะ
+   กำลังใช้โหมดปลูกอยู่)
+
+ห้ามแก้โค้ดใด ๆ ในขั้นนี้ เป็นแค่การทดสอบยืนยัน ถ้าไม่ทำงานให้บันทึก
+อาการที่เจอไว้ ไม่ต้องพยายามแก้เอง
+
+เมื่อเสร็จ: บันทึกผลลง PLAN.md ติ๊ก checklist สรุปผลแล้วรอผมยืนยัน
+ก่อนไปข้อ 6</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">ทดสอบ 6 — กล้อง (ไม่พึ่ง LINE)</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 6 เท่านั้น (ข้อ
+สุดท้ายของ Phase 0): "กล้อง (ถ่าย/บันทึก SPIFFS เท่านั้น ตัดส่วนส่ง
+LINE ออก)"
+
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม
+
+1. เปิด firmware/src/camera.cpp ยืนยันว่าส่วนเรียก LINE Notify ถูก
+   คอมเมนต์ออกแล้ว (ทำไปแล้วในขั้นตอน 0.2)
+2. ทดสอบว่าโค้ดดึงภาพจาก snapshot.cgi ของกล้อง IP มาเก็บใน SPIFFS
+   ได้ (Wokwi ไม่มีกล้อง IP จำลองจริง ให้ทดสอบ logic การเรียก HTTP
+   และการเขียนไฟล์ SPIFFS แยกจากกัน หรือ mock response แทนกล้องจริง)
+3. บันทึกว่าส่วนไหนทดสอบผ่านได้จริงในสภาพไม่มีฮาร์ดแวร์ ส่วนไหนต้อง
+   รอกล้องจริงถึงจะทดสอบได้เต็มรูปแบบ
+
+ห้ามแตะไฟล์อื่นนอกจาก camera.cpp/.h
+
+เมื่อเสร็จ: บันทึกผลลง PLAN.md ติ๊ก checklist ข้อนี้ — ถ้าครบทั้ง 6
+ข้อ ให้สรุปภาพรวม Phase 0 ทั้งหมดว่าอะไรผ่าน อะไรยังค้าง แล้วถือว่า
+Phase 0 เสร็จสมบูรณ์ รอผมยืนยันก่อนเริ่ม Phase 1</pre>
+        </div>
+      </details>
+
+      <div class="callout"><b>หลังข้อ 6 ผ่าน:</b> Phase 0 เสร็จสมบูรณ์แล้ว — ของเดิมยืนยันว่ารันได้ถูกต้องทุกส่วนที่ยังไม่ตาย ค่อยไปเปิด Phase 1 ด้านล่าง</div>
+    </section>
+
+    <section id="p1">
+      <div class="phase-title"><span class="kicker">Phase 1</span></div>
+      <h2>Security Hardening</h2>
+      <p class="section-desc">ปิดช่องโหว่ที่เจอตอนสำรวจ — ทำหลัง Phase 0 เสร็จสมบูรณ์เท่านั้น</p>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">1.1 — ย้าย token + เช็ค signature</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 1 ข้อ 1-2 เท่านั้น:
+
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม โดยเฉพาะ Decision Log
+ข้อ 2-3 ใน DESIGN.md
+
+1. ย้าย LINE Channel Access Token จาก backend/apps-script/Code.gs
+   ไปเก็บใน Script Properties ของ Apps Script (ใช้
+   PropertiesService.getScriptProperties()) แก้ replyMessage() ให้
+   อ่าน token จากตรงนั้นแทนค่าที่ฝังไว้
+
+2. เพิ่มการตรวจสอบ x-line-signature ใน doPost() ก่อนประมวลผล event
+   ใด ๆ — ใช้ HMAC-SHA256 กับ Channel Secret (เก็บใน Script
+   Properties เช่นกัน) เทียบกับ header ที่ LINE ส่งมา ถ้าไม่ตรงให้
+   ปฏิเสธ request ทันที ไม่ประมวลผลต่อ
+
+ห้ามแก้ logic อื่นใน Code.gs นอกจาก 2 ข้อนี้ ทดสอบว่า LINE Bot ยัง
+ทำงานได้ปกติหลังแก้ (เทียบกับผลทดสอบ Phase 0 ข้อ 5)
+
+เมื่อเสร็จ: ติ๊ก PLAN.md 2 ข้อนี้ สรุปให้ผมดูว่าทดสอบยืนยันแล้วว่า
+บอทยังทำงานปกติ</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">1.2 — doGet + ย้ายพิน strapping</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 1 ข้อ 3-4 เท่านั้น:
+
+1. ยืนยัน/เพิ่ม doGet(e) ใน Code.gs ให้ตรงกับที่เฟิร์มแวร์เรียก (ถ้า
+   ยังไม่ได้ทำตอน Phase 0 ข้อทดสอบ 4)
+
+2. ย้ายพินรีเลย์ออกจาก GPIO 0 และ GPIO 12 (strapping pin) ใน
+   firmware/src/control.cpp ไปใช้พินอื่นที่ปลอดภัยกว่า (เช่น GPIO 14,
+   27) อัปเดต docs/pin-mapping.md ให้ตรงด้วย
+
+ทดสอบผ่าน Wokwi ว่าโค้ดยังทำงานปกติหลังเปลี่ยนพิน
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ครบ Phase 1 สรุปให้ผมดู ถือว่า Phase 1 จบ
+รอผมยืนยันก่อนเริ่ม Phase 2 (Firebase)</pre>
+        </div>
+      </details>
+    </section>
+
+    <section id="p2">
+      <div class="phase-title"><span class="kicker">Phase 2</span></div>
+      <h2>Track B1 — Firebase Hybrid</h2>
+      <p class="section-desc">ดูรายละเอียดเต็มใน Firebase Migration Plan (ไฟล์แยก) — นี่คือ prompt ย่อสำหรับสั่ง agent แต่ละขั้น</p>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">2.1 — ตั้งโปรเจ็ค Firebase + Security Rules</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 1-2 เท่านั้น — อ่าน
+DESIGN.md หัวข้อ "โครงสร้างข้อมูล — Firebase Realtime DB" ก่อนเริ่ม
+
+1. เขียนไฟล์ database.rules.json ตามโครงสร้างใน DESIGN.md (อ่านได้
+   ทุกคน เขียนได้เฉพาะ auth != null)
+2. เขียนคำแนะนำทีละขั้น (เป็นไฟล์ docs/firebase-setup.md) สำหรับผม
+   ไปตั้งค่าเองใน Firebase Console (สร้างโปรเจ็ค เปิด Realtime
+   Database, เปิด Anonymous Auth) เพราะขั้นนี้ agent ทำให้ไม่ได้
+   โดยตรง ต้องทำผ่านหน้าเว็บ Console เอง
+
+ห้ามเริ่มแก้เฟิร์มแวร์ในขั้นนี้ รอให้ผมตั้งค่า Firebase Console เสร็จ
+และให้ config (apiKey, databaseURL) มาก่อน
+
+เมื่อเสร็จ: ส่งไฟล์ทั้งสองให้ผมตรวจ รอผมยืนยันว่าตั้งค่า Console
+เสร็จแล้วก่อนไปข้อถัดไป</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">2.2 — ต่อเฟิร์มแวร์เข้า Firebase</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 3 เท่านั้น — ผมตั้งค่า
+Firebase Console เสร็จแล้ว (apiKey/databaseURL อยู่ใน secrets.h แล้ว)
+
+1. เพิ่มไลบรารี Firebase-ESP-Client ใน platformio.ini
+2. แก้ firmware/src/cloud_sync.cpp ให้ subscribe ค่าจาก control/ แบบ
+   real-time แทนการ http.GET() ไปหา Apps Script เดิม — เก็บฟังก์ชัน
+   เดิมที่คุย Apps Script ไว้ก่อน (comment ออก ไม่ลบ) เผื่อต้องย้อนกลับ
+3. ทดสอบผ่าน Wokwi ว่า ESP32 จำลองเชื่อม Firebase RTDB ได้จริง อ่าน
+   ค่า control/ ได้ real-time
+
+ห้ามแตะ backend/apps-script/Code.gs ในขั้นนี้ (เป็นข้อถัดไป)
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนี้ สรุปผลทดสอบให้ผมดูก่อนไปข้อถัดไป</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">2.3 — แก้ Code.gs ให้เขียนลง Firebase</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 4 เท่านั้น
+
+แก้ backend/apps-script/Code.gs ฟังก์ชัน update_data() และ
+update_status() ให้ยิง REST API ของ Firebase RTDB แทนการเขียน
+Google Sheet ชีต control (ใช้ UrlFetchApp.fetch ยิงไปที่
+{databaseURL}/control/{path}.json แบบ PUT) เก็บ line_user_id ไว้ที่
+meta/ ตามที่ระบุใน DESIGN.md
+
+คง getdata() ที่อ่านจาก Google Sheet ไว้เหมือนเดิมก่อน (ยังไม่ย้าย
+log เซนเซอร์) ทดสอบว่าพิมพ์ on_off_fan ในแชทแล้วค่าใน Firebase
+เปลี่ยนจริง และ ESP32 (จากข้อ 2.2) รับค่าได้ real-time
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนี้ สรุปผลทดสอบ end-to-end (แชท → Code.gs
+→ Firebase → ESP32) ให้ผมดูก่อนไปข้อถัดไป</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">2.4 — เว็บแดชบอร์ด</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 5 (ข้อสุดท้าย) เท่านั้น
+
+สร้าง dashboard/index.html หน้าเดียว ใช้ Firebase JS SDK อ่าน
+sensors/latest แบบ real-time ขึ้นจอทันที และกราฟย้อนหลังจาก
+sensors/log ด้วย Chart.js ตามที่ระบุใน Firebase Migration Plan
+
+ห้ามใช้ framework ใหญ่ (React ฯลฯ) เอาแค่ HTML+JS ธรรมดาไฟล์เดียว
+เพราะจะโฮสต์ฟรีบน Firebase Hosting หรือ GitHub Pages
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ครบ Phase 2 สรุปให้ผมดู ถือว่า Phase 2 จบ</pre>
+        </div>
+      </details>
+    </section>
+
+    <section id="p3">
+      <div class="phase-title"><span class="kicker">Phase 3</span></div>
+      <h2>เมื่อพร้อมขึ้นฮาร์ดแวร์จริง</h2>
+      <p class="section-desc">ใช้ตอนมีบอร์ด/เซนเซอร์จริงในมือแล้วเท่านั้น ยังไม่ต้องเปิดตอนนี้</p>
+
+      <details>
+        <summary><span class="status future">รอคิว (รอฮาร์ดแวร์)</span><span class="step-title">3.1 — สลับจากจำลองไปฮาร์ดแวร์จริง</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 3 ทั้งหมด — เริ่มได้เมื่อมี
+ฮาร์ดแวร์จริงในมือแล้วเท่านั้น
+
+1. สลับทดสอบทีละเซนเซอร์/รีเลย์จริง แทนค่าจำลอง Wokwi ทีละตัว อย่า
+   เปลี่ยนพร้อมกันทั้งหมด อ้างอิงลำดับเดียวกับ Phase 0 ข้อทดสอบ
+   (sensors → control → RTC → cloud → LINE → camera)
+2. ตรวจ pin-map ใน docs/pin-mapping.md เทียบกับ PCB จริง แก้ให้ตรง
+   ถ้าไม่ตรง
+3. รวบรวม README, diagram, วิดีโอสาธิตจากผลทดสอบทั้ง Phase 0-3
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ครบ Phase 3 — โปรเจ็คเสร็จสมบูรณ์</pre>
+        </div>
+      </details>
+    </section>
+
+  </main>
+</div>
+
+<footer>SMART FARM IOT — AGENT PROMPTS BY PHASE · จัดทำโดย Claude</footer>
+
+</body>
+</html>
