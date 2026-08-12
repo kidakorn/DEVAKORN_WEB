@@ -94,7 +94,7 @@
       <a href="#p0a">Phase 0 — เตรียมโค้ด</a>
       <a href="#p0b">Phase 0 — ทดสอบ 6 ข้อ</a>
       <a href="#p1">Phase 1 — Security</a>
-      <a href="#p2">Phase 2 — Firebase</a>
+      <a href="#p2">Phase 2 — Track A</a>
       <a href="#p3">Phase 3 — ฮาร์ดแวร์จริง</a>
     </div>
   </nav>
@@ -164,8 +164,8 @@ simulation เท่านั้น
       <h2>ทดสอบทีละส่วน (6 ข้อ)</h2>
       <p class="section-desc">เรียงจากง่าย/อิสระที่สุดไปหายากสุด — ห้ามข้าม แม้ข้อก่อนหน้าจะดูผ่านแล้วก็ตาม ให้บันทึกผลใน PLAN.md ทุกครั้ง</p>
 
-      <details open>
-        <summary><span class="status now">กำลังทำ</span><span class="step-title">ทดสอบ 1 — Sensors</span></summary>
+      <details>
+        <summary><span class="status done">ผ่านแล้ว</span><span class="step-title">ทดสอบ 1 — Sensors</span></summary>
         <div class="prompt-body">
           <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 1 เท่านั้น: "Sensors
 บน Wokwi (DHT22 + ตัวต้านทานปรับค่าแทนดินชื้น)"
@@ -187,7 +187,7 @@ simulation เท่านั้น
       </details>
 
       <details>
-        <summary><span class="status next">คิวถัดไป</span><span class="step-title">ทดสอบ 2 — Control logic + Actuators</span></summary>
+        <summary><span class="status done">ผ่านแล้ว</span><span class="step-title">ทดสอบ 2 — Control logic + Actuators</span></summary>
         <div class="prompt-body">
           <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 2 เท่านั้น: "Control
 logic + Actuators (LED แทนรีเลย์) ทั้ง 3 โหมดปลูก"
@@ -211,7 +211,7 @@ logic + Actuators (LED แทนรีเลย์) ทั้ง 3 โหมด�
       </details>
 
       <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">ทดสอบ 3 — วันปลูก (RTC + day counter)</span></summary>
+        <summary><span class="status done">ผ่านแล้ว</span><span class="step-title">ทดสอบ 3 — วันปลูก (RTC + day counter)</span></summary>
         <div class="prompt-body">
           <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 3 เท่านั้น: "วันปลูก
 (RTC + day counter) หลังแก้บั๊ก"
@@ -234,27 +234,28 @@ logic + Actuators (LED แทนรีเลย์) ทั้ง 3 โหมด�
       </details>
 
       <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">ทดสอบ 4 — เชื่อม Google Sheet (GET/POST)</span></summary>
+        <summary><span class="status done">ผ่านแล้ว</span><span class="step-title">ทดสอบ 4 — เชื่อม Google Sheet (GET/POST)</span></summary>
         <div class="prompt-body">
           <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 4 เท่านั้น: "เชื่อม
-Google Sheet — ยืนยันว่า Code.gs มี doGet จริงหรือไม่ก่อน"
+Google Sheet"
 
-อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม โดยเฉพาะหมายเหตุใน
-CLAUDE.md เรื่อง Code.gs มีแค่ doPost
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md, docs/google-sheet-setup.md ก่อน
+เริ่ม — Sheet เดิมอาจเข้าถึงไม่ได้แล้ว ต้องสร้างใหม่ทั้งหมด
 
-1. เปิด backend/apps-script/Code.gs ในโปรเจ็ค Apps Script จริง
-   (ไม่ใช่แค่ไฟล์ในเครื่อง) เช็คว่ามีไฟล์ .gs อื่นในโปรเจ็คเดียวกัน
-   ที่มี doGet(e) หรือไม่
-2. ถ้าไม่มี — เพิ่ม doGet(e) ที่ทำงานเหมือน doPost (รับ e.parameter
-   แทน e.parameters เพราะ GET ส่ง query string) อย่าเปลี่ยน logic
-   อื่นในไฟล์
-3. Deploy เป็น Web App ใหม่ (execute as me, anyone can access)
-   ทดสอบยิง status=send และ status=get ด้วย curl/Postman ก่อน ยังไม่
-   ต้องต่อกับ ESP32 จริง
-4. ถ้าผ่าน ค่อยทดสอบผ่าน Wokwi ให้ ESP32 จำลองยิง HTTP ไปจริง เช็ค
-   ว่าเขียนแถวใหม่ใน sheet1 ได้ และดึงค่า control กลับมาได้ครบ
+1. ทำตาม docs/google-sheet-setup.md ทีละขั้น: สร้าง Google Sheet ใหม่
+   (แท็บ sheet1 + control ตามคอลัมน์ที่ระบุ) ผูก Apps Script เข้าไป
+   วางเนื้อหาจาก backend/apps-script/Code.gs แล้ว Deploy เป็น Web App
+2. เช็คว่ามี doGet(e) ใน Code.gs หรือยัง (ถ้ายังไม่มี เพิ่มให้ทำงาน
+   เหมือน doPost แต่รับ e.parameter แทน e.parameters)
+3. แก้จุดที่ Sheet ID ฝังตรง ๆ ในโค้ด (openById/openByUrl) ให้เป็น
+   SpreadsheetApp.getActiveSpreadsheet() ตามที่ระบุใน setup guide
+4. ทดสอบยิง status=send และ status=get ด้วย curl/Postman ก่อน (มี
+   ตัวอย่างคำสั่งใน docs/google-sheet-setup.md) ยังไม่ต้องต่อ ESP32
+5. ถ้าผ่าน เอา SCRIPT_ID ใหม่ไปใส่ใน firmware/src/secrets.h แล้ว
+   ทดสอบผ่าน Wokwi ให้ ESP32 จำลองยิง HTTP จริง เช็คว่าเขียนแถวใหม่
+   ใน sheet1 ได้ และดึงค่า control กลับมาได้ครบ
 
-ห้ามแก้ logic อื่นใน Code.gs นอกจากเพิ่ม doGet ห้ามเริ่มข้อทดสอบถัดไป
+ห้ามแก้ logic อื่นใน Code.gs นอกจากที่ระบุไว้ ห้ามเริ่มข้อทดสอบถัดไป
 
 เมื่อเสร็จ: บันทึกผลลง PLAN.md ติ๊ก checklist สรุปผลแล้วรอผมยืนยัน
 ก่อนไปข้อ 5</pre>
@@ -262,7 +263,7 @@ CLAUDE.md เรื่อง Code.gs มีแค่ doPost
       </details>
 
       <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">ทดสอบ 5 — LINE Bot แบบแชท</span></summary>
+        <summary><span class="status done">ผ่านแล้ว</span><span class="step-title">ทดสอบ 5 — LINE Bot แบบแชท</span></summary>
         <div class="prompt-body">
           <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 5 เท่านั้น: "LINE
 Bot แบบแชท (ยืนยันซ้ำว่ายังทำงาน)"
@@ -286,28 +287,35 @@ Bot แบบแชท (ยืนยันซ้ำว่ายังทำง�
         </div>
       </details>
 
-      <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">ทดสอบ 6 — กล้อง (ไม่พึ่ง LINE)</span></summary>
+      <details open>
+        <summary><span class="status now">กำลังทำ — ข้อสุดท้ายของ Phase 0</span><span class="step-title">ทดสอบ 6 — กล้อง (ไม่มีกล้องจริงเลย)</span></summary>
         <div class="prompt-body">
+          <p>⚠️ ไม่มีกล้อง IP สักตัวในมือ — ทดสอบแค่ logic การดึงภาพผ่าน HTTP มาเก็บ SPIFFS เท่านั้น ส่วนต่อกล้องจริง + auth เลื่อนไป Phase 3</p>
           <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 0 ข้อทดสอบที่ 6 เท่านั้น (ข้อ
-สุดท้ายของ Phase 0): "กล้อง (ถ่าย/บันทึก SPIFFS เท่านั้น ตัดส่วนส่ง
-LINE ออก)"
+สุดท้ายของ Phase 0) — ปรับขอบเขตแล้วเพราะไม่มีกล้อง IP จริงในมือ
 
-อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม โดยเฉพาะ DESIGN.md
+Decision Log ข้อ 4 เรื่องกล้อง
 
 1. เปิด firmware/src/camera.cpp ยืนยันว่าส่วนเรียก LINE Notify ถูก
    คอมเมนต์ออกแล้ว (ทำไปแล้วในขั้นตอน 0.2)
-2. ทดสอบว่าโค้ดดึงภาพจาก snapshot.cgi ของกล้อง IP มาเก็บใน SPIFFS
-   ได้ (Wokwi ไม่มีกล้อง IP จำลองจริง ให้ทดสอบ logic การเรียก HTTP
-   และการเขียนไฟล์ SPIFFS แยกจากกัน หรือ mock response แทนกล้องจริง)
-3. บันทึกว่าส่วนไหนทดสอบผ่านได้จริงในสภาพไม่มีฮาร์ดแวร์ ส่วนไหนต้อง
-   รอกล้องจริงถึงจะทดสอบได้เต็มรูปแบบ
+2. แก้ URL ปลายทางชั่วคราวจาก snapshot.cgi ของกล้องจริง เป็น URL
+   ภาพสาธารณะแทน (เช่น https://picsum.photos/640/480) เพื่อทดสอบแค่
+   logic การยิง HTTP GET รับภาพ แล้วเขียนลง SPIFFS — คอมเมนต์กำกับ
+   ไว้ชัดเจนในโค้ดว่า "TODO: เปลี่ยนกลับเป็น URL กล้องจริงตอนมี
+   ฮาร์ดแวร์ (Phase 3)"
+3. ทดสอบผ่าน Wokwi ว่าดึงภาพจาก URL ทดสอบมาเก็บ SPIFFS ได้จริง อ่าน
+   ไฟล์กลับมาเช็คขนาดว่าไม่ใช่ 0 byte
+4. ส่วน authentication กับกล้องจริง (user/password ที่เคยฝังในโค้ด
+   เดิม) ไม่ต้องทดสอบตอนนี้ — บันทึกไว้ใน PLAN.md ว่าเป็นส่วนที่ยัง
+   ทดสอบไม่ได้จนกว่าจะมีฮาร์ดแวร์
 
 ห้ามแตะไฟล์อื่นนอกจาก camera.cpp/.h
 
-เมื่อเสร็จ: บันทึกผลลง PLAN.md ติ๊ก checklist ข้อนี้ — ถ้าครบทั้ง 6
-ข้อ ให้สรุปภาพรวม Phase 0 ทั้งหมดว่าอะไรผ่าน อะไรยังค้าง แล้วถือว่า
-Phase 0 เสร็จสมบูรณ์ รอผมยืนยันก่อนเริ่ม Phase 1</pre>
+เมื่อเสร็จ: บันทึกผลลง PLAN.md ติ๊ก checklist ข้อนี้ (ระบุชัดว่า
+"ผ่านเฉพาะส่วน logic ยังไม่ทดสอบกับกล้องจริง") — ถ้าครบทั้ง 6 ข้อ
+ให้สรุปภาพรวม Phase 0 ทั้งหมด แล้วถือว่า Phase 0 เสร็จสมบูรณ์ รอผม
+ยืนยันก่อนเริ่ม Phase 1</pre>
         </div>
       </details>
 
@@ -316,11 +324,11 @@ Phase 0 เสร็จสมบูรณ์ รอผมยืนยันก�
 
     <section id="p1">
       <div class="phase-title"><span class="kicker">Phase 1</span></div>
-      <h2>Security Hardening</h2>
-      <p class="section-desc">ปิดช่องโหว่ที่เจอตอนสำรวจ — ทำหลัง Phase 0 เสร็จสมบูรณ์เท่านั้น</p>
+      <h2>Security Hardening ✅ เสร็จแล้ว</h2>
+      <p class="section-desc">ปิดช่องโหว่ที่เจอตอนสำรวจ</p>
 
       <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">1.1 — ย้าย token + เช็ค signature</span></summary>
+        <summary><span class="status done">ผ่านแล้ว</span><span class="step-title">1.1 — ย้าย token + เช็ค signature</span></summary>
         <div class="prompt-body">
           <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 1 ข้อ 1-2 เท่านั้น:
 
@@ -346,7 +354,7 @@ Phase 0 เสร็จสมบูรณ์ รอผมยืนยันก�
       </details>
 
       <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">1.2 — doGet + ย้ายพิน strapping</span></summary>
+        <summary><span class="status done">ผ่านแล้ว</span><span class="step-title">1.2 — doGet + ย้ายพิน strapping</span></summary>
         <div class="prompt-body">
           <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 1 ข้อ 3-4 เท่านั้น:
 
@@ -359,95 +367,174 @@ Phase 0 เสร็จสมบูรณ์ รอผมยืนยันก�
 
 ทดสอบผ่าน Wokwi ว่าโค้ดยังทำงานปกติหลังเปลี่ยนพิน
 
-เมื่อเสร็จ: ติ๊ก PLAN.md ครบ Phase 1 สรุปให้ผมดู ถือว่า Phase 1 จบ
-รอผมยืนยันก่อนเริ่ม Phase 2 (Firebase)</pre>
+เมื่อเสร็จ: ติ๊ก PLAN.md ครบ Phase 1 สรุปให้ผมดู ถือว่า Phase 1 จบ</pre>
         </div>
       </details>
     </section>
 
     <section id="p2">
       <div class="phase-title"><span class="kicker">Phase 2</span></div>
-      <h2>Track B1 — Firebase Hybrid</h2>
-      <p class="section-desc">ดูรายละเอียดเต็มใน Firebase Migration Plan (ไฟล์แยก) — นี่คือ prompt ย่อสำหรับสั่ง agent แต่ละขั้น</p>
+      <h2>Track A — เก็บงานที่เหลือด้วย Apps Script เดิม</h2>
+      <div class="callout"><b>ตัดสินใจแล้ว:</b> ไม่ใช้ Firebase ตอนนี้ — อยู่กับ Apps Script/Google Sheet เดิมต่อ ดู DESIGN.md Decision Log ข้อ 1 ที่ปิดแล้ว แผน Firebase เก็บไว้ใน Backlog ด้านล่างสุดของหน้านี้เผื่ออนาคต</div>
+      <p class="section-desc">แทน LINE Notify ด้วย Apps Script pushMessage() + แดชบอร์ดง่าย ๆ ในระบบเดียวกัน</p>
+
+      <details open>
+        <summary><span class="status now">กำลังทำ</span><span class="step-title">2.1 — เพิ่ม pushMessage() ใน Code.gs</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 1 เท่านั้น: "แทน LINE
+Notify ด้วย Apps Script pushMessage()"
+
+อ่าน CLAUDE.md, PLAN.md, DESIGN.md ก่อนเริ่ม โดยเฉพาะ Decision Log
+ข้อ 2 ใน DESIGN.md
+
+1. เพิ่มฟังก์ชัน pushMessage(userId, text) ใน
+   backend/apps-script/Code.gs ยิงไปที่
+   https://api.line.me/v2/bot/message/push ใช้ Channel Access Token
+   จาก Script Properties (ตัวเดียวกับที่ replyMessage() ใช้อยู่แล้ว
+   จาก Phase 1)
+
+2. เก็บ line_user_id ของผู้ทักบอทครั้งแรก ไว้ใน Script Properties —
+   ดักจาก requestObj.source.userId ใน doPost() ตอนมี event เข้ามา
+   ถ้ายังไม่เคยเก็บไว้ก็บันทึกทันที
+
+3. ยังไม่ต้องเรียก pushMessage() จากที่ไหน แค่เตรียมฟังก์ชันให้พร้อม
+   ใช้ก่อน (เป็นข้อถัดไป)
+
+ห้ามแก้ logic อื่นใน Code.gs นอกจากนี้
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนี้ ทดสอบเรียก pushMessage() ตรง ๆ ครั้ง
+เดียวว่าข้อความไปถึงจริง แล้วรอผมยืนยันก่อนไปข้อถัดไป</pre>
+        </div>
+      </details>
 
       <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">2.1 — ตั้งโปรเจ็ค Firebase + Security Rules</span></summary>
+        <summary><span class="status next">คิวถัดไป</span><span class="step-title">2.2 — ต่อ pushMessage() เข้ากล้อง/แจ้งเตือน</span></summary>
         <div class="prompt-body">
-          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 1-2 เท่านั้น — อ่าน
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 2 เท่านั้น: "เอา
+pushMessage() มาต่อกับส่วนกล้อง/แจ้งเตือนที่ถูก stub ไว้"
+
+1. เปิด firmware/src/camera.cpp และ control.cpp หาจุดที่เคย
+   Serial.println() แทน LINE.notify() ไว้ตอน Phase 0
+
+2. ฝั่งเฟิร์มแวร์: จุดที่ต้องแจ้งเตือน (เช่น น้ำในถังหมด) ให้ยิง
+   HTTP ไปหา Apps Script endpoint ใหม่ (เพิ่ม status=notify ใน
+   doGet/doPost) ส่ง event type ไป แทนที่จะยิง LINE โดยตรงจากเฟิร์มแวร์
+   เอง (เฟิร์มแวร์ไม่ควรถือ LINE token)
+
+3. ฝั่ง Code.gs: รับ status=notify แล้วเรียก pushMessage() ที่ทำไว้
+   ข้อ 2.1 ส่งข้อความไปหา line_user_id ที่เก็บไว้ — เฉพาะ event สำคัญ
+   เท่านั้น (น้ำหมด/ค่าผิดปกติ) ไม่ใช่ทุกรอบ poll เพื่อไม่ให้เกิน
+   โควตาฟรี ~500 ข้อความ/เดือน
+
+ห้ามเรียก LINE.notify()/TridentTD กลับมาใช้เด็ดขาด
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนี้ ทดสอบผ่าน Wokwi จำลอง event น้ำหมด
+เช็คว่าได้ข้อความ LINE จริง สรุปผลแล้วรอผมยืนยันก่อนไปข้อถัดไป</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">2.3 — Dashboard แบบ PWA บน GitHub Pages</span></summary>
+        <div class="prompt-body">
+          <p>เปลี่ยนจากแผนเดิม (Apps Script HtmlService) เป็น PWA บน GitHub Pages เพราะ service worker ต้องรันจาก origin ตรงถึงจะติดตั้งเป็นแอปได้</p>
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 3 เท่านั้น: "ทำแดชบอร์ด
+แนว PWA ติดตั้งเป็นแอปบนมือถือได้ โฮสต์บน GitHub Pages"
+
+อ่าน DESIGN.md หัวข้อ "Dashboard — PWA บน GitHub Pages" ก่อนเริ่ม
+
+1. สร้างโฟลเดอร์ dashboard/ ที่ root repo (แยกจาก firmware/ backend/)
+   ประกอบด้วย:
+   - index.html — หน้าเดียว (SPA ง่าย ๆ ไม่ใช้ framework ใหญ่)
+   - manifest.json — ชื่อแอป, ไอคอน, "display": "standalone"
+   - service-worker.js — cache แค่ app shell (HTML/CSS/JS/ไอคอน)
+     ไม่ cache ข้อมูลเซนเซอร์
+   - icons/ — ไอคอนแอปหลายขนาด (ใช้ไอคอนชั่วคราวไปก่อนได้ถ้ายังไม่มี
+     ดีไซน์จริง)
+
+2. ออกแบบ UI แบบแอปมือถือ ไม่ใช่เว็บทั่วไป:
+   - Bottom tab navigation 3 แท็บ: สถานะ / กราฟ / ตั้งค่า
+   - แท็บสถานะ: การ์ดแสดงค่าเซนเซอร์ล่าสุด + ปุ่มควบคุม manual
+     ขนาดใหญ่กดง่าย
+   - แท็บกราฟ: ใช้ Chart.js แสดงความชื้นดิน/อุณหภูมิย้อนหลัง
+   - แท็บตั้งค่า: เลือกโหมดปลูก
+   - Mobile-first เท่านั้น ไม่ต้องทำ layout สำหรับจอกว้าง
+
+3. เรียกข้อมูลจาก Apps Script Web App เดิมด้วย fetch() ธรรมดา (ยิงไป
+   ?status=get) — ถ้าต้องการข้อมูลย้อนหลังทำกราฟ ให้เพิ่ม
+   status=log ใน Code.gs (อ่านจาก sheet1) เป็นข้อก่อนหน้านี้ถ้ายังไม่มี
+
+4. ทดสอบว่า "Add to Home Screen" ได้จริงบน Chrome mobile (จำลองผ่าน
+   Chrome DevTools mobile emulation ก็พอ ไม่ต้องมีมือถือจริง)
+
+ห้ามใช้ React Native/Flutter หรือ framework ที่ต้อง build แยก — เอา
+แค่ HTML/CSS/JS ธรรมดาที่ deploy ตรงผ่าน GitHub Pages ได้เลย
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนี้ ส่ง URL GitHub Pages มาให้ผมดู</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">รอคิว</span><span class="step-title">2.4 — ทดสอบ end-to-end</span></summary>
+        <div class="prompt-body">
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 4 (ข้อสุดท้าย) เท่านั้น:
+"ทดสอบ end-to-end ว่าระบบแจ้งเตือนใหม่ทำงานจริง"
+
+จำลองสถานการณ์น้ำหมดผ่าน Wokwi ครบวงจร: เซนเซอร์ระดับน้ำ → ESP32 →
+Apps Script (status=notify) → pushMessage() → ข้อความ LINE จริง
+
+เช็คแดชบอร์ด (ข้อ 2.3) ว่าอัปเดตสถานะตรงกับที่จำลองด้วย
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ครบ Phase 2 สรุปภาพรวมทั้งเฟสให้ผมดู ถือว่า
+Phase 2 จบ — โปรเจ็คพร้อมสำหรับ Phase 3 ตอนมีฮาร์ดแวร์จริง</pre>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="status future">Backlog — ไม่ทำตอนนี้</span><span class="step-title">แผนเดิม: Firebase Hybrid (เก็บไว้เผื่ออนาคต)</span></summary>
+        <div class="prompt-body">
+          <p>4 prompt ด้านล่างเป็นแผนเดิมก่อนตัดสินใจไม่ใช้ Firebase — เก็บไว้เผื่ออยากกลับมาทำในอนาคต ไม่ต้องใช้ตอนนี้</p>
+
+          <p style="margin-top:14px;"><b>Firebase 2.1 — ตั้งโปรเจ็ค Firebase + Security Rules</b></p>
+          <pre class="prompt">งานของ session นี้คือ backlog Firebase ข้อ 1-2 เท่านั้น — อ่าน
 DESIGN.md หัวข้อ "โครงสร้างข้อมูล — Firebase Realtime DB" ก่อนเริ่ม
 
 1. เขียนไฟล์ database.rules.json ตามโครงสร้างใน DESIGN.md (อ่านได้
    ทุกคน เขียนได้เฉพาะ auth != null)
 2. เขียนคำแนะนำทีละขั้น (เป็นไฟล์ docs/firebase-setup.md) สำหรับผม
-   ไปตั้งค่าเองใน Firebase Console (สร้างโปรเจ็ค เปิด Realtime
-   Database, เปิด Anonymous Auth) เพราะขั้นนี้ agent ทำให้ไม่ได้
-   โดยตรง ต้องทำผ่านหน้าเว็บ Console เอง
+   ไปตั้งค่าเองใน Firebase Console
 
 ห้ามเริ่มแก้เฟิร์มแวร์ในขั้นนี้ รอให้ผมตั้งค่า Firebase Console เสร็จ
-และให้ config (apiKey, databaseURL) มาก่อน
+และให้ config (apiKey, databaseURL) มาก่อน</pre>
 
-เมื่อเสร็จ: ส่งไฟล์ทั้งสองให้ผมตรวจ รอผมยืนยันว่าตั้งค่า Console
-เสร็จแล้วก่อนไปข้อถัดไป</pre>
-        </div>
-      </details>
-
-      <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">2.2 — ต่อเฟิร์มแวร์เข้า Firebase</span></summary>
-        <div class="prompt-body">
-          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 3 เท่านั้น — ผมตั้งค่า
+          <p style="margin-top:14px;"><b>Firebase 2.2 — ต่อเฟิร์มแวร์เข้า Firebase</b></p>
+          <pre class="prompt">งานของ session นี้คือ backlog Firebase ข้อ 3 เท่านั้น — ผมตั้งค่า
 Firebase Console เสร็จแล้ว (apiKey/databaseURL อยู่ใน secrets.h แล้ว)
 
 1. เพิ่มไลบรารี Firebase-ESP-Client ใน platformio.ini
 2. แก้ firmware/src/cloud_sync.cpp ให้ subscribe ค่าจาก control/ แบบ
    real-time แทนการ http.GET() ไปหา Apps Script เดิม — เก็บฟังก์ชัน
-   เดิมที่คุย Apps Script ไว้ก่อน (comment ออก ไม่ลบ) เผื่อต้องย้อนกลับ
-3. ทดสอบผ่าน Wokwi ว่า ESP32 จำลองเชื่อม Firebase RTDB ได้จริง อ่าน
-   ค่า control/ ได้ real-time
+   เดิมไว้ก่อน (comment ออก ไม่ลบ)
+3. ทดสอบผ่าน Wokwi ว่า ESP32 จำลองเชื่อม Firebase RTDB ได้จริง</pre>
 
-ห้ามแตะ backend/apps-script/Code.gs ในขั้นนี้ (เป็นข้อถัดไป)
+          <p style="margin-top:14px;"><b>Firebase 2.3 — แก้ Code.gs ให้เขียนลง Firebase</b></p>
+          <pre class="prompt">งานของ session นี้คือ backlog Firebase ข้อ 4 เท่านั้น
 
-เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนี้ สรุปผลทดสอบให้ผมดูก่อนไปข้อถัดไป</pre>
-        </div>
-      </details>
+แก้ update_data() และ update_status() ให้ยิง REST API ของ Firebase
+RTDB แทนการเขียน Google Sheet ชีต control เก็บ line_user_id ไว้ที่
+meta/ ตามที่ระบุใน DESIGN.md</pre>
 
-      <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">2.3 — แก้ Code.gs ให้เขียนลง Firebase</span></summary>
-        <div class="prompt-body">
-          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 4 เท่านั้น
-
-แก้ backend/apps-script/Code.gs ฟังก์ชัน update_data() และ
-update_status() ให้ยิง REST API ของ Firebase RTDB แทนการเขียน
-Google Sheet ชีต control (ใช้ UrlFetchApp.fetch ยิงไปที่
-{databaseURL}/control/{path}.json แบบ PUT) เก็บ line_user_id ไว้ที่
-meta/ ตามที่ระบุใน DESIGN.md
-
-คง getdata() ที่อ่านจาก Google Sheet ไว้เหมือนเดิมก่อน (ยังไม่ย้าย
-log เซนเซอร์) ทดสอบว่าพิมพ์ on_off_fan ในแชทแล้วค่าใน Firebase
-เปลี่ยนจริง และ ESP32 (จากข้อ 2.2) รับค่าได้ real-time
-
-เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนี้ สรุปผลทดสอบ end-to-end (แชท → Code.gs
-→ Firebase → ESP32) ให้ผมดูก่อนไปข้อถัดไป</pre>
-        </div>
-      </details>
-
-      <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">2.4 — เว็บแดชบอร์ด</span></summary>
-        <div class="prompt-body">
-          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 5 (ข้อสุดท้าย) เท่านั้น
+          <p style="margin-top:14px;"><b>Firebase 2.4 — เว็บแดชบอร์ด</b></p>
+          <pre class="prompt">งานของ session นี้คือ backlog Firebase ข้อ 5 (ข้อสุดท้าย) เท่านั้น
 
 สร้าง dashboard/index.html หน้าเดียว ใช้ Firebase JS SDK อ่าน
-sensors/latest แบบ real-time ขึ้นจอทันที และกราฟย้อนหลังจาก
-sensors/log ด้วย Chart.js ตามที่ระบุใน Firebase Migration Plan
-
-ห้ามใช้ framework ใหญ่ (React ฯลฯ) เอาแค่ HTML+JS ธรรมดาไฟล์เดียว
-เพราะจะโฮสต์ฟรีบน Firebase Hosting หรือ GitHub Pages
-
-เมื่อเสร็จ: ติ๊ก PLAN.md ครบ Phase 2 สรุปให้ผมดู ถือว่า Phase 2 จบ</pre>
+sensors/latest แบบ real-time และกราฟย้อนหลังจาก sensors/log ด้วย
+Chart.js — โฮสต์ฟรีบน Firebase Hosting หรือ GitHub Pages</pre>
         </div>
       </details>
     </section>
 
     <section id="p3">
+
       <div class="phase-title"><span class="kicker">Phase 3</span></div>
       <h2>เมื่อพร้อมขึ้นฮาร์ดแวร์จริง</h2>
       <p class="section-desc">ใช้ตอนมีบอร์ด/เซนเซอร์จริงในมือแล้วเท่านั้น ยังไม่ต้องเปิดตอนนี้</p>

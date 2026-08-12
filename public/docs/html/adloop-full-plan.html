@@ -546,9 +546,20 @@
           <td>เปลี่ยนจาก mock-first เป็น <strong>full-feature + เชื่อม Facebook API จริงตั้งแต่ Phase 0</strong> (ดูหัวข้อ 06-07)</td>
         </tr>
         <tr>
+          <td class="strong">Meta App + ads permission (dev mode)</td>
+          <td><span class="status-badge done">เสร็จแล้ว</span></td>
+          <td>สร้าง Meta App และได้รับ ads permission ระดับ dev mode แล้ว</td>
+        </tr>
+        <tr>
+          <td class="strong">Test asset จริง — เพจฟุตบอล (มี bot auto-post)</td>
+          <td><span class="status-badge done">เชื่อมแล้ว</span></td>
+          <td>ใช้เป็น test asset หลักของ Phase 0-4 เพราะเป็นทรัพย์สินของนักพัฒนาเอง ไม่ใช่ของลูกค้า
+            — ต้องระวังไม่ให้กระทบ bot auto-post เดิม และไม่ปล่อยแคมเปญทดสอบยิงงบจริง</td>
+        </tr>
+        <tr>
           <td class="strong">Phase 0 — Foundation + Facebook API จริง</td>
           <td><span class="status-badge inprogress">กำลังดำเนินการ</span></td>
-          <td>Monorepo, Prisma schema ตั้งค่าแล้ว — อยู่ระหว่างต่อ FacebookAdsProvider จริงกับ test ad account และเตรียมยื่น App Review</td>
+          <td>Monorepo, Prisma schema ตั้งค่าแล้ว — อยู่ระหว่างต่อ FacebookAdsProvider จริงกับเพจฟุตบอล/ad account และเตรียมยื่น App Review</td>
         </tr>
         <tr>
           <td class="strong">ตั้งชื่อโปรเจ็ค + .gitignore</td>
@@ -566,6 +577,16 @@
           <td>ยังไม่เริ่ม — รอ Phase 0 (รวมเชื่อม API จริง) + UI Guidelines อนุมัติก่อน</td>
         </tr>
       </table>
+    </div>
+
+    <div class="callout" style="margin-top:20px">
+      <span class="mark">i</span>
+      <p><strong>ทรัพย์สินของตัวเอง vs ของลูกค้า:</strong> เพจฟุตบอลที่ใช้ทดสอบเป็นของนักพัฒนาเอง
+      ไม่ใช่ของลูกค้า จึงใช้พัฒนา/ทดสอบได้ตามกติกาปกติของ Meta โดยไม่ต้องรอ App Review — แต่
+      <strong style="color:var(--text)">ห้ามใช้เพจ/ad account ของลูกค้าจริง</strong>
+      จนกว่าจะผ่านทั้ง App Review และ Business Verification เพราะเพจนี้มีผู้ติดตามจริงและมี
+      bot auto-post ทำงานอยู่ก่อนแล้ว แคมเปญที่สร้างระหว่างทดสอบต้องตั้งงบต่ำสุดหรือ pause ทันที
+      และต้องตรวจสอบว่าไม่กระทบการทำงานของ bot เดิม</p>
     </div>
   </div>
 </section>
@@ -730,12 +751,14 @@
         </tr>
         <tr>
           <td class="strong">1. สร้าง Meta App</td>
-          <td>ลงทะเบียนแอปประเภท Business ใน Meta for Developers</td>
+          <td>ลงทะเบียนแอปประเภท Business ใน Meta for Developers <span class="status-badge done" style="margin-left:6px">เสร็จแล้ว</span></td>
           <td>บัญชี Business Manager, โดเมนเว็บไซต์</td>
         </tr>
         <tr>
           <td class="strong">2. ขอ Permission</td>
-          <td>ขอสิทธิ์ <code>ads_management</code>, <code>business_management</code>, <code>pages_read_engagement</code></td>
+          <td>ขอสิทธิ์ <code>ads_management</code>, <code>business_management</code>, <code>pages_read_engagement</code>
+            <span class="status-badge done" style="margin-left:6px">ได้ dev mode แล้ว</span><br>
+            ใช้งานกับ test asset ของตัวเอง (เพจฟุตบอล) ได้แล้วตอนนี้ ยังไม่ครอบคลุมเพจ/ad account ของลูกค้า</td>
           <td>Privacy Policy, คำอธิบาย use case ชัดเจน</td>
         </tr>
         <tr>

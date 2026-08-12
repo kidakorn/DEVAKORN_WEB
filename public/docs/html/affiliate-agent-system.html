@@ -223,21 +223,74 @@
       <tr><td>5</td><td>จัดคิว/โพสต์</td><td>posting-schedule</td><td>2 นาที</td></tr>
     </table>
 
+    <div class="rules-box">
+      <strong>⚠️ ข้อจำกัดสำคัญ: งบ 0 บาท + ไม่ใช้ AI API</strong>
+      <p>ทุก Phase <strong>ห้ามเรียก AI API แบบโปรแกรมมาติก</strong> (ไม่ว่าฟรีหรือเสียเงิน) — ChatGPT/Gemini/Flow ใช้ผ่านหน้าเว็บแชทด้วยมือเสมอ Google Flow เองก็<strong>ไม่มี public API แยกต่างหาก</strong> การ automate ผ่าน Veo ต้องใช้ Gemini API/Vertex AI ซึ่งคิดเงินแยกรายวินาที ไม่รวมใน Google AI Pro subscription จึงไม่ใช้ในแผนงบ 0 บาทนี้ สิ่งที่ automate ได้คือ<strong>งานที่ไม่ใช่ AI</strong> เช่น เก็บ log, เช็คสินค้าซ้ำ, ทำกราฟ, ดึงข้อมูลสินค้า (เมื่อได้ Affiliate API แล้ว)</p>
+    </div>
+
+    <h3>แหล่งข้อมูลสินค้า: ดึงอัตโนมัติได้แค่ไหน</h3>
+    <table>
+      <tr><th>วิธี</th><th>ต้นทุน</th><th>ความเสี่ยง</th><th>ใช้ได้เมื่อไหร่</th></tr>
+      <tr><td>กรอกมือ</td><td>0 บาท</td><td>ไม่มี</td><td>ทันที (Phase 1-2)</td></tr>
+      <tr><td>Shopee Open API / TikTok Affiliate API</td><td>0 บาท (รออนุมัติ)</td><td>ต่ำ</td><td>หลังอนุมัติ (Phase 3)</td></tr>
+      <tr><td>Scrape เว็บ/แอปตรง ๆ</td><td>0 บาท</td><td><strong>ผิด ToS เสี่ยงบัญชีถูกบล็อก</strong></td><td><strong>ห้ามใช้</strong></td></tr>
+    </table>
+
+    <h3 style="color:#fff;font-size:16px;">Full Plan รายละเอียดแต่ละ Phase</h3>
+
+    <h3>🔹 Phase 1 — Manual Loop (สัปดาห์ 1-2)</h3>
+    <p><strong>เป้าหมาย:</strong> เก็บข้อมูล 14 วันแรกให้ครบ เพื่อรู้ว่าคอนเทนต์แบบไหนติด</p>
+    <ol>
+      <li>เปิดแอป TikTok Shop/Shopee หาสินค้า 3-4 ชิ้นตามเกณฑ์ — <strong>กรอกข้อมูลด้วยมือ</strong> ลงระบบ</li>
+      <li>เปิด ChatGPT/Gemini free (หน้าเว็บแชท ไม่ใช่ API) วางสินค้า ขอสคริปต์ — copy ผลลัพธ์เข้าระบบเอง</li>
+      <li>เปิด Google Flow ป้อน shot description สร้างวิดีโอด้วยมือ</li>
+      <li>ตัดต่อ CapCut, เช็ค compliance ด้วยตา, โพสต์เอง</li>
+    </ol>
+    <div class="output-box"><strong>เครื่องมือ (0 บาท):</strong> Next.js (local) + SQLite, ChatGPT/Gemini free web, Google Flow, CapCut<br><strong>Exit criteria:</strong> ข้อมูลครบ 14 วัน</div>
+
+    <h3>🔹 Phase 2 — Data Automation ไม่ใช่ AI Automation (สัปดาห์ 3-4)</h3>
+    <p><strong>เป้าหมาย:</strong> ลดงานซ้ำซ้อนที่ไม่ใช่ AI ออกจากมือ ส่วน AI ยังคง manual เหมือนเดิม</p>
+    <ol>
+      <li><strong>ระบบเตือนสินค้าซ้ำ</strong> — เช็คอัตโนมัติจาก log ว่าเคยรีวิวภายใน 30 วันหรือยัง (logic ธรรมดา)</li>
+      <li><strong>Template สคริปต์กึ่งสำเร็จรูป</strong> — ระบบกรอกชื่อสินค้าใน prompt ให้อัตโนมัติ ให้กด copy ไปวางเอง</li>
+      <li><strong>Dashboard engagement</strong> — กราฟสรุปจากตัวเลขที่กรอก คำนวณด้วย JS ธรรมดา</li>
+      <li><strong>สมัคร Affiliate Open API คู่ขนาน</strong> — เริ่มขออนุมัติ Shopee/TikTok API ไว้ล่วงหน้า</li>
+    </ol>
+    <div class="output-box"><strong>Exit criteria:</strong> ประหยัดเวลาต่อวันได้จริง + สถานะสมัคร API ชัดเจน</div>
+
+    <h3>🔹 Phase 3 — Semi-Auto ด้วยข้อมูลจริง (เดือนที่ 2 ขึ้นไป)</h3>
+    <p><strong>เงื่อนไขก่อนเริ่ม:</strong> ต้องได้รับอนุมัติ Affiliate API แล้วเท่านั้น ถ้ายังไม่อนุมัติให้อยู่ Phase 2 ต่อ</p>
+    <ol>
+      <li>เชื่อม Affiliate API เข้า Next.js API route ดึงสินค้าอัตโนมัติแทนกรอกมือ</li>
+      <li>กรองสินค้าอัตโนมัติตามเกณฑ์ (logic ธรรมดา ไม่ใช่ AI)</li>
+      <li>สคริปต์/วิดีโอ <strong>ยังคง manual ผ่าน ChatGPT/Gemini/Flow web เหมือนเดิมทุกประการ</strong></li>
+      <li>Compliance-check ยังต้องมีมนุษย์ตรวจก่อนโพสต์เสมอ</li>
+    </ol>
+    <div class="output-box"><strong>Exit criteria:</strong> ระบบดึงสินค้าเสถียร ≥2 สัปดาห์ ไม่มี error</div>
+
     <h3>Weekly Loop</h3>
     <ul>
       <li>รวบรวมผล engagement ของ 7 คลิปที่ผ่านมา</li>
-      <li>รัน <code>performance-loop</code> วิเคราะห์ว่าสินค้า/มุมนำเสนอแบบไหนติด</li>
+      <li>รัน <code>performance-loop</code> วิเคราะห์ว่าสินค้า/มุมนำเสนอแบบไหนติด (manual ผ่านหน้าเว็บ ไม่ใช่ API)</li>
       <li>ปรับเกณฑ์ใน <code>product-selection</code> ตามผลลัพธ์</li>
       <li>เช็คว่านโยบายแพลตฟอร์มเปลี่ยนไหม</li>
     </ul>
 
-    <h3>Phase Roadmap</h3>
+    <h3>Monthly Milestone</h3>
     <ol>
-      <li><strong>Phase 1 (สัปดาห์ 1-2):</strong> ทำ manual ทั้งหมด เก็บข้อมูลว่าอะไรติด</li>
-      <li><strong>Phase 2 (สัปดาห์ 3-4):</strong> automate <code>product-selection</code> + <code>script-generation</code> ด้วย n8n/Make แต่ตัดต่อ+โพสต์เอง</li>
-      <li><strong>Phase 3 (เดือนที่ 2+):</strong> พิจารณา automate <code>video-assembly</code> ด้วย text-to-video API — <code>compliance-check</code> ยังต้องมีมนุษย์ตรวจเสมอ</li>
+      <li><strong>สเกลขึ้น</strong> — เพิ่มความถี่โพสต์/บัญชีที่ 2</li>
+      <li><strong>ปรับนิช</strong> — ถ้า engagement ต่ำต่อเนื่อง</li>
+      <li><strong>ทบทวนเรื่อง AI API</strong> — ถ้าเห็น ROI ชัดเจนค่อยพิจารณาเปิดใช้ AI API (มีค่าใช้จ่าย) เป็นทางเลือกอนาคต ไม่ใช่ default ของแผนนี้</li>
     </ol>
-    <div class="rules-box"><strong>Guardrail ตลอดทุก Phase:</strong> Human approval ที่ compliance-check ห้ามถูกตัดออก ไม่ว่าระบบจะ automate ไปมากแค่ไหน</div>
+
+    <div class="rules-box">
+      <strong>Guardrail ตลอดทุก Phase:</strong>
+      <ul>
+        <li>Human approval ที่ compliance-check ห้ามถูกตัดออก</li>
+        <li>ห้ามเรียก AI API แบบโปรแกรมมาติกในทุก phase ของแผนนี้</li>
+        <li>ห้าม scrape ข้อมูลสินค้าจากเว็บ/แอปโดยตรง ใช้ได้แค่กรอกมือหรือ Affiliate API ที่อนุมัติแล้วเท่านั้น</li>
+      </ul>
+    </div>
   </section>
 
   <section id="prompts" class="file-block core">
@@ -287,6 +340,8 @@
     <h3 style="font-size:16px;color:#fff;">🏗️ Phase Prompts (สั่ง agent สร้าง/ขยายระบบตาม PLAN.md)</h3>
     <p class="note"><strong>Tech stack ตลอดทั้งโปรเจกต์:</strong> ใช้ Next.js เป็น framework หลักตั้งแต่ Phase 1 เพื่อให้โครงสร้างเดียวกันขยายต่อได้ทุก phase โดยไม่ต้อง migrate ทีหลัง</p>
 
+    <p class="note"><strong>กฎงบ 0 บาท:</strong> ทุก Phase ห้ามเรียก AI API แบบโปรแกรมมาติก (ChatGPT/Gemini/Flow ใช้ผ่านหน้าเว็บด้วยมือเสมอ) และห้าม scrape ข้อมูลสินค้า — รายละเอียดใน PLAN.md</p>
+
     <h3>Phase 1 — Manual Loop Setup (สัปดาห์ 1-2)</h3>
     <pre>สร้างระบบช่วยงาน manual ตาม Phase 1 ใน .ai/PLAN.md โดยอ่านสเปกจาก AGENTS.md,
 .ai/PROMPTS.md และ .ai/skills/*/SKILL.md ทั้งหมด
@@ -304,32 +359,35 @@
 - ไม่ต้องเชื่อมต่อ API ภายนอกใด ๆ ในเฟสนี้ ทุกอย่างเป็นการกรอกด้วยมือ
 - เป้าหมายคือเก็บข้อมูล 14 วันแรกให้ครบเพื่อใช้วิเคราะห์ใน performance-loop</pre>
 
-    <h3>Phase 2 — Semi-Automate Selection + Script (สัปดาห์ 3-4)</h3>
+    <h3>Phase 2 — Data Automation ไม่ใช่ AI Automation (สัปดาห์ 3-4)</h3>
     <pre>ต่อยอดจากโปรเจกต์ Next.js เดิมจาก Phase 1 ตาม Phase 2 ใน .ai/PLAN.md
 ห้ามสร้างโปรเจกต์ใหม่หรือเปลี่ยน framework
+ห้ามเรียก AI API ใด ๆ ในโค้ด (ไม่ใช้ OpenAI/Gemini/Claude API หรือเทียบเท่า)
+ส่วนที่เกี่ยวกับ AI (สคริปต์/วิดีโอ) ยังคงให้ผู้ใช้ทำผ่านหน้าเว็บ ChatGPT/Gemini/Flow ด้วยมือเหมือนเดิม
 
-สิ่งที่ต้องเพิ่ม:
-- สร้าง API routes ใน Next.js (app/api/*) สำหรับ:
-  1. ดึงข้อมูลสินค้าตามเกณฑ์ใน .ai/skills/product-selection/SKILL.md
-  2. เรียก AI generate สคริปต์ตาม .ai/skills/script-generation/SKILL.md
-     และแปลงเป็น shot description ตาม .ai/skills/video-assembly/SKILL.md (prompt ข้อ 6)
-- เชื่อม API routes เหล่านี้เข้ากับ workflow อัตโนมัติ (n8n/Make หรือเทียบเท่า) เรียกผ่าน webhook
-- video-assembly และ posting-schedule ยังคงทำ manual (ตัดต่อ CapCut + โพสต์เอง)
-- เพิ่มหน้า dashboard ใน Next.js แสดงผล engagement ของ 7 วันล่าสุด เพื่อเตรียมป้อนเข้า performance-loop
+สิ่งที่ต้องเพิ่ม (logic ธรรมดา ไม่ใช่ AI ทั้งหมด):
+- API route เช็คสินค้าซ้ำ: เมื่อกรอกสินค้าใหม่ ให้เทียบกับ log 30 วันล่าสุดอัตโนมัติ แจ้งเตือนถ้าซ้ำ
+- ปุ่ม "Copy prompt สคริปต์" ที่แทรกชื่อสินค้าที่เลือกไว้ลงใน template prompt ของ skills/script-generation/SKILL.md
+  ให้ผู้ใช้กด copy แล้วไปวางในหน้าเว็บ ChatGPT/Gemini เอง (ไม่ใช่เรียก API)
+- หน้า dashboard สรุป engagement รายสัปดาห์ คำนวณกราฟด้วย JavaScript ธรรมดาจากข้อมูลที่กรอกไว้
+- เพิ่มหน้าเช็คสถานะการสมัคร Shopee Open API / TikTok Shop Affiliate API (บันทึกว่าสมัครวันไหน สถานะอนุมัติล่าสุด)
 - ห้ามข้ามการตรวจ compliance-check โดยมนุษย์ไม่ว่ากรณีใด</pre>
 
-    <h3>Phase 3 — Video Automation (เดือนที่ 2 ขึ้นไป)</h3>
-    <pre>ขยายโปรเจกต์ Next.js เดิมตาม Phase 3 ใน .ai/PLAN.md — ใช้เฉพาะเมื่อ Phase 1-2 มีข้อมูลอย่างน้อย 30 วันแล้ว
+    <h3>Phase 3 — Semi-Auto ด้วยข้อมูลจริง (เดือนที่ 2 ขึ้นไป)</h3>
+    <pre>ขยายโปรเจกต์ Next.js เดิมตาม Phase 3 ใน .ai/PLAN.md — ใช้เฉพาะเมื่อได้รับอนุมัติ
+Shopee Open API หรือ TikTok Shop Affiliate API แล้วเท่านั้น (เช็คจากหน้าสถานะที่ทำไว้ใน Phase 2)
 ห้ามสร้างโปรเจกต์ใหม่หรือเปลี่ยน framework
+ห้ามเรียก AI API ใด ๆ ในโค้ด เหมือน Phase 1-2 ทุกประการ — เปลี่ยนแค่แหล่งข้อมูลสินค้าเท่านั้น
 
 สิ่งที่ต้องเพิ่ม:
-- สร้าง API route ใน Next.js เชื่อมต่อ Google Flow API (หรือ Creatify API หากอัปเกรด)
-  ให้รับ shot description จาก workflow ใน Phase 2 เป็น input โดยตรง ผลิตวิดีโอแบบ semi-auto
-- เพิ่มขั้นตอนบังคับ: หยุดระบบไว้ที่หน้า compliance-check เสมอ แสดง checklist ตาม
-  .ai/skills/compliance-check/SKILL.md ให้มนุษย์กดอนุมัติก่อน ระบบห้ามโพสต์เองอัตโนมัติ
-- เพิ่ม log ใน database เก็บว่าคลิปไหนสร้างจาก Flow model ระดับไหน (Lite/Fast/Quality)
-  เพื่อคุมการใช้เครดิตรายเดือนไม่ให้เกินโควตา
-- ก่อนเริ่มเฟสนี้ ให้ถามฉันยืนยันก่อนว่าพร้อมจริงหรือยัง ห้ามเริ่มเองอัตโนมัติ</pre>
+- API route เชื่อมต่อ Shopee Open API / TikTok Shop Affiliate API ที่อนุมัติแล้ว
+  ดึงรายการสินค้า/ราคา/ยอดขาย/เรตติ้งอัตโนมัติ แทนการกรอกมือ
+- Logic กรองสินค้าอัตโนมัติตามเกณฑ์ใน .ai/skills/product-selection/SKILL.md
+  (ยอดขายขั้นต่ำ, เรตติ้งขั้นต่ำ 4.5, ไม่ซ้ำใน 30 วัน) — เขียนเป็นโค้ดเงื่อนไขธรรมดา
+- ส่วนสคริปต์และวิดีโอยังคงเป็นปุ่ม "copy prompt" ให้ผู้ใช้ไปทำเองในหน้าเว็บ ChatGPT/Gemini/Flow เหมือน Phase 1-2
+- ห้ามข้ามการตรวจ compliance-check โดยมนุษย์ไม่ว่ากรณีใด
+- ถ้า API ทางการยังไม่อนุมัติ ห้าม fallback ไปใช้วิธี scrape เว็บโดยเด็ดขาด ให้แจ้งเตือนและกลับไปทำ manual แทน
+- ก่อนเริ่มเฟสนี้ ให้ถามฉันยืนยันก่อนว่าได้รับอนุมัติ API แล้วจริงหรือยัง ห้ามเริ่มเองอัตโนมัติ</pre>
   </section>
 
   <hr class="sep">
@@ -347,6 +405,12 @@
       <li>หลีกเลี่ยงสินค้าหมวดที่แพลตฟอร์มจำกัด</li>
     </ol>
     <div class="rules-box">ห้ามเลือกสินค้าที่เคยรีวิวแล้วภายใน 30 วัน · สินค้าทั้งชุดควรอยู่ธีมเดียวกัน · ข้อมูลต้องดึงสดไม่เกิน 24 ชม.</div>
+    <h3>แหล่งข้อมูลสินค้า (ตามกฎงบ 0 บาท)</h3>
+    <ul>
+      <li><strong>Phase 1-2:</strong> กรอกข้อมูลด้วยมือจากการเปิดแอปดูเองเท่านั้น</li>
+      <li><strong>Phase 3 ขึ้นไป:</strong> ใช้ได้เฉพาะ Shopee Open API / TikTok Shop Affiliate API ที่ได้รับอนุมัติแล้ว</li>
+      <li><strong>ห้ามใช้การ scrape เว็บ/แอปโดยตรงเด็ดขาด</strong> ในทุก phase</li>
+    </ul>
     <div class="output-box"><strong>Output:</strong> ตาราง ชื่อสินค้า | ราคา | ยอดขาย | เรตติ้ง | จุดขาย 1 บรรทัด (3-4 รายการ)</div>
   </section>
 
