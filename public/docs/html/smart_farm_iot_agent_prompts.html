@@ -434,42 +434,40 @@ pushMessage() มาต่อกับส่วนกล้อง/แจ้ง�
       </details>
 
       <details>
-        <summary><span class="status future">รอคิว</span><span class="step-title">2.3 — Dashboard แบบ PWA บน GitHub Pages</span></summary>
+        <summary><span class="status future">รอคิว</span><span class="step-title">2.3 — Mobile App ด้วย Flutter</span></summary>
         <div class="prompt-body">
-          <p>เปลี่ยนจากแผนเดิม (Apps Script HtmlService) เป็น PWA บน GitHub Pages เพราะ service worker ต้องรันจาก origin ตรงถึงจะติดตั้งเป็นแอปได้</p>
-          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 3 เท่านั้น: "ทำแดชบอร์ด
-แนว PWA ติดตั้งเป็นแอปบนมือถือได้ โฮสต์บน GitHub Pages"
+          <p>เปลี่ยนจากแผนเดิม (PWA/React Native) เป็นแอป Flutter จริง — cross-platform iOS + Android</p>
+          <pre class="prompt">งานของ session นี้คือ PLAN.md Phase 2 ข้อ 3 เท่านั้น: "ทำแอปมือถือ
+ด้วย Flutter"
 
-อ่าน DESIGN.md หัวข้อ "Dashboard — PWA บน GitHub Pages" ก่อนเริ่ม
+อ่าน DESIGN.md หัวข้อ "Mobile App — Flutter" ก่อนเริ่ม โดยเฉพาะ
+Decision Log ข้อ 5
 
-1. สร้างโฟลเดอร์ dashboard/ ที่ root repo (แยกจาก firmware/ backend/)
-   ประกอบด้วย:
-   - index.html — หน้าเดียว (SPA ง่าย ๆ ไม่ใช้ framework ใหญ่)
-   - manifest.json — ชื่อแอป, ไอคอน, "display": "standalone"
-   - service-worker.js — cache แค่ app shell (HTML/CSS/JS/ไอคอน)
-     ไม่ cache ข้อมูลเซนเซอร์
-   - icons/ — ไอคอนแอปหลายขนาด (ใช้ไอคอนชั่วคราวไปก่อนได้ถ้ายังไม่มี
-     ดีไซน์จริง)
+1. สร้างโปรเจ็ค Flutter ใหม่ในโฟลเดอร์ mobile-app/ ที่ root repo
+   (แยกจาก firmware/ backend/) ด้วย `flutter create`
 
-2. ออกแบบ UI แบบแอปมือถือ ไม่ใช่เว็บทั่วไป:
-   - Bottom tab navigation 3 แท็บ: สถานะ / กราฟ / ตั้งค่า
+2. ออกแบบโครงแอปแบบ 3 แท็บ ใช้ BottomNavigationBar:
    - แท็บสถานะ: การ์ดแสดงค่าเซนเซอร์ล่าสุด + ปุ่มควบคุม manual
-     ขนาดใหญ่กดง่าย
-   - แท็บกราฟ: ใช้ Chart.js แสดงความชื้นดิน/อุณหภูมิย้อนหลัง
-   - แท็บตั้งค่า: เลือกโหมดปลูก
-   - Mobile-first เท่านั้น ไม่ต้องทำ layout สำหรับจอกว้าง
+     (เรียก doGet(status=get) ของ Apps Script Web App เดิม)
+   - แท็บกราฟ: ใช้ package fl_chart แสดงความชื้นดิน/อุณหภูมิย้อนหลัง
+     (ถ้ายังไม่มี endpoint status=log ใน Code.gs ให้บอกผมก่อน เป็น
+     คนละงานที่ต้องแก้ backend)
+   - แท็บตั้งค่า: เลือกโหมดปลูก (เขียนกลับไปที่ชีต control ผ่าน
+     Apps Script)
 
-3. เรียกข้อมูลจาก Apps Script Web App เดิมด้วย fetch() ธรรมดา (ยิงไป
-   ?status=get) — ถ้าต้องการข้อมูลย้อนหลังทำกราฟ ให้เพิ่ม
-   status=log ใน Code.gs (อ่านจาก sheet1) เป็นข้อก่อนหน้านี้ถ้ายังไม่มี
+3. ใช้ package http เรียก Apps Script Web App เป็น JSON API ตรง ๆ
+   (GET ธรรมดา ไม่ติดปัญหา CORS แบบเว็บ browser)
 
-4. ทดสอบว่า "Add to Home Screen" ได้จริงบน Chrome mobile (จำลองผ่าน
-   Chrome DevTools mobile emulation ก็พอ ไม่ต้องมีมือถือจริง)
+4. ยังไม่ต้องทำ push notification (Firebase Cloud Messaging) ในขั้นนี้
+   — เป็นข้อถัดไปถ้าต้องการ เน้นให้แอปอ่าน/เขียนสถานะได้ถูกต้องก่อน
 
-ห้ามใช้ React Native/Flutter หรือ framework ที่ต้อง build แยก — เอา
-แค่ HTML/CSS/JS ธรรมดาที่ deploy ตรงผ่าน GitHub Pages ได้เลย
+5. ทดสอบบน Android emulator หรือมือถือจริงผ่าน USB debugging (ไม่มี
+   iOS ให้ทดสอบก็ไม่เป็นไร โฟกัส Android ก่อน)
 
-เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนี้ ส่ง URL GitHub Pages มาให้ผมดู</pre>
+ห้ามใช้ Firebase Realtime Database ในขั้นนี้ (ตัดสินใจไม่ใช้แล้ว ดู
+Decision Log ข้อ 1) — เรียก Apps Script เป็น backend เดียวเท่านั้น
+
+เมื่อเสร็จ: ติ๊ก PLAN.md ข้อนี้ ส่งสกรีนช็อตหรือวิดีโอสั้น ๆ มาให้ผมดู</pre>
         </div>
       </details>
 
