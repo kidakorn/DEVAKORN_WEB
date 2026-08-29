@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP Build Sheets — คู่มือฝึกจาก 6 โปรเจ็ค</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --paper: #F3EFE4;
+    --ink: #22282E;
+    --ink-soft: #5C6570;
+    --blueprint: #1D4E6B;
+    --blueprint-deep: #123A50;
+    --grid-line: rgba(255,255,255,0.14);
+    --accent: #D6A419;
+    --accent-deep: #9C7413;
+    --card-line: #DAD3C0;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+
+  a { color: var(--blueprint); }
+
+  /* === Cover / hero: a blueprint sheet, literally === */
+  .cover {
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(135deg, var(--blueprint) 0%, var(--blueprint-deep) 100%);
+    background-size: 32px 32px, 32px 32px, cover;
+    color: #EAF2F6;
+    padding: 64px 24px 56px;
+    position: relative;
+  }
+
+  .cover-inner {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .cover-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .cover-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.15;
+    margin: 0 0 16px 0;
+  }
+
+  .cover-sub {
+    font-size: 15.5px;
+    color: #C7DAE4;
+    max-width: 560px;
+    margin: 0 0 28px 0;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 18px;
+  }
+
+  .cover-meta div span {
+    display: block;
+    color: #8FAFC0;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 3px;
+  }
+
+  /* === Body container === */
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  section { margin-bottom: 56px; }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    margin: 0 0 6px 0;
+  }
+
+  .section-intro {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    max-width: 620px;
+    margin: 0 0 24px 0;
+  }
+
+  /* === How to use === */
+  .howto-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .howto-item {
+    display: flex;
+    gap: 14px;
+    background: #fff;
+    border: 1px solid var(--card-line);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+
+  .howto-num {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--blueprint);
+    font-size: 15px;
+    flex-shrink: 0;
+    width: 24px;
+  }
+
+  .howto-item p { margin: 0; font-size: 14px; }
+  .howto-item strong { display: block; font-family: var(--font-display); font-size: 14.5px; margin-bottom: 3px; }
+
+  /* === Concept glossary cards === */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .concept-card {
+    background: #fff;
+    border: 1px solid var(--card-line);
+    border-left: 4px solid var(--blueprint);
+    border-radius: 4px;
+    padding: 18px 20px;
+  }
+
+  .concept-card h3 {
+    font-family: var(--font-display);
+    font-size: 15.5px;
+    margin: 0 0 6px 0;
+  }
+
+  .concept-card p { font-size: 13.5px; margin: 0 0 10px 0; color: var(--ink); }
+  .concept-card p:last-child { margin-bottom: 0; }
+
+  .concept-card code, .why-box code {
+    font-family: var(--font-mono);
+    background: var(--paper);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12.5px;
+  }
+
+  .why-box {
+    background: #FBF6E9;
+    border: 1px dashed var(--accent-deep);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  .why-box strong { color: var(--accent-deep); font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  pre {
+    background: var(--ink);
+    color: #E8EDE9;
+    padding: 14px 16px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    overflow-x: auto;
+    margin: 10px 0 0 0;
+    line-height: 1.55;
+  }
+
+  /* === Roadmap strip === */
+  .roadmap {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .roadmap-node {
+    flex: 0 0 auto;
+    width: 108px;
+    text-align: center;
+    position: relative;
+    padding: 0 6px;
+  }
+
+  .roadmap-node .dot {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--blueprint);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 8px;
+  }
+
+  .roadmap-node .lbl { font-size: 11px; color: var(--ink-soft); line-height: 1.3; }
+
+  .roadmap-node:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 17px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--card-line);
+    z-index: -1;
+  }
+
+  /* === Project build sheets === */
+  .sheet {
+    background: #fff;
+    border: 1px solid var(--card-line);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+
+  .sheet-head {
+    background: var(--blueprint);
+    color: #EAF2F6;
+    padding: 18px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .sheet-head-left .sheet-no {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+  }
+
+  .sheet-head-left h3 {
+    font-family: var(--font-display);
+    font-size: 19px;
+    margin: 4px 0 0 0;
+  }
+
+  .sheet-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+  }
+
+  .tag {
+    border: 1px solid rgba(234,242,246,0.4);
+    border-radius: 3px;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+
+  .sheet-body { padding: 20px 22px 24px; }
+
+  .sheet-body h4 {
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    margin: 20px 0 8px 0;
+  }
+
+  .sheet-body h4:first-child { margin-top: 0; }
+
+  .sheet-body p { font-size: 13.5px; margin: 0 0 8px 0; }
+
+  table.spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+
+  table.spec-table th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 6px 8px;
+    border-bottom: 2px solid var(--card-line);
+  }
+
+  table.spec-table td {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--card-line);
+    font-family: var(--font-mono);
+  }
+
+  table.spec-table td.desc { font-family: var(--font-body); }
+
+  ul.plain { margin: 0; padding-left: 18px; font-size: 13.5px; }
+  ul.plain li { margin-bottom: 4px; }
+
+  ol.steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 0;
+    padding: 0;
+    border-left: 2px solid var(--card-line);
+  }
+
+  ol.steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 2px 0 16px 26px;
+    font-size: 13.5px;
+  }
+
+  ol.steps li:last-child { padding-bottom: 0; }
+
+  ol.steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: -13px;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--blueprint);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  ol.steps li strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    margin-bottom: 2px;
+  }
+
+  ol.steps li code {
+    font-family: var(--font-mono);
+    background: var(--paper);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+
+  .prompt-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+
+  .prompt-label .tag-prompt {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #fff;
+    background: var(--accent-deep);
+    padding: 3px 9px;
+    border-radius: 3px;
+  }
+
+  .prompt-label .prompt-hint {
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .prompt-box {
+    background: var(--ink);
+    color: #E8EDE9;
+    padding: 16px 18px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    margin: 0;
+    border-left: 4px solid var(--accent);
+  }
+
+  /* === Footer === */
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+    padding: 24px;
+    border-top: 1px solid var(--card-line);
+  }
+
+  @media (max-width: 640px) {
+    .cover { padding: 48px 18px 40px; }
+    .wrap { padding: 36px 18px 60px; }
+    .sheet-head { flex-direction: column; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-eyebrow">Build Sheet Series — No. 01–06</div>
+    <h1 class="cover-title">6 โปรเจ็คฝึกฝีมือ<br>ก่อนกลับไปลุย Ledger ERP</h1>
+    <p class="cover-sub">
+      คู่มือแบบลงมือทำ ไม่ใช่บทความอ่านเฉยๆ แต่ละโปรเจ็คคือ "ใบสั่งงาน"
+      ที่มีขอบเขตชัดเจนพอจะทำจบได้ในหนึ่งรอบที่ว่าง พร้อมเหตุผลเบื้องหลัง
+      การตัดสินใจทางเทคนิคของแต่ละจุด ไม่ใช่แค่บอกว่าต้องทำอะไร
+    </p>
+    <div class="cover-meta">
+      <div><span>ภาษา</span>PHP (Plain, ไม่ใช้ Framework)</div>
+      <div><span>ระดับ</span>Staff Developer, ปีที่ 1</div>
+      <div><span>โปรเจ็คทั้งหมด</span>6 ใบ</div>
+      <div><span>เวลารวมโดยประมาณ</span>10–15 วันทำงาน</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section id="howto">
+    <div class="section-label">Sheet 00</div>
+    <h2>วิธีใช้คู่มือนี้</h2>
+    <p class="section-intro">
+      ก่อนเปิดโปรเจ็คแรก อ่าน 4 ข้อนี้ก่อน จะช่วยให้ทุกโปรเจ็คไปในทิศทางเดียวกัน
+    </p>
+    <div class="howto-list">
+      <div class="howto-item">
+        <div class="howto-num">01</div>
+        <p><strong>ทำตามลำดับ ไม่ใช่ตามใจ</strong>
+        แต่ละโปรเจ็คถูกจัดลำดับให้ทักษะที่ได้จากอันก่อนหน้าถูกใช้ซ้ำในอันถัดไป
+        ข้ามลำดับได้ถ้าอยากลองเรื่องใดเรื่องหนึ่งเจาะจง แต่ถ้าไม่มีเหตุผลเฉพาะ ทำเรียงจะได้ผลลัพธ์การเรียนรู้ดีกว่า</p>
+      </div>
+      <div class="howto-item">
+        <div class="howto-num">02</div>
+        <p><strong>อ่านหัวข้อ "แนวคิดหลัก" ในหน้าถัดไปก่อน</strong>
+        เป็นแพทเทิร์นที่ใช้ซ้ำในทุกโปรเจ็ค ถ้าเข้าใจตรงนั้นแน่นๆ การอ่านสเปกแต่ละโปรเจ็คจะเร็วขึ้นมาก
+        เพราะจะรู้ทันทีว่า "จุดยากของโปรเจ็คนี้อยู่ตรงไหน"</p>
+      </div>
+      <div class="howto-item">
+        <div class="howto-num">03</div>
+        <p><strong>ทำโครงสร้างให้เหมือนงาน Ledger ERP</strong>
+        Composer + PSR-4 autoload, ไม่ใช้ framework, แยก Core/Modules/Shared เหมือนเดิม
+        จะได้ไม่ต้องเรียนรู้ pattern ใหม่ทุกครั้ง และเทียบกับงานจริงที่เคยทำได้ตรงๆ</p>
+      </div>
+      <div class="howto-item">
+        <div class="howto-num">04</div>
+        <p><strong>สเปกในนี้คือขอบเขตขั้นต่ำ ไม่ใช่เพดาน</strong>
+        แต่ละใบบอก "ต้องมีอะไรถึงจะเรียกว่าจบ" ถ้าอยากต่อยอด (เพิ่ม UI สวยๆ, เพิ่ม export Excel ฯลฯ)
+        ทำได้เต็มที่หลังจากจุดที่กำหนดไว้ผ่านแล้ว</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <div class="section-label">Sheet 00 (ต่อ)</div>
+    <h2>ลำดับการฝึก</h2>
+    <p class="section-intro">ความยากค่อยๆ ไต่ระดับ แต่ละจุดเพิ่มแนวคิดใหม่ 1 อย่างจากของเดิม</p>
+    <div class="roadmap">
+      <div class="roadmap-node"><div class="dot">01</div><div class="lbl">จองคิว<br>overlap check</div></div>
+      <div class="roadmap-node"><div class="dot">02</div><div class="lbl">เบิก-คืน<br>audit trail</div></div>
+      <div class="roadmap-node"><div class="dot">03</div><div class="lbl">Ticket<br>state machine</div></div>
+      <div class="roadmap-node"><div class="dot">04</div><div class="lbl">สมาชิก<br>point ledger</div></div>
+      <div class="roadmap-node"><div class="dot">05</div><div class="lbl">CMS<br>publish flow</div></div>
+      <div class="roadmap-node"><div class="dot">06</div><div class="lbl">เช่า-คืน<br>รวมทุกอย่าง</div></div>
+    </div>
+  </section>
+
+  <section id="concepts">
+    <div class="section-label">Sheet 00 (ต่อ)</div>
+    <h2>แนวคิดหลักที่ใช้ซ้ำทุกโปรเจ็ค</h2>
+    <p class="section-intro">
+      5 pattern นี้จะเจอซ้ำๆ ในทุกใบงาน เข้าใจตรงนี้ก่อนแล้วสเปกที่เหลือจะอ่านง่ายขึ้นมาก
+    </p>
+    <div class="concept-grid">
+
+      <div class="concept-card">
+        <h3>1. ตรวจช่วงเวลาทับซ้อน (Overlap check)</h3>
+        <p>ใช้ในโปรเจ็ค 01 และ 06 ปัญหาคือ "จองเวลา A-B ได้ไหม เมื่อมีคนจองไว้แล้วบางช่วง"
+        เงื่อนไขทับซ้อนที่ถูกต้องคือ: ช่วงใหม่ทับกับช่วงเก่า ก็ต่อเมื่อ เวลาเริ่มใหม่ น้อยกว่า เวลาจบเก่า
+        และ เวลาจบใหม่ มากกว่า เวลาเริ่มเก่า</p>
+        <pre>SELECT COUNT(*) FROM appointments
+WHERE staff_id = :staff_id
+  AND start_time &lt; :new_end
+  AND end_time &gt; :new_start</pre>
+        <div class="why-box"><strong>ทำไมไม่เช็คแค่ "เวลาเริ่มตรงกัน"</strong>
+        เพราะการจองจริงมีความยาวไม่เท่ากัน ถ้าเช็คแค่จุดเริ่ม จะพลาดเคสที่ช่วงเวลาซ้อนกันตรงกลาง
+        เช่น ของเก่า 10:00-11:00 ของใหม่ 10:30-10:45 เวลาเริ่มไม่ตรงกันเลยแต่ทับกันเต็มๆ</div>
+      </div>
+
+      <div class="concept-card">
+        <h3>2. State Machine (เครื่องสถานะ)</h3>
+        <p>ใช้ในโปรเจ็ค 02, 03, 06 คือการกำหนดว่า "จากสถานะ A ไปสถานะไหนได้บ้าง"
+        เขียนเป็นตารางที่เดียว ไม่กระจายเงื่อนไข if/else ไปทั่วโค้ด</p>
+        <pre>const TRANSITIONS = [
+    'open'        => ['assigned'],
+    'assigned'    => ['in_progress', 'open'],
+    'in_progress' => ['resolved'],
+    'resolved'    => ['closed', 'in_progress'],
+    'closed'      => [],
+];</pre>
+        <div class="why-box"><strong>ทำไมไม่ใช้ if แยกทีละจุด</strong>
+        ถ้าเขียน if ทั่วระบบ วันหนึ่งกฎเปลี่ยน (เช่น เพิ่มสถานะ "รอชิ้นส่วน") จะต้องไล่แก้หลายที่
+        เก็บกฎไว้ในตารางเดียว แก้ที่เดียวจบ และตรวจสอบ transition ผิดกฎได้ง่ายด้วยเช็คตารางนี้ก่อนบันทึก</div>
+      </div>
+
+      <div class="concept-card">
+        <h3>3. Immutable log (บันทึกที่แก้ไขย้อนหลังไม่ได้)</h3>
+        <p>ใช้ในโปรเจ็ค 02 และ 04 หลักการคือ ห้าม UPDATE หรือ DELETE แถวประวัติ
+        ถ้าข้อมูลเปลี่ยน ให้ INSERT แถวใหม่แทน แล้วคำนวณค่าปัจจุบันจากผลรวมของ log ทั้งหมด</p>
+        <pre>-- ยอดคะแนนสมาชิกไม่ใช่ column ที่ UPDATE ตรงๆ
+-- แต่คำนวณจาก log ทุกครั้ง
+SELECT SUM(points) FROM point_transactions
+WHERE member_id = :member_id</pre>
+        <div class="why-box"><strong>ทำไมไม่เก็บแค่ยอดรวมแล้วอัปเดตทับ</strong>
+        ถ้าเก็บแค่ยอดปัจจุบันแล้ว UPDATE ทับทุกครั้ง เวลามีข้อผิดพลาด (เช่น แต้มผิด, ทุจริต)
+        จะตรวจสอบย้อนหลังไม่ได้ว่าเกิดอะไรขึ้น การเก็บ log ทำให้ตรวจสอบได้เสมอ เหมือนสมุดบัญชีจริง
+        ที่ไม่มีใครขีดฆ่าตัวเลขแล้วเขียนทับ</div>
+      </div>
+
+      <div class="concept-card">
+        <h3>4. Transaction สำหรับงานข้ามตาราง</h3>
+        <p>ใช้ทุกโปรเจ็คที่มีการ "ตัดของ" พร้อมกับ "บันทึกรายการ" (เบิกของ, จองอุปกรณ์, แลกแต้ม)
+        สองการเขียนนี้ต้องสำเร็จพร้อมกันหรือไม่สำเร็จเลยทั้งคู่</p>
+        <pre>$db->beginTransaction();
+try {
+    // 1. ลดจำนวนของที่มีอยู่
+    // 2. บันทึกรายการเบิก
+    $db->commit();
+} catch (Throwable $e) {
+    $db->rollBack();
+    throw $e;
+}</pre>
+        <div class="why-box"><strong>ทำไมต้องเป็น transaction</strong>
+        ถ้าขั้นตอนที่ 1 สำเร็จแต่ขั้นตอนที่ 2 ล้มเหลว (เซิร์ฟเวอร์ล่มพอดี) ของจะถูกตัดออกจากสต็อก
+        โดยไม่มีบันทึกว่าใครเอาไป ข้อมูลจะไม่ตรงกับความจริงถาวร transaction ป้องกันเคสแบบนี้</div>
+      </div>
+
+      <div class="concept-card">
+        <h3>5. Role-based access (สิทธิ์ตามบทบาท)</h3>
+        <p>ใช้ในโปรเจ็ค 02, 03, 06 คนละบทบาทเห็นคนละหน้า/ทำคนละ action ได้
+        เขียนเป็น middleware ตรวจก่อนเข้า route เดียว ไม่ใช่เช็คสิทธิ์ซ้ำในทุก Controller</p>
+        <div class="why-box"><strong>ทำไมเช็คที่ middleware ไม่ใช่ในแต่ละ Controller</strong>
+        ถ้าลืมเช็คในสัก Controller เดียว จะเป็นช่องโหว่ทันที การเช็คที่จุดเดียวก่อนเข้าถึง route
+        ทุกเส้นทางไม่มีทางลืม เพราะเป็นด่านที่บังคับผ่านเสมอ</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== PROJECT 01 ===================== -->
+  <section class="sheet-wrap">
+    <div class="section-label">Sheet 01 / 06</div>
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-head-left">
+          <div class="sheet-no">BUILD SHEET NO. 01</div>
+          <h3>ระบบจองคิวร้านตัดผม / คลินิก</h3>
+        </div>
+        <div class="sheet-tags">
+          <div class="tag">ความยาก: เล็ก</div>
+          <div class="tag">เวลา: 1–2 วัน</div>
+          <div class="tag">โฟกัส: Overlap Check</div>
+        </div>
+      </div>
+      <div class="sheet-body">
+        <h4>เป้าหมายการฝึก</h4>
+        <p>ฝึก CRUD พื้นฐานให้คล่องมือ พร้อมโจทย์แรกที่ "ตรรกะ" สำคัญกว่าหน้าตา:
+        กันไม่ให้จองเวลาที่ทับกับคิวเดิมของช่างคนเดียวกัน</p>
+
+        <h4>ตารางที่ต้องมี</h4>
+        <table class="spec-table">
+          <thead><tr><th>ตาราง</th><th class="desc">คอลัมน์สำคัญ</th></tr></thead>
+          <tbody>
+            <tr><td>staff</td><td class="desc">id, name, service_ids (บริการที่ทำได้)</td></tr>
+            <tr><td>services</td><td class="desc">id, name, duration_minutes, price</td></tr>
+            <tr><td>customers</td><td class="desc">id, name, phone</td></tr>
+            <tr><td>appointments</td><td class="desc">id, staff_id, customer_id, service_id, start_time, end_time, status</td></tr>
+          </tbody>
+        </table>
+
+        <h4>จุดที่ต้องคิดให้ดีก่อนเขียนโค้ด</h4>
+        <ul class="plain">
+          <li>เวลาเริ่ม-จบคำนวณจาก <code>duration_minutes</code> ของบริการที่เลือก ไม่ใช่ให้ผู้ใช้กรอกเอง</li>
+          <li>เช็ค overlap (ดูแนวคิดหลักข้อ 1) ก่อน INSERT ทุกครั้ง ไม่ใช่แค่ฝั่ง JavaScript หน้าเว็บ
+          เพราะ client-side ข้ามได้เสมอ</li>
+          <li>สถานะนัดหมาย: <code>booked</code> → <code>completed</code> หรือ <code>cancelled</code>
+          ยกเลิกแล้วต้องเปิดช่องเวลานั้นให้จองใหม่ได้</li>
+        </ul>
+
+        <h4>ขั้นตอนการทำ</h4>
+        <ol class="steps">
+          <li><strong>ตั้งโครงโปรเจ็ค</strong>
+          <code>composer.json</code> แบบ PSR-4, ก็อปปี้ <code>Core/</code>
+          (Router, Database, BaseController, BaseModel) จากงาน Ledger ERP มาใช้ตรงๆ ได้เลย ไม่ต้องเขียนใหม่</li>
+          <li><strong>เขียน schema.sql</strong>
+          สร้าง 4 ตารางตามสเปกด้านบน ใส่ข้อมูลตัวอย่าง (seed) ช่าง 2-3 คน และบริการ 3-4 รายการ
+          จะได้มีข้อมูลทดสอบทันทีโดยไม่ต้องกรอกเองทุกครั้ง</li>
+          <li><strong>สร้าง Model ทั้ง 4 ตัว</strong>
+          <code>StaffModel</code>, <code>ServiceModel</code>, <code>CustomerModel</code>, <code>AppointmentModel</code>
+          extends BaseModel ตั้งแค่ <code>$table</code> ก่อน ยังไม่ต้องมี method พิเศษ</li>
+          <li><strong>ทำหน้ารายการนัดหมาย</strong>
+          route <code>GET /appointments</code> แสดงนัดหมายของวันนั้นๆ เรียงตามเวลา ทำให้ดูออกก่อนว่าข้อมูลไหลถูกต้อง
+          ก่อนจะไปยุ่งกับ logic ที่ซับซ้อนกว่า</li>
+          <li><strong>เขียน overlap check ก่อน แยกเป็น method เดี่ยว</strong>
+          <code>AppointmentModel::hasOverlap($staffId, $start, $end)</code> ตามแนวคิดหลักข้อ 1
+          เขียนแยกและทดสอบให้แน่ใจว่าถูกก่อน ค่อยเอาไปต่อกับฟอร์ม จะดีบักง่ายกว่าเขียนปนกับ Controller</li>
+          <li><strong>ทำฟอร์มจองคิว</strong>
+          route <code>GET /appointments/create</code> (ฟอร์ม) และ <code>POST /appointments</code> (บันทึก)
+          คำนวณ <code>end_time</code> จาก <code>duration_minutes</code> ของบริการที่เลือก เรียก
+          <code>hasOverlap</code> ก่อน insert เสมอ</li>
+          <li><strong>ทำปุ่มยกเลิกนัด</strong>
+          route <code>POST /appointments/{id}/cancel</code> เปลี่ยน status เป็น <code>cancelled</code>
+          ไม่ต้องลบแถวทิ้ง เก็บไว้เป็นประวัติ</li>
+          <li><strong>ทดสอบตามเกณฑ์ด้านล่างด้วยมือ</strong>
+          ลองจองซ้อนเวลาจริงๆ ดูว่าโดนปฏิเสธไหม ก่อนจะถือว่าจบ</li>
+        </ol>
+
+        <h4>เกณฑ์ว่าจบแล้ว</h4>
+        <ul class="plain">
+          <li>จองสำเร็จเมื่อเวลาว่างจริง</li>
+          <li>พยายามจองเวลาที่ทับกับคิวเดิมของช่างคนเดียวกัน ต้องถูกปฏิเสธพร้อมข้อความบอกเหตุผล</li>
+          <li>ยกเลิกนัดแล้ว ช่วงเวลานั้นจองใหม่ได้ทันที</li>
+        </ul>
+
+        <div class="prompt-label">
+          <span class="tag-prompt">Prompt</span>
+          <span class="prompt-hint">คัดลอกทั้งกล่องไปวางสั่ง agent ได้เลย</span>
+        </div>
+        <pre class="prompt-box">สร้างระบบจองคิวร้านตัดผม/คลินิกด้วย Plain PHP ไม่ใช้ framework ใดๆ ใช้ Composer เฉพาะ PSR-4 autoload เท่านั้น
+
+กติกาที่ต้องทำตามทุกจุด:
+- ห้ามใช้ emoji ทุกที่ ทั้งโค้ด คอมเมนต์ และข้อความในระบบ
+- เข้าถึงฐานข้อมูลด้วย PDO prepared statements เท่านั้น ห้าม concatenate string เข้า SQL
+- โค้ดที่มี logic ไม่ตรงไปตรงมา ต้องมีคอมเมนต์อธิบายว่าทำไมถึงเขียนแบบนี้ ไม่ใช่แค่อธิบายว่าทำอะไร
+- ทุก input ต้อง validate ก่อนถึงชั้น Model เสมอ
+
+โครงสร้าง: src/Core (Router, Database, BaseController, BaseModel แบบ CRUD ทั่วไป), src/Modules ต่อโมดูล, views เป็น PHP template ธรรมดา
+
+สร้าง 4 ตาราง: staff, services, customers, appointments (ดูคอลัมน์จากสเปกที่แนบ) ทำ overlap check เป็น method แยกชื่อ AppointmentModel::hasOverlap($staffId, $start, $end) โดยเช็คเงื่อนไข: เวลาเริ่มใหม่ < เวลาจบเก่า AND เวลาจบใหม่ > เวลาเริ่มเก่า ต้องเรียก method นี้ก่อน insert นัดหมายทุกครั้ง ห้าม bypass
+
+ทำตามลำดับนี้: (1) schema + seed ข้อมูล (2) Model ทั้ง 4 ตัว (3) หน้ารายการนัดหมาย (4) hasOverlap แยกทดสอบก่อน (5) ฟอร์มจอง (6) ปุ่มยกเลิก
+
+ทำทีละขั้นแล้วรายงานผลก่อนไปขั้นถัดไป เกณฑ์จบ: จองซ้อนเวลาต้องถูกปฏิเสธจริงจากฝั่งเซิร์ฟเวอร์ (ทดสอบด้วยการยิง request ตรงๆ ไม่ใช่แค่ผ่าน UI) และยกเลิกนัดแล้วเวลานั้นต้องจองใหม่ได้ทันที</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECT 02 ===================== -->
+  <section class="sheet-wrap">
+    <div class="section-label">Sheet 02 / 06</div>
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-head-left">
+          <div class="sheet-no">BUILD SHEET NO. 02</div>
+          <h3>ระบบเบิก-คืนอุปกรณ์ในออฟฟิศ</h3>
+        </div>
+        <div class="sheet-tags">
+          <div class="tag">ความยาก: เล็ก-กลาง</div>
+          <div class="tag">เวลา: 1–2 วัน</div>
+          <div class="tag">โฟกัส: Workflow + Audit Trail</div>
+        </div>
+      </div>
+      <div class="sheet-body">
+        <h4>เป้าหมายการฝึก</h4>
+        <p>ฝึก workflow ที่มีขั้นตอนอนุมัติ และฝึกเก็บ audit trail แบบ immutable log
+        (แนวคิดหลักข้อ 3) ซึ่งเป็นพื้นฐานสำคัญของงานบัญชี/การเงินที่จะเจอในงานจริงบ่อยๆ</p>
+
+        <h4>ตารางที่ต้องมี</h4>
+        <table class="spec-table">
+          <thead><tr><th>ตาราง</th><th class="desc">คอลัมน์สำคัญ</th></tr></thead>
+          <tbody>
+            <tr><td>equipment_items</td><td class="desc">id, name, total_qty, available_qty</td></tr>
+            <tr><td>employees</td><td class="desc">id, name, department</td></tr>
+            <tr><td>checkout_requests</td><td class="desc">id, item_id, employee_id, qty, status, requested_at</td></tr>
+            <tr><td>checkout_logs</td><td class="desc">id, request_id, action, actor_id, created_at (insert-only)</td></tr>
+          </tbody>
+        </table>
+
+        <h4>จุดที่ต้องคิดให้ดีก่อนเขียนโค้ด</h4>
+        <ul class="plain">
+          <li>สถานะ: <code>requested</code> → <code>approved</code> → <code>checked_out</code> → <code>returned</code>
+          (หรือ <code>rejected</code> จาก requested) ใช้ตาราง transition แบบแนวคิดหลักข้อ 2</li>
+          <li>ทุกการเปลี่ยนสถานะ INSERT แถวใหม่ใน <code>checkout_logs</code> ห้ามลบของเก่า
+          แม้ผู้ดูแลจะอยากแก้ประวัติก็ตาม</li>
+          <li>การลด/เพิ่ม <code>available_qty</code> ต้องอยู่ใน transaction เดียวกับการเปลี่ยนสถานะ
+          (แนวคิดหลักข้อ 4)</li>
+        </ul>
+
+        <h4>ขั้นตอนการทำ</h4>
+        <ol class="steps">
+          <li><strong>ตั้งโครงโปรเจ็ค + schema</strong>
+          Core เดิมจาก ERP, สร้าง 4 ตารางตามสเปก ใส่อุปกรณ์ตัวอย่าง 5-6 ชิ้น พร้อม
+          <code>available_qty</code> เริ่มต้น</li>
+          <li><strong>เขียนตาราง state transition ก่อน</strong>
+          ตาม pattern แนวคิดหลักข้อ 2 กำหนดให้ชัดว่าจาก <code>requested</code> ไปได้แค่
+          <code>approved</code> หรือ <code>rejected</code> เท่านั้น เขียนเป็น const ในคลาสเดียว
+          ก่อนเริ่มเขียน Controller ใดๆ</li>
+          <li><strong>ทำ RequestModel + LogModel</strong>
+          extends BaseModel ปกติ แต่ <code>LogModel</code> ไม่มี method <code>update</code> หรือ
+          <code>delete</code> เลย (ลบ method ออกจากคลาสไปเลยเพื่อบังคับว่า insert-only จริง)</li>
+          <li><strong>ทำ POST /requests (สร้างคำขอ)</strong>
+          สถานะเริ่มต้น <code>requested</code> พร้อม insert แถวแรกใน <code>checkout_logs</code></li>
+          <li><strong>ทำ POST /requests/{id}/approve</strong>
+          เช็คตาราง transition ก่อนว่า <code>requested → approved</code> ถูกกฎไหม เฉพาะ role ผู้อนุมัติเรียกได้
+          เปลี่ยนสถานะ + insert log ในการเรียกเดียวกัน</li>
+          <li><strong>ทำ POST /requests/{id}/checkout</strong>
+          ลด <code>available_qty</code> ของอุปกรณ์ พร้อมเปลี่ยนสถานะเป็น <code>checked_out</code>
+          และ insert log ทั้งหมดอยู่ใน transaction เดียว (แนวคิดหลักข้อ 4) เพราะถ้าลด qty สำเร็จ
+          แต่เปลี่ยนสถานะไม่สำเร็จ ข้อมูลจะเพี้ยนทันที</li>
+          <li><strong>ทำ POST /requests/{id}/return</strong>
+          คืน <code>available_qty</code> กลับ, สถานะเป็น <code>returned</code>, insert log ปิดท้าย</li>
+          <li><strong>ทำหน้าประวัติ</strong>
+          join <code>checkout_logs</code> กับ <code>equipment_items</code> และ
+          <code>employees</code> แสดงลำดับเวลาของอุปกรณ์แต่ละชิ้น</li>
+          <li><strong>ทดสอบ</strong>
+          ลองเบิกเกินจำนวนที่มี และลองยิง request ข้ามขั้น (เช่นเรียก checkout ทั้งที่ยังไม่ approve)
+          ทั้งสองเคสต้องถูกปฏิเสธ</li>
+        </ol>
+
+        <h4>เกณฑ์ว่าจบแล้ว</h4>
+        <ul class="plain">
+          <li>เบิกของเกินจำนวนที่มีอยู่ ระบบต้องปฏิเสธ</li>
+          <li>ดูประวัติการเบิก-คืนของอุปกรณ์แต่ละชิ้นย้อนหลังได้ครบทุกขั้นตอน</li>
+          <li>ผู้อนุมัติเห็นเฉพาะคำขอที่ยัง <code>requested</code> อยู่</li>
+        </ul>
+
+        <div class="prompt-label">
+          <span class="tag-prompt">Prompt</span>
+          <span class="prompt-hint">คัดลอกทั้งกล่องไปวางสั่ง agent ได้เลย</span>
+        </div>
+        <pre class="prompt-box">สร้างระบบเบิก-คืนอุปกรณ์ในออฟฟิศด้วย Plain PHP ไม่ใช้ framework ใดๆ ใช้ Composer เฉพาะ PSR-4 autoload เท่านั้น
+
+กติกาที่ต้องทำตามทุกจุด:
+- ห้ามใช้ emoji ทุกที่ ทั้งโค้ด คอมเมนต์ และข้อความในระบบ
+- เข้าถึงฐานข้อมูลด้วย PDO prepared statements เท่านั้น
+- โค้ดที่มี logic ไม่ตรงไปตรงมา ต้องมีคอมเมนต์อธิบายว่าทำไมถึงเขียนแบบนี้
+- ทุก input ต้อง validate ก่อนถึงชั้น Model เสมอ
+
+สร้าง 4 ตาราง: equipment_items, employees, checkout_requests, checkout_logs
+
+จุดสำคัญที่สุดของงานนี้: checkout_logs ต้อง insert-only เท่านั้น อย่าสร้าง method update หรือ delete ให้คลาสนี้เลยแม้แต่ตัวเดียว เพื่อบังคับด้วยโครงสร้างโค้ดว่าห้ามแก้ไขประวัติย้อนหลัง
+
+เขียนตาราง state transition ก่อนเขียน Controller ใดๆ: requested -> approved/rejected, approved -> checked_out, checked_out -> returned เก็บเป็น const array ในที่เดียว ทุกจุดที่เปลี่ยนสถานะต้องเช็คตารางนี้ก่อนเสมอ ปฏิเสธถ้า transition ไม่ถูกกฎ
+
+การลด/เพิ่ม available_qty ต้องอยู่ใน database transaction เดียวกับการเปลี่ยนสถานะและการ insert log เสมอ (beginTransaction/commit/rollBack) เพราะถ้าขั้นตอนใดขั้นตอนหนึ่งล้มเหลวกลางคัน ข้อมูลสต็อกกับสถานะจะไม่ตรงกัน
+
+ทำตามลำดับ: (1) schema + seed (2) ตาราง state transition (3) RequestModel + LogModel (4) POST /requests สร้างคำขอ (5) approve (6) checkout ลด qty ใน transaction (7) return คืน qty (8) หน้าประวัติ
+
+ทำทีละขั้นแล้วรายงานผลก่อนไปขั้นถัดไป เกณฑ์จบ: เบิกเกินจำนวนต้องถูกปฏิเสธ, เรียก endpoint ข้ามขั้น (เช่น checkout ทั้งที่ยังไม่ approve) ต้องถูกปฏิเสธ, ประวัติดูย้อนหลังได้ครบทุกขั้นตอน</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECT 03 ===================== -->
+  <section class="sheet-wrap">
+    <div class="section-label">Sheet 03 / 06</div>
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-head-left">
+          <div class="sheet-no">BUILD SHEET NO. 03</div>
+          <h3>ระบบแจ้งซ่อม / Ticket ภายในองค์กร</h3>
+        </div>
+        <div class="sheet-tags">
+          <div class="tag">ความยาก: กลาง</div>
+          <div class="tag">เวลา: 2–3 วัน</div>
+          <div class="tag">โฟกัส: State Machine + Role</div>
+        </div>
+      </div>
+      <div class="sheet-body">
+        <h4>เป้าหมายการฝึก</h4>
+        <p>โปรเจ็คแรกที่มี 3 บทบาทชัดเจน (ผู้แจ้ง / ช่าง / หัวหน้า) แต่ละบทบาทเห็นและทำได้ไม่เหมือนกัน
+        เป็นแบบฝึกหัด role-based access ตัวจริง (แนวคิดหลักข้อ 5) รวมกับ state machine ที่ซับซ้อนขึ้น</p>
+
+        <h4>ตารางที่ต้องมี</h4>
+        <table class="spec-table">
+          <thead><tr><th>ตาราง</th><th class="desc">คอลัมน์สำคัญ</th></tr></thead>
+          <tbody>
+            <tr><td>users</td><td class="desc">id, name, role (requester / technician / supervisor)</td></tr>
+            <tr><td>tickets</td><td class="desc">id, title, description, status, priority, requester_id, assignee_id</td></tr>
+            <tr><td>ticket_comments</td><td class="desc">id, ticket_id, user_id, comment, created_at</td></tr>
+          </tbody>
+        </table>
+
+        <h4>จุดที่ต้องคิดให้ดีก่อนเขียนโค้ด</h4>
+        <ul class="plain">
+          <li>สถานะ: <code>open</code> → <code>assigned</code> → <code>in_progress</code> → <code>resolved</code> → <code>closed</code>
+          กำหนดในตาราง transition เดียว ตามตัวอย่างในแนวคิดหลักข้อ 2</li>
+          <li>ผู้แจ้งเห็นแค่ ticket ของตัวเอง, ช่างเห็นเฉพาะที่ถูก assign, หัวหน้าเห็นทั้งหมด — เช็คที่ middleware
+          ไม่ใช่แยกเงื่อนไขในแต่ละหน้า</li>
+          <li>เฉพาะหัวหน้าเท่านั้นที่ assign ช่างได้ ช่างเปลี่ยนสถานะ ticket ของตัวเองได้อย่างเดียว</li>
+        </ul>
+
+        <h4>ขั้นตอนการทำ</h4>
+        <ol class="steps">
+          <li><strong>ตั้งโครงโปรเจ็ค + auth ขั้นต่ำ</strong>
+          Core เดิม, ทำ login แบบง่าย (session + <code>password_hash</code>) เหมือน Phase 1 ของ ERP
+          แต่ไม่ต้องมีระบบสิทธิ์ละเอียดเท่า แค่ column <code>role</code> ใน <code>users</code>
+          พอสำหรับโปรเจ็คนี้</li>
+          <li><strong>schema + seed ผู้ใช้ 3 บทบาท</strong>
+          สร้างผู้ใช้ทดสอบอย่างน้อยบทบาทละ 1 คน (requester, technician, supervisor)
+          จะได้สลับ login ทดสอบสิทธิ์ได้ทันที</li>
+          <li><strong>เขียนตาราง state transition ของ ticket</strong>
+          ตามตัวอย่างในแนวคิดหลักข้อ 2 ทำก่อนเขียน Controller เหมือนโปรเจ็ค 02</li>
+          <li><strong>ทำ middleware ตรวจ role</strong>
+          เขียนจุดเดียวที่เช็คว่า role ไหนเข้า route ไหนได้ และ requester เห็นเฉพาะ
+          ticket ที่ <code>requester_id</code> ตรงกับตัวเอง — วางไว้ก่อนเขียนหน้าจริง
+          จะได้ไม่ลืมเช็คทีหลัง</li>
+          <li><strong>ทำ POST /tickets (สร้าง ticket)</strong>
+          เฉพาะ requester เรียกได้ สถานะเริ่มต้น <code>open</code></li>
+          <li><strong>ทำ POST /tickets/{id}/assign</strong>
+          เฉพาะ supervisor เรียกได้ ตั้ง <code>assignee_id</code> และเปลี่ยนสถานะเป็น
+          <code>assigned</code> ตามตาราง transition</li>
+          <li><strong>ทำ POST /tickets/{id}/status</strong>
+          เฉพาะ technician ที่เป็น assignee เรียกได้ เช็คตาราง transition ก่อนเปลี่ยนทุกครั้ง
+          ปฏิเสธถ้าข้ามขั้น</li>
+          <li><strong>ทำระบบคอมเมนต์</strong>
+          <code>POST /tickets/{id}/comments</code> ทุกบทบาทที่เกี่ยวข้องกับ ticket นั้นคอมเมนต์ได้
+          แสดงเรียงตามเวลา</li>
+          <li><strong>ทดสอบสลับ 3 บทบาท</strong>
+          ล็อกอินเป็น requester คนหนึ่งแล้วลองเปิด ticket ของอีกคน ต้องเข้าไม่ได้จริง (ไม่ใช่แค่ปุ่มหาย)</li>
+        </ol>
+
+        <h4>เกณฑ์ว่าจบแล้ว</h4>
+        <ul class="plain">
+          <li>ผู้แจ้งพยายามเปิดดู ticket คนอื่นไม่ได้ (ไม่ใช่แค่ซ่อนปุ่ม แต่ route ต้องปฏิเสธจริง)</li>
+          <li>เปลี่ยนสถานะข้ามขั้น (เช่น จาก open ไป closed ตรงๆ) ต้องถูกปฏิเสธ</li>
+          <li>คอมเมนต์ในแต่ละ ticket เรียงตามเวลาถูกต้อง</li>
+        </ul>
+
+        <div class="prompt-label">
+          <span class="tag-prompt">Prompt</span>
+          <span class="prompt-hint">คัดลอกทั้งกล่องไปวางสั่ง agent ได้เลย</span>
+        </div>
+        <pre class="prompt-box">สร้างระบบแจ้งซ่อม/ticket ภายในองค์กรด้วย Plain PHP ไม่ใช้ framework ใดๆ ใช้ Composer เฉพาะ PSR-4 autoload เท่านั้น
+
+กติกาที่ต้องทำตามทุกจุด:
+- ห้ามใช้ emoji ทุกที่ ทั้งโค้ด คอมเมนต์ และข้อความในระบบ
+- เข้าถึงฐานข้อมูลด้วย PDO prepared statements เท่านั้น
+- โค้ดที่มี logic ไม่ตรงไปตรงมา ต้องมีคอมเมนต์อธิบายว่าทำไมถึงเขียนแบบนี้
+- ทุก input ต้อง validate ก่อนถึงชั้น Model เสมอ
+
+ระบบนี้มี 3 บทบาท: requester (ผู้แจ้ง), technician (ช่าง), supervisor (หัวหน้า) ทำ auth แบบง่ายด้วย PHP session และ password_hash/password_verify เก็บ role เป็น column ในตาราง users
+
+สร้าง 3 ตาราง: users (มี column role), tickets, ticket_comments
+
+จุดสำคัญที่สุดของงานนี้: เขียน middleware ตรวจสิทธิ์จุดเดียวที่รันก่อนทุก route ที่เกี่ยวกับ ticket ไม่ใช่เช็คแยกในแต่ละ Controller เพราะถ้าลืมเช็คสักจุดเดียวจะเป็นช่องโหว่ทันที ภายใน middleware ต้องบังคับว่า requester เห็นเฉพาะ ticket ที่ requester_id ตรงกับตัวเอง, technician เห็นเฉพาะที่ตัวเองเป็น assignee, supervisor เห็นทั้งหมด
+
+เขียนตาราง state transition ของ ticket ก่อนเขียน Controller: open -> assigned, assigned -> in_progress หรือกลับ open, in_progress -> resolved, resolved -> closed หรือกลับ in_progress เก็บเป็น const array ที่เดียว ทุกจุดเปลี่ยนสถานะต้องเช็คตารางนี้ก่อน
+
+เฉพาะ supervisor เท่านั้นที่ assign ช่างได้ เฉพาะ technician ที่เป็น assignee เท่านั้นที่เปลี่ยนสถานะ ticket นั้นได้
+
+ทำตามลำดับ: (1) schema + seed ผู้ใช้ 3 บทบาท (2) login/session (3) ตาราง state transition (4) middleware ตรวจ role (5) สร้าง ticket (6) assign (7) เปลี่ยนสถานะ (8) คอมเมนต์
+
+ทำทีละขั้นแล้วรายงานผลก่อนไปขั้นถัดไป เกณฑ์จบ: ล็อกอินเป็น requester คนหนึ่งแล้วลองเปิด ticket ของอีกคนต้องเข้าไม่ได้จริงจากฝั่งเซิร์ฟเวอร์, เปลี่ยนสถานะข้ามขั้นต้องถูกปฏิเสธ</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECT 04 ===================== -->
+  <section class="sheet-wrap">
+    <div class="section-label">Sheet 04 / 06</div>
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-head-left">
+          <div class="sheet-no">BUILD SHEET NO. 04</div>
+          <h3>ระบบสมาชิก + คะแนนสะสม</h3>
+        </div>
+        <div class="sheet-tags">
+          <div class="tag">ความยาก: กลาง</div>
+          <div class="tag">เวลา: 2–3 วัน</div>
+          <div class="tag">โฟกัส: Point Ledger</div>
+        </div>
+      </div>
+      <div class="sheet-body">
+        <h4>เป้าหมายการฝึก</h4>
+        <p>โปรเจ็คนี้คือ "บัญชี" เวอร์ชันย่อ ฝึกคิดแบบเงิน: ยอดคะแนนต้องแม่นเป๊ะเสมอ
+        ตรวจสอบย้อนหลังได้ทุกแต้ม ใช้แนวคิดหลักข้อ 3 (immutable log) เต็มรูปแบบ</p>
+
+        <h4>ตารางที่ต้องมี</h4>
+        <table class="spec-table">
+          <thead><tr><th>ตาราง</th><th class="desc">คอลัมน์สำคัญ</th></tr></thead>
+          <tbody>
+            <tr><td>members</td><td class="desc">id, name, phone, card_no</td></tr>
+            <tr><td>point_transactions</td><td class="desc">id, member_id, points (+/-), reason, ref_type, created_at</td></tr>
+            <tr><td>rewards</td><td class="desc">id, name, point_cost, stock</td></tr>
+            <tr><td>redemptions</td><td class="desc">id, member_id, reward_id, points_used, created_at</td></tr>
+          </tbody>
+        </table>
+
+        <h4>จุดที่ต้องคิดให้ดีก่อนเขียนโค้ด</h4>
+        <ul class="plain">
+          <li>ยอดคะแนนของสมาชิกไม่ใช่ column ที่แก้ตรงๆ แต่เป็นผลรวมของ <code>point_transactions</code> เสมอ</li>
+          <li>แลกรางวัล = INSERT แถวคะแนนติดลบใน <code>point_transactions</code> พร้อมกับ INSERT ใน
+          <code>redemptions</code> ในทรานแซกชันเดียว (แนวคิดหลักข้อ 4)</li>
+          <li>แลกรางวัลที่คะแนนไม่พอ หรือของหมด <code>stock</code> ต้องถูกปฏิเสธก่อนเขียนอะไรลง DB</li>
+        </ul>
+
+        <h4>ขั้นตอนการทำ</h4>
+        <ol class="steps">
+          <li><strong>ตั้งโครงโปรเจ็ค + schema</strong>
+          Core เดิม, สร้าง 4 ตาราง ใส่รางวัลตัวอย่าง 3-4 รายการพร้อม <code>point_cost</code>
+          และ <code>stock</code></li>
+          <li><strong>ทำ MemberModel::getBalance()</strong>
+          เขียน method นี้ก่อนอย่างอื่นทั้งหมด: <code>SELECT SUM(points) FROM point_transactions
+          WHERE member_id = :id</code> — ห้ามมี column ยอดคะแนนแยกต่างหากที่ต้องคอย sync เอง</li>
+          <li><strong>ทำ POST /members/{id}/earn</strong>
+          สำหรับพนักงานให้แต้มลูกค้า insert แถวคะแนนบวกใน <code>point_transactions</code>
+          พร้อม <code>reason</code> (เช่น "ซื้อครบ 500 บาท")</li>
+          <li><strong>ทำหน้าประวัติแต้มของสมาชิก</strong>
+          แสดง list ของ <code>point_transactions</code> เรียงเวลา พร้อมยอดคงเหลือที่คำนวณจาก
+          <code>getBalance()</code> ทำก่อนจะไปเขียนส่วนแลกรางวัลที่ซับซ้อนกว่า</li>
+          <li><strong>ทำ POST /members/{id}/redeem</strong>
+          ขั้นตอนภายในต้องเรียงแบบนี้เท่านั้น: (1) lock แถวรางวัลด้วย
+          <code>SELECT ... FOR UPDATE</code> (2) เช็ค stock พอไหม (3) เช็ค balance
+          จาก <code>getBalance()</code> พอไหม (4) ถ้าผ่านทั้งคู่ insert คะแนนติดลบ +
+          insert แถว <code>redemptions</code> + ลด stock ทั้งหมดใน transaction เดียว</li>
+          <li><strong>ทดสอบ race condition</strong>
+          จำลองแลกรางวัลชิ้นสุดท้ายพร้อมกัน 2 คำขอ (เปิด 2 แท็บ หรือเขียนสคริปต์ยิงพร้อมกัน)
+          ต้องมีแค่คำขอเดียวสำเร็จ ถ้าทั้งคู่สำเร็จแปลว่าลืม row lock ในขั้นตอนที่ 5</li>
+          <li><strong>ทดสอบแลกแต้มไม่พอ</strong>
+          ต้องถูกปฏิเสธก่อนที่จะเขียนอะไรลง DB เลยสักแถว</li>
+        </ol>
+
+        <h4>เกณฑ์ว่าจบแล้ว</h4>
+        <ul class="plain">
+          <li>ผลรวมคะแนนที่คำนวณจาก log ตรงกับสิ่งที่แสดงบนหน้าสมาชิกเสมอ ไม่มีทางเบี้ยว</li>
+          <li>แลกรางวัลพร้อมกัน 2 คำขอสำหรับของชิ้นสุดท้าย ต้องมีแค่คำขอเดียวสำเร็จ</li>
+        </ul>
+
+        <div class="prompt-label">
+          <span class="tag-prompt">Prompt</span>
+          <span class="prompt-hint">คัดลอกทั้งกล่องไปวางสั่ง agent ได้เลย</span>
+        </div>
+        <pre class="prompt-box">สร้างระบบสมาชิก + คะแนนสะสมด้วย Plain PHP ไม่ใช้ framework ใดๆ ใช้ Composer เฉพาะ PSR-4 autoload เท่านั้น
+
+กติกาที่ต้องทำตามทุกจุด:
+- ห้ามใช้ emoji ทุกที่ ทั้งโค้ด คอมเมนต์ และข้อความในระบบ
+- เข้าถึงฐานข้อมูลด้วย PDO prepared statements เท่านั้น
+- โค้ดที่มี logic ไม่ตรงไปตรงมา ต้องมีคอมเมนต์อธิบายว่าทำไมถึงเขียนแบบนี้
+- ทุก input ต้อง validate ก่อนถึงชั้น Model เสมอ
+
+สร้าง 4 ตาราง: members, point_transactions, rewards, redemptions
+
+จุดสำคัญที่สุดของงานนี้: ห้ามมี column ยอดคะแนนสะสมแยกต่างหากในตาราง members ที่ต้องคอย update เองเด็ดขาด ยอดคะแนนต้องคำนวณจาก SUM(points) ของ point_transactions ทุกครั้งที่ต้องใช้ ผ่าน method MemberModel::getBalance($memberId) เขียน method นี้เป็นอันดับแรกก่อนอย่างอื่น
+
+การแลกรางวัล (redeem) ต้องทำตามลำดับนี้ภายใน database transaction เดียวเท่านั้น: (1) SELECT ... FOR UPDATE ล็อกแถวรางวัลก่อน (2) เช็ค stock ของรางวัลว่าพอไหม (3) เช็ค getBalance() ว่าคะแนนพอไหม (4) ถ้าผ่านทั้งคู่ insert แถวคะแนนติดลบใน point_transactions พร้อม insert แถวใน redemptions พร้อมลด stock แล้ว commit ถ้าไม่ผ่านข้อใดข้อหนึ่ง rollback และไม่เขียนอะไรเลย ต้องมี row lock เพราะสองคนแลกของชิ้นสุดท้ายพร้อมกันเป็นเคสจริงที่ต้องกันไว้
+
+ทำตามลำดับ: (1) schema + seed รางวัล (2) MemberModel::getBalance (3) หน้าประวัติแต้ม (4) earn points (5) redeem พร้อม row lock ตามที่อธิบายด้านบน
+
+ทำทีละขั้นแล้วรายงานผลก่อนไปขั้นถัดไป เกณฑ์จบ: จำลองแลกรางวัลชิ้นสุดท้ายพร้อมกัน 2 คำขอ ต้องมีแค่คำขอเดียวสำเร็จ, แลกแต้มไม่พอต้องถูกปฏิเสธก่อนเขียนอะไรลง DB</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECT 05 ===================== -->
+  <section class="sheet-wrap">
+    <div class="section-label">Sheet 05 / 06</div>
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-head-left">
+          <div class="sheet-no">BUILD SHEET NO. 05</div>
+          <h3>Mini CMS สำหรับบล็อก / ข่าวบริษัท</h3>
+        </div>
+        <div class="sheet-tags">
+          <div class="tag">ความยาก: กลาง</div>
+          <div class="tag">เวลา: 2–3 วัน</div>
+          <div class="tag">โฟกัส: Publish Flow + Upload</div>
+        </div>
+      </div>
+      <div class="sheet-body">
+        <h4>เป้าหมายการฝึก</h4>
+        <p>โปรเจ็คนี้ต่างจากอันอื่นตรงไม่มี "เงิน" หรือ "ของ" ให้ตัดสต็อก แต่ฝึกเรื่องที่พลาดบ่อยแทน:
+        การอัปโหลดไฟล์อย่างปลอดภัย และการทำ URL ที่อ่านง่ายไม่ชนกัน</p>
+
+        <h4>ตารางที่ต้องมี</h4>
+        <table class="spec-table">
+          <thead><tr><th>ตาราง</th><th class="desc">คอลัมน์สำคัญ</th></tr></thead>
+          <tbody>
+            <tr><td>posts</td><td class="desc">id, title, slug, body, status (draft/published), published_at</td></tr>
+            <tr><td>categories</td><td class="desc">id, name, slug</td></tr>
+            <tr><td>post_categories</td><td class="desc">post_id, category_id (many-to-many)</td></tr>
+            <tr><td>media</td><td class="desc">id, post_id, file_path, original_name, mime_type</td></tr>
+          </tbody>
+        </table>
+
+        <h4>จุดที่ต้องคิดให้ดีก่อนเขียนโค้ด</h4>
+        <ul class="plain">
+          <li><code>slug</code> ต้อง unique เสมอ ถ้าชื่อโพสต์ซ้ำ ต้องต่อท้ายอัตโนมัติ (เช่น <code>-2</code>)
+          ไม่ใช่ปล่อยให้ error ตอน INSERT</li>
+          <li>อัปโหลดไฟล์ต้องตรวจ MIME type จริงของไฟล์ (ไม่ใช่เชื่อแค่นามสกุลที่ผู้ใช้ตั้ง)
+          และเปลี่ยนชื่อไฟล์เป็นค่าที่ระบบสร้างเอง ไม่ใช้ชื่อไฟล์เดิมจากผู้ใช้ตรงๆ (ป้องกัน path/injection ผ่านชื่อไฟล์)</li>
+          <li>โพสต์ <code>draft</code> เข้าถึงได้เฉพาะคนที่ล็อกอินเป็นแอดมิน ส่วน <code>published</code>
+          เท่านั้นที่คนทั่วไปเห็น</li>
+        </ul>
+
+        <h4>ขั้นตอนการทำ</h4>
+        <ol class="steps">
+          <li><strong>ตั้งโครงโปรเจ็ค + schema</strong>
+          Core เดิม, สร้าง 4 ตาราง, สร้างโฟลเดอร์ <code>public/uploads/</code>
+          แยกออกจาก <code>src/</code> ให้ชัดเจน (ไฟล์ที่ผู้ใช้อัปโหลดไม่ควรอยู่ปนกับโค้ด)</li>
+          <li><strong>เขียนฟังก์ชันสร้าง slug ก่อน</strong>
+          แปลงชื่อโพสต์เป็น slug, เช็คว่าซ้ำไหมใน DB, ถ้าซ้ำต่อท้ายด้วยเลข
+          (<code>-2</code>, <code>-3</code> ไล่ไป) เขียนและทดสอบฟังก์ชันนี้แยกก่อนเอาไปต่อกับฟอร์ม</li>
+          <li><strong>ทำ PostModel + CategoryModel</strong>
+          extends BaseModel ปกติ</li>
+          <li><strong>ทำฟอร์มสร้าง/แก้ไขโพสต์</strong>
+          <code>POST /posts</code> บันทึกเป็น <code>status = draft</code> เสมอ
+          ไม่มีทางสร้างโพสต์ที่ publish ทันทีจากฟอร์มนี้ ต้องกดปุ่ม publish แยกต่างหาก</li>
+          <li><strong>ทำตัวจัดการอัปโหลดไฟล์แยกเป็น class เดียว</strong>
+          <code>Shared\FileUploader</code> ใช้ <code>finfo_file()</code> ตรวจ MIME type จริง
+          ของไฟล์ (ไม่ใช่ดูแค่นามสกุล) แล้วสร้างชื่อไฟล์ใหม่ด้วย <code>uniqid()</code> หรือ hash
+          ไม่ใช้ชื่อไฟล์เดิมจากผู้ใช้เด็ดขาด</li>
+          <li><strong>เชื่อมอัปโหลดเข้ากับฟอร์มโพสต์</strong>
+          บันทึกผลลัพธ์ลง <code>media</code> พร้อม <code>post_id</code> ที่เกี่ยวข้อง</li>
+          <li><strong>ทำปุ่ม publish</strong>
+          <code>POST /posts/{id}/publish</code> เปลี่ยน <code>status = published</code>
+          และตั้ง <code>published_at = NOW()</code></li>
+          <li><strong>ทำหน้ารายการสาธารณะ</strong>
+          query เฉพาะ <code>status = published</code> เท่านั้น เรียงตาม
+          <code>published_at</code> ล่าสุดก่อน</li>
+          <li><strong>ทดสอบ</strong>
+          ตั้งชื่อโพสต์ซ้ำ 2 ครั้งดู slug, ลองอัปโหลดไฟล์ปลอมนามสกุล (เช่นเปลี่ยน .php เป็น .jpg)
+          ต้องถูกปฏิเสธจาก MIME check ไม่ใช่แค่ดูนามสกุลผ่าน</li>
+        </ol>
+
+        <h4>เกณฑ์ว่าจบแล้ว</h4>
+        <ul class="plain">
+          <li>ตั้งชื่อโพสต์ซ้ำกัน 2 ครั้ง ได้ slug ไม่ชนกันทั้งคู่</li>
+          <li>อัปโหลดไฟล์ที่ไม่ใช่รูปภาพ (เช่นเปลี่ยนนามสกุล .php เป็น .jpg) ต้องถูกปฏิเสธ</li>
+          <li>โพสต์สถานะ draft ไม่โผล่ในหน้ารายการสาธารณะ</li>
+        </ul>
+
+        <div class="prompt-label">
+          <span class="tag-prompt">Prompt</span>
+          <span class="prompt-hint">คัดลอกทั้งกล่องไปวางสั่ง agent ได้เลย</span>
+        </div>
+        <pre class="prompt-box">สร้าง Mini CMS สำหรับบล็อก/ข่าวบริษัทด้วย Plain PHP ไม่ใช้ framework ใดๆ ใช้ Composer เฉพาะ PSR-4 autoload เท่านั้น
+
+กติกาที่ต้องทำตามทุกจุด:
+- ห้ามใช้ emoji ทุกที่ ทั้งโค้ด คอมเมนต์ และข้อความในระบบ
+- เข้าถึงฐานข้อมูลด้วย PDO prepared statements เท่านั้น
+- โค้ดที่มี logic ไม่ตรงไปตรงมา ต้องมีคอมเมนต์อธิบายว่าทำไมถึงเขียนแบบนี้
+- ทุก input ต้อง validate ก่อนถึงชั้น Model เสมอ
+
+สร้าง 4 ตาราง: posts, categories, post_categories (many-to-many), media เก็บไฟล์อัปโหลดไว้ที่ public/uploads/ แยกจาก src/ ให้ชัดเจน
+
+จุดสำคัญที่หนึ่งของงานนี้: เขียนฟังก์ชันสร้าง slug ก่อนอย่างอื่นทั้งหมด แปลงชื่อโพสต์เป็น slug แบบ URL-safe เช็คว่าซ้ำกับที่มีอยู่ใน DB ไหม ถ้าซ้ำต่อท้ายด้วยเลข -2, -3 ไล่ไปจนกว่าจะไม่ซ้ำ ห้ามปล่อยให้ INSERT ล้มเหลวเพราะ slug ซ้ำ
+
+จุดสำคัญที่สองของงานนี้: การอัปโหลดไฟล์ทำเป็นคลาสแยก (เช่น Shared\FileUploader) ตรวจชนิดไฟล์จริงด้วย finfo_file() ไม่ใช่ดูจากนามสกุลไฟล์ที่ผู้ใช้ตั้ง อนุญาตเฉพาะ MIME type ของรูปภาพเท่านั้น (image/jpeg, image/png, image/webp) แล้วสร้างชื่อไฟล์ใหม่ด้วย hash หรือ uniqid ห้ามใช้ชื่อไฟล์เดิมจากผู้ใช้เก็บลงระบบไฟล์เด็ดขาด
+
+โพสต์ที่สร้างใหม่ทุกครั้งต้องมี status = draft เท่านั้น การเปลี่ยนเป็น published ต้องทำผ่าน endpoint แยกต่างหากเสมอ ไม่มีทางสร้างโพสต์ publish ได้ในการเรียกครั้งเดียว
+
+ทำตามลำดับ: (1) schema + โฟลเดอร์ uploads (2) ฟังก์ชันสร้าง slug แยกทดสอบก่อน (3) Model (4) ฟอร์มสร้าง/แก้ไขโพสต์ (5) FileUploader (6) เชื่อมอัปโหลดเข้าฟอร์ม (7) ปุ่ม publish (8) หน้ารายการสาธารณะ
+
+ทำทีละขั้นแล้วรายงานผลก่อนไปขั้นถัดไป เกณฑ์จบ: ตั้งชื่อโพสต์ซ้ำ 2 ครั้งต้องได้ slug ไม่ชนกัน, อัปโหลดไฟล์ปลอมนามสกุลต้องถูกปฏิเสธจาก MIME check จริง ไม่ใช่แค่ดูนามสกุลผ่าน</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECT 06 ===================== -->
+  <section class="sheet-wrap">
+    <div class="section-label">Sheet 06 / 06</div>
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-head-left">
+          <div class="sheet-no">BUILD SHEET NO. 06</div>
+          <h3>ระบบเช่า-คืนอุปกรณ์ (กล้อง / เครื่องมือช่าง)</h3>
+        </div>
+        <div class="sheet-tags">
+          <div class="tag">ความยาก: กลาง-ใหญ่</div>
+          <div class="tag">เวลา: 3–4 วัน</div>
+          <div class="tag">โฟกัส: รวมทุกแนวคิดหลัก</div>
+        </div>
+      </div>
+      <div class="sheet-body">
+        <h4>เป้าหมายการฝึก</h4>
+        <p>โปรเจ็คปิดท้าย รวมทุกแนวคิดหลัก (1–5) ไว้ในระบบเดียว: จองล่วงหน้าแบบเช็คช่วงวันที่ทับซ้อน,
+        สถานะของหลายขั้น, คำนวณค่าปรับคืนช้าแบบธุรกรรมการเงิน, และสิทธิ์ตามบทบาท</p>
+
+        <h4>ตารางที่ต้องมี</h4>
+        <table class="spec-table">
+          <thead><tr><th>ตาราง</th><th class="desc">คอลัมน์สำคัญ</th></tr></thead>
+          <tbody>
+            <tr><td>equipment</td><td class="desc">id, name, daily_rate, condition (ok/damaged), status</td></tr>
+            <tr><td>rentals</td><td class="desc">id, equipment_id, customer_id, start_date, due_date, returned_date, status</td></tr>
+            <tr><td>late_fees</td><td class="desc">id, rental_id, days_late, amount (insert-only)</td></tr>
+            <tr><td>damage_reports</td><td class="desc">id, rental_id, description, reported_at</td></tr>
+          </tbody>
+        </table>
+
+        <h4>จุดที่ต้องคิดให้ดีก่อนเขียนโค้ด</h4>
+        <ul class="plain">
+          <li>เช็คทับซ้อนของช่วง <code>start_date</code>–<code>due_date</code> เหมือนโปรเจ็ค 01
+          แต่เป็นระดับวันแทนนาที (แนวคิดหลักข้อ 1)</li>
+          <li>สถานะของ: <code>available</code> → <code>reserved</code> → <code>rented</code> → <code>returned</code>
+          หรือ <code>damaged</code> ถ้าคืนแล้วชำรุด</li>
+          <li>ค่าปรับคำนวณตอนคืนของ: <code>days_late = คืนจริง - due_date</code> (ถ้าติดลบหรือศูนย์ = ไม่มีค่าปรับ)
+          แล้ว <code>amount = days_late * daily_rate</code> บันทึกเป็นแถวใหม่เสมอ ไม่ทับของเดิม</li>
+          <li>อัปเดตสถานะของ, บันทึกค่าปรับ, และปิด rental ต้องอยู่ใน transaction เดียวกัน</li>
+        </ul>
+
+        <h4>ขั้นตอนการทำ</h4>
+        <ol class="steps">
+          <li><strong>ตั้งโครงโปรเจ็ค + schema</strong>
+          Core เดิม, สร้าง 4 ตาราง, seed อุปกรณ์ตัวอย่าง 5-6 ชิ้น พร้อม <code>daily_rate</code></li>
+          <li><strong>ทำ overlap check ระดับวัน</strong>
+          <code>RentalModel::hasOverlap($equipmentId, $startDate, $dueDate)</code>
+          ใช้ตรรกะเดียวกับโปรเจ็ค 01 (แนวคิดหลักข้อ 1) แค่เทียบเป็นวันแทนนาที
+          เขียนแยกทดสอบก่อนต่อกับฟอร์มเหมือนเดิม</li>
+          <li><strong>เขียนตาราง state transition ของอุปกรณ์</strong>
+          <code>available → reserved → rented → returned</code> หรือแตกไป
+          <code>damaged</code> ตอนคืน ตามแนวคิดหลักข้อ 2</li>
+          <li><strong>ทำ POST /rentals (จอง)</strong>
+          เรียก <code>hasOverlap</code> ก่อน insert เสมอ สถานะเริ่มต้น <code>reserved</code></li>
+          <li><strong>ทำ POST /rentals/{id}/checkout</strong>
+          เปลี่ยนสถานะอุปกรณ์เป็น <code>rented</code> ตอนลูกค้ามารับของจริง</li>
+          <li><strong>ทำฟังก์ชันคำนวณค่าปรับแยกเป็น method เดียว</strong>
+          <code>calculateLateFee($dueDate, $returnedDate, $dailyRate)</code>:
+          <code>days_late = returnedDate - dueDate</code> ถ้าค่าติดลบหรือศูนย์คืนค่า 0
+          ไม่ใช่ค่าติดลบ เขียนและทดสอบแยกก่อนต่อกับ route คืนของ</li>
+          <li><strong>ทำ POST /rentals/{id}/return</strong>
+          ขั้นตอนภายในต้องอยู่ใน transaction เดียว: เรียก <code>calculateLateFee</code>,
+          insert แถวใน <code>late_fees</code> ถ้ามีค่าปรับ, รับ input ว่าชำรุดไหม
+          (ถ้าใช่ insert <code>damage_reports</code> และตั้งสถานะอุปกรณ์เป็น
+          <code>damaged</code> แทน <code>available</code>), ปิด rental เป็น
+          <code>returned</code></li>
+          <li><strong>ทำหน้ารายงานของชำรุด</strong>
+          join <code>damage_reports</code> กับ <code>rentals</code> เพื่อดูว่าใครยืมตอนของชำรุด</li>
+          <li><strong>ทดสอบครบทั้ง 4 เกณฑ์ด้านล่าง</strong>
+          โดยเฉพาะกรณีคืนตรงเวลาต้องไม่มีค่าปรับเกิดขึ้นเลย (ไม่ใช่ค่าปรับ 0 บาทที่ insert ทิ้งไว้เฉยๆ)</li>
+        </ol>
+
+        <h4>เกณฑ์ว่าจบแล้ว</h4>
+        <ul class="plain">
+          <li>จองอุปกรณ์ชิ้นเดียวกันในช่วงวันที่ทับซ้อนกัน ต้องถูกปฏิเสธ</li>
+          <li>คืนของช้า 3 วัน อัตรา 100 บาท/วัน ต้องคำนวณค่าปรับได้ 300 บาทพอดี</li>
+          <li>คืนของตรงเวลาหรือเร็วกว่ากำหนด ไม่มีค่าปรับเกิดขึ้น</li>
+          <li>รายงานของที่ชำรุดเชื่อมกับ rental ที่ถูกต้อง ตรวจสอบย้อนกลับได้ว่าใครยืมตอนชำรุด</li>
+        </ul>
+
+        <div class="prompt-label">
+          <span class="tag-prompt">Prompt</span>
+          <span class="prompt-hint">คัดลอกทั้งกล่องไปวางสั่ง agent ได้เลย</span>
+        </div>
+        <pre class="prompt-box">สร้างระบบเช่า-คืนอุปกรณ์ (กล้อง/เครื่องมือช่าง) ด้วย Plain PHP ไม่ใช้ framework ใดๆ ใช้ Composer เฉพาะ PSR-4 autoload เท่านั้น
+
+กติกาที่ต้องทำตามทุกจุด:
+- ห้ามใช้ emoji ทุกที่ ทั้งโค้ด คอมเมนต์ และข้อความในระบบ
+- เข้าถึงฐานข้อมูลด้วย PDO prepared statements เท่านั้น
+- โค้ดที่มี logic ไม่ตรงไปตรงมา ต้องมีคอมเมนต์อธิบายว่าทำไมถึงเขียนแบบนี้
+- ทุก input ต้อง validate ก่อนถึงชั้น Model เสมอ
+
+สร้าง 4 ตาราง: equipment, rentals, late_fees (insert-only), damage_reports
+
+เขียน RentalModel::hasOverlap($equipmentId, $startDate, $dueDate) ก่อนอย่างอื่น ใช้ตรรกะเดียวกับการเช็คช่วงเวลาทับซ้อนทั่วไป: เริ่มใหม่ < จบเก่า AND จบใหม่ > เริ่มเก่า แต่เทียบเป็นวันแทนนาที ต้องเรียกก่อน insert การจองทุกครั้ง
+
+เขียนตาราง state transition ของอุปกรณ์ก่อนเขียน Controller: available -> reserved -> rented -> returned หรือแตกไป damaged ตอนคืนถ้าชำรุด เก็บเป็น const array ที่เดียว
+
+จุดสำคัญที่สุดของงานนี้คือการคำนวณค่าปรับ เขียนเป็น method แยก calculateLateFee($dueDate, $returnedDate, $dailyRate): คำนวณ days_late = returnedDate - dueDate ถ้าค่าออกมาติดลบหรือศูนย์ให้คืนค่า 0 (ห้ามคืนค่าติดลบ) แล้ว amount = days_late * dailyRate เขียนและทดสอบ method นี้แยกก่อนเอาไปต่อกับ route คืนของ
+
+ขั้นตอนคืนของ (return) ต้องอยู่ใน database transaction เดียว: เรียก calculateLateFee, insert แถวใน late_fees เฉพาะกรณีมีค่าปรับจริง (ห้าม insert แถวค่าปรับ 0 บาททิ้งไว้เฉยๆ), รับ input ว่าชำรุดไหม ถ้าใช่ insert damage_reports และตั้งสถานะอุปกรณ์เป็น damaged แทน available, ปิดสถานะ rental เป็น returned
+
+ทำตามลำดับ: (1) schema + seed อุปกรณ์ (2) hasOverlap แยกทดสอบก่อน (3) ตาราง state transition (4) สร้างการจอง (5) checkout (6) calculateLateFee แยกทดสอบก่อน (7) return รวมทุกอย่างใน transaction (8) หน้ารายงานของชำรุด
+
+ทำทีละขั้นแล้วรายงานผลก่อนไปขั้นถัดไป เกณฑ์จบ: จองทับซ้อนช่วงวันต้องถูกปฏิเสธ, คืนช้า 3 วันอัตรา 100 บาทต้องได้ค่าปรับ 300 บาทพอดี, คืนตรงเวลาต้องไม่มีค่าปรับเกิดขึ้นเลย</pre>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  PHP Build Sheets — ทำเรียงตามลำดับได้ผลลัพธ์ดีที่สุด แต่ไม่บังคับ<br>
+  ต่อยอดจากแนวทางเดียวกับงาน Ledger ERP: Plain PHP, Composer PSR-4, ไม่มี Framework
+</footer>
+
+</body>
+</html>

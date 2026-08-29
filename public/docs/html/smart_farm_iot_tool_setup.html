@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Farm IoT — คู่มือติดตั้งเครื่องมือ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F7F1; --paper-raised:#FFFFFF; --ink:#1E2A22; --ink-soft:#57645C;
+    --line:#DDE1D3; --board:#1B2420; --blue:#256B8C; --blue-soft:#E4F0F4;
+    --ochre:#A5752E; --ochre-soft:#F8EFD9; --rust:#A6432F; --rust-soft:#FAE5DF;
+    --moss:#437245; --moss-soft:#E6F0E4; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif; line-height:1.7; font-size:16px; word-wrap:break-word; overflow-wrap:anywhere; word-break:break-word;}
+  h1,h2,h3{font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif; letter-spacing:-0.01em; color:var(--ink);}
+  code,.mono{font-family:'IBM Plex Mono',monospace; font-size:0.88em; background:var(--blue-soft); color:var(--blue); padding:1px 6px; border-radius:4px;}
+  a{color:var(--blue);}
+
+  .hero{background:var(--board); color:#EDEEE6; padding:48px 8vw 36px; position:relative; overflow:hidden;}
+  .hero::after{content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size:28px 28px; pointer-events:none;}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:#9FB6A8; margin-bottom:14px;}
+  .hero h1{font-size:clamp(24px,4vw,38px); margin:0 0 10px; color:#F7F8F2;}
+  .hero p.sub{max-width:680px; color:#C7CFC5; font-size:15px; margin:0;}
+
+  .wrap{display:grid; grid-template-columns:220px minmax(0,1fr); gap:44px; max-width:1140px; margin:0 auto; padding:40px 8vw 100px;}
+  nav.toc{position:sticky; top:24px; align-self:start; font-size:13.5px;}
+  nav.toc .toc-label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px;}
+  nav.toc a{display:block; color:var(--ink-soft); text-decoration:none; padding:5px 0 5px 14px; border-left:2px solid var(--line);}
+  nav.toc a:hover{color:var(--blue); border-left-color:var(--blue);}
+
+  main section{margin-bottom:46px;}
+  .phase-title{display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;}
+  .phase-title h2{font-size:22px; margin:0;}
+  .kicker{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.1em; color:var(--blue); text-transform:uppercase;}
+  .section-desc{color:var(--ink-soft); margin:8px 0 18px; font-size:14.5px;}
+
+  .status{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:700; padding:3px 10px; border-radius:100px; white-space:nowrap;}
+  .status.done{background:var(--moss-soft); color:var(--moss);}
+  .status.now{background:var(--ochre-soft); color:var(--ochre);}
+  .status.next{background:var(--blue-soft); color:var(--blue);}
+  .status.future{background:#E7E9E2; color:#5C665F;}
+
+  /* overview matrix */
+  .matrix{width:100%; border-collapse:collapse; margin:18px 0 6px; font-size:13.5px;}
+  .matrix th, .matrix td{padding:10px 12px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .matrix th{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); font-weight:600;}
+  .matrix tr:last-child td{border-bottom:none;}
+  .matrix-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--paper-raised);}
+  .matrix-wrap .matrix{margin:0;}
+  .matrix-wrap .matrix th, .matrix-wrap .matrix td{padding:12px 14px;}
+
+  /* tool card */
+  .tool-card{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin-bottom:16px; box-shadow:0 1px 3px rgba(30,42,34,0.05);}
+  .tool-head{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:6px;}
+  .tool-head h3{margin:0; font-size:18px;}
+  .tool-why{color:var(--ink-soft); font-size:14px; margin:6px 0 16px;}
+  .tool-why b{color:var(--ink);}
+
+  .steps{counter-reset:step; margin:0; padding:0; list-style:none;}
+  .steps li{position:relative; padding:2px 0 16px 34px; font-size:14.5px;}
+  .steps li:last-child{padding-bottom:0;}
+  .steps li::before{counter-increment:step; content:counter(step); position:absolute; left:0; top:1px; width:22px; height:22px; border-radius:50%; background:var(--blue-soft); color:var(--blue); font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:700; display:flex; align-items:center; justify-content:center;}
+  .steps li b{color:var(--ink);}
+
+  pre.cmd{background:var(--board); color:#D7DED4; border-radius:8px; padding:12px 16px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; overflow-x:auto; line-height:1.6; margin:8px 0 0; white-space:pre-wrap;}
+
+  .verify{background:var(--moss-soft); border:1px solid #C6DEC4; border-radius:8px; padding:12px 14px; font-size:13px; margin-top:14px;}
+  .verify b{color:var(--moss);}
+
+  .tip{background:var(--ochre-soft); border:1px solid #E0C48D; border-radius:8px; padding:12px 14px; font-size:13px; margin-top:10px;}
+  .tip b{color:var(--ochre);}
+
+  .callout{background:var(--blue-soft); border:1px solid #B7D2DC; border-radius:var(--radius); padding:14px 16px; font-size:13.5px; margin:14px 0;}
+  .callout b{color:var(--blue);}
+
+  footer{text-align:center; padding:30px 8vw 60px; color:var(--ink-soft); font-size:12.5px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:900px){
+    .wrap{grid-template-columns:1fr; padding:30px 6vw 80px; gap:24px;}
+    nav.toc{position:static; background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;}
+    nav.toc .toc-list{display:flex; flex-wrap:wrap; gap:4px 14px;}
+    nav.toc a{border-left:none; padding:4px 0;}
+  }
+  @media (max-width:600px){
+    body{font-size:15.5px;}
+    .hero{padding:36px 6vw 28px;}
+    .hero h1{font-size:22px;}
+    main h2{font-size:19px;}
+    .tool-card{padding:18px 16px;}
+    pre.cmd{font-size:11.5px; padding:10px 12px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Environment Setup Guide</div>
+  <h1>คู่มือติดตั้งเครื่องมือทั้งหมด</h1>
+  <p class="sub">รวมทุกเครื่องมือที่โปรเจ็ค Smart Farm IoT ต้องใช้ (นอกเหนือจากตัว IDE เขียนโค้ด) ตั้งแต่เฟิร์มแวร์ แอปมือถือ ไปจนถึง backend และบอท LINE — ทำตามลำดับ ข้อไหนยังไม่จำเป็นตอนนี้จะบอกไว้ว่ารอได้</p>
+</div>
+
+<div class="wrap">
+  <nav class="toc">
+    <div class="toc-label">สารบัญ</div>
+    <div class="toc-list">
+      <a href="#overview">ภาพรวม — เครื่องมือไหนใช้ตอนไหน</a>
+      <a href="#git">1. Git for Windows</a>
+      <a href="#flutter">2. Flutter + Android Studio</a>
+      <a href="#platformio">3. PlatformIO (เฟิร์มแวร์)</a>
+      <a href="#wokwi">4. Wokwi (จำลองไม่ต้องมีฮาร์ดแวร์)</a>
+      <a href="#google">5. Google Apps Script</a>
+      <a href="#line">6. LINE Developers Console</a>
+      <a href="#github">7. GitHub</a>
+      <a href="#clasp">8. Node.js + clasp (ตัวเลือกเสริม)</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <section id="overview">
+      <div class="phase-title"><span class="kicker">ภาพรวม</span></div>
+      <h2>เครื่องมือไหนใช้ตอนไหน</h2>
+      <p class="section-desc">เรียงตามความจำเป็นตอนนี้ — ไม่ต้องติดตั้งทุกอย่างพร้อมกัน ทำตามลำดับ "ตอนนี้" ก่อน</p>
+
+      <div class="matrix-wrap">
+        <table class="matrix">
+          <tr><th>เครื่องมือ</th><th>ใช้ทำอะไร</th><th>สถานะ</th></tr>
+          <tr><td>Git for Windows</td><td>เก็บเวอร์ชันโค้ดทั้งโปรเจ็ค จำเป็นสำหรับ Flutter ด้วย</td><td><span class="status now">ต้องมีตอนนี้</span></td></tr>
+          <tr><td>Flutter + Android Studio</td><td>สร้างแอปมือถือ (Phase 2 ข้อ 3)</td><td><span class="status now">ต้องมีตอนนี้</span></td></tr>
+          <tr><td>Wokwi</td><td>จำลอง ESP32 โดยไม่ต้องมีฮาร์ดแวร์จริง — ใช้มาตั้งแต่ Phase 0</td><td><span class="status done">น่าจะมีอยู่แล้ว</span></td></tr>
+          <tr><td>Google Apps Script</td><td>รัน backend (Code.gs) — เว็บล้วน ไม่ต้องติดตั้ง</td><td><span class="status done">ใช้งานผ่านเว็บ</span></td></tr>
+          <tr><td>LINE Developers Console</td><td>จัดการบอท token/webhook — ตั้งไว้แล้วตั้งแต่ Phase 1</td><td><span class="status done">น่าจะมีอยู่แล้ว</span></td></tr>
+          <tr><td>PlatformIO</td><td>คอมไพล์/อัปโหลดเฟิร์มแวร์ขึ้น ESP32 จริง</td><td><span class="status future">รอ Phase 3 (มีฮาร์ดแวร์)</span></td></tr>
+          <tr><td>GitHub</td><td>โฮสต์ repo ไว้โชว์พอร์ตโฟลิโอ</td><td><span class="status next">ทำตอนไหนก็ได้</span></td></tr>
+          <tr><td>Node.js + clasp</td><td>ดัน Code.gs ผ่าน command line แทนก็อปวาง</td><td><span class="status future">ตัวเลือกเสริม</span></td></tr>
+        </table>
+      </div>
+
+      <div class="callout"><b>สรุปสั้น ๆ:</b> ตอนนี้พี่ต้องติดตั้งแค่ Git + Flutter + Android Studio เพื่อทำ Phase 2 ข้อ 3 (Flutter app) ต่อได้ ส่วนที่เหลือน่าจะเคยตั้งไว้แล้วในเซสชันก่อน ๆ (Wokwi, LINE) หรือรอไว้ก่อนได้ (PlatformIO รอมีฮาร์ดแวร์จริง)</div>
+    </section>
+
+    <section id="git">
+      <div class="phase-title"><span class="kicker">1</span></div>
+      <div class="tool-card">
+        <div class="tool-head"><h3>Git for Windows</h3><span class="status now">ต้องมีตอนนี้</span></div>
+        <p class="tool-why"><b>ทำไมต้องมี:</b> เป็นเครื่องมือเก็บเวอร์ชันโค้ด (version control) ที่ repo ทั้งโปรเจ็คใช้อยู่ และ Flutter tooling เองก็เรียกใช้ Git เบื้องหลังตอนติดตั้ง — ถ้ายังไม่มี Flutter จะติดตั้งไม่ผ่าน</p>
+        <ol class="steps">
+          <li>ไปที่ <code>git-scm.com/download/win</code> ดาวน์โหลดตัวติดตั้งเวอร์ชันล่าสุด (ตัวติดตั้งจะเลือกให้อัตโนมัติตาม Windows 64-bit)</li>
+          <li>รันตัวติดตั้ง กด Next ไปเรื่อย ๆ ด้วยค่า default ได้เลย (ค่าเริ่มต้นของ Git for Windows เหมาะกับผู้เริ่มต้นอยู่แล้ว) จุดที่ควรเช็คให้แน่ใจคือ "Git from the command line and also from 3rd-party software" ต้องถูกเลือกไว้</li>
+          <li>ติดตั้งเสร็จแล้ว ปิด terminal ที่เปิดค้างอยู่ทั้งหมด แล้วเปิดใหม่ (สำคัญ เพราะค่า PATH จะยังไม่อัปเดตถ้าไม่เปิด terminal ใหม่)</li>
+          <li>ตั้งค่าชื่อ/อีเมลที่จะโชว์ในทุก commit (ทำครั้งเดียว ใช้ได้ตลอด):
+            <pre class="cmd">git config --global user.name "ชื่อพี่"
+git config --global user.email "อีเมลพี่"</pre>
+          </li>
+        </ol>
+        <div class="verify"><b>เช็คว่าติดตั้งสำเร็จ:</b> เปิด terminal พิมพ์ <code>git --version</code> ถ้าขึ้นเลขเวอร์ชัน (เช่น <code>git version 2.4x.x</code>) แปลว่าใช้ได้แล้ว</div>
+      </div>
+    </section>
+
+    <section id="flutter">
+      <div class="phase-title"><span class="kicker">2</span></div>
+      <div class="tool-card">
+        <div class="tool-head"><h3>Flutter SDK + Android Studio</h3><span class="status now">ต้องมีตอนนี้ — ใช้ทำ Phase 2 ข้อ 3</span></div>
+        <p class="tool-why"><b>ทำไมต้องมี:</b> Flutter SDK คือชุดเครื่องมือหลักสำหรับเขียนแอป ส่วน Android Studio ให้ Android SDK + emulator (มือถือจำลอง) ที่ใช้ทดสอบแอประหว่างพัฒนา — ต้องมีทั้งคู่ ขาดตัวใดตัวหนึ่งจะรันแอปไม่ได้</p>
+        <ol class="steps">
+          <li>เปิด VS Code ไปที่ Extensions (Ctrl+Shift+X) ค้นหา <b>Flutter</b> เลือกตัวที่พัฒนาโดย <b>Dart Code</b> กด Install (ตัว Dart extension จะติดตั้งตามมาอัตโนมัติ)</li>
+          <li>เปิด Command Palette (Ctrl+Shift+P) พิมพ์ <b>Flutter: New Project</b> — ถ้ายังไม่เคยมี Flutter SDK ในเครื่อง VS Code จะเสนอให้ดาวน์โหลดและตั้งค่าให้อัตโนมัติ (ไม่ต้องโหลด .zip เองแล้วไปตั้ง PATH มือ วิธีนี้ง่ายสุดสำหรับคนเพิ่งเริ่ม)</li>
+          <li>ดาวน์โหลด/ติดตั้ง <b>Android Studio</b> จาก <code>developer.android.com/studio</code> ตอนติดตั้งเลือก component ที่เกี่ยวกับ Android SDK ให้ครบ (ตัวติดตั้งจะเลือกให้อัตโนมัติถ้าใช้ค่า default)</li>
+          <li>เปิด Android Studio ครั้งแรก ไปที่ Settings → Plugins ค้นหา <b>Flutter</b> กด Install (จะติดตั้ง Dart ให้ด้วยถ้าถาม)</li>
+          <li>สร้าง Android Virtual Device (emulator) ผ่าน Android Studio → Device Manager → Create Device เลือกรุ่นมือถือที่อยากจำลอง (เลือกรุ่นกลาง ๆ เช่น Pixel ก็พอ)</li>
+          <li>เปิด terminal ใหม่ พิมพ์ <code>flutter doctor -v</code> เพื่อตรวจสอบว่าทุกอย่างครบ ถ้ามีอะไรค้าง (เช่น Android licenses) มันจะบอกคำสั่งแก้ให้เอง โดยทั่วไปคือ:
+            <pre class="cmd">flutter doctor --android-licenses</pre>
+            แล้วพิมพ์ <code>y</code> ยอมรับทุกข้อ
+          </li>
+          <li>เปิด <b>Developer Mode</b> ใน Windows — จำเป็นสำหรับสร้าง symlink ตอน build โปรเจ็คที่มี plugin (เกือบทุกโปรเจ็ค Flutter จริงจะมี plugin) ถ้าไม่เปิดจะเจอ error "Building with plugins requires symlink support" ตอน build ทีหลัง:
+            <pre class="cmd">start ms-settings:developers</pre>
+            จะเปิดหน้า Settings ให้เลย เปิดสวิตช์ <b>Developer Mode</b> เป็น ON แล้วรีสตาร์ทเครื่อง (แนะนำให้รีสตาร์ท แม้บางครั้งไม่รีก็ใช้ได้ แต่รีชัวร์กว่า)
+          </li>
+          <li>ทดสอบด้วยโปรเจ็คทิ้งขว้าง (throwaway) ก่อนเริ่มงานจริง เพื่อให้แน่ใจว่าทุกอย่างพร้อมจริง ๆ:
+            <pre class="cmd">flutter create test_app
+cd test_app
+flutter run</pre>
+            เลือก emulator หรือมือถือจริงที่ต่อไว้เป็น target ถ้าแอปตัวอย่าง (นับเลขเวลากดปุ่ม +) รันขึ้นมาได้ แปลว่าเครื่องพร้อมทำ Phase 2 ข้อ 3 จริงแล้ว ลบโฟลเดอร์ <code>test_app</code> ทิ้งได้เลยหลังทดสอบผ่าน
+          </li>
+        </ol>
+        <div class="verify"><b>เช็คว่าติดตั้งสำเร็จ:</b> รัน <code>flutter doctor -v</code> อีกครั้ง ถ้าเห็นเครื่องหมายถูกสีเขียวที่ "Flutter", "Android toolchain", "Android Studio" ถือว่าพร้อมใช้งานแล้ว (เครื่องหมาย ✗ ที่ "Xcode"/"VS Code" ข้ามได้ ไม่จำเป็นสำหรับงานนี้)</div>
+        <div class="tip"><b>หมายเหตุ:</b> ไม่ต้องติดตั้ง Xcode/iOS toolchain เพราะพัฒนา iOS บน Windows ทำไม่ได้อยู่แล้ว — แผนตอนนี้โฟกัส Android ก่อนตามที่คุยกันไว้ ถ้าอยากได้ iOS ในอนาคตต้องมี Mac เพิ่ม</div>
+        <div class="tip"><b>ถ้าอยากทดสอบบนมือถือจริงแทน emulator:</b> เข้า Settings → About phone กดที่ "Build number" รัว ๆ 7 ครั้งเพื่อปลดล็อก Developer options แล้วเข้า Developer options เปิด "USB debugging" ต่อสาย USB เข้าเครื่อง แล้ว Flutter จะเห็นเครื่องจริงเป็นอีก target หนึ่ง</div>
+      </div>
+    </section>
+
+    <section id="platformio">
+      <div class="phase-title"><span class="kicker">3</span></div>
+      <div class="tool-card">
+        <div class="tool-head"><h3>PlatformIO IDE (VS Code Extension)</h3><span class="status future">รอ Phase 3 — มีฮาร์ดแวร์จริงค่อยติดตั้ง</span></div>
+        <p class="tool-why"><b>ทำไมต้องมี:</b> ใช้คอมไพล์และอัปโหลดเฟิร์มแวร์ (.ino/.cpp) ขึ้น ESP32 จริงผ่านสาย USB — ตอนนี้ยังไม่มีฮาร์ดแวร์ ทดสอบผ่าน Wokwi ล้วน จึงยังไม่จำเป็นต้องติดตั้งตอนนี้ แปะขั้นตอนไว้ให้ล่วงหน้าสำหรับตอนถึง Phase 3</p>
+        <ol class="steps">
+          <li>เปิด VS Code ไปที่ Extensions ค้นหา <b>PlatformIO IDE</b> กด Install (ใช้เวลาสักพัก เพราะโหลด core tools เพิ่มเบื้องหลัง)</li>
+          <li>รีสตาร์ท VS Code หลังติดตั้งเสร็จ จะเห็นไอคอน PlatformIO (รูปมด) ที่แถบซ้าย</li>
+          <li>ติดตั้ง USB driver ให้ตรงกับชิปที่บอร์ด ESP32 ใช้ (เช็คจากบอร์ดที่จะซื้อ): ถ้าเป็นชิป <b>CP210x</b> โหลดจากเว็บ Silicon Labs, ถ้าเป็น <b>CH340</b> โหลดจากเว็บผู้ผลิตชิปนั้น — ไม่มี driver จะเสียบสาย USB แล้ว Windows ไม่รู้จักบอร์ด</li>
+          <li>เปิดโปรเจ็คเฟิร์มแวร์ที่มี <code>platformio.ini</code> อยู่แล้ว (ทำไว้ตั้งแต่ Phase 0) PlatformIO จะสแกน dependency ให้อัตโนมัติ</li>
+        </ol>
+        <div class="verify"><b>เช็คว่าติดตั้งสำเร็จ:</b> ต่อบอร์ด ESP32 จริงเข้าเครื่อง แล้วกดปุ่ม ✓ (compile) ที่แถบล่างของ VS Code ถ้า compile ผ่านและเห็นพอร์ต COM ของบอร์ดในแถบล่าง แปลว่าพร้อมอัปโหลดจริงแล้ว</div>
+      </div>
+    </section>
+
+    <section id="wokwi">
+      <div class="phase-title"><span class="kicker">4</span></div>
+      <div class="tool-card">
+        <div class="tool-head"><h3>Wokwi (จำลอง ESP32)</h3><span class="status done">น่าจะตั้งไว้แล้วตั้งแต่ Phase 0</span></div>
+        <p class="tool-why"><b>ทำไมต้องมี:</b> จำลองวงจร ESP32 + เซนเซอร์ทั้งหมดโดยไม่ต้องมีฮาร์ดแวร์จริง — เป็นตัวที่ใช้ทดสอบมาตลอด Phase 0-2 แปะไว้เผื่อพี่สลับเครื่องหรือต้องตั้งค่าใหม่</p>
+        <ol class="steps">
+          <li>สมัครบัญชีฟรีที่ <code>wokwi.com</code> (ใช้ผ่าน browser ได้เลย ไม่ต้องติดตั้งอะไร)</li>
+          <li>ถ้าอยากรันจำลองจากภายใน VS Code โดยตรง (สะดวกกว่าเปิดเว็บแยก) ติดตั้ง extension <b>Wokwi for VS Code</b> จาก Extensions</li>
+          <li>ผูกบัญชี Wokwi กับ extension (จะมีปุ่ม "Connect to Wokwi" ขึ้นมาให้กดตอนเปิดใช้ครั้งแรก) แผน Free ใช้ได้กับโปรเจ็คที่มี <code>wokwi.toml</code> อยู่แล้ว (มีไฟล์นี้ในโปรเจ็คตั้งแต่ Phase 0)</li>
+        </ol>
+        <div class="verify"><b>เช็คว่าใช้งานได้:</b> เปิดโฟลเดอร์เฟิร์มแวร์ที่มี <code>wokwi.toml</code> กด F1 พิมพ์ <b>Wokwi: Start Simulator</b> ถ้าจำลองวงจรขึ้นมาและ Serial Monitor พิมพ์ log ออกมา แปลว่าใช้งานได้ปกติ</div>
+      </div>
+    </section>
+
+    <section id="google">
+      <div class="phase-title"><span class="kicker">5</span></div>
+      <div class="tool-card">
+        <div class="tool-head"><h3>Google Apps Script</h3><span class="status done">ใช้งานผ่านเว็บ ไม่ต้องติดตั้ง</span></div>
+        <p class="tool-why"><b>ทำไมต้องมี:</b> เป็นที่รัน backend (<code>Code.gs</code>) ทั้งหมดของโปรเจ็ค — รับข้อมูลเซนเซอร์, คุยกับ LINE Bot, เก็บ token ใน Script Properties ทำงานผ่าน browser ล้วน ไม่มีอะไรให้ติดตั้งลงเครื่อง</p>
+        <ol class="steps">
+          <li>ใช้บัญชี Google เดิมที่สร้างชีต <code>sheet1</code>/<code>control</code> ไว้แล้วตั้งแต่ก่อนเริ่มโปรเจ็คนี้ (ดูขั้นตอนสร้างชีตใหม่ได้ใน <code>google-sheet-setup.md</code> ถ้าต้องสร้างใหม่)</li>
+          <li>เปิด Google Sheet ที่ใช้อยู่ → Extensions → Apps Script จะเปิดตัวแก้ไข <code>Code.gs</code> ในแท็บใหม่</li>
+          <li>ทุกครั้งที่แก้โค้ดใน Apps Script editor ต้องกด <b>Deploy → Manage deployments → แก้ไข (ไอคอนดินสอ) → Version: New version → Deploy</b> ใหม่ ไม่งั้น URL Web App เดิมจะยังใช้โค้ดเวอร์ชันเก่าอยู่ — จุดนี้เป็นจุดที่คนพลาดกันบ่อย</li>
+        </ol>
+        <div class="tip"><b>หมายเหตุ:</b> ถ้าอยากดัน Code.gs จากเครื่อง (เช่นให้ Claude Code แก้ไฟล์ในเครื่องแล้วอัปขึ้น Apps Script อัตโนมัติ) ต้องใช้เครื่องมือเสริมชื่อ <code>clasp</code> — ดูหัวข้อ 8 ด้านล่าง (เป็นตัวเลือกเสริม ไม่จำเป็น)</div>
+      </div>
+    </section>
+
+    <section id="line">
+      <div class="phase-title"><span class="kicker">6</span></div>
+      <div class="tool-card">
+        <div class="tool-head"><h3>LINE Developers Console</h3><span class="status done">น่าจะตั้งไว้แล้วตั้งแต่ Phase 1</span></div>
+        <p class="tool-why"><b>ทำไมต้องมี:</b> เป็นที่จัดการ Channel Access Token / Channel Secret และตั้งค่า Webhook URL ให้ LINE ส่ง event เข้ามาที่ Apps Script — ใช้ผ่านเว็บล้วน แปะขั้นตอนไว้เผื่อต้องตั้งค่าใหม่หรือ token หมดอายุ</p>
+        <ol class="steps">
+          <li>ไปที่ <code>developers.line.biz/console</code> ล็อกอินด้วยบัญชี LINE เดิมที่สร้าง Provider ไว้</li>
+          <li>เข้า Channel ที่เป็น <b>Messaging API</b> ของโปรเจ็คนี้ → แท็บ <b>Messaging API</b></li>
+          <li>ถ้า token หมดอายุหรือต้องออกใหม่ กด <b>Issue</b> ที่ Channel access token (long-lived) แล้วนำค่าไปใส่ใน Script Properties ของ Apps Script (ไม่ใช่ฝังในโค้ดตรง ๆ ตามที่ตัดสินใจไว้ใน Phase 1)</li>
+          <li>ตรวจว่า Webhook URL ชี้ไปที่ URL ล่าสุดของ Apps Script Web App (URL จะเปลี่ยนทุกครั้งที่ deploy เป็น "New version" ถ้าตั้ง deployment แบบ auto-update URL คงเดิมได้ ให้เช็คด้วยปุ่ม <b>Verify</b> ข้าง Webhook URL)</li>
+        </ol>
+        <div class="verify"><b>เช็คว่าใช้งานได้:</b> กดปุ่ม <b>Verify</b> ข้าง Webhook URL ใน console ถ้าขึ้น "Success" แปลว่า LINE เชื่อมกับ Apps Script ได้ปกติ</div>
+      </div>
+    </section>
+
+    <section id="github">
+      <div class="phase-title"><span class="kicker">7</span></div>
+      <div class="tool-card">
+        <div class="tool-head"><h3>GitHub</h3><span class="status next">ทำตอนไหนก็ได้ ไม่บล็อกงานอื่น</span></div>
+        <p class="tool-why"><b>ทำไมต้องมี:</b> เก็บ repo ทั้งโปรเจ็คไว้บนคลาวด์ ใช้โชว์เป็นพอร์ตโฟลิโอได้ตามที่เคยคุยไว้ว่าอยากได้ผลงานไปสมัครงาน — ใช้ Git (หัวข้อ 1) เป็นเครื่องมือคุยกับ GitHub</p>
+        <ol class="steps">
+          <li>สมัครบัญชีที่ <code>github.com</code> ถ้ายังไม่มี</li>
+          <li>กด New repository ตั้งชื่อ (เช่น <code>smart-farm-iot</code>) เลือก Private หรือ Public ก็ได้ตามต้องการ</li>
+          <li>ในเครื่อง เปิด terminal ไปที่โฟลเดอร์โปรเจ็ค รันคำสั่งเชื่อม repo (แทน URL ด้วยของพี่เอง):
+            <pre class="cmd">git init
+git add .
+git commit -m "initial commit"
+git branch -M main
+git remote add origin https://github.com/USERNAME/smart-farm-iot.git
+git push -u origin main</pre>
+          </li>
+        </ol>
+        <div class="verify"><b>เช็คว่าสำเร็จ:</b> รีเฟรชหน้า repo บน GitHub เห็นไฟล์ทั้งหมดขึ้นแล้ว แปลว่า push สำเร็จ</div>
+        <div class="tip"><b>อย่าลืม:</b> เช็ค <code>.gitignore</code> ว่ากันไฟล์ secrets (เช่น <code>secrets.h</code>) ไม่ให้หลุดขึ้น GitHub ก่อน push ทุกครั้ง — มีไฟล์นี้เตรียมไว้แล้วตั้งแต่ Phase 0</div>
+      </div>
+    </section>
+
+    <section id="clasp">
+      <div class="phase-title"><span class="kicker">8</span></div>
+      <div class="tool-card">
+        <div class="tool-head"><h3>Node.js + clasp</h3><span class="status future">ตัวเลือกเสริม ไม่จำเป็นตอนนี้</span></div>
+        <p class="tool-why"><b>ทำไมอาจอยากมี:</b> ปกติแก้ <code>Code.gs</code> ต้องเปิด browser ไปวางโค้ดใน Apps Script editor เอง — <code>clasp</code> (Command Line Apps Script Projects ของ Google) ให้ push โค้ดจากเครื่อง (ที่ Claude Code แก้ไฟล์ให้) ขึ้น Apps Script ได้โดยตรงผ่าน terminal สะดวกกว่าถ้าจะแก้บ่อย ๆ แต่ไม่ใช่สิ่งจำเป็นต่อการทำโปรเจ็คให้เสร็จ</p>
+        <ol class="steps">
+          <li>ติดตั้ง <b>Node.js</b> (LTS version) จาก <code>nodejs.org</code> ตัวติดตั้งมี npm มาให้ในตัวอยู่แล้ว</li>
+          <li>เปิด terminal รัน <code>npm install -g @google/clasp</code> เพื่อติดตั้ง clasp แบบ global</li>
+          <li>รัน <code>clasp login</code> จะเปิด browser ให้ล็อกอินด้วยบัญชี Google เดียวกับที่สร้าง Apps Script ไว้</li>
+          <li>เปิดที่ <code>script.google.com/home/usersettings</code> เปิดสวิตช์ "Google Apps Script API" ให้เป็น ON (clasp จะเชื่อมต่อไม่ได้ถ้าปิดอยู่)</li>
+          <li>ในโฟลเดอร์ <code>backend/apps-script/</code> รัน <code>clasp clone [scriptId]</code> (เอา scriptId จาก URL ของ Apps Script editor) เพื่อผูกโฟลเดอร์นี้กับโปรเจ็คบนคลาวด์</li>
+        </ol>
+        <div class="verify"><b>เช็คว่าใช้งานได้:</b> แก้ไฟล์ <code>Code.gs</code> ในเครื่องนิดหน่อย แล้วรัน <code>clasp push</code> ถ้ากลับไปดูใน Apps Script editor (เว็บ) เห็นโค้ดที่แก้อัปเดตแล้ว แปลว่าใช้งานได้</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>Smart Farm IoT — Tool Setup Guide</footer>
+
+</body>
+</html>

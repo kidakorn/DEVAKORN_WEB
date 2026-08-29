@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 ไอเดียแก้ปัญหา Version Control — AS400 / LANSA / RPG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f8fa; --surface:#ffffff; --border:#e1e5ea;
+    --text:#1c2126; --muted:#5b6572; --faint:#8b95a1;
+    --blue:#0f62fe; --blue-dark:#0043ce; --blue-bg:#edf4ff;
+    --green:#0e8a5f; --green-bg:#e6f6ef;
+    --amber:#a15c00; --amber-bg:#fff3e0;
+    --purple:#8a3ffc; --purple-bg:#f2ebff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans Thai',sans-serif;line-height:1.7;padding-bottom:80px;}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px;}
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:36px 24px 30px;margin-bottom:30px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;}
+  h1{font-size:clamp(22px,4vw,28px);font-weight:600;margin:0 0 10px;}
+  .subtitle{color:var(--muted);font-size:15.5px;max-width:640px;}
+
+  .idea{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px;position:relative;}
+  .idea.chosen{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue);}
+  .idea-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;}
+  .idea-num{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--blue);min-width:32px;}
+  .idea-title{font-size:16.5px;font-weight:600;margin:0 0 4px;}
+  .idea-oneliner{font-size:14px;color:var(--muted);margin:0;}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
+  .badge{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;}
+  .b-cost-free{background:var(--green-bg);color:var(--green);}
+  .b-cost-paid{background:var(--amber-bg);color:var(--amber);}
+  .b-effort-low{background:var(--blue-bg);color:var(--blue-dark);}
+  .b-effort-med{background:#f4f0e0;color:#8a6d00;}
+  .b-effort-high{background:var(--purple-bg);color:var(--purple);}
+  .idea ul{margin:8px 0 0;padding-left:18px;font-size:14px;color:var(--text);}
+  .idea li{margin-bottom:4px;}
+  .chosen-tag{position:absolute;top:-10px;right:16px;background:var(--blue);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:20px;}
+
+  h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--border);}
+  .summary-card{background:var(--blue-bg);border:1px solid #b8d3ff;border-radius:10px;padding:18px 20px;}
+  .summary-card p{margin:0;font-size:14.5px;color:#0a3a8c;}
+
+  footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--faint);text-align:center;}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">AS400 / IBMi &middot; LANSA &middot; RPG</div>
+    <h1>10 ไอเดียแก้ปัญหา Version Control</h1>
+    <div class="subtitle">รวมทางเลือกทั้งหมดที่เป็นไปได้ ตั้งแต่ทำเองฟรีไปจนถึงซื้อเครื่องมือระดับองค์กร เรียงจากง่าย/ถูกที่สุดไปยาก/แพงที่สุด</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="idea">
+    <div class="badges"><span class="badge b-cost-free">ฟรี</span><span class="badge b-effort-low">effort ต่ำ</span></div>
+    <div class="idea-head">
+      <div class="idea-num">01</div>
+      <div>
+        <div class="idea-title">Governance checklist (ไม่ต้องมีเครื่องมือใหม่เลย)</div>
+        <p class="idea-oneliner">แก้ที่ "กระบวนการ" ก่อนแก้ที่ "เครื่องมือ" — ใช้ checklist/sign-off บังคับว่าต้อง promote ทั้งชุดพร้อมกัน</p>
+      </div>
+    </div>
+    <ul>
+      <li>ทำได้วันนี้เลย ไม่ต้องเขียนโค้ดหรือรอสิทธิ์ใคร</li>
+      <li>แก้ปัญหา "ลืม promote บางไฟล์" ได้ทันทีด้วยวินัย ไม่ใช่ automation</li>
+      <li>ไม่แก้ปัญหา "ไม่รู้ว่า prod มี version ไหน" เพราะยังไม่มี history เก็บไว้</li>
+    </ul>
+  </div>
+
+  <div class="idea chosen">
+    <span class="chosen-tag">แผนที่กำลังทำอยู่</span>
+    <div class="badges"><span class="badge b-cost-free">ฟรี</span><span class="badge b-effort-med">effort กลาง</span></div>
+    <div class="idea-head">
+      <div class="idea-num">02</div>
+      <div>
+        <div class="idea-title">DIY Export-to-Git ผ่าน FTP (Path A)</div>
+        <p class="idea-oneliner">CPYTOSTMF + FTP ที่มีอยู่แล้ว + git บน PC/build server — ไม่ต้องรอสิทธิ์ admin บน IBMi</p>
+      </div>
+    </div>
+    <ul>
+      <li>เริ่มได้ทันทีด้วยสิทธิ์ที่มีอยู่แล้ว ทดสอบบน pub400 ได้ก่อนใช้จริง</li>
+      <li>ได้ git history + diff + tag จริง แก้ปัญหา visibility และ version ผสมกันพร้อมกัน</li>
+      <li>ยังเป็น manual/semi-automated จนกว่าจะสร้าง Python tool ตามแผนที่วางไว้</li>
+    </ul>
+  </div>
+
+  <div class="idea">
+    <div class="badges"><span class="badge b-cost-free">ฟรี</span><span class="badge b-effort-high">effort สูง</span></div>
+    <div class="idea-head">
+      <div class="idea-num">03</div>
+      <div>
+        <div class="idea-title">Git เต็มรูปแบบบน IBMi (Path B)</div>
+        <p class="idea-oneliner">ติดตั้ง git จริงผ่าน SSH + PASE + yum แล้ว automate ทั้งหมดด้วย job scheduler บนเครื่องเอง</p>
+      </div>
+    </div>
+    <ul>
+      <li>Automate เต็มรูปแบบ ไม่ต้องพึ่งคน FTP</li>
+      <li>ต้องขอ admin เปิด SSH และติดตั้ง yum ก่อน อาจใช้เวลารออนุมัติ</li>
+      <li>เหมาะทำหลัง Path A พิสูจน์ผลแล้วว่าคุ้มค่าลงทุนเวลา</li>
+    </ul>
+  </div>
+
+  <div class="idea">
+    <div class="badges"><span class="badge b-cost-free">ฟรี</span><span class="badge b-effort-low">effort ต่ำ</span></div>
+    <div class="idea-head">
+      <div class="idea-num">04</div>
+      <div>
+        <div class="idea-title">Visual LANSA native Git</div>
+        <p class="idea-oneliner">เปิดใช้ Git ที่มีอยู่แล้วใน Visual LANSA IDE (Editor Options &rarr; Version Control)</p>
+      </div>
+    </div>
+    <ul>
+      <li>ไม่ต้องสร้างอะไรเพิ่ม มีอยู่แล้วในเครื่องมือที่ใช้อยู่</li>
+      <li>ครอบคลุมเฉพาะฝั่ง Visual LANSA repository เท่านั้น</li>
+      <li>ควรใช้ควบคู่กับไอเดียอื่นสำหรับฝั่ง RPG/CL บน production</li>
+    </ul>
+  </div>
+
+  <div class="idea">
+    <div class="badges"><span class="badge b-cost-free">ฟรี</span><span class="badge b-effort-med">effort กลาง</span></div>
+    <div class="idea-head">
+      <div class="idea-num">05</div>
+      <div>
+        <div class="idea-title">RDi + EGit (IDE-based สำหรับฝั่ง RPG)</div>
+        <p class="idea-oneliner">ใช้ Rational Developer for i (Eclipse) กับปลั๊กอิน EGit จัดการ source ผ่านหน้า IDE แทน command line</p>
+      </div>
+    </div>
+    <ul>
+      <li>เหมาะกับคนที่คุ้นเคย IDE มากกว่า terminal</li>
+      <li>ต้องตั้งค่า remote system explorer เชื่อมกับ IBMi ก่อนใช้งานได้จริง</li>
+      <li>ทีมต้องมี license RDi หรือใช้รุ่นฟรีที่มีข้อจำกัดฟีเจอร์</li>
+    </ul>
+  </div>
+
+  <div class="idea">
+    <div class="badges"><span class="badge b-cost-free">ฟรี</span><span class="badge b-effort-med">effort กลาง</span></div>
+    <div class="idea-head">
+      <div class="idea-num">06</div>
+      <div>
+        <div class="idea-title">SAVF-based atomic package promotion</div>
+        <p class="idea-oneliner">แก้ปัญหา "version ผสมกัน" ที่ระดับ OS object โดยตรง — สร้าง save file (*SAVF) รวมทั้งชุด object แล้ว promote เป็นก้อนเดียว</p>
+      </div>
+    </div>
+    <ul>
+      <li>แก้ atomicity โดยไม่ต้องพึ่ง git เลย ใช้ CL คำสั่งมาตรฐาน (SAVOBJ/RSTOBJ)</li>
+      <li>รับประกันว่าทั้งชุดไปด้วยกันเสมอ เพราะเป็นไฟล์เดียวจริงๆ</li>
+      <li>ไม่ได้ diff/history แบบ git — เหมาะใช้ "คู่กับ" ไอเดีย 02 มากกว่าใช้แทน</li>
+    </ul>
+  </div>
+
+  <div class="idea">
+    <div class="badges"><span class="badge b-cost-free">ฟรี</span><span class="badge b-effort-med">effort กลาง</span></div>
+    <div class="idea-head">
+      <div class="idea-num">07</div>
+      <div>
+        <div class="idea-title">iForGit (open source lightweight client)</div>
+        <p class="idea-oneliner">เครื่องมือ open source เชื่อม git กับ source บน IBMi ผ่าน RDi/VS Code โดยตรง</p>
+      </div>
+    </div>
+    <ul>
+      <li>ไม่มีค่าใช้จ่าย ติดตั้งง่ายกว่าสร้างเอง</li>
+      <li>ชุมชนเล็ก เอกสารและ support จำกัด ต้องพร้อม debug เอง</li>
+      <li>ยังไม่แก้ปัญหา "promote ทั้งชุด" โดยตรง ต้องออกแบบ workflow เพิ่ม</li>
+    </ul>
+  </div>
+
+  <div class="idea">
+    <div class="badges"><span class="badge b-cost-paid">มีค่าใช้จ่าย</span><span class="badge b-effort-med">effort กลาง</span></div>
+    <div class="idea-head">
+      <div class="idea-num">08</div>
+      <div>
+        <div class="idea-title">SEE/Change (change management + lock)</div>
+        <p class="idea-oneliner">เครื่องมือเฉพาะทางที่มี checkout/lock จริงจัง ป้องกันคนแก้ object เดียวกันพร้อมกัน</p>
+      </div>
+    </div>
+    <ul>
+      <li>แก้ปัญหา "คนแก้พร้อมกันแล้วโดนทับ" ได้ตรงจุดที่สุดในลิสต์นี้</li>
+      <li>มีทั้งหน้าจอ 5250 และ RDi ให้เลือกใช้</li>
+      <li>เป็น change control มากกว่า git-based diff history เต็มรูปแบบ</li>
+    </ul>
+  </div>
+
+  <div class="idea">
+    <div class="badges"><span class="badge b-cost-paid">มีค่าใช้จ่ายสูง</span><span class="badge b-effort-high">effort สูง</span></div>
+    <div class="idea-head">
+      <div class="idea-num">09</div>
+      <div>
+        <div class="idea-title">ARCAD Skipper / Aldon LMI / ChangeMan ZMF</div>
+        <p class="idea-oneliner">เครื่องมือ SCM/ALM ระดับองค์กร ครบวงจรทั้ง version, promotion, และ approval workflow</p>
+      </div>
+    </div>
+    <ul>
+      <li>ครบที่สุดในลิสต์นี้ แก้ทั้ง visibility, concurrent edit, และ atomic promotion</li>
+      <li>ราคาสูง ใช้เวลา implement เป็นเดือน ต้องมี buy-in จากผู้บริหาร</li>
+      <li>เหมาะทำหลังพิสูจน์แล้วว่าปัญหาใหญ่พอที่จะคุ้มการลงทุน</li>
+    </ul>
+  </div>
+
+  <div class="idea">
+    <div class="badges"><span class="badge b-cost-free">ฟรี (ถ้ามีของเดิม)</span><span class="badge b-effort-high">effort สูง</span></div>
+    <div class="idea-head">
+      <div class="idea-num">10</div>
+      <div>
+        <div class="idea-title">CI/CD pipeline เต็มรูปแบบ (Jenkins + git)</div>
+        <p class="idea-oneliner">ต่อยอดจากไอเดีย 02/03 ให้มี pipeline อัตโนมัติเต็มรูปแบบ: commit &rarr; build &rarr; test &rarr; deploy ขึ้น TAI โดยไม่ต้องมีคนกด FTP เอง</p>
+      </div>
+    </div>
+    <ul>
+      <li>ลดขั้นตอนมือให้เหลือน้อยที่สุด ลด human error ได้มากสุด</li>
+      <li>ต้องมี test suite รองรับ (เช่น RPGUnit) ไม่งั้น deploy อัตโนมัติเสี่ยงกว่าเดิม</li>
+      <li>เป็นเป้าหมายระยะยาว ไม่ใช่จุดเริ่มต้นที่เหมาะสมตอนนี้</li>
+    </ul>
+  </div>
+
+  <h2>สรุป</h2>
+  <div class="summary-card">
+    <p>ไอเดีย <strong>02 (DIY Export-to-Git ผ่าน FTP)</strong> คือแผนที่กำลังทำอยู่ตอนนี้ เพราะสมดุลระหว่างต้นทุน (ฟรี), effort (ทำได้จริงโดยไม่ต้องรอ admin), และแก้ปัญหาหลักได้ตรงจุด (visibility + version ผสมกัน) ไอเดีย 01 (checklist) ใช้เป็นทางลัดชั่วคราวระหว่างรอสร้างเครื่องมือได้ ส่วนไอเดีย 06 (SAVF) เป็นตัวเสริมที่น่าสนใจถ้าอยากการันตี atomicity แน่นขึ้นไปอีกชั้น</p>
+  </div>
+
+</div>
+<footer>เอกสารสรุปทางเลือกทั้งหมด — ใช้ประกอบการตัดสินใจ ไม่ใช่แผนที่อนุมัติแล้ว</footer>
+</body>
+</html>

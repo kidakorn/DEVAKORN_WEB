@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Farm IoT — แผนติดตั้ง Flutter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F7F1; --paper-raised:#FFFFFF; --ink:#1E2A22; --ink-soft:#57645C;
+    --line:#DDE1D3; --board:#1B2420; --blue:#256B8C; --blue-soft:#E4F0F4;
+    --ochre:#A5752E; --ochre-soft:#F8EFD9; --moss:#437245; --moss-soft:#E6F0E4;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif; line-height:1.65; font-size:16px; word-wrap:break-word; overflow-wrap:anywhere; word-break:break-word;}
+  h1,h2,h3{font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif; letter-spacing:-0.01em; color:var(--ink);}
+  code{font-family:'IBM Plex Mono',monospace; font-size:0.88em; background:var(--blue-soft); color:var(--blue); padding:1px 6px; border-radius:4px;}
+
+  .hero{background:var(--board); color:#EDEEE6; padding:44px 8vw 32px;}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:#9FB6A8; margin-bottom:12px;}
+  .hero h1{font-size:clamp(22px,4vw,34px); margin:0 0 10px; color:#F7F8F2;}
+  .hero p.sub{max-width:640px; color:#C7CFC5; font-size:14.5px; margin:0;}
+
+  .progress-bar{max-width:1000px; margin:-18px auto 0; padding:0 8vw; position:relative; z-index:2;}
+  .progress-track{background:var(--paper-raised); border:1px solid var(--line); border-radius:100px; height:34px; display:flex; align-items:center; padding:0 4px; box-shadow:0 2px 10px rgba(30,42,34,0.08);}
+  .progress-fill{height:26px; border-radius:100px; background:linear-gradient(90deg,var(--moss),#5B9A5D); width:0%; transition:width .3s ease; min-width:26px;}
+  .progress-label{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); text-align:center; margin-top:8px;}
+
+  .wrap{max-width:820px; margin:0 auto; padding:40px 8vw 100px;}
+
+  section.phase{margin-bottom:34px;}
+  .phase-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px;}
+  .phase-head h2{font-size:19px; margin:0;}
+  .kicker{font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:0.1em; color:var(--blue); text-transform:uppercase;}
+  .phase-desc{color:var(--ink-soft); font-size:13.5px; margin:6px 0 16px;}
+
+  .status{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:700; padding:3px 9px; border-radius:100px; white-space:nowrap;}
+  .status.now{background:var(--ochre-soft); color:var(--ochre);}
+  .status.done{background:var(--moss-soft); color:var(--moss);}
+  .status.later{background:#E7E9E2; color:#5C665F;}
+
+  .item{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius); padding:13px 16px 10px; margin-bottom:8px; transition:background .15s ease, opacity .15s ease;}
+  .item-row{display:flex; align-items:flex-start; gap:12px;}
+  .item input[type="checkbox"]{width:19px; height:19px; margin-top:2px; flex-shrink:0; accent-color:var(--moss); cursor:pointer;}
+  .item label{flex:1; cursor:pointer; font-size:14.5px;}
+  .item label b{display:block; color:var(--ink); font-size:15px; margin-bottom:2px;}
+  .item label span.note{color:var(--ink-soft); font-size:13px;}
+  .item.checked{background:var(--moss-soft); border-color:#C6DEC4;}
+  .item.checked label b{text-decoration:line-through; color:var(--ink-soft);}
+
+  .item details{margin-top:8px; padding-left:31px;}
+  .item details summary{cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--blue); list-style:none; display:inline-flex; align-items:center; gap:4px;}
+  .item details summary::before{content:"▸"; display:inline-block; transition:transform .15s ease;}
+  .item details[open] summary::before{transform:rotate(90deg);}
+  .item details summary::-webkit-details-marker{display:none;}
+  .detail-body{font-size:13.5px; color:var(--ink); margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);}
+  .detail-body ol{margin:0; padding-left:18px;}
+  .detail-body li{margin-bottom:8px;}
+  .detail-body a{color:var(--blue); text-decoration:underline;}
+  pre.cmd{background:var(--board); color:#D7DED4; border-radius:8px; padding:10px 13px; font-family:'IBM Plex Mono',monospace; font-size:12px; overflow-x:auto; line-height:1.6; margin:6px 0 0; white-space:pre-wrap;}
+
+  .ref{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--blue); margin-top:2px; display:inline-block;}
+
+  .callout{background:var(--blue-soft); border:1px solid #B7D2DC; border-radius:var(--radius); padding:14px 16px; font-size:13.5px; margin:16px 0;}
+  .callout b{color:var(--blue);}
+
+  footer{text-align:center; padding:20px 8vw 60px; color:var(--ink-soft); font-size:12px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:600px){
+    .hero{padding:34px 6vw 26px;}
+    .hero h1{font-size:21px;}
+    .wrap{padding:30px 6vw 80px;}
+    .item{padding:12px 13px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Setup Checklist</div>
+  <h1>แผนติดตั้ง Flutter</h1>
+  <p class="sub">เช็คลิสต์ 10 ข้อสำหรับติดตั้งเครื่องมือ Flutter ให้พร้อมทำ Phase 2 ข้อ 3 — กดติ๊กเก็บความคืบหน้าไว้ระหว่างเปิดหน้านี้ (รีเฟรชหรือปิดแท็บแล้วค่าจะรีเซ็ต ให้จำจากที่ทำไปแล้วเอง หรือดูสถานะจริงจาก <code>PLAN.md</code>) รายละเอียดขั้นตอนเต็ม ๆ อยู่ในไฟล์ <code>smart_farm_iot_tool_setup.html</code></p>
+</div>
+
+<div class="progress-bar">
+  <div class="progress-track"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-label" id="label">0 / 10 ข้อ</div>
+</div>
+
+<div class="wrap">
+
+  <section class="phase">
+    <p class="phase-desc">ทำตามลำดับบนลงล่าง แต่ละข้อล็อกกันอยู่บ้าง (เช่น Git ต้องมีก่อน Flutter ถึงติดตั้งผ่าน)</p>
+
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a1"><label for="a1"><b>ติดตั้ง Git for Windows</b><span class="note">ดาวน์โหลดจาก git-scm.com/download/win ติดตั้งด้วยค่า default</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body"><ol>
+          <li>ไปที่ <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com/download/win</a> ดาวน์โหลดตัวติดตั้งเวอร์ชันล่าสุด (เลือกให้อัตโนมัติตาม Windows 64-bit)</li>
+          <li>รันตัวติดตั้ง กด Next ไปเรื่อย ๆ ด้วยค่า default ได้เลย เช็คให้แน่ใจว่า "Git from the command line and also from 3rd-party software" ถูกเลือกไว้</li>
+          <li>ติดตั้งเสร็จแล้ว ปิด terminal ที่เปิดค้างอยู่ทั้งหมด แล้วเปิดใหม่ (ค่า PATH จะยังไม่อัปเดตถ้าไม่เปิด terminal ใหม่)</li>
+        </ol></div>
+      </details>
+    </div>
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a2"><label for="a2"><b>ตั้งค่า git config (ชื่อ/อีเมล)</b><span class="note">รันครั้งเดียว ใช้ได้ตลอด</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body">เปิด terminal (PowerShell หรือ Command Prompt ก็ได้) พิมพ์ 2 บรรทัดนี้ (แทนชื่อ/อีเมลเป็นของพี่เอง) ค่านี้จะโชว์ในทุก commit ที่ทำต่อไป
+          <pre class="cmd">git config --global user.name "ชื่อพี่"
+git config --global user.email "อีเมลพี่"</pre>
+        </div>
+      </details>
+    </div>
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a3"><label for="a3"><b>เช็ค git --version ผ่าน</b><span class="note">ยืนยันว่า Git ใช้งานได้จริงก่อนไปต่อ</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body">เปิด terminal ใหม่ พิมพ์:
+          <pre class="cmd">git --version</pre>
+          ถ้าขึ้นเลขเวอร์ชัน (เช่น <code>git version 2.4x.x</code>) แปลว่าใช้ได้แล้ว ถ้าขึ้น "not recognized" ให้ปิด terminal ทุกหน้าต่างแล้วเปิดใหม่อีกรอบ (บางทีต้อง restart เครื่องด้วยถ้ายังไม่หาย)
+        </div>
+      </details>
+    </div>
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a4"><label for="a4"><b>ติดตั้ง Flutter extension ใน VS Code</b><span class="note">Extensions → ค้นหา Flutter (โดย Dart Code)</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body"><ol>
+          <li>เปิด VS Code กด <code>Ctrl+Shift+X</code> เปิด Extensions panel</li>
+          <li>ค้นหา <b>Flutter</b> เลือกตัวที่พัฒนาโดย <b>Dart Code</b> (ลิงก์โดยตรง: <a href="https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter" target="_blank" rel="noopener">marketplace.visualstudio.com — Dart-Code.flutter</a>)</li>
+          <li>กด Install — ตัว Dart extension จะติดตั้งตามมาให้อัตโนมัติ ไม่ต้องหาลงเอง</li>
+        </ol></div>
+      </details>
+    </div>
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a5"><label for="a5"><b>ให้ VS Code ดาวน์โหลด Flutter SDK ให้อัตโนมัติ</b><span class="note">Ctrl+Shift+P → Flutter: New Project</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body"><ol>
+          <li>กด <code>Ctrl+Shift+P</code> เปิด Command Palette พิมพ์ <b>Flutter: New Project</b> แล้วกด Enter</li>
+          <li>ถ้ายังไม่เคยมี Flutter SDK ในเครื่อง VS Code จะเสนอปุ่ม "Download SDK" ให้กด — มันจะดาวน์โหลดและตั้งค่า PATH ให้อัตโนมัติ (ไม่ต้องโหลด .zip เองแล้วไปตั้ง PATH มือแบบวิธีทางการที่ <a href="https://docs.flutter.dev/get-started/install/windows/mobile" target="_blank" rel="noopener">docs.flutter.dev/get-started/install/windows</a> เขียนไว้ — วิธีผ่าน VS Code นี้ง่ายกว่าสำหรับคนเพิ่งเริ่ม)</li>
+          <li>รอจนดาวน์โหลดเสร็จ (ใช้เวลาสักพัก ไฟล์ค่อนข้างใหญ่) แล้วเลือกตำแหน่งโฟลเดอร์สำหรับสร้างโปรเจ็คทดสอบ (ยังไม่ต้องสร้างจริงก็ได้ กด Escape ออกได้หลัง SDK โหลดเสร็จ)</li>
+        </ol></div>
+      </details>
+    </div>
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a6"><label for="a6"><b>ติดตั้ง Android Studio</b><span class="note">developer.android.com/studio ติดตั้ง component Android SDK ให้ครบ</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body"><ol>
+          <li>ไปที่ <a href="https://developer.android.com/studio" target="_blank" rel="noopener">developer.android.com/studio</a> ดาวน์โหลดตัวติดตั้งสำหรับ Windows</li>
+          <li>รันตัวติดตั้ง เลือก "Standard" installation type (ค่า default) จะติดตั้ง Android SDK, Android SDK Platform-Tools, Android Virtual Device ให้ครบในขั้นตอนเดียว</li>
+          <li>เปิด Android Studio ครั้งแรก ไปที่ <b>Settings → Plugins</b> ค้นหา <b>Flutter</b> กด Install (ถ้าถามให้ติดตั้ง Dart ด้วย กด Yes)</li>
+        </ol></div>
+      </details>
+    </div>
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a7"><label for="a7"><b>สร้าง Android Virtual Device (emulator)</b><span class="note">Android Studio → Device Manager → Create Device</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body"><ol>
+          <li>เปิด Android Studio ไปที่ <b>Device Manager</b> (ไอคอนมือถือด้านขวา หรือ More Actions → Virtual Device Manager)</li>
+          <li>กด <b>Create Device</b> เลือกรุ่นมือถือกลาง ๆ (เช่น Pixel 6 หรือ Pixel 7) กด Next</li>
+          <li>เลือก System Image (เวอร์ชัน Android) — ถ้ายังไม่เคยโหลด จะมีปุ่ม Download ข้าง ๆ ให้กดโหลดก่อน แนะนำเลือกเวอร์ชันล่าสุดที่มีให้</li>
+          <li>กด Finish รอสักครู่ emulator จะโชว์ในรายการ กดปุ่ม ▶ เพื่อเปิดทดสอบว่าจำลองมือถือขึ้นมาได้จริง</li>
+        </ol></div>
+      </details>
+    </div>
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a8"><label for="a8"><b>รัน flutter doctor -v ผ่านหมด</b><span class="note">แก้ Android licenses ถ้าค้าง ด้วย flutter doctor --android-licenses</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body">เปิด terminal ใหม่ (สำคัญ ต้องเปิดใหม่หลังติดตั้งของก่อนหน้าเสร็จ) พิมพ์:
+          <pre class="cmd">flutter doctor -v</pre>
+          ถ้าเห็นบรรทัด "Android licenses not accepted" ให้รัน:
+          <pre class="cmd">flutter doctor --android-licenses</pre>
+          แล้วพิมพ์ <code>y</code> ยอมรับไปเรื่อย ๆ จนครบทุกข้อ รันคำสั่งแรกอีกครั้งเพื่อดูว่าติ๊กเขียวครบหรือยัง (อ้างอิงขั้นตอนตามเอกสารทางการที่ <a href="https://docs.flutter.dev/get-started/install/windows/mobile" target="_blank" rel="noopener">docs.flutter.dev/get-started/install/windows</a>)
+        </div>
+      </details>
+    </div>
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a9"><label for="a9"><b>เปิด Windows Developer Mode</b><span class="note">start ms-settings:developers แล้วรีสตาร์ทเครื่อง — กันปัญหา symlink error ทีหลัง</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body">จำเป็นสำหรับให้ Flutter สร้าง symlink ตอน build โปรเจ็คที่มี plugin (เกือบทุกโปรเจ็คจริงมี) ไม่เปิดจะเจอ error "Building with plugins requires symlink support" ทีหลัง
+          <pre class="cmd">start ms-settings:developers</pre>
+          พิมพ์คำสั่งนี้ใน terminal จะเปิดหน้า Settings ให้เลย หรือเข้าเองที่ <b>Settings → Privacy & Security → For developers</b> เปิดสวิตช์ <b>Developer Mode</b> เป็น ON แล้วรีสตาร์ทเครื่อง (แนะนำให้รีสตาร์ทให้ชัวร์)
+        </div>
+      </details>
+    </div>
+    <div class="item">
+      <div class="item-row"><input type="checkbox" id="a10"><label for="a10"><b>ทดสอบด้วย flutter create test_app แล้ว flutter run</b><span class="note">ยืนยันว่าทุกอย่างพร้อมจริงก่อนเริ่มงานจริง ลบทิ้งได้หลังผ่าน</span></label></div>
+      <details><summary>ดูขั้นตอนละเอียด</summary>
+        <div class="detail-body">เปิด emulator ที่สร้างไว้ในข้อ 7 ให้รันอยู่ก่อน (หรือต่อมือถือจริงผ่าน USB debugging) แล้วเปิด terminal ไปที่โฟลเดอร์ไหนก็ได้ที่ไม่ใช่ repo หลัก พิมพ์:
+          <pre class="cmd">flutter create test_app
+cd test_app
+flutter run</pre>
+          ถ้ามีมากกว่า 1 target ให้มันถามว่าจะรันบนไหน เลือก emulator/มือถือที่เตรียมไว้ รอสักครู่จะเห็นแอปตัวอย่าง (มีปุ่ม + กดแล้วเลขนับเพิ่ม) ขึ้นบนหน้าจอจริง — ถ้าขึ้นแปลว่าเครื่องพร้อม 100% แล้ว กด <code>q</code> ใน terminal เพื่อหยุด แล้วลบโฟลเดอร์ <code>test_app</code> ทิ้งได้เลย
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <div class="callout"><b>ถ้าติดขัดตรงไหน:</b> ส่ง error message หรือผลจาก <code>flutter doctor -v</code> มาได้เลย ช่วยดูให้ทีละจุด</div>
+
+</div>
+
+<footer>Smart Farm IoT — Flutter Setup Checklist</footer>
+
+<script>
+  const boxes = document.querySelectorAll('.item input[type="checkbox"]');
+  const fill = document.getElementById('fill');
+  const label = document.getElementById('label');
+  function update(){
+    let checked = 0;
+    boxes.forEach(b => {
+      const item = b.closest('.item');
+      if(b.checked){ item.classList.add('checked'); checked++; }
+      else{ item.classList.remove('checked'); }
+    });
+    const pct = Math.round((checked / boxes.length) * 100);
+    fill.style.width = pct + '%';
+    label.textContent = checked + ' / ' + boxes.length + ' ข้อ';
+  }
+  boxes.forEach(b => b.addEventListener('change', update));
+  update();
+</script>
+
+</body>
+</html>

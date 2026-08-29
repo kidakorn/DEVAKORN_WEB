@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คู่มือฝึกฝีมือ Flutter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#1E3D34;
+    --forest-light:#2E5B4E;
+    --paper:#FAF8F2;
+    --card:#FFFFFF;
+    --coral:#D9683D;
+    --coral-light:#F4DDCE;
+    --highlight:#FCE8A8;
+    --charcoal:#25281F;
+    --line:#DDD9C9;
+    --muted:#6B6A5E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    font-family:'Inter',sans-serif;
+    color:var(--charcoal);
+  }
+  .wrap{ max-width:880px; margin:0 auto; padding:0 20px 80px; }
+
+  header.cover{
+    background:var(--forest);
+    color:#F4F1E4;
+    padding:56px 24px 44px;
+    margin-bottom:36px;
+  }
+  header.cover .inner{ max-width:840px; margin:0 auto; }
+  .kicker{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.3em;
+    color:#B9CDBF;
+    margin:0 0 12px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:36px;
+    line-height:1.25;
+    margin:0 0 14px;
+  }
+  .cover p{ font-size:15px; line-height:1.75; color:#D9E3DA; max-width:620px; margin:0; }
+
+  .note-box{
+    background:var(--forest-light);
+    border-left:3px solid var(--coral);
+    padding:14px 18px;
+    margin-top:22px;
+    font-size:13.5px;
+    line-height:1.7;
+    color:#EDE7D4;
+    max-width:600px;
+  }
+
+  .level-header{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin:44px 0 20px;
+  }
+  .level-num{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:13px;
+    color:#fff;
+    background:var(--forest);
+    width:26px; height:26px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .level-header h2{
+    font-family:'Fraunces',serif;
+    font-size:21px;
+    margin:0;
+    color:var(--forest);
+  }
+  .level-header .sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--muted);
+  }
+
+  .lesson{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:22px 24px;
+    margin-bottom:16px;
+  }
+  .lesson-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+    margin-bottom:12px;
+  }
+  .lesson-title{
+    font-family:'Fraunces',serif;
+    font-size:18px;
+    font-weight:600;
+    color:var(--charcoal);
+    margin:0;
+  }
+  .badges{ display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
+  .badge{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    padding:3px 9px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .badge.time{ background:#EFEDE0; color:var(--muted); }
+  .badge.special{ background:var(--coral-light); color:#8A3A1C; }
+
+  .lesson p.what{ font-size:14px; line-height:1.7; margin:0 0 14px; color:var(--charcoal); }
+  .lesson p.what b{ color:var(--forest); font-weight:600; }
+
+  .learn-box{
+    background:var(--highlight);
+    border-radius:8px;
+    padding:12px 16px;
+    font-size:13px;
+    line-height:1.7;
+    color:#4A3C10;
+    margin-bottom:10px;
+  }
+  .learn-box .lbl{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    display:block;
+    margin-bottom:4px;
+    color:#7A5E12;
+  }
+
+  .warn-box{
+    background:#FBEAE5;
+    border-radius:8px;
+    padding:12px 16px;
+    font-size:13px;
+    line-height:1.7;
+    color:#7A2E1B;
+    margin-top:10px;
+  }
+  .warn-box .lbl{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    display:block;
+    margin-bottom:4px;
+    color:#A1401F;
+  }
+
+  .steps{
+    margin:4px 0 0;
+    padding:0;
+    list-style:none;
+    counter-reset:step;
+  }
+  .steps li{
+    counter-increment:step;
+    display:flex;
+    gap:11px;
+    align-items:baseline;
+    font-size:13.5px;
+    line-height:1.6;
+    padding:6px 0;
+    border-bottom:1px dotted var(--line);
+  }
+  .steps li:last-child{ border-bottom:none; }
+  .steps li::before{
+    content:counter(step);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:#fff;
+    background:var(--forest-light);
+    width:20px; height:20px;
+    border-radius:50%;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .steps-lbl{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    color:var(--forest);
+    display:block;
+    margin:14px 0 6px;
+  }
+
+  .prompt-card{
+    border:1px solid var(--line);
+    border-radius:8px;
+    margin-top:14px;
+    background:#F7F5EC;
+    overflow:hidden;
+  }
+  .prompt-card summary{
+    cursor:pointer;
+    list-style:none;
+    padding:10px 14px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:600;
+    color:var(--forest);
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .prompt-card summary::-webkit-details-marker{ display:none; }
+  .prompt-card summary::before{
+    content:'▸';
+    color:var(--coral);
+    font-size:11px;
+    transition:transform 0.15s ease;
+  }
+  .prompt-card[open] summary::before{ transform:rotate(90deg); }
+  .prompt-box{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    line-height:1.65;
+    white-space:pre-wrap;
+    word-break:break-word;
+    background:#FFFFFF;
+    border-top:1px dashed var(--line);
+    margin:0;
+    padding:14px;
+    color:var(--charcoal);
+  }
+  .copy-btn{
+    display:block;
+    width:calc(100% - 24px);
+    margin:0 12px 12px;
+    padding:8px 10px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    background:var(--forest);
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+  }
+  .copy-btn:hover{ background:var(--coral); }
+  .copy-btn:active{ transform:translateY(1px); }
+
+  .done-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px dashed var(--line);
+  }
+  .done-row input{ width:16px; height:16px; accent-color:var(--forest); }
+  .done-row label{ font-size:12.5px; color:var(--muted); font-family:'IBM Plex Mono',monospace; }
+
+  .path{
+    background:var(--forest);
+    color:#F4F1E4;
+    border-radius:10px;
+    padding:26px 26px 22px;
+    margin-top:48px;
+  }
+  .path h2{
+    font-family:'Fraunces',serif;
+    font-size:19px;
+    margin:0 0 6px;
+  }
+  .path p.intro{ font-size:13.5px; color:#C7D6CB; margin:0 0 18px; }
+  .path ol{ margin:0; padding-left:20px; }
+  .path li{ font-size:14px; line-height:2.1; }
+  .path li b{ color:#FCE8A8; }
+  .path .closing{
+    font-size:12.5px;
+    color:#B9CDBF;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid rgba(255,255,255,0.15);
+  }
+
+  @media (max-width:600px){
+    header.cover{ padding:42px 18px 34px; }
+    h1{ font-size:27px; }
+    .lesson{ padding:18px; }
+    .lesson-top{ flex-direction:column; }
+    .badges{ justify-content:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="inner">
+    <p class="kicker">คู่มือฝึกฝีมือ — เล่ม 1</p>
+    <h1>โปรเจกต์ฝึกมือ Flutter<br>สำหรับเวลาว่าง</h1>
+    <p>รวมโปรเจกต์เดี่ยวขนาดเล็ก เรียงจากง่ายไปยาก แต่ละอันฝึกทักษะคนละจุด ไม่ต้องทำครบทุกอันหรือทำตามลำดับเป๊ะ ๆ เลือกอันที่สนใจที่สุดตอนว่างได้เลย</p>
+    <div class="note-box">
+      เอกสารนี้แยกจากแผนงานหลักของระบบ POS ที่กำลังวางแผนอยู่ ใช้เป็นที่ฝึกทักษะย่อยก่อนหรือระหว่างที่รอเริ่มงานจริง
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="level-header">
+    <span class="level-num">1</span>
+    <h2>ระดับง่าย</h2>
+    <span class="sub">ทำคนเดียวจบใน 3–7 วัน</span>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-top">
+      <p class="lesson-title">Todo List พร้อมเก็บข้อมูลในเครื่อง</p>
+      <div class="badges"><span class="badge time">2–4 วัน</span></div>
+    </div>
+    <p class="what">แอปจดสิ่งที่ต้องทำ เพิ่ม/ลบ/ติ๊กเสร็จ ข้อมูลอยู่ในเครื่องอย่างเดียว <b>ไม่มี backend</b></p>
+    <div class="learn-box">
+      <span class="lbl">จะได้เรียนรู้</span>
+      ควรทำเป็นโปรเจกต์แรกสุด เพราะไม่มี backend มากวนใจ ได้โฟกัสแค่ widget, state management (Riverpod), และ local storage (sqflite หรือ Hive) ล้วน ๆ เป็นการปูพื้นฐานก่อนไปแตะโปรเจกต์ที่มี backend
+    </div>
+    <span class="steps-lbl">ขั้นตอน</span>
+    <ol class="steps">
+      <li>สร้างโปรเจกต์ Flutter ใหม่ด้วยคำสั่ง flutter create</li>
+      <li>ออกแบบหน้าจอหลักด้วย widget พื้นฐาน (Scaffold, ListView)</li>
+      <li>สร้าง model ง่าย ๆ สำหรับ todo item (title, isDone)</li>
+      <li>ติดตั้ง Riverpod แล้วผูก state เป็นลิสต์ของ todos</li>
+      <li>เพิ่มฟังก์ชันเพิ่ม/ลบ/ติ๊กเสร็จ ทดสอบว่าหน้าจออัปเดตถูก</li>
+      <li>ติดตั้ง Hive หรือ sqflite เพื่อเก็บข้อมูลถาวรในเครื่อง</li>
+      <li>โหลดข้อมูลตอนเปิดแอป และบันทึกทุกครั้งที่มีการแก้ไข</li>
+      <li>ทดสอบปิดแอปแล้วเปิดใหม่ ข้อมูลต้องยังอยู่ครบ</li>
+    </ol>
+    <details class="prompt-card">
+      <summary>▸ Prompt สั่ง Agent</summary>
+      <pre class="prompt-box" id="pr1">งานนี้เป็นโปรเจกต์ฝึกฝีมือเดี่ยว แยกจากระบบ POS หลัก ชื่อโปรเจกต์: Todo List พร้อมเก็บข้อมูลในเครื่อง
+
+กติกาที่ต้องทำตามตลอดงานนี้:
+- เสนอแผนย่อยก่อนเริ่มเขียนโค้ดเสมอ แล้วรอฉันอนุมัติก่อนลงมือ
+- ทำทีละขั้นตอนตามลิสต์ด้านล่าง อย่าข้ามหรือรวมหลายขั้นตอนโดยไม่แจ้ง
+- อธิบายเหตุผลทุกการตัดสินใจทางเทคนิค ฉันไม่มีพื้นฐาน Flutter มาก่อน ให้อธิบายในระดับที่คนเริ่มต้นเข้าใจได้
+- ห้ามใช้ emoji ที่ใดทั้งสิ้น ไม่ว่าในโค้ด คอมเมนต์ หรือข้อความตอบกลับ
+- คอมเมนต์โค้ดที่ไม่ตรงไปตรงมาให้บอกว่าทำไมถึงเขียนแบบนั้น ไม่ใช่แค่บอกว่าทำอะไร
+
+ขั้นตอนที่ต้องทำ:
+1. สร้างโปรเจกต์ Flutter ใหม่ด้วยคำสั่ง flutter create
+2. ออกแบบหน้าจอหลักด้วย widget พื้นฐาน (Scaffold, ListView)
+3. สร้าง model ง่าย ๆ สำหรับ todo item (title, isDone)
+4. ติดตั้ง Riverpod แล้วผูก state เป็นลิสต์ของ todos
+5. เพิ่มฟังก์ชันเพิ่ม/ลบ/ติ๊กเสร็จ ทดสอบว่าหน้าจออัปเดตถูก
+6. ติดตั้ง Hive หรือ sqflite เพื่อเก็บข้อมูลถาวรในเครื่อง
+7. โหลดข้อมูลตอนเปิดแอป และบันทึกทุกครั้งที่มีการแก้ไข
+8. ทดสอบปิดแอปแล้วเปิดใหม่ ข้อมูลต้องยังอยู่ครบ
+
+หลังจบแต่ละขั้นตอน สรุปให้ฉันทราบว่าทำอะไรไปบ้าง ทดสอบอย่างไร แล้วรอฉันยืนยันก่อนไปขั้นถัดไป</pre>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pr1').textContent)">คัดลอก prompt</button>
+    </details>
+    <div class="done-row">
+      <input type="checkbox" id="c1"><label for="c1">ทำเสร็จแล้ว</label>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-top">
+      <p class="lesson-title">แอปพยากรณ์อากาศ</p>
+      <div class="badges"><span class="badge time">2–3 วัน</span></div>
+    </div>
+    <p class="what">กรอกชื่อเมือง แล้วแสดงอุณหภูมิ/สภาพอากาศ โดยเรียก API ฟรีจากภายนอก (เช่น OpenWeatherMap)</p>
+    <div class="learn-box">
+      <span class="lbl">จะได้เรียนรู้</span>
+      ฝึกเรียก REST API จากแหล่งภายนอก, จัดการ loading/error state (พิมพ์ชื่อเมืองผิด, เน็ตหลุด), และ parse JSON เป็น Dart object — ตรงกับสิ่งที่ต้องทำตอนแอป Flutter คุยกับ backend NestJS ของโปรเจกต์ POS
+    </div>
+    <span class="steps-lbl">ขั้นตอน</span>
+    <ol class="steps">
+      <li>สมัคร API key ฟรีจากผู้ให้บริการ เช่น OpenWeatherMap</li>
+      <li>สร้างโปรเจกต์ Flutter ใหม่</li>
+      <li>ออกแบบหน้าจอ: ช่องกรอกชื่อเมือง ปุ่มค้นหา พื้นที่แสดงผล</li>
+      <li>เขียนฟังก์ชันเรียก API ด้วย package http</li>
+      <li>แปลง JSON response เป็น Dart object</li>
+      <li>แสดงผลอุณหภูมิและสภาพอากาศบนหน้าจอ</li>
+      <li>จัดการ error กรณีพิมพ์ชื่อเมืองผิดหรือเน็ตหลุด แสดงข้อความที่เข้าใจง่าย</li>
+      <li>เพิ่ม loading indicator ระหว่างรอข้อมูลจาก API</li>
+    </ol>
+    <details class="prompt-card">
+      <summary>▸ Prompt สั่ง Agent</summary>
+      <pre class="prompt-box" id="pr2">งานนี้เป็นโปรเจกต์ฝึกฝีมือเดี่ยว แยกจากระบบ POS หลัก ชื่อโปรเจกต์: แอปพยากรณ์อากาศ
+
+กติกาที่ต้องทำตามตลอดงานนี้:
+- เสนอแผนย่อยก่อนเริ่มเขียนโค้ดเสมอ แล้วรอฉันอนุมัติก่อนลงมือ
+- ทำทีละขั้นตอนตามลิสต์ด้านล่าง อย่าข้ามหรือรวมหลายขั้นตอนโดยไม่แจ้ง
+- อธิบายเหตุผลทุกการตัดสินใจทางเทคนิค ฉันไม่มีพื้นฐาน Flutter มาก่อน ให้อธิบายในระดับที่คนเริ่มต้นเข้าใจได้
+- ห้ามใช้ emoji ที่ใดทั้งสิ้น
+- คอมเมนต์โค้ดที่ไม่ตรงไปตรงมาให้บอกว่าทำไมถึงเขียนแบบนั้น ไม่ใช่แค่บอกว่าทำอะไร
+
+ขั้นตอนที่ต้องทำ:
+1. สมัคร API key ฟรีจากผู้ให้บริการ เช่น OpenWeatherMap
+2. สร้างโปรเจกต์ Flutter ใหม่
+3. ออกแบบหน้าจอ: ช่องกรอกชื่อเมือง ปุ่มค้นหา พื้นที่แสดงผล
+4. เขียนฟังก์ชันเรียก API ด้วย package http
+5. แปลง JSON response เป็น Dart object
+6. แสดงผลอุณหภูมิและสภาพอากาศบนหน้าจอ
+7. จัดการ error กรณีพิมพ์ชื่อเมืองผิดหรือเน็ตหลุด แสดงข้อความที่เข้าใจง่าย
+8. เพิ่ม loading indicator ระหว่างรอข้อมูลจาก API
+
+หลังจบแต่ละขั้นตอน สรุปให้ฉันทราบว่าทำอะไรไปบ้าง ทดสอบอย่างไร แล้วรอฉันยืนยันก่อนไปขั้นถัดไป</pre>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pr2').textContent)">คัดลอก prompt</button>
+    </details>
+    <div class="done-row">
+      <input type="checkbox" id="c2"><label for="c2">ทำเสร็จแล้ว</label>
+    </div>
+  </div>
+
+  <div class="level-header">
+    <span class="level-num">2</span>
+    <h2>ระดับปานกลาง</h2>
+    <span class="sub">ทำคนเดียวจบใน 1–3 สัปดาห์</span>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-top">
+      <p class="lesson-title">แอปติดตามค่าใช้จ่าย</p>
+      <div class="badges"><span class="badge time">1–2 สัปดาห์</span></div>
+    </div>
+    <p class="what">บันทึกรายรับ-รายจ่าย แยกหมวดหมู่ แสดงกราฟสรุปรายเดือน</p>
+    <div class="learn-box">
+      <span class="lbl">จะได้เรียนรู้</span>
+      ฝึกออกแบบโครงสร้างข้อมูลในเครื่องที่มีความสัมพันธ์กัน (รายการผูกกับหมวดหมู่) และฝึกใช้ library กราฟ (เช่น fl_chart) ซึ่งได้ใช้ตอนทำหน้ารายงานยอดขายของ admin_dashboard ในโปรเจกต์ POS พอดี ถือเป็นการซ้อมล่วงหน้า
+    </div>
+    <span class="steps-lbl">ขั้นตอน</span>
+    <ol class="steps">
+      <li>ออกแบบโครงสร้างข้อมูลในเครื่อง (จำนวนเงิน, หมวดหมู่, วันที่, โน้ต)</li>
+      <li>Setup sqflite หรือ Hive สำหรับเก็บข้อมูล</li>
+      <li>สร้างหน้าเพิ่มรายการ (ฟอร์มกรอกจำนวนเงิน หมวดหมู่ วันที่)</li>
+      <li>สร้างหน้าแสดงรายการทั้งหมด แยกตามเดือน</li>
+      <li>คำนวณยอดรวมรายเดือน แยกตามหมวดหมู่</li>
+      <li>ติดตั้ง fl_chart แล้วแสดงกราฟสรุป</li>
+      <li>เพิ่มฟังก์ชันแก้ไขและลบรายการ</li>
+      <li>ใช้งานจริงกับข้อมูลของตัวเองสัก 1 เดือนเพื่อทดสอบ</li>
+    </ol>
+    <details class="prompt-card">
+      <summary>▸ Prompt สั่ง Agent</summary>
+      <pre class="prompt-box" id="pr3">งานนี้เป็นโปรเจกต์ฝึกฝีมือเดี่ยว แยกจากระบบ POS หลัก ชื่อโปรเจกต์: แอปติดตามค่าใช้จ่าย
+
+กติกาที่ต้องทำตามตลอดงานนี้:
+- เสนอแผนย่อยก่อนเริ่มเขียนโค้ดเสมอ แล้วรอฉันอนุมัติก่อนลงมือ
+- ทำทีละขั้นตอนตามลิสต์ด้านล่าง อย่าข้ามหรือรวมหลายขั้นตอนโดยไม่แจ้ง
+- อธิบายเหตุผลทุกการตัดสินใจทางเทคนิค ฉันไม่มีพื้นฐาน Flutter มาก่อน ให้อธิบายในระดับที่คนเริ่มต้นเข้าใจได้
+- ห้ามใช้ emoji ที่ใดทั้งสิ้น
+- คอมเมนต์โค้ดที่ไม่ตรงไปตรงมาให้บอกว่าทำไมถึงเขียนแบบนั้น ไม่ใช่แค่บอกว่าทำอะไร
+
+ขั้นตอนที่ต้องทำ:
+1. ออกแบบโครงสร้างข้อมูลในเครื่อง (จำนวนเงิน, หมวดหมู่, วันที่, โน้ต)
+2. Setup sqflite หรือ Hive สำหรับเก็บข้อมูล
+3. สร้างหน้าเพิ่มรายการ (ฟอร์มกรอกจำนวนเงิน หมวดหมู่ วันที่)
+4. สร้างหน้าแสดงรายการทั้งหมด แยกตามเดือน
+5. คำนวณยอดรวมรายเดือน แยกตามหมวดหมู่
+6. ติดตั้ง fl_chart แล้วแสดงกราฟสรุป
+7. เพิ่มฟังก์ชันแก้ไขและลบรายการ
+8. ใช้งานจริงกับข้อมูลของตัวเองสัก 1 เดือนเพื่อทดสอบ
+
+หลังจบแต่ละขั้นตอน สรุปให้ฉันทราบว่าทำอะไรไปบ้าง ทดสอบอย่างไร แล้วรอฉันยืนยันก่อนไปขั้นถัดไป</pre>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pr3').textContent)">คัดลอก prompt</button>
+    </details>
+    <div class="done-row">
+      <input type="checkbox" id="c3"><label for="c3">ทำเสร็จแล้ว</label>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-top">
+      <p class="lesson-title">แอปแชทเรียลไทม์แบบง่าย</p>
+      <div class="badges"><span class="badge time">1–2 สัปดาห์</span></div>
+    </div>
+    <p class="what">ห้องแชทเดียว ทุกคนพิมพ์แล้วเห็นข้อความของกันและกันทันที ไม่ต้องมีระบบเพิ่มเพื่อน/ห้องส่วนตัว</p>
+    <div class="learn-box">
+      <span class="lbl">จะได้เรียนรู้</span>
+      ฝึก WebSocket ตั้งแต่ต้นจนจบในสเกลเล็ก ก่อนไปเจอของจริงที่ซับซ้อนกว่าในเฟส 6 ของ POS (real-time sync สต็อก) จะเข้าใจแนวคิด "server broadcast ข้อมูลไปหาหลาย client พร้อมกัน" โดยไม่ปนกับ logic ธุรกิจที่ซับซ้อน
+    </div>
+    <span class="steps-lbl">ขั้นตอน</span>
+    <ol class="steps">
+      <li>Setup backend เปล่าด้วย NestJS</li>
+      <li>เพิ่ม WebSocket gateway (เช่น Socket.io)</li>
+      <li>สร้าง endpoint รับข้อความแล้ว broadcast ไปทุก client ที่เชื่อมต่ออยู่</li>
+      <li>Setup โปรเจกต์ Flutter เชื่อมต่อ WebSocket (package socket_io_client)</li>
+      <li>ออกแบบหน้าจอแชท (ช่องพิมพ์ข้อความ + รายการข้อความ)</li>
+      <li>ทดสอบเปิดแอปสองเครื่อง (หรือสอง emulator) พิมพ์แล้วดูว่าอีกเครื่องเห็นทันที</li>
+      <li>เพิ่มชื่อผู้ส่งแสดงคู่กับข้อความ</li>
+      <li>ถ้าอยากยากขึ้น ลองเพิ่มการแจ้งเตือนเมื่อมีข้อความใหม่</li>
+    </ol>
+    <details class="prompt-card">
+      <summary>▸ Prompt สั่ง Agent</summary>
+      <pre class="prompt-box" id="pr4">งานนี้เป็นโปรเจกต์ฝึกฝีมือเดี่ยว แยกจากระบบ POS หลัก ชื่อโปรเจกต์: แอปแชทเรียลไทม์แบบง่าย
+
+กติกาที่ต้องทำตามตลอดงานนี้:
+- เสนอแผนย่อยก่อนเริ่มเขียนโค้ดเสมอ แล้วรอฉันอนุมัติก่อนลงมือ
+- ทำทีละขั้นตอนตามลิสต์ด้านล่าง อย่าข้ามหรือรวมหลายขั้นตอนโดยไม่แจ้ง
+- อธิบายเหตุผลทุกการตัดสินใจทางเทคนิค ฉันไม่มีพื้นฐาน Flutter มาก่อน ให้อธิบายในระดับที่คนเริ่มต้นเข้าใจได้
+- ห้ามใช้ emoji ที่ใดทั้งสิ้น
+- คอมเมนต์โค้ดที่ไม่ตรงไปตรงมาให้บอกว่าทำไมถึงเขียนแบบนั้น ไม่ใช่แค่บอกว่าทำอะไร
+
+ขั้นตอนที่ต้องทำ:
+1. Setup backend เปล่าด้วย NestJS
+2. เพิ่ม WebSocket gateway (เช่น Socket.io)
+3. สร้าง endpoint รับข้อความแล้ว broadcast ไปทุก client ที่เชื่อมต่ออยู่
+4. Setup โปรเจกต์ Flutter เชื่อมต่อ WebSocket (package socket_io_client)
+5. ออกแบบหน้าจอแชท (ช่องพิมพ์ข้อความ + รายการข้อความ)
+6. ทดสอบเปิดแอปสองเครื่อง (หรือสอง emulator) พิมพ์แล้วดูว่าอีกเครื่องเห็นทันที
+7. เพิ่มชื่อผู้ส่งแสดงคู่กับข้อความ
+8. ถ้าอยากยากขึ้น ลองเพิ่มการแจ้งเตือนเมื่อมีข้อความใหม่
+
+หลังจบแต่ละขั้นตอน สรุปให้ฉันทราบว่าทำอะไรไปบ้าง ทดสอบอย่างไร แล้วรอฉันยืนยันก่อนไปขั้นถัดไป</pre>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pr4').textContent)">คัดลอก prompt</button>
+    </details>
+    <div class="done-row">
+      <input type="checkbox" id="c4"><label for="c4">ทำเสร็จแล้ว</label>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-top">
+      <p class="lesson-title">แอปจองคิว/นัดหมายง่าย ๆ</p>
+      <div class="badges"><span class="badge time">1–2 สัปดาห์</span></div>
+    </div>
+    <p class="what">ผู้ใช้เลือกวันเวลาที่ว่างเพื่อจอง (เช่น จองคิวร้านตัดผมสมมติ) ระบบกันไม่ให้จองเวลาเดียวกันซ้ำ</p>
+    <div class="learn-box">
+      <span class="lbl">จะได้เรียนรู้</span>
+      ฝึกปัญหาแบบเดียวกับการตัดสต็อกใน POS — กันไม่ให้สองคนจองเวลาเดียวกันพร้อมกันได้ (concurrency) แต่สเกลเล็กกว่ามาก เหมาะเป็นตัวซ้อมก่อนไปเจอเฟส 2 (Inventory + Orders) ของ POS จริง
+    </div>
+    <span class="steps-lbl">ขั้นตอน</span>
+    <ol class="steps">
+      <li>ออกแบบ schema: ตาราง slots (วันเวลา, สถานะว่าง/ถูกจอง)</li>
+      <li>Setup backend NestJS + PostgreSQL</li>
+      <li>เขียน API ดึงเวลาที่ว่างในแต่ละวัน</li>
+      <li>เขียน API จองคิว ต้องมี transaction + lock กันจองเวลาเดียวกันซ้ำ</li>
+      <li>Setup Flutter แสดงปฏิทิน/รายการเวลาที่ว่าง</li>
+      <li>เพิ่มหน้ายืนยันการจอง</li>
+      <li>ทดสอบยิง request จองเวลาเดียวกันพร้อมกันสองครั้ง ต้องมีแค่ครั้งเดียวสำเร็จ</li>
+      <li>เพิ่มหน้าดูประวัติการจองของตัวเอง</li>
+    </ol>
+    <details class="prompt-card">
+      <summary>▸ Prompt สั่ง Agent</summary>
+      <pre class="prompt-box" id="pr5">งานนี้เป็นโปรเจกต์ฝึกฝีมือเดี่ยว แยกจากระบบ POS หลัก ชื่อโปรเจกต์: แอปจองคิว/นัดหมายง่าย ๆ
+
+กติกาที่ต้องทำตามตลอดงานนี้:
+- เสนอแผนย่อยก่อนเริ่มเขียนโค้ดเสมอ แล้วรอฉันอนุมัติก่อนลงมือ
+- ทำทีละขั้นตอนตามลิสต์ด้านล่าง อย่าข้ามหรือรวมหลายขั้นตอนโดยไม่แจ้ง
+- อธิบายเหตุผลทุกการตัดสินใจทางเทคนิค ฉันไม่มีพื้นฐาน Flutter มาก่อน ให้อธิบายในระดับที่คนเริ่มต้นเข้าใจได้
+- ห้ามใช้ emoji ที่ใดทั้งสิ้น
+- คอมเมนต์โค้ดที่ไม่ตรงไปตรงมาให้บอกว่าทำไมถึงเขียนแบบนั้น ไม่ใช่แค่บอกว่าทำอะไร โดยเฉพาะส่วนที่กันการจองซ้ำ
+
+ขั้นตอนที่ต้องทำ:
+1. ออกแบบ schema: ตาราง slots (วันเวลา, สถานะว่าง/ถูกจอง)
+2. Setup backend NestJS + PostgreSQL
+3. เขียน API ดึงเวลาที่ว่างในแต่ละวัน
+4. เขียน API จองคิว ต้องมี transaction + lock กันจองเวลาเดียวกันซ้ำ
+5. Setup Flutter แสดงปฏิทิน/รายการเวลาที่ว่าง
+6. เพิ่มหน้ายืนยันการจอง
+7. ทดสอบยิง request จองเวลาเดียวกันพร้อมกันสองครั้ง ต้องมีแค่ครั้งเดียวสำเร็จ
+8. เพิ่มหน้าดูประวัติการจองของตัวเอง
+
+หลังจบแต่ละขั้นตอน สรุปให้ฉันทราบว่าทำอะไรไปบ้าง ทดสอบอย่างไร แล้วรอฉันยืนยันก่อนไปขั้นถัดไป</pre>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pr5').textContent)">คัดลอก prompt</button>
+    </details>
+    <div class="done-row">
+      <input type="checkbox" id="c5"><label for="c5">ทำเสร็จแล้ว</label>
+    </div>
+  </div>
+
+  <div class="level-header">
+    <span class="level-num">3</span>
+    <h2>ระดับสูง</h2>
+    <span class="sub">ใกล้เคียงงานจริง ใช้เวลาหลายสัปดาห์</span>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-top">
+      <p class="lesson-title">เชื่อม Flutter เข้ากับระบบ AS400/IBMi ที่ทำงานอยู่</p>
+      <div class="badges"><span class="badge special">ตรงสายงานคุณ</span><span class="badge time">3–4 สัปดาห์+</span></div>
+    </div>
+    <p class="what">สร้างแอป Flutter เล็ก ๆ ที่คุยกับข้อมูลจาก AS400/IBMi ผ่าน API ตัวกลาง (เขียน REST API wrapper ด้วย LANSA หรือ Node.js ที่ไปเรียกข้อมูลจาก DB2 for i อีกที) เช่น ดูสต็อกสินค้าจากระบบเดิม, ค้นหาข้อมูลลูกค้า, หรือ dashboard สรุปยอดง่าย ๆ</p>
+    <div class="learn-box">
+      <span class="lbl">จะได้เรียนรู้</span>
+      โปรเจกต์นี้มีประโยชน์สูงสุดสำหรับสายงานคุณโดยตรง เพราะเป็นทักษะที่ตลาดต้องการมาก (คนที่เชื่อม legacy system อย่าง AS400 เข้ากับ mobile app สมัยใหม่ได้ค่อนข้างหายาก) และใช้ประสบการณ์ LANSA/RPG ที่มีอยู่แล้วให้เป็นประโยชน์ แทนที่จะทิ้งไปเรียนแต่ของใหม่ล้วน ๆ
+    </div>
+    <div class="warn-box">
+      <span class="lbl">ข้อควรระวัง</span>
+      ถ้าเป็นข้อมูลจริงของบริษัท ต้องเช็คกับหัวหน้า/ฝ่าย security ก่อนว่าเอาข้อมูลออกมาทำโปรเจกต์ส่วนตัวได้ไหม แนะนำให้เริ่มจากสร้างข้อมูลจำลอง (mock data) ที่มีโครงสร้างคล้ายของจริงแทน จะได้ฝึกได้โดยไม่เสี่ยงเรื่อง data privacy
+    </div>
+    <span class="steps-lbl">ขั้นตอน</span>
+    <ol class="steps">
+      <li>คุยกับหัวหน้า/ทีม security ก่อนว่าเอาข้อมูลอะไรออกมาได้บ้าง หรือเตรียม mock data แทน</li>
+      <li>ออกแบบ endpoint ที่ต้องการ เช่น ดูสต็อกสินค้า หรือค้นหาข้อมูลลูกค้า</li>
+      <li>เขียน API wrapper ด้วย LANSA หรือ Node.js ที่ไปเรียกข้อมูลจาก DB2 for i</li>
+      <li>ทดสอบ API ตัวกลางนี้ด้วย Postman ก่อนแตะ Flutter</li>
+      <li>Setup โปรเจกต์ Flutter เชื่อมกับ API ตัวกลาง</li>
+      <li>ออกแบบหน้าจอแสดงผลข้อมูล (รายการ, ค้นหา, รายละเอียด)</li>
+      <li>จัดการ error กรณี AS400 ตอบช้าหรือ timeout</li>
+      <li>ทดสอบให้ครบกับข้อมูลจำลองก่อนพิจารณาต่อกับข้อมูลจริง</li>
+    </ol>
+    <details class="prompt-card">
+      <summary>▸ Prompt สั่ง Agent</summary>
+      <pre class="prompt-box" id="pr6">งานนี้เป็นโปรเจกต์ฝึกฝีมือเดี่ยว แยกจากระบบ POS หลัก ชื่อโปรเจกต์: เชื่อม Flutter เข้ากับระบบ AS400/IBMi
+
+กติกาที่ต้องทำตามตลอดงานนี้:
+- เสนอแผนย่อยก่อนเริ่มเขียนโค้ดเสมอ แล้วรอฉันอนุมัติก่อนลงมือ
+- ทำทีละขั้นตอนตามลิสต์ด้านล่าง อย่าข้ามหรือรวมหลายขั้นตอนโดยไม่แจ้ง
+- อธิบายเหตุผลทุกการตัดสินใจทางเทคนิค โดยเฉพาะจุดที่เกี่ยวกับการเชื่อมต่อ AS400 อธิบายในระดับที่คนเริ่มต้นด้าน Flutter เข้าใจได้ (ฉันมีพื้นฐาน AS400/LANSA/RPG อยู่แล้ว แต่ไม่มีพื้นฐาน Flutter)
+- ห้ามใช้ emoji ที่ใดทั้งสิ้น
+- คอมเมนต์โค้ดที่ไม่ตรงไปตรงมาให้บอกว่าทำไมถึงเขียนแบบนั้น ไม่ใช่แค่บอกว่าทำอะไร
+- ห้ามเดาว่าเอาข้อมูลจริงของบริษัทมาใช้ได้ ถ้ายังไม่ได้ยืนยันกับฉันว่าตรวจสอบเรื่อง security แล้ว ให้ใช้ mock data แทนเสมอ
+
+ขั้นตอนที่ต้องทำ:
+1. ถามฉันก่อนว่าตรวจสอบกับหัวหน้า/ทีม security เรื่องข้อมูลแล้วหรือยัง ถ้ายังให้ใช้ mock data
+2. ออกแบบ endpoint ที่ต้องการ เช่น ดูสต็อกสินค้า หรือค้นหาข้อมูลลูกค้า
+3. เขียน API wrapper ด้วย LANSA หรือ Node.js ที่ไปเรียกข้อมูลจาก DB2 for i (หรือ mock data ตามข้อ 1)
+4. ทดสอบ API ตัวกลางนี้ด้วย Postman ก่อนแตะ Flutter
+5. Setup โปรเจกต์ Flutter เชื่อมกับ API ตัวกลาง
+6. ออกแบบหน้าจอแสดงผลข้อมูล (รายการ, ค้นหา, รายละเอียด)
+7. จัดการ error กรณี AS400 ตอบช้าหรือ timeout
+8. ทดสอบให้ครบกับข้อมูลจำลองก่อนพิจารณาต่อกับข้อมูลจริง
+
+หลังจบแต่ละขั้นตอน สรุปให้ฉันทราบว่าทำอะไรไปบ้าง ทดสอบอย่างไร แล้วรอฉันยืนยันก่อนไปขั้นถัดไป</pre>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pr6').textContent)">คัดลอก prompt</button>
+    </details>
+    <div class="done-row">
+      <input type="checkbox" id="c6"><label for="c6">ทำเสร็จแล้ว</label>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-top">
+      <p class="lesson-title">Mini e-commerce เดี่ยว</p>
+      <div class="badges"><span class="badge time">3–6 สัปดาห์</span></div>
+    </div>
+    <p class="what">เวอร์ชันย่อของระบบ POS หลักที่กำลังวางแผนอยู่ แต่ตัดส่วน POS หน้าร้านออก เหลือแค่ร้านค้าออนไลน์ + แดชบอร์ดแอดมินง่าย ๆ</p>
+    <div class="learn-box">
+      <span class="lbl">จะได้เรียนรู้</span>
+      ถ้าอยากซ้อมสถาปัตยกรรมแบบเดียวกับโปรเจกต์ POS หลัก (มี backend, มี DB transaction, มีหลายแอป) แต่อยากได้ขนาดเล็กกว่าเพื่อทำให้จบเร็วกว่า อันนี้เหมาะเป็นตัวซ้อมมือก่อนลงมือทำโปรเจกต์ POS จริงจัง
+    </div>
+    <span class="steps-lbl">ขั้นตอน</span>
+    <ol class="steps">
+      <li>ออกแบบ schema แบบย่อ (products, orders, order_items)</li>
+      <li>Setup backend NestJS + PostgreSQL + Prisma</li>
+      <li>ทำ Auth module และ Product API</li>
+      <li>ทำ Order API พร้อมตัดสต็อกแบบ transaction ปลอดภัย</li>
+      <li>Setup Flutter app ฝั่งลูกค้า (เบราส์สินค้า, ตะกร้า, checkout)</li>
+      <li>Setup Flutter Web ฝั่งแอดมิน (ดูออเดอร์, จัดการสินค้า)</li>
+      <li>ทดสอบ flow เต็ม: ซื้อสินค้า แล้วเช็คว่าเห็นใน admin และสต็อกลดถูกต้อง</li>
+      <li>ถ้าอยากต่อยอด ลองเพิ่ม WebSocket sync แบบเฟส 6 ของ POS หลัก</li>
+    </ol>
+    <details class="prompt-card">
+      <summary>▸ Prompt สั่ง Agent</summary>
+      <pre class="prompt-box" id="pr7">งานนี้เป็นโปรเจกต์ฝึกฝีมือเดี่ยว แยกจากระบบ POS หลัก (แต่มีสถาปัตยกรรมคล้ายกันในสเกลเล็กกว่า) ชื่อโปรเจกต์: Mini e-commerce เดี่ยว
+
+กติกาที่ต้องทำตามตลอดงานนี้:
+- เสนอแผนย่อยก่อนเริ่มเขียนโค้ดเสมอ แล้วรอฉันอนุมัติก่อนลงมือ
+- ทำทีละขั้นตอนตามลิสต์ด้านล่าง อย่าข้ามหรือรวมหลายขั้นตอนโดยไม่แจ้ง
+- อธิบายเหตุผลทุกการตัดสินใจทางเทคนิค ฉันไม่มีพื้นฐาน Flutter มาก่อน ให้อธิบายในระดับที่คนเริ่มต้นเข้าใจได้
+- ห้ามใช้ emoji ที่ใดทั้งสิ้น
+- คอมเมนต์โค้ดที่ไม่ตรงไปตรงมาให้บอกว่าทำไมถึงเขียนแบบนั้น ไม่ใช่แค่บอกว่าทำอะไร โดยเฉพาะ logic การตัดสต็อก
+
+ขั้นตอนที่ต้องทำ:
+1. ออกแบบ schema แบบย่อ (products, orders, order_items)
+2. Setup backend NestJS + PostgreSQL + Prisma
+3. ทำ Auth module และ Product API
+4. ทำ Order API พร้อมตัดสต็อกแบบ transaction ปลอดภัย
+5. Setup Flutter app ฝั่งลูกค้า (เบราส์สินค้า, ตะกร้า, checkout)
+6. Setup Flutter Web ฝั่งแอดมิน (ดูออเดอร์, จัดการสินค้า)
+7. ทดสอบ flow เต็ม: ซื้อสินค้า แล้วเช็คว่าเห็นใน admin และสต็อกลดถูกต้อง
+8. ถ้าอยากต่อยอด ลองเพิ่ม WebSocket sync แบบเฟส 6 ของ POS หลัก
+
+หลังจบแต่ละขั้นตอน สรุปให้ฉันทราบว่าทำอะไรไปบ้าง ทดสอบอย่างไร แล้วรอฉันยืนยันก่อนไปขั้นถัดไป</pre>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pr7').textContent)">คัดลอก prompt</button>
+    </details>
+    <div class="done-row">
+      <input type="checkbox" id="c7"><label for="c7">ทำเสร็จแล้ว</label>
+    </div>
+  </div>
+
+  <div class="path">
+    <h2>ถ้ายังไม่รู้จะเริ่มจากไหน</h2>
+    <p class="intro">แนะนำลำดับนี้ แต่ไม่จำเป็นต้องทำตามเป๊ะ ๆ — เลือกอันที่สนใจที่สุดตอนนั้นได้เลย</p>
+    <ol>
+      <li><b>Todo List</b> — ปูพื้นฐาน Flutter ล้วน ๆ</li>
+      <li><b>แอปพยากรณ์อากาศ</b> — ฝึกคุย API ภายนอก</li>
+      <li><b>แอปจองคิว</b> — ฝึก concurrency สเกลเล็ก ตรงกับปัญหาที่จะเจอใน POS</li>
+      <li><b>กลับมาทำเฟส 0–3 ของระบบ POS หลัก</b> — จะเห็นว่าทักษะที่ฝึกมาทั้งหมดเอามาใช้จริงตรงนี้</li>
+    </ol>
+    <p class="closing">เป้าหมายคือฝึกฝีมือให้สนุก ไม่ใช่ทำตาม checklist — checkbox ในเอกสารนี้เป็นแค่ตัวช่วยจำ ไม่ได้บันทึกอัตโนมัติ ถ้าปิดหน้านี้แล้วเปิดใหม่จะรีเซ็ต</p>
+  </div>
+
+</div>
+</body>
+</html>
