@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Plan — ASP.NET Core Basic ผ่าน VS Code</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #4b2f8a;
+    --accent-soft: #e4dcf0;
+    --ok: #2f6b4f;
+    --ok-soft: #dcece2;
+    --code-bg: #1b2430;
+    --code-ink: #e8ecf1;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.65; font-size:15px;
+  }
+  .wrap{ max-width:980px; margin:0 auto; padding:48px 24px 100px; }
+  header{ border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:32px; }
+  .doc-id{ font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:8px; }
+  h1{ font-size:27px; margin:0 0 12px; font-weight:700; letter-spacing:-0.01em; }
+  .subtitle{ color:#4a5568; max-width:75ch; font-size:14.5px; }
+
+  .overview-box{
+    background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent);
+    padding:18px 20px; margin:28px 0 36px; font-size:14px;
+  }
+  .overview-box dl{ display:grid; grid-template-columns:auto 1fr; gap:6px 16px; margin:0; }
+  .overview-box dt{ font-family:var(--mono); color:#4a5568; font-size:12.5px; white-space:nowrap; }
+  .overview-box dd{ margin:0; }
+
+  .roadmap{
+    display:flex; flex-wrap:wrap; gap:8px; margin-bottom:44px;
+  }
+  .roadmap a{
+    font-family:var(--mono); font-size:12px; padding:6px 12px;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink);
+    text-decoration:none; border-radius:2px;
+  }
+  .roadmap a:hover{ border-color:var(--accent); color:var(--accent); }
+
+  .phase{
+    background:var(--panel); border:1px solid var(--line); margin-bottom:26px; scroll-margin-top:20px;
+  }
+  .phase-head{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    padding:18px 22px; background:var(--accent-soft); border-bottom:1px solid var(--line);
+  }
+  .phase-head-left{ display:flex; align-items:baseline; gap:12px; }
+  .phase-num{ font-family:var(--mono); font-size:12px; color:var(--accent); font-weight:700; }
+  .phase-title{ font-size:18px; font-weight:700; }
+  .phase-duration{
+    font-family:var(--mono); font-size:11.5px; color:var(--accent);
+    background:#fff; padding:3px 10px; border-radius:2px; border:1px solid var(--line);
+  }
+  .phase-body{ padding:20px 22px 22px; }
+
+  .concept-list{
+    margin:0 0 18px; padding-left:20px; font-size:14px;
+  }
+  .concept-list li{ margin-bottom:5px; }
+
+  .subblock{ margin-bottom:16px; }
+  .subblock:last-child{ margin-bottom:0; }
+  .subblock-label{
+    font-family:var(--mono); font-size:11.5px; color:var(--accent); margin-bottom:6px;
+  }
+
+  pre{
+    margin:0 0 10px; padding:12px 14px; background:var(--code-bg); color:var(--code-ink);
+    font-family:var(--mono); font-size:12.5px; overflow-x:auto; line-height:1.6;
+  }
+  pre:last-child{ margin-bottom:0; }
+
+  .exercise{
+    background:#f6f8fa; border:1px solid var(--line); border-left:3px solid var(--ok);
+    padding:12px 14px; font-size:13.5px; margin-top:12px;
+  }
+  .exercise b{ color:var(--ok); }
+
+  .checklist{
+    background:var(--ok-soft); border:1px solid #a8c9b5; padding:12px 14px; margin-top:12px; font-size:13.5px;
+  }
+  .checklist .cl-label{ font-family:var(--mono); font-size:11px; color:var(--ok); margin-bottom:6px; }
+  .checklist ul{ margin:0; padding-left:18px; }
+  .checklist li{ margin-bottom:4px; }
+
+  .vscode-tip{
+    background:#fff; border:1px dashed var(--line); padding:10px 14px; font-size:13px; margin-top:12px; color:#374151;
+  }
+  .vscode-tip b{ color:var(--ink); }
+
+  table.summary{
+    width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); font-size:13px; margin-top:8px;
+  }
+  table.summary th, table.summary td{ border:1px solid var(--line); padding:9px 10px; text-align:left; }
+  table.summary th{ background:#f6f8fa; font-family:var(--mono); font-weight:600; font-size:11px; color:#4a5568; }
+
+  footer{
+    margin-top:56px; padding-top:16px; border-top:1px solid var(--line);
+    font-size:12px; color:#8a94a3; font-family:var(--mono);
+  }
+
+  @media (max-width: 700px){
+    .wrap{ padding:32px 16px 60px; }
+    h1{ font-size:21px; }
+    pre{ font-size:11.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">LEARNING-PLAN / aspnetcore-basic-vscode / rev.1</div>
+    <h1>Learning Plan — ASP.NET Core Basic แบบ Step by Step ผ่าน VS Code</h1>
+    <p class="subtitle">
+      แผนการเรียนรู้ตั้งแต่พื้นฐาน C# ไปจนถึงสร้าง Web API เล็กๆ ได้เอง ครอบคลุม syntax, โครงสร้างโปรเจกต์,
+      และแนวคิดเฉพาะของ ASP.NET Core ที่ต่างจาก RPG/LANSA ที่คุ้นเคย
+    </p>
+  </header>
+
+  <div class="overview-box">
+    <dl>
+      <dt>เป้าหมายจบแผน</dt><dd>เข้าใจ syntax C# พื้นฐาน + โครงสร้าง ASP.NET Core + สร้าง CRUD Web API ต่อ SQL Server ได้เอง</dd>
+      <dt>เครื่องมือ</dt><dd>VS Code + C# Dev Kit + .NET SDK (ตาม setup plan ที่ทำไปก่อนหน้านี้)</dd>
+      <dt>ระยะเวลารวมโดยประมาณ</dt><dd>4-6 สัปดาห์ ถ้าเรียนวันละ 1-1.5 ชั่วโมง (ปรับตามเวลาว่างจริงได้)</dd>
+      <dt>สมมติฐาน</dt><dd>มีพื้นฐานเขียนโปรแกรมมาก่อน (RPG/RDML) แต่ยังไม่เคยเขียน C# หรือ OOP มาก่อน</dd>
+    </dl>
+  </div>
+
+  <div class="roadmap">
+    <a href="#glossary" style="border-color:var(--accent); color:var(--accent);">ศัพท์เฉพาะทั้งหมด</a>
+    <a href="#p0">Phase 0 — ปรับความคุ้นเคย</a>
+    <a href="#p1">Phase 1 — C# พื้นฐาน</a>
+    <a href="#p2">Phase 2 — OOP ใน C#</a>
+    <a href="#p3">Phase 3 — โครงสร้าง ASP.NET Core</a>
+    <a href="#p4">Phase 4 — Routing และ Controller</a>
+    <a href="#p5">Phase 5 — Async/Await</a>
+    <a href="#p6">Phase 6 — Model และ EF Core</a>
+    <a href="#p7">Phase 7 — โปรเจกต์จริง CRUD</a>
+    <a href="#p8">Phase 8 — Debug และ Test ใน VS Code</a>
+    <a href="#p9">Phase 9 — ก้าวต่อไป</a>
+  </div>
+
+  <section class="phase" id="glossary" style="border-color:var(--accent);">
+    <div class="phase-head" style="background:var(--accent-soft);">
+      <div class="phase-head-left"><span class="phase-num">GLOSSARY</span><span class="phase-title">ศัพท์เฉพาะของ ASP.NET Core ที่ต้องรู้จัก</span></div>
+    </div>
+    <div class="phase-body">
+      <p style="margin-top:0;">รวมคำศัพท์ที่จะเจอบ่อยที่สุดตลอดแผนการเรียนนี้ แนะนำให้กลับมาเปิดดูทุกครั้งที่เจอคำที่ไม่คุ้น แทนที่จะข้ามไป เพราะคำเหล่านี้ปรากฏซ้ำตลอดทุก phase</p>
+      <table class="summary">
+        <thead><tr><th style="width:20%;">ศัพท์</th><th>ความหมาย</th></tr></thead>
+        <tbody>
+          <tr><td><code>SDK</code> (Software Development Kit)</td><td>ชุดเครื่องมือที่ใช้ compile และรันโค้ด .NET ต้องติดตั้งแยกจาก VS Code เสมอ (VS Code เป็นแค่ editor ไม่มี SDK มาให้)</td></tr>
+          <tr><td><code>NuGet</code></td><td>ระบบจัดการ package/library ของ .NET เทียบเท่า npm ของ JavaScript หรือ pip ของ Python ใช้คำสั่ง <code>dotnet add package</code> เพื่อติดตั้ง</td></tr>
+          <tr><td><code>Solution (.sln)</code></td><td>ไฟล์ที่รวมหลายโปรเจกต์เข้าด้วยกัน เช่น โปรเจกต์ API กับโปรเจกต์ Test อยู่ใน solution เดียวกัน ไม่บังคับต้องมีถ้าทำโปรเจกต์เดียว</td></tr>
+          <tr><td><code>Project (.csproj)</code></td><td>ไฟล์ตั้งค่าของแต่ละโปรเจกต์ บอกว่าใช้ .NET version ไหน มี package/dependency อะไรบ้าง คล้าย package.json ของ Node.js</td></tr>
+          <tr><td><code>Program.cs</code></td><td>ไฟล์จุดเริ่มต้นของโปรแกรม (entry point) ทุกอย่างเริ่มรันจากไฟล์นี้เสมอ</td></tr>
+          <tr><td><code>appsettings.json</code></td><td>ไฟล์เก็บค่า configuration เช่น connection string ของ database, API key ต่างๆ อ่านค่าได้จากทุกที่ในโปรเจกต์ผ่าน DI</td></tr>
+          <tr><td><code>launchSettings.json</code></td><td>ไฟล์ตั้งค่าเฉพาะตอน develop เช่น port ที่ใช้รัน, environment variable อยู่ในโฟลเดอร์ Properties/ ไม่ถูก deploy ขึ้น production</td></tr>
+          <tr><td><code>Kestrel</code></td><td>web server ที่มากับ ASP.NET Core เองใช้รับ request จริง ไม่ต้องติดตั้ง web server แยก (ต่างจาก PHP ที่มักต้องพึ่ง Apache/Nginx)</td></tr>
+          <tr><td><code>Middleware</code></td><td>โค้ดที่ทำงานคั่นระหว่างทางของทุก request ก่อนถึงปลายทาง เช่น เช็ค login, log การเข้าใช้งาน เรียงต่อกันเป็น "pipeline"</td></tr>
+          <tr><td><code>Dependency Injection (DI)</code></td><td>แนวคิดที่ไม่ต้อง <code>new</code> object เองในทุกที่ที่ใช้ แต่ "ขอ" จาก framework ผ่าน constructor แทน ช่วยให้เปลี่ยนการ implement ได้ง่ายและ test ได้สะดวกขึ้น</td></tr>
+          <tr><td><code>Service</code></td><td>class ที่ถูกลงทะเบียนไว้ให้ DI จัดการ (ผ่าน <code>builder.Services.Add...</code>) แล้วเรียกใช้ผ่าน constructor ที่ไหนก็ได้ในโปรเจกต์</td></tr>
+          <tr><td><code>Controller</code></td><td>class ที่รับ HTTP request เข้ามาแล้วตัดสินใจว่าจะทำอะไรต่อ (เทียบได้กับ RDML function ที่รับ input แล้วประมวลผล)</td></tr>
+          <tr><td><code>Action / Action method</code></td><td>method หนึ่งตัวภายใน Controller ที่ผูกกับ 1 endpoint เช่น <code>GetById</code>, <code>Create</code></td></tr>
+          <tr><td><code>Route</code></td><td>เส้นทาง URL ที่ใช้เข้าถึง endpoint นั้นๆ กำหนดผ่าน attribute <code>[Route]</code>, <code>[HttpGet]</code></td></tr>
+          <tr><td><code>Model</code></td><td>class ที่ใช้แทนโครงสร้างข้อมูล เช่น Order, Product มักตรงกับ 1 table ใน database</td></tr>
+          <tr><td><code>DTO</code> (Data Transfer Object)</td><td>class ที่ใช้รับ/ส่งข้อมูลระหว่าง client กับ server โดยเฉพาะ แยกจาก Model เพื่อไม่ให้ client เห็นหรือแก้ field ที่ไม่ควรแตะ (เช่น password hash)</td></tr>
+          <tr><td><code>DbContext</code></td><td>class ตัวแทนของการเชื่อมต่อ database ทั้งหมด เป็นจุดเดียวที่ query หรือบันทึกข้อมูลผ่าน EF Core</td></tr>
+          <tr><td><code>DbSet&lt;T&gt;</code></td><td>property ภายใน DbContext ที่แทน 1 table เช่น <code>DbSet&lt;Order&gt; Orders</code> แทน table ชื่อ Orders</td></tr>
+          <tr><td><code>Migration</code></td><td>ไฟล์ที่ EF Core generate ให้อัตโนมัติ บันทึกว่า table structure เปลี่ยนแปลงอย่างไรบ้าง ใช้สร้าง/แก้ table จริงใน database</td></tr>
+          <tr><td><code>LINQ</code> (Language Integrated Query)</td><td>วิธีเขียน query ข้อมูล (filter, sort, group) ด้วย syntax C# โดยตรง แทนการเขียน SQL string เอง</td></tr>
+          <tr><td><code>Task&lt;T&gt;</code></td><td>ตัวแทนของงานที่ "กำลังทำอยู่และจะเสร็จในอนาคต" ใช้คู่กับ async/await เสมอ</td></tr>
+          <tr><td><code>async / await</code></td><td>คำสั่งบอกว่า method นี้ทำงานแบบไม่บล็อก thread หลักระหว่างรอ I/O (เช่น รอ database ตอบกลับ)</td></tr>
+          <tr><td><code>IActionResult</code></td><td>type ที่ Controller method มักจะ return แทนที่จะ return ข้อมูลตรงๆ ครอบทั้งสถานะ HTTP (200, 404) และข้อมูลไว้ด้วยกัน</td></tr>
+          <tr><td><code>Ok() / NotFound() / BadRequest()</code></td><td>helper method ใน Controller ที่สร้าง HTTP response พร้อม status code ที่ถูกต้องให้อัตโนมัติ</td></tr>
+          <tr><td><code>Attribute</code></td><td>syntax ที่เขียนในเครื่องหมาย <code>[ ]</code> เหนือ class หรือ method เพื่อกำหนดพฤติกรรมพิเศษ เช่น <code>[HttpGet]</code>, <code>[Route]</code>, <code>[ApiController]</code></td></tr>
+          <tr><td><code>CORS</code> (Cross-Origin Resource Sharing)</td><td>กลไกอนุญาตให้ frontend ที่รันคนละ URL/port เรียก backend ได้ ต้องตั้งค่าเปิดเองถ้าแยก frontend/backend</td></tr>
+          <tr><td><code>Environment (Development/Production)</code></td><td>ตัวแปรบอกว่าโปรแกรมกำลังรันในโหมดไหน มีผลต่อ error message ที่แสดง (Development เห็น error ละเอียด, Production ซ่อนรายละเอียดเพื่อความปลอดภัย)</td></tr>
+          <tr><td><code>xUnit</code></td><td>library สำหรับเขียน unit test ที่นิยมที่สุดใน .NET ปัจจุบัน ใช้ attribute <code>[Fact]</code> กำหนดว่า method ไหนคือ test</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= PHASE 0 ================= -->
+  <div class="phase" id="p0">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 0</span><span class="phase-title">ปรับความคุ้นเคยกับภาษา typed แบบใหม่</span></div>
+      <span class="phase-duration">~1 วัน</span>
+    </div>
+    <div class="phase-body">
+      <p style="margin-top:0;">ก่อนเริ่มเขียน C# จริง ควรเข้าใจว่า C# ต่างจาก RPG/RDML ตรงไหนบ้างในระดับแนวคิด เพื่อไม่ให้งงตอนเจอ syntax แปลกตา</p>
+      <ul class="concept-list">
+        <li>C# เป็นภาษา <b>object-oriented</b> เต็มรูปแบบ ทุกอย่างอยู่ใน class ไม่มี "โปรแกรมลอยๆ" แบบ RPG</li>
+        <li>ใช้เครื่องหมาย <code>{ }</code> กำหนดขอบเขตของ block แทนการเยื้อง column แบบ fixed-format RPG</li>
+        <li>ทุกบรรทัดคำสั่งจบด้วย <code>;</code> เสมอ</li>
+        <li>C# เป็น <b>strongly-typed</b> เหมือน RPG (ประกาศ type ชัดเจน) แต่ syntax การประกาศต่างกัน</li>
+      </ul>
+      <div class="vscode-tip"><b>VS Code tip:</b> เปิด Command Palette (Ctrl+Shift+P) พิมพ์ ".NET: New Project" จะช่วยสร้างโปรเจกต์ผ่าน UI แทนการพิมพ์คำสั่งเองได้ ถ้ายังไม่ชินกับ terminal</div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 1 ================= -->
+  <div class="phase" id="p1">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 1</span><span class="phase-title">C# พื้นฐาน — ตัวแปร, type, control flow</span></div>
+      <span class="phase-duration">3-4 วัน</span>
+    </div>
+    <div class="phase-body">
+      <ul class="concept-list">
+        <li>ประกาศตัวแปรและ type พื้นฐาน (int, string, decimal, bool, DateTime)</li>
+        <li>if/else, switch, for, foreach, while</li>
+        <li>function/method และการส่งค่า parameter</li>
+        <li>nullable type (<code>string?</code>) — concept ที่ไม่มีใน RPG แต่สำคัญมากใน C#</li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">ตัวอย่าง syntax</div>
+        <pre>// ประกาศตัวแปร ต้องระบุ type เสมอ (หรือใช้ var ให้ compiler เดา type ให้)
+int quantity = 10;
+decimal price = 25.50m;
+string customerName = "Somchai";
+bool isActive = true;
+var total = quantity * price;   // var เดา type เป็น decimal จากค่าที่ assign
+
+// nullable — บอกว่าตัวแปรนี้เป็น null ได้
+string? note = null;
+
+// method
+decimal CalculateTotal(int qty, decimal unitPrice)
+{
+    return qty * unitPrice;
+}
+
+// control flow
+if (quantity > 0)
+{
+    Console.WriteLine("มีสินค้า");
+}
+else
+{
+    Console.WriteLine("สินค้าหมด");
+}
+
+foreach (var item in orderList)
+{
+    Console.WriteLine(item.Name);
+}</pre>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> เขียนโปรแกรม console เล็กๆ (ไม่ต้องมี web) คำนวณราคารวมสินค้าจาก list ที่กำหนดเอง
+        แล้วลอง print ผลลัพธ์ผ่าน <code>Console.WriteLine</code> รันด้วย <code>dotnet run</code>
+      </div>
+      <div class="checklist">
+        <div class="cl-label">พร้อมไป phase ถัดไปเมื่อ</div>
+        <ul>
+          <li>เขียน method รับ parameter และ return ค่าได้เองโดยไม่ต้องเปิดตัวอย่าง</li>
+          <li>เข้าใจความต่างระหว่าง <code>string</code> กับ <code>string?</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 2 ================= -->
+  <div class="phase" id="p2">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 2</span><span class="phase-title">OOP ใน C# — class, interface, dependency injection เบื้องต้น</span></div>
+      <span class="phase-duration">4-5 วัน</span>
+    </div>
+    <div class="phase-body">
+      <p style="margin-top:0;">phase นี้สำคัญที่สุด เพราะ ASP.NET Core ทั้งเฟรมเวิร์กสร้างอยู่บนแนวคิด OOP หากข้ามส่วนนี้จะอ่านโค้ดจริงไม่เข้าใจเลย</p>
+      <ul class="concept-list">
+        <li>class, property, constructor</li>
+        <li>interface และทำไมต้องมี (สัญญาว่า class ไหนต้องมี method อะไรบ้าง)</li>
+        <li>dependency injection (DI) เบื้องต้น — concept หลักที่ ASP.NET Core ใช้ทุกที่</li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">ตัวอย่าง syntax</div>
+        <pre>// class พร้อม property แบบสั้น (auto-property)
+public class Order
+{
+    public int Id { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
+    public decimal TotalAmount { get; set; }
+}
+
+// interface — กำหนดว่า class ที่ implement ต้องมี method นี้
+public interface IOrderRepository
+{
+    Order? GetById(int id);
+    void Add(Order order);
+}
+
+// class ที่ implement interface ข้างบน
+public class OrderRepository : IOrderRepository
+{
+    public Order? GetById(int id)
+    {
+        // logic ค้นหาจริง
+        return null;
+    }
+
+    public void Add(Order order)
+    {
+        // logic บันทึกจริง
+    }
+}
+
+// dependency injection — รับ interface เข้ามาทาง constructor
+// ASP.NET Core จะ "เสียบ" ของจริงให้เองตอน runtime
+public class OrderService
+{
+    private readonly IOrderRepository _repository;
+
+    public OrderService(IOrderRepository repository)
+    {
+        _repository = repository;
+    }
+}</pre>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> สร้าง interface <code>ICustomerRepository</code> พร้อม class ที่ implement
+        แล้วลองสร้าง class อีกตัวที่รับ interface นี้เข้ามาทาง constructor เหมือนตัวอย่างข้างบน
+      </div>
+      <div class="vscode-tip"><b>VS Code tip:</b> พิมพ์ <code>ctor</code> แล้วกด Tab ใน C# Dev Kit จะ generate constructor
+      ให้อัตโนมัติ ไม่ต้องพิมพ์เองทั้งหมด</div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 3 ================= -->
+  <div class="phase" id="p3">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 3</span><span class="phase-title">โครงสร้าง ASP.NET Core — Program.cs และ middleware</span></div>
+      <span class="phase-duration">2-3 วัน</span>
+    </div>
+    <div class="phase-body">
+      <ul class="concept-list">
+        <li>ไฟล์ Program.cs คือจุดเริ่มต้นของทุกโปรเจกต์</li>
+        <li>concept "middleware pipeline" — request วิ่งผ่านหลายชั้นก่อนถึง controller</li>
+        <li>การลงทะเบียน service สำหรับ DI ใน Program.cs</li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">Program.cs ตัวอย่าง (โครงสร้างจริงที่เจอในทุกโปรเจกต์)</div>
+        <pre>var builder = WebApplication.CreateBuilder(args);
+
+// === ส่วนลงทะเบียน service สำหรับ DI ===
+builder.Services.AddControllers();
+builder.Services.AddScoped&lt;IOrderRepository, OrderRepository&gt;();
+
+var app = builder.Build();
+
+// === ส่วน middleware pipeline (ลำดับสำคัญมาก) ===
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();</pre>
+      </div>
+      <p>อ่านจากบนลงล่าง: ส่วนแรก "ลงทะเบียน" ว่าโปรเจกต์นี้มี service อะไรบ้าง ส่วนที่สองกำหนดว่า
+      request ที่เข้ามาแต่ละอันจะถูกประมวลผลผ่านขั้นตอนอะไรบ้างก่อนถึงปลายทาง</p>
+
+      <div class="subblock">
+        <div class="subblock-label">อธิบายลึกทีละบรรทัด</div>
+        <p><code>WebApplication.CreateBuilder(args)</code> — สร้างตัว "builder" ที่ใช้ตั้งค่าทุกอย่างของแอปก่อนเริ่มรันจริง
+        รับ <code>args</code> จาก command line เผื่อมีคนสั่งรันพร้อม parameter พิเศษ</p>
+        <p><code>builder.Services.AddControllers()</code> — บอก framework ว่าโปรเจกต์นี้ต้องการใช้ระบบ Controller
+        (ถ้าไม่เรียกบรรทัดนี้ Controller ที่เขียนไว้จะไม่ถูกเปิดใช้งานเลย แม้ไฟล์จะมีอยู่ก็ตาม)</p>
+        <p><code>builder.Services.AddScoped&lt;...&gt;()</code> — ลงทะเบียน service เข้าสู่ระบบ DI คำว่า "Scoped"
+        หมายถึง object ตัวนี้จะถูกสร้างใหม่ 1 ครั้งต่อ 1 request (ต่างจาก "Singleton" ที่สร้างครั้งเดียวใช้ตลอดอายุโปรแกรม
+        และ "Transient" ที่สร้างใหม่ทุกครั้งที่มีคนขอ)</p>
+        <p><code>builder.Build()</code> — ปิดขั้นตอนตั้งค่า แล้วสร้างแอปตัวจริงออกมาเป็นตัวแปร <code>app</code></p>
+        <p><code>app.UseHttpsRedirection()</code> — middleware ที่บังคับให้ request ที่เข้ามาแบบ http ถูก redirect
+        ไปเป็น https อัตโนมัติ เพื่อความปลอดภัย</p>
+        <p><code>app.UseAuthorization()</code> — middleware ที่เช็คสิทธิ์การเข้าถึงก่อนอนุญาตให้ request ผ่านไปถึง Controller
+        (ถ้ายังไม่ทำระบบ login ยังไม่มีผลอะไร แต่ต้องมีบรรทัดนี้ไว้เผื่ออนาคต)</p>
+        <p><code>app.MapControllers()</code> — จุดสุดท้ายของ pipeline บอกว่า "ถ้า request ผ่าน middleware ทุกด่านมาถึงตรงนี้
+        ให้ส่งต่อไปยัง Controller ที่ตรงกับ route ที่ขอมา"</p>
+        <p><code>app.Run()</code> — เริ่มรัน Kestrel web server จริงๆ และรอรับ request เข้ามาตลอดเวลา
+        (บรรทัดนี้ทำให้โปรแกรม "ค้าง" รออยู่ ไม่ใช่รันเสร็จแล้วปิดตัวแบบ console app ทั่วไป)</p>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> สร้างโปรเจกต์ด้วย <code>dotnet new webapi</code> แล้วเปิด Program.cs อ่านทุกบรรทัด
+        ลองเพิ่ม <code>app.Use(...)</code> ตัวใหม่ที่ print ข้อความก่อนทุก request เพื่อดู middleware ทำงานจริง
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 4 ================= -->
+  <div class="phase" id="p4">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 4</span><span class="phase-title">Routing และ Controller</span></div>
+      <span class="phase-duration">3-4 วัน</span>
+    </div>
+    <div class="phase-body">
+      <ul class="concept-list">
+        <li>attribute routing (<code>[Route]</code>, <code>[HttpGet]</code>, <code>[HttpPost]</code>)</li>
+        <li>รับค่าจาก URL, query string, และ request body</li>
+        <li>return type ต่างๆ (Ok, NotFound, BadRequest)</li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">ความหมายของแต่ละ attribute</div>
+        <p><code>[ApiController]</code> — บอก framework ว่า class นี้คือ Controller สำหรับ Web API โดยเฉพาะ
+        เปิดใช้ feature เสริมอัตโนมัติ เช่น validate ข้อมูลที่รับเข้ามาให้เองโดยไม่ต้องเขียนเช็คเอง (automatic model validation)</p>
+        <p><code>[Route("api/orders")]</code> — กำหนด "prefix" ของ URL ทั้งหมดใน Controller นี้ ทุก endpoint ข้างในจะขึ้นต้นด้วย
+        <code>/api/orders</code> เสมอ</p>
+        <p><code>[HttpGet("{id}")]</code> — บอกว่า method นี้ตอบสนองต่อ HTTP GET เท่านั้น และ <code>{id}</code>
+        คือส่วนหนึ่งของ URL ที่จะถูกส่งเข้ามาเป็น parameter ชื่อ <code>id</code> โดยอัตโนมัติ (ต้องตั้งชื่อ parameter
+        ใน method ให้ตรงกับชื่อใน <code>{ }</code>)</p>
+        <p><code>[FromQuery]</code> — บอกว่าค่านี้มาจาก query string (ส่วนหลัง <code>?</code> ใน URL) เช่น
+        <code>?keyword=abc</code></p>
+        <p><code>[FromBody]</code> — บอกว่าค่านี้มาจาก JSON ที่ส่งมาใน request body (ปกติใช้กับ POST/PUT)
+        framework จะแปลง JSON เป็น C# object ให้อัตโนมัติตามโครงสร้างของ class ที่ระบุไว้</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ตัวอย่าง Controller ครบทุกรูปแบบการรับค่า</div>
+        <pre>[ApiController]
+[Route("api/orders")]
+public class OrdersController : ControllerBase
+{
+    // รับค่าจาก URL path เช่น /api/orders/5
+    [HttpGet("{id}")]
+    public IActionResult GetById(int id)
+    {
+        if (id &lt;= 0) return BadRequest("id ต้องมากกว่า 0");
+        return Ok(new { id, name = "ตัวอย่าง" });
+    }
+
+    // รับค่าจาก query string เช่น /api/orders/search?keyword=abc
+    [HttpGet("search")]
+    public IActionResult Search([FromQuery] string keyword)
+    {
+        return Ok($"ค้นหา: {keyword}");
+    }
+
+    // รับค่าจาก request body (JSON)
+    [HttpPost]
+    public IActionResult Create([FromBody] Order order)
+    {
+        return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
+    }
+}</pre>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> สร้าง controller ชื่อ <code>ProductsController</code> ที่มี endpoint GET (ดึงตาม id),
+        GET (ค้นหาด้วย query), และ POST (สร้างใหม่) แล้วทดสอบเรียกผ่านเบราว์เซอร์หรือ REST Client extension
+      </div>
+      <div class="vscode-tip"><b>VS Code tip:</b> ติดตั้ง extension <b>REST Client</b> (publisher: Huachao Mao)
+      สร้างไฟล์ <code>.http</code> เขียน request ทดสอบ API ได้โดยไม่ต้องออกจาก VS Code เลย ไม่ต้องพึ่ง Postman</div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 5 ================= -->
+  <div class="phase" id="p5">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 5</span><span class="phase-title">Async/Await — จุดที่ต่างจาก RDML มากที่สุด</span></div>
+      <span class="phase-duration">2-3 วัน</span>
+    </div>
+    <div class="phase-body">
+      <ul class="concept-list">
+        <li>ทำไมต้องมี async (รองรับ concurrent request จำนวนมากโดยไม่บล็อก thread)</li>
+        <li>รูปแบบ <code>Task&lt;T&gt;</code>, <code>async</code>, <code>await</code></li>
+        <li>กฎง่ายๆ: ถ้า method เรียก database หรือ I/O ควรเป็น async เสมอ</li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">เทียบ synchronous กับ asynchronous</div>
+        <pre>// synchronous (บล็อกจนกว่าจะเสร็จ) — ไม่ควรใช้ในงานจริงที่ต่อ database
+public IActionResult GetOrderSync(int id)
+{
+    var order = _dbContext.Orders.Find(id);   // รอตรงนี้ thread ถูกจับไว้ทั้งหมด
+    return Ok(order);
+}
+
+// asynchronous (ปล่อย thread ไปทำงานอื่นระหว่างรอ) — มาตรฐานที่ควรใช้จริง
+public async Task&lt;IActionResult&gt; GetOrderAsync(int id)
+{
+    var order = await _dbContext.Orders.FindAsync(id);   // await = รอแบบไม่บล็อก thread
+    return Ok(order);
+}</pre>
+      </div>
+      <p>ให้จำง่ายๆ ว่า <code>await</code> ไม่ใช่แค่ "รอ" เฉยๆ แต่คือการบอกว่า "ระหว่างรอสิ่งนี้ ให้ thread
+      ไปรับ request อื่นก่อนได้" ต่างจาก RPG ที่โปรแกรมหนึ่งครอบครอง job/thread เดียวตลอดการทำงาน</p>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> แก้ controller จาก Phase 4 ให้ทุก method เป็น async (แม้ยังไม่ต่อ database จริง
+        ก็ใช้ <code>await Task.Delay(100)</code> จำลองการรอไปก่อนเพื่อฝึก syntax)
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 6 ================= -->
+  <div class="phase" id="p6">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 6</span><span class="phase-title">Model และ Entity Framework Core</span></div>
+      <span class="phase-duration">4-5 วัน</span>
+    </div>
+    <div class="phase-body">
+      <ul class="concept-list">
+        <li>DbContext คืออะไร (ตัวแทนของ database connection + table ทั้งหมด)</li>
+        <li>LINQ query พื้นฐาน (Where, Select, OrderBy, FirstOrDefault)</li>
+        <li>migration — วิธีสร้าง/แก้ table จากโค้ด C#</li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">ตัวอย่าง DbContext และ query</div>
+        <pre>public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options) { }
+
+    public DbSet&lt;Order&gt; Orders =&gt; Set&lt;Order&gt;();
+}
+
+// การ query ด้วย LINQ
+var recentOrders = await db.Orders
+    .Where(o =&gt; o.TotalAmount &gt; 1000)
+    .OrderByDescending(o =&gt; o.CreatedAt)
+    .Take(10)
+    .ToListAsync();</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ความหมายของแต่ละส่วนใน LINQ query</div>
+        <p><code>db.Orders</code> — เข้าถึง table Orders ผ่าน DbContext (<code>db</code> คือชื่อตัวแปร DbContext
+        ที่ถูก inject เข้ามา)</p>
+        <p><code>.Where(o =&gt; o.TotalAmount &gt; 1000)</code> — กรองแถวที่ TotalAmount มากกว่า 1000 เทียบได้กับ
+        SQL <code>WHERE TotalAmount > 1000</code> ส่วน <code>o =&gt;</code> คือ "lambda expression" อ่านว่า
+        "สำหรับแต่ละแถว (เรียกว่า o) ให้เช็คเงื่อนไขนี้"</p>
+        <p><code>.OrderByDescending(o =&gt; o.CreatedAt)</code> — เรียงจากใหม่ไปเก่า เทียบเท่า SQL
+        <code>ORDER BY CreatedAt DESC</code></p>
+        <p><code>.Take(10)</code> — เอาแค่ 10 แถวแรก เทียบเท่า SQL <code>TOP 10</code> หรือ <code>LIMIT 10</code></p>
+        <p><code>.ToListAsync()</code> — แปลงผลลัพธ์เป็น List และรันจริง (query ก่อนหน้าทั้งหมดยังไม่ถูกรันจริง
+        จนกว่าจะเรียก ToListAsync หรือ method ลักษณะนี้ เรียกว่า "deferred execution" คือ query จะถูกประกอบขึ้นก่อน
+        แล้วค่อยยิงไป database ทีเดียวตอนจบ)</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">คำสั่ง migration ที่ใช้บ่อย</div>
+        <pre>dotnet tool install --global dotnet-ef
+dotnet ef migrations add InitialCreate
+dotnet ef database update</pre>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> สร้าง DbContext สำหรับ Order model จาก phase ก่อนหน้า สร้าง migration
+        แล้ว update database (ใช้ SQLite หรือ SQL Server LocalDB สำหรับฝึกได้ ไม่ต้องรอ SQL Server จริงของบริษัท)
+      </div>
+      <div class="vscode-tip"><b>VS Code tip:</b> ติดตั้ง extension <b>SQL Server (mssql)</b> ของ Microsoft
+      เพื่อดูข้อมูลใน table ผ่าน VS Code ได้เลย ไม่ต้องสลับไปเปิดโปรแกรมอื่น</div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 7 ================= -->
+  <div class="phase" id="p7">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 7</span><span class="phase-title">โปรเจกต์จริง — สร้าง CRUD API เต็มรูปแบบ</span></div>
+      <span class="phase-duration">5-7 วัน</span>
+    </div>
+    <div class="phase-body">
+      <p style="margin-top:0;">รวมทุกอย่างจาก Phase 1-6 มาทำเป็นโปรเจกต์เดียว เพื่อฝึกให้เห็นภาพรวมทั้งระบบ</p>
+      <ul class="concept-list">
+        <li>ออกแบบ model ง่ายๆ 1-2 table (เช่น Product, Order)</li>
+        <li>สร้าง Controller ครบ 4 endpoint: Create, Read (list + by id), Update, Delete</li>
+        <li>เพิ่ม validation เบื้องต้น (เช่น ห้ามชื่อว่าง, จำนวนต้องมากกว่า 0)</li>
+        <li>ทดสอบทุก endpoint ผ่านไฟล์ .http ใน VS Code</li>
+      </ul>
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> สร้าง "ระบบจัดการสินค้าคงคลังอย่างง่าย" ที่มี endpoint ครบ CRUD ต่อ SQLite
+        หรือ SQL Server LocalDB ให้ทำเองทั้งหมดโดยไม่เปิดตัวอย่างจาก phase ก่อนหน้า เพื่อเช็คว่าจำได้จริง
+      </div>
+      <div class="checklist">
+        <div class="cl-label">พร้อมไป phase ถัดไปเมื่อ</div>
+        <ul>
+          <li>สร้าง endpoint ใหม่ได้เองโดยไม่ต้องเปิดเอกสารดูตลอดเวลา</li>
+          <li>อธิบายได้ว่าทำไม method ที่ต่อ database ต้องเป็น async</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 8 ================= -->
+  <div class="phase" id="p8">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 8</span><span class="phase-title">Debug และ Test ใน VS Code</span></div>
+      <span class="phase-duration">2-3 วัน</span>
+    </div>
+    <div class="phase-body">
+      <ul class="concept-list">
+        <li>ตั้ง breakpoint และ step-through (F10 step over, F11 step into)</li>
+        <li>ดู variable แบบ real-time ใน Debug panel</li>
+        <li>เขียน unit test เบื้องต้นด้วย xUnit</li>
+      </ul>
+      <div class="subblock">
+        <div class="subblock-label">ตัวอย่าง unit test (xUnit)</div>
+        <pre>public class OrderServiceTests
+{
+    [Fact]
+    public void CalculateTotal_ShouldReturnCorrectAmount()
+    {
+        var result = OrderService.CalculateTotal(qty: 3, unitPrice: 100);
+        Assert.Equal(300, result);
+    }
+}</pre>
+      </div>
+      <div class="vscode-tip"><b>VS Code tip:</b> C# Dev Kit แสดงปุ่ม "Run Test" / "Debug Test" เหนือทุก method
+      ที่มี <code>[Fact]</code> โดยอัตโนมัติ กดรันทีละ test ได้โดยไม่ต้องพิมพ์คำสั่งเอง</div>
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> ตั้ง breakpoint ใน controller จาก Phase 7 แล้วยิง request ผ่านไฟล์ .http
+        สังเกตค่าตัวแปรที่ Debug panel ระหว่าง step ทีละบรรทัด
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 9 ================= -->
+  <div class="phase" id="p9">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 9</span><span class="phase-title">ก้าวต่อไปหลังจบพื้นฐาน</span></div>
+      <span class="phase-duration">ต่อเนื่อง</span>
+    </div>
+    <div class="phase-body">
+      <p style="margin-top:0;">พอผ่าน Phase 0-8 แล้ว ถือว่ามีพื้นฐานพอเริ่มงานจริงได้ หัวข้อถัดไปที่ควรเรียนเมื่อโปรเจกต์จริงต้องใช้:</p>
+      <table class="summary">
+        <thead><tr><th>หัวข้อ</th><th>ใช้เมื่อไหร่</th></tr></thead>
+        <tbody>
+          <tr><td>Authentication/Authorization (JWT)</td><td>ต้องมีระบบ login แยกสิทธิ์ผู้ใช้</td></tr>
+          <tr><td>Middleware แบบ custom</td><td>ต้องการ logic ที่ทำงานกับทุก request (เช่น logging, error handling กลาง)</td></tr>
+          <tr><td>เชื่อมต่อ external API (เช่น IWS)</td><td>ตอนเริ่มงานจริงตามที่คุยกันไว้ก่อนหน้า</td></tr>
+          <tr><td>Docker</td><td>ต้องการ deploy แบบ container</td></tr>
+          <tr><td>Clean Architecture / layered structure</td><td>โปรเจกต์เริ่มใหญ่ขึ้น มีหลายคนดูแลพร้อมกัน</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    ระยะเวลาแต่ละ phase เป็นค่าประมาณ ปรับได้ตามความคุ้นเคยจริง แนะนำให้ลงมือทำแบบฝึกหัดทุก phase
+    ก่อนไปต่อ แทนที่จะอ่านผ่านอย่างเดียว เพราะ syntax ใหม่จะจำได้จริงต่อเมื่อพิมพ์เองและเจอ error เอง
+  </footer>
+
+</div>
+</body>
+</html>

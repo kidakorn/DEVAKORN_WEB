@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Django vs ASP.NET Core — เจาะลึก Syntax</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #2f5d8a;
+    --accent-soft: #dce6f0;
+    --django: #0c4b33;
+    --django-soft: #dcece2;
+    --dotnet: #4b2f8a;
+    --dotnet-soft: #e4dcf0;
+    --code-bg: #1b2430;
+    --code-ink: #e8ecf1;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.65;
+    font-size:15px;
+  }
+
+  .wrap{
+    max-width:1000px;
+    margin:0 auto;
+    padding:48px 24px 100px;
+  }
+
+  header{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:24px;
+    margin-bottom:36px;
+  }
+
+  .doc-id{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+
+  h1{
+    font-size:28px;
+    margin:0 0 12px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+
+  .subtitle{
+    color:#4a5568;
+    max-width:75ch;
+    font-size:14.5px;
+  }
+
+  nav.toc{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:18px 22px;
+    margin:32px 0 44px;
+    font-size:13.5px;
+  }
+
+  nav.toc .toc-title{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:#4a5568;
+    margin-bottom:10px;
+  }
+
+  nav.toc ol{
+    columns:2;
+    margin:0;
+    padding-left:18px;
+  }
+
+  nav.toc a{
+    color:var(--ink);
+    text-decoration:none;
+    border-bottom:1px solid transparent;
+  }
+  nav.toc a:hover{ border-bottom-color:var(--accent); }
+
+  section.block{
+    margin-bottom:44px;
+  }
+
+  section.block h2{
+    font-size:19px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:10px;
+    margin-bottom:20px;
+  }
+
+  .ide-answer{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:4px solid var(--accent);
+    padding:20px 22px;
+    margin-bottom:20px;
+  }
+
+  .ide-answer .headline{
+    font-weight:700;
+    font-size:16px;
+    margin-bottom:10px;
+  }
+
+  .ide-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-top:16px;
+  }
+
+  .ide-col{
+    background:#f6f8fa;
+    border:1px solid var(--line);
+    padding:14px 16px;
+  }
+
+  .ide-col .lang-name{
+    font-family:var(--mono);
+    font-weight:700;
+    font-size:13px;
+    margin-bottom:8px;
+  }
+
+  .ide-col.django .lang-name{ color:var(--django); }
+  .ide-col.dotnet .lang-name{ color:var(--dotnet); }
+
+  .ide-col ul{
+    margin:0;
+    padding-left:18px;
+    font-size:13.5px;
+  }
+  .ide-col li{ margin-bottom:5px; }
+
+  .compare-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:26px;
+  }
+
+  .compare-item{
+    background:var(--panel);
+    border:1px solid var(--line);
+  }
+
+  .compare-head{
+    padding:10px 16px;
+    font-family:var(--mono);
+    font-weight:700;
+    font-size:13px;
+  }
+
+  .compare-item.django .compare-head{ background:var(--django-soft); color:var(--django); }
+  .compare-item.dotnet .compare-head{ background:var(--dotnet-soft); color:var(--dotnet); }
+
+  .compare-desc{
+    padding:12px 16px 0;
+    font-size:13.5px;
+    color:#374151;
+  }
+
+  pre{
+    margin:0;
+    padding:14px 16px;
+    background:var(--code-bg);
+    color:var(--code-ink);
+    font-family:var(--mono);
+    font-size:12.5px;
+    overflow-x:auto;
+    line-height:1.6;
+  }
+
+  .topic-label{
+    font-family:var(--mono);
+    font-size:12px;
+    color:#4a5568;
+    margin:0 0 8px;
+    padding-left:2px;
+  }
+
+  .note{
+    background:var(--accent-soft);
+    border-left:3px solid var(--accent);
+    padding:12px 14px;
+    font-size:13.5px;
+    margin-top:8px;
+  }
+
+  table.linktable{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--panel);
+    border:1px solid var(--line);
+    font-size:13.5px;
+  }
+
+  table.linktable th, table.linktable td{
+    border:1px solid var(--line);
+    padding:10px 12px;
+    text-align:left;
+    vertical-align:top;
+  }
+
+  table.linktable th{
+    background:#f6f8fa;
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:#4a5568;
+  }
+
+  table.linktable a{
+    color:var(--accent);
+    word-break:break-all;
+  }
+
+  .pill{
+    display:inline-block;
+    padding:1px 7px;
+    border-radius:2px;
+    font-size:10.5px;
+    font-weight:600;
+    margin-right:4px;
+  }
+  .pill.official{ background:var(--accent-soft); color:var(--accent); }
+  .pill.thai{ background:var(--django-soft); color:var(--django); }
+  .pill.video{ background:var(--dotnet-soft); color:var(--dotnet); }
+
+  footer{
+    margin-top:56px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:#8a94a3;
+    font-family:var(--mono);
+  }
+
+  @media (max-width: 700px){
+    .wrap{ padding:32px 16px 60px; }
+    h1{ font-size:22px; }
+    .compare-row{ grid-template-columns:1fr; }
+    .ide-grid{ grid-template-columns:1fr; }
+    nav.toc ol{ columns:1; }
+    pre{ font-size:11.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">TECH-STACK / django-vs-aspnetcore / rev.1</div>
+    <h1>Django vs ASP.NET Core — เจาะลึก Syntax และการใช้งานกับ VS Code</h1>
+    <p class="subtitle">
+      เปรียบเทียบ syntax แบบเคียงข้างกันในงานที่ใช้บ่อยที่สุด พร้อมยืนยันการใช้งานกับ VS Code
+      และรวม link เอกสารทางการและ tutorial ภาษาไทยไว้ท้ายเอกสาร
+    </p>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-title">สารบัญ</div>
+    <ol>
+      <li><a href="#ide">ใช้ VS Code ได้ไหม</a></li>
+      <li><a href="#setup">โครงสร้างโปรเจกต์เริ่มต้น</a></li>
+      <li><a href="#routing">Routing / URL</a></li>
+      <li><a href="#model">Model และ ORM</a></li>
+      <li><a href="#view">View / Controller</a></li>
+      <li><a href="#crud">ตัวอย่าง CRUD เต็มรูปแบบ</a></li>
+      <li><a href="#async">การจัดการ Async</a></li>
+      <li><a href="#links">Documentation และ Tutorial</a></li>
+    </ol>
+  </nav>
+
+  <section class="block" id="ide">
+    <h2>ใช้ VS Code ได้ไหม</h2>
+    <div class="ide-answer">
+      <div class="headline">ได้ทั้งคู่ครับ ไม่จำเป็นต้องใช้ Visual Studio (full IDE)</div>
+      <p style="margin:0;">
+        ทั้ง Django และ ASP.NET Core พัฒนาบน VS Code ได้เต็มรูปแบบ รวมถึง debug แบบตั้ง breakpoint
+        และ step-through ได้ปกติ ต่างกันที่ extension ที่ต้องติดตั้งเพิ่มและความลื่นไหลของ tooling
+      </p>
+      <div class="ide-grid">
+        <div class="ide-col django">
+          <div class="lang-name">Django (VS Code)</div>
+          <ul>
+            <li>ติดตั้ง extension <b>Python</b> ของ Microsoft (จำเป็น)</li>
+            <li>เพิ่ม <b>Pylance</b> สำหรับ autocomplete และ type checking</li>
+            <li>debug ผ่านไฟล์ <code>launch.json</code> เลือก template "Django" ได้ทันที</li>
+            <li>ตั้ง breakpoint ในไฟล์ .py ได้ปกติ เห็นค่าตัวแปรระหว่าง request จริง</li>
+            <li>ไม่มี built-in database designer แบบ visual ต้องพึ่ง extension เสริมหรือ pgAdmin/DBeaver แยก</li>
+          </ul>
+        </div>
+        <div class="ide-col dotnet">
+          <div class="lang-name">ASP.NET Core (VS Code)</div>
+          <ul>
+            <li>ติดตั้ง extension <b>C# Dev Kit</b> ของ Microsoft (จำเป็น มาแทน OmniSharp เดิม)</li>
+            <li>ต้องติดตั้ง <b>.NET SDK</b> แยกจาก VS Code (ตัว editor ไม่รวม SDK มาให้)</li>
+            <li>debug ผ่าน <code>launch.json</code> ที่ C# Dev Kit generate ให้อัตโนมัติ</li>
+            <li>IntelliSense และ refactor tools ใกล้เคียง Visual Studio ตัวเต็มมากขึ้นเรื่อยๆ ในเวอร์ชันหลัง</li>
+            <li>บาง feature ขั้นสูง (เช่น visual designer ของ Blazor) ยังทำได้ดีกว่าใน Visual Studio ตัวเต็ม</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        สรุป: ทั้งสอง stack ทำงานบน VS Code ได้จริงและไม่ต้องพึ่ง Visual Studio เลย
+        ความแตกต่างหลักคือ Django ใช้ Python extension ที่เบาและติดตั้งเร็วกว่า ส่วน ASP.NET Core
+        ต้องติดตั้ง .NET SDK เพิ่มก่อนเสมอ แต่พอตั้งค่าเสร็จแล้วประสบการณ์ debug ทั้งคู่ใกล้เคียงกันมาก
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="setup">
+    <h2>โครงสร้างโปรเจกต์เริ่มต้น</h2>
+    <div class="compare-row">
+      <div class="compare-item django">
+        <div class="compare-head">Django — สร้างโปรเจกต์</div>
+        <div class="topic-label" style="padding:12px 16px 0;">คำสั่ง terminal</div>
+        <pre>django-admin startproject myproject
+cd myproject
+python manage.py startapp orders
+python manage.py runserver</pre>
+        <div class="compare-desc" style="padding-bottom:14px;">
+          ได้โครงสร้างโฟลเดอร์แบบ "project" ที่มีหลาย "app" ย่อยอยู่ข้างใน แต่ละ app คือหน่วยงานหนึ่ง
+          (เช่น orders, users) แยกไฟล์ตาม convention: models.py, views.py, urls.py
+        </div>
+      </div>
+      <div class="compare-item dotnet">
+        <div class="compare-head">ASP.NET Core — สร้างโปรเจกต์</div>
+        <div class="topic-label" style="padding:12px 16px 0;">คำสั่ง terminal</div>
+        <pre>dotnet new webapi -o MyProject
+cd MyProject
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet run</pre>
+        <div class="compare-desc" style="padding-bottom:14px;">
+          ได้โปรเจกต์เดียว (ไม่แยกเป็นหลาย app ย่อยแบบ Django) จัดโฟลเดอร์เองตาม convention ของทีม
+          เช่น Controllers/, Models/, Services/ ปกติจะ add package ผ่าน NuGet เพิ่มตามที่ต้องใช้
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="routing">
+    <h2>Routing / URL</h2>
+    <div class="compare-row">
+      <div class="compare-item django">
+        <div class="compare-head">Django — urls.py</div>
+        <pre>from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("orders/", views.order_list),
+    path("orders/&lt;int:order_id&gt;/", views.order_detail),
+]</pre>
+        <div class="compare-desc" style="padding-bottom:14px;">
+          กำหนด URL แยกเป็นไฟล์ต่างหาก (urls.py) แล้วชี้ไปยัง function ใน views.py
+          เห็นภาพรวมเส้นทาง URL ทั้งหมดของ app ได้ในที่เดียว
+        </div>
+      </div>
+      <div class="compare-item dotnet">
+        <div class="compare-head">ASP.NET Core — Controller attribute</div>
+        <pre>[ApiController]
+[Route("api/orders")]
+public class OrdersController : ControllerBase
+{
+    [HttpGet("{orderId}")]
+    public IActionResult GetOrder(int orderId)
+    {
+        // logic
+    }
+}</pre>
+        <div class="compare-desc" style="padding-bottom:14px;">
+          กำหนด route ด้วย attribute เหนือ class และ method โดยตรง (decorator-style)
+          ไม่มีไฟล์ routing กลางแยกต่างหาก ต้องไล่ดูทีละ controller เพื่อเห็น route ทั้งหมด
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="model">
+    <h2>Model และ ORM</h2>
+    <div class="compare-row">
+      <div class="compare-item django">
+        <div class="compare-head">Django — models.py</div>
+        <pre>from django.db import models
+
+class Order(models.Model):
+    customer_name = models.CharField(max_length=100)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.customer_name</pre>
+        <div class="compare-desc" style="padding-bottom:14px;">
+          field ของ table ถูกกำหนดเป็น attribute ของ class ตรงๆ ไม่ต้องเขียน type แยก
+          Python เป็น dynamically-typed จึงไม่บังคับ type annotation แต่ Django field type
+          (CharField, DecimalField) ทำหน้าที่กำหนดชนิดข้อมูลแทน
+        </div>
+      </div>
+      <div class="compare-item dotnet">
+        <div class="compare-head">ASP.NET Core — Model class (C#)</div>
+        <pre>public class Order
+{
+    public int Id { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
+    public decimal TotalAmount { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}</pre>
+        <div class="compare-desc" style="padding-bottom:14px;">
+          C# เป็น strongly-typed ต้องระบุ type ของทุก property ชัดเจน (string, decimal, DateTime)
+          compiler จะเช็คความถูกต้องของ type ให้ตั้งแต่ก่อนรัน ใกล้เคียงความรู้สึกกำหนด field
+          แบบ DDS หรือ RPG data structure มากกว่า Python
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-item django">
+        <div class="compare-head">Django — Query ข้อมูล</div>
+        <pre>orders = Order.objects.filter(total_amount__gt=1000)
+order = Order.objects.get(id=5)
+Order.objects.create(customer_name="Somchai", total_amount=1500)</pre>
+      </div>
+      <div class="compare-item dotnet">
+        <div class="compare-head">ASP.NET Core — Query ข้อมูล (EF Core)</div>
+        <pre>var orders = await db.Orders
+    .Where(o =&gt; o.TotalAmount &gt; 1000)
+    .ToListAsync();
+
+var order = await db.Orders.FindAsync(5);
+db.Orders.Add(new Order { CustomerName = "Somchai", TotalAmount = 1500 });
+await db.SaveChangesAsync();</pre>
+      </div>
+    </div>
+    <div class="note">
+      สังเกตว่า Django ORM เขียนสั้นและอ่านคล้ายประโยคภาษาอังกฤษ (filter, get, create) ส่วน EF Core
+      ของ ASP.NET Core ใช้ LINQ ซึ่งมีรูปแบบคล้าย SQL ปนกับ lambda expression และเกือบทุก query
+      ต้องใช้ <code>await</code> เพราะเป็น async by default ซึ่งเป็นแนวคิดที่ RPG/RDML ไม่มี
+      (ต้องทำความเข้าใจเพิ่มว่า await คือ "รอผลลัพธ์แบบไม่บล็อก thread หลัก" ไม่ใช่แค่ "รอ" ธรรมดา)
+    </div>
+  </section>
+
+  <section class="block" id="view">
+    <h2>View / Controller (จัดการ request)</h2>
+    <div class="compare-row">
+      <div class="compare-item django">
+        <div class="compare-head">Django — views.py</div>
+        <pre>from django.http import JsonResponse
+from .models import Order
+
+def order_detail(request, order_id):
+    order = Order.objects.get(id=order_id)
+    return JsonResponse({
+        "customer_name": order.customer_name,
+        "total_amount": str(order.total_amount),
+    })</pre>
+        <div class="compare-desc" style="padding-bottom:14px;">
+          view คือ function ธรรมดา รับ request เข้ามา return response ออกไป อ่านเป็นลำดับ
+          บนลงล่างตรงไปตรงมา ไม่มี async ปนถ้าไม่ตั้งใจเขียนเอง
+        </div>
+      </div>
+      <div class="compare-item dotnet">
+        <div class="compare-head">ASP.NET Core — Controller method</div>
+        <pre>[HttpGet("{orderId}")]
+public async Task&lt;IActionResult&gt; GetOrder(int orderId)
+{
+    var order = await db.Orders.FindAsync(orderId);
+    if (order is null) return NotFound();
+
+    return Ok(new {
+        order.CustomerName,
+        order.TotalAmount
+    });
+}</pre>
+        <div class="compare-desc" style="padding-bottom:14px;">
+          method อยู่ภายใน class (controller) ต้องจัดการ case ที่หาไม่เจอเอง (NotFound)
+          และเกือบทุก method เป็น async (มี Task&lt;...&gt; ครอบ) ซึ่งเป็นรูปแบบมาตรฐานของ ASP.NET Core
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="crud">
+    <h2>ตัวอย่าง CRUD เต็มรูปแบบ (Create + Read)</h2>
+    <div class="compare-row">
+      <div class="compare-item django">
+        <div class="compare-head">Django — Create + Read ครบ flow</div>
+        <pre>from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def order_create(request):
+    data = json.loads(request.body)
+    order = Order.objects.create(
+        customer_name=data["customer_name"],
+        total_amount=data["total_amount"],
+    )
+    return JsonResponse({"id": order.id}, status=201)
+
+def order_list(request):
+    orders = Order.objects.all().order_by("-created_at")
+    result = [
+        {"id": o.id, "customer_name": o.customer_name}
+        for o in orders
+    ]
+    return JsonResponse(result, safe=False)</pre>
+      </div>
+      <div class="compare-item dotnet">
+        <div class="compare-head">ASP.NET Core — Create + Read ครบ flow</div>
+        <pre>public record CreateOrderDto(string CustomerName, decimal TotalAmount);
+
+[HttpPost]
+public async Task&lt;IActionResult&gt; CreateOrder(CreateOrderDto dto)
+{
+    var order = new Order {
+        CustomerName = dto.CustomerName,
+        TotalAmount = dto.TotalAmount
+    };
+    db.Orders.Add(order);
+    await db.SaveChangesAsync();
+    return CreatedAtAction(nameof(GetOrder), new { orderId = order.Id }, order);
+}
+
+[HttpGet]
+public async Task&lt;IActionResult&gt; ListOrders()
+{
+    var orders = await db.Orders
+        .OrderByDescending(o =&gt; o.CreatedAt)
+        .Select(o =&gt; new { o.Id, o.CustomerName })
+        .ToListAsync();
+    return Ok(orders);
+}</pre>
+      </div>
+    </div>
+    <div class="note">
+      จุดที่ต่างชัดเจนคือ ASP.NET Core นิยมประกาศ <code>record</code> (DTO) แยกสำหรับรับข้อมูล
+      เข้ามาโดยเฉพาะ เพื่อให้ type-safe ตั้งแต่ต้นทาง ส่วน Django รับข้อมูลจาก
+      <code>request.body</code> แบบ JSON ดิบแล้ว parse เอง ยืดหยุ่นกว่าแต่ไม่มีการเช็ค type
+      ให้อัตโนมัติเท่า C#
+    </div>
+  </section>
+
+  <section class="block" id="async">
+    <h2>การจัดการ Async — จุดที่ต่างจาก RDML มากที่สุด</h2>
+    <div class="compare-row">
+      <div class="compare-item django">
+        <div class="compare-head">Django</div>
+        <div class="compare-desc" style="padding:14px 16px;">
+          Django แบบดั้งเดิม (และที่ใช้กันส่วนใหญ่) เขียนแบบ <b>synchronous</b> คือรันทีละบรรทัดจากบนลงล่าง
+          เหมือนที่คุ้นเคยจาก RPG/RDML ทุกประการ ไม่ต้องเรียนรู้ async/await เพิ่ม เว้นแต่จะเลือกใช้
+          Django async views ซึ่งเป็น feature เสริมที่ไม่บังคับใช้
+        </div>
+      </div>
+      <div class="compare-item dotnet">
+        <div class="compare-head">ASP.NET Core</div>
+        <div class="compare-desc" style="padding:14px 16px;">
+          ASP.NET Core ออกแบบมาให้เขียนแบบ <b>asynchronous</b> เป็นมาตรฐานตั้งแต่ต้น
+          (เกือบทุก method ที่เกี่ยวกับ database หรือ I/O จะมี <code>async</code>/<code>await</code> ปนอยู่เสมอ)
+          ข้อดีคือ performance รองรับผู้ใช้พร้อมกันได้ดีกว่า แต่ต้องใช้เวลาทำความเข้าใจแนวคิดนี้
+          ก่อนจะเขียนโค้ดได้คล่องมือ
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      สรุปจุดนี้: ถ้าอยากได้ความรู้สึกใกล้เคียง RDML ที่สุด (โค้ดรันเป็นลำดับ ไม่ต้องคิดเรื่อง
+      "รอแบบไม่บล็อก") Django จะปรับตัวง่ายกว่า ASP.NET Core ในช่วงแรกอย่างชัดเจน
+      แต่ถ้าทีมพร้อมลงทุนเวลาเรียนรู้ async/await ตั้งแต่ต้น ASP.NET Core จะให้ผลลัพธ์ด้าน
+      performance และ type-safety ที่ดีกว่าในระยะยาว
+    </div>
+  </section>
+
+  <section class="block" id="links">
+    <h2>Documentation และ Tutorial</h2>
+    <table class="linktable">
+      <thead>
+        <tr>
+          <th style="width:14%;">Stack</th>
+          <th style="width:16%;">ประเภท</th>
+          <th style="width:30%;">แหล่งข้อมูล</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Django</td>
+          <td><span class="pill official">official</span></td>
+          <td>เอกสารทางการ (มี tutorial "Writing your first Django app" 8 ตอน)</td>
+          <td><a href="https://docs.djangoproject.com/en/stable/" target="_blank">docs.djangoproject.com</a></td>
+        </tr>
+        <tr>
+          <td>Django</td>
+          <td><span class="pill official">official</span></td>
+          <td>หน้าเริ่มต้นอย่างเป็นทางการ พร้อมลิงก์ tutorial</td>
+          <td><a href="https://www.djangoproject.com/start/" target="_blank">djangoproject.com/start</a></td>
+        </tr>
+        <tr>
+          <td>Django</td>
+          <td><span class="pill thai">ไทย</span></td>
+          <td>บทความสอน Django เบื้องต้นแบบ step-by-step</td>
+          <td><a href="https://expert-programming-tutor.com/tutorial/article/KE000991_Simple_use_of_DJango_from_the_beginning.php" target="_blank">expert-programming-tutor.com — สอนใช้งาน Django</a></td>
+        </tr>
+        <tr>
+          <td>Django</td>
+          <td><span class="pill video">วิดีโอ ไทย</span></td>
+          <td>ซีรีส์สอน Django เบื้องต้นจนใช้งานจริง (Zinglecode)</td>
+          <td><a href="https://www.youtube.com/watch?v=BBL8W-lpNHw" target="_blank">youtube.com — สอน Django เบื้องต้น #1</a></td>
+        </tr>
+        <tr>
+          <td>Django</td>
+          <td><span class="pill thai">ไทย</span></td>
+          <td>บทความรวม tips การใช้งาน Django (security, admin, debug toolbar)</td>
+          <td><a href="https://stackpython.co/tutorial/django-tips-python-web-development" target="_blank">stackpython.co — Django Tips</a></td>
+        </tr>
+        <tr>
+          <td>ASP.NET Core</td>
+          <td><span class="pill official">official</span></td>
+          <td>เอกสารทางการฉบับเต็มจาก Microsoft</td>
+          <td><a href="https://learn.microsoft.com/en-us/aspnet/core/" target="_blank">learn.microsoft.com/aspnet/core</a></td>
+        </tr>
+        <tr>
+          <td>ASP.NET Core</td>
+          <td><span class="pill official">official</span></td>
+          <td>Tutorial สร้าง ASP.NET Core MVC app ทีละขั้นตอน (รองรับ VS Code)</td>
+          <td><a href="https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-mvc-app/start-mvc" target="_blank">learn.microsoft.com — Get started with ASP.NET Core MVC</a></td>
+        </tr>
+        <tr>
+          <td>ASP.NET Core</td>
+          <td><span class="pill thai">ไทย, official</span></td>
+          <td>Learning path ภาษาไทยจาก Microsoft Learn สำหรับผู้เริ่มต้น</td>
+          <td><a href="https://learn.microsoft.com/th-th/training/paths/aspnet-core-web-app/" target="_blank">learn.microsoft.com/th-th — สร้างแอปเว็บด้วย ASP.NET Core</a></td>
+        </tr>
+        <tr>
+          <td>ASP.NET Core</td>
+          <td><span class="pill thai">ไทย, official</span></td>
+          <td>Learning path ภาษาไทย เจาะลึก fundamentals (middleware, DI)</td>
+          <td><a href="https://learn.microsoft.com/th-th/training/paths/aspnet-core-fundamentals/" target="_blank">learn.microsoft.com/th-th — ทำความเข้าใจพื้นฐาน ASP.NET Core</a></td>
+        </tr>
+        <tr>
+          <td>ASP.NET Core</td>
+          <td><span class="pill thai">ไทย</span></td>
+          <td>ซีรีส์บทความ Workshop เชื่อมต่อ SQL Server ด้วย ASP.NET Core MVC</td>
+          <td><a href="https://medium.com/jed-ng/asp-net-core-mvc-workshop-01-%E0%B9%80%E0%B8%A3%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87-project-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%97%E0%B8%B3%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A3%E0%B8%B9%E0%B9%89%E0%B8%88%E0%B8%B1%E0%B8%81-bootstrap-ff2953f3331" target="_blank">medium.com/jed-ng — ASP.NET Core MVC Workshop #01</a></td>
+        </tr>
+        <tr>
+          <td>ASP.NET Core</td>
+          <td><span class="pill video">วิดีโอ ฟรี · .NET 9</span></td>
+          <td>คอร์สเต็ม ASP.NET Core MVC + Entity Framework Core บน freeCodeCamp (สอนโดย Alen Omeri)</td>
+          <td><a href="https://www.freecodecamp.org/news/learn-aspnet-core-mvc-with-net-9/" target="_blank">freecodecamp.org — Learn ASP.NET Core MVC with .NET 9</a></td>
+        </tr>
+        <tr>
+          <td>ASP.NET Core</td>
+          <td><span class="pill video">วิดีโอ ฟรี · .NET 9</span></td>
+          <td>คอร์ส REST API ตั้งแต่พื้นฐานจนถึง CRUD เต็มรูปแบบพร้อม SQL Server</td>
+          <td><a href="https://www.freecodecamp.org/news/master-rest-api-development-with-net-9/" target="_blank">freecodecamp.org — Master REST API Development with .NET 9</a></td>
+        </tr>
+        <tr>
+          <td>ASP.NET Core</td>
+          <td><span class="pill video">วิดีโอ ฟรี</span></td>
+          <td>คอร์สสร้าง ASP.NET Core MVC web app แบบ full-stack ตั้งแต่ต้นจนจบ (เผยแพร่ ก.พ. 2025)</td>
+          <td><a href="https://www.freecodecamp.org/news/how-to-build-an-aspnet-core-mvc-web-app/" target="_blank">freecodecamp.org — How to Build an ASP.NET Core MVC Web App</a></td>
+        </tr>
+        <tr>
+          <td>ASP.NET Core</td>
+          <td><span class="pill official">ฟรี · .NET 10</span></td>
+          <td>คอร์สเจาะลึก Web API 151+ บท ครอบคลุม EF Core, JWT, Clean Architecture, Docker, CI/CD</td>
+          <td><a href="https://codewithmukesh.com/courses/dotnet-webapi-zero-to-hero/" target="_blank">codewithmukesh.com — .NET Web API Zero to Hero</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:12.5px;color:#4a5568;margin-top:10px;">
+      ทั้ง 4 รายการล่างสุดใช้ .NET 9 หรือ .NET 10 ซึ่งเป็นเวอร์ชันปัจจุบัน (ไม่ใช่ของเก่าอย่าง .NET 5/6 ที่คอร์สภาษาไทยส่วนใหญ่ยังอ้างอิงอยู่)
+      syntax หลักของ C#/ASP.NET Core ไม่ได้เปลี่ยนมากระหว่างเวอร์ชัน จึงเรียนจากภาษาอังกฤษได้โดยไม่มีปัญหาเรื่องความเข้าใจโค้ด
+    </p>
+  </section>
+
+  <footer>
+    ตัวอย่างโค้ดในเอกสารนี้เขียนขึ้นเพื่อประกอบการอธิบายเปรียบเทียบ ไม่ใช่โค้ด production
+    ควรอ้างอิงเอกสารทางการเพิ่มเติมก่อนนำไปใช้จริง
+  </footer>
+
+</div>
+</body>
+</html>

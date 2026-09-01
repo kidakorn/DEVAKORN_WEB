@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เปรียบเทียบ Web Stack และ Framework</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #2f5d8a;
+    --accent-soft: #dce6f0;
+    --ok: #2f6b4f;
+    --ok-soft: #dcece2;
+    --mid: #8a6d2f;
+    --mid-soft: #f0e9d6;
+    --hard: #8a3a2f;
+    --hard-soft: #f0dcd6;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.65;
+    font-size:15px;
+  }
+
+  .wrap{
+    max-width:960px;
+    margin:0 auto;
+    padding:48px 24px 100px;
+  }
+
+  header{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:24px;
+    margin-bottom:36px;
+  }
+
+  .doc-id{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+
+  h1{
+    font-size:30px;
+    margin:0 0 12px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+
+  .subtitle{
+    color:#4a5568;
+    max-width:72ch;
+    font-size:14.5px;
+  }
+
+  .baseline{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:4px solid var(--accent);
+    padding:16px 20px;
+    margin:28px 0 40px;
+    font-size:14px;
+  }
+
+  .baseline b{ color:var(--accent); }
+
+  nav.toc{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:18px 22px;
+    margin-bottom:44px;
+    font-size:13.5px;
+  }
+
+  nav.toc .toc-title{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:#4a5568;
+    margin-bottom:10px;
+  }
+
+  nav.toc ol{
+    columns:2;
+    margin:0;
+    padding-left:18px;
+  }
+
+  nav.toc a{
+    color:var(--ink);
+    text-decoration:none;
+    border-bottom:1px solid transparent;
+  }
+  nav.toc a:hover{ border-bottom-color:var(--accent); }
+
+  section.group-title{
+    margin:52px 0 18px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--line);
+  }
+
+  section.group-title h2{
+    font-size:13px;
+    font-family:var(--mono);
+    text-transform:lowercase;
+    color:#4a5568;
+    letter-spacing:0.02em;
+    margin:0;
+  }
+
+  .stack-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    margin-bottom:22px;
+    scroll-margin-top:20px;
+  }
+
+  .stack-head{
+    padding:18px 22px;
+    background:#f6f8fa;
+    border-bottom:1px solid var(--line);
+  }
+
+  .stack-name{
+    font-family:var(--mono);
+    font-size:19px;
+    font-weight:700;
+    margin-bottom:4px;
+  }
+
+  .stack-tagline{
+    font-size:13px;
+    color:#4a5568;
+  }
+
+  .stack-body{
+    padding:20px 22px 22px;
+  }
+
+  .ratings{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    margin-bottom:20px;
+  }
+
+  .rating{
+    border:1px solid var(--line);
+    padding:10px 12px;
+  }
+
+  .rating-label{
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:#4a5568;
+    margin-bottom:6px;
+  }
+
+  .rating-value{
+    font-size:13.5px;
+    font-weight:600;
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:2px;
+  }
+
+  .rv-easy{ background:var(--ok-soft); color:var(--ok); }
+  .rv-mid{ background:var(--mid-soft); color:var(--mid); }
+  .rv-hard{ background:var(--hard-soft); color:var(--hard); }
+
+  .field{
+    margin-bottom:14px;
+  }
+  .field:last-child{ margin-bottom:0; }
+
+  .field-label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--accent);
+    margin-bottom:4px;
+  }
+
+  .field-value{
+    font-size:14px;
+  }
+
+  .compare-note{
+    margin-top:16px;
+    padding:12px 14px;
+    background:var(--accent-soft);
+    border-left:3px solid var(--accent);
+    font-size:13.5px;
+  }
+
+  .compare-note b{ color:var(--accent); }
+
+  table.summary{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--panel);
+    border:1px solid var(--line);
+    font-size:13px;
+    margin-bottom:20px;
+  }
+
+  table.summary th, table.summary td{
+    border:1px solid var(--line);
+    padding:9px 10px;
+    text-align:left;
+  }
+
+  table.summary th{
+    background:#f6f8fa;
+    font-family:var(--mono);
+    font-weight:600;
+    font-size:11.5px;
+    color:#4a5568;
+  }
+
+  table.summary td.name{
+    font-family:var(--mono);
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .pill{
+    display:inline-block;
+    padding:1px 7px;
+    border-radius:2px;
+    font-size:11.5px;
+    font-weight:600;
+  }
+
+  .lowcode-box{
+    background:var(--ok-soft);
+    border:1px solid #a8c9b5;
+    padding:20px 22px;
+    margin-bottom:22px;
+  }
+
+  .lowcode-box .stack-name{ color:var(--ok); }
+
+  .verdict-box{
+    margin-top:48px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:4px solid var(--ink);
+    padding:22px 24px;
+  }
+
+  .verdict-box h3{
+    font-family:var(--mono);
+    font-size:14px;
+    margin:0 0 12px;
+  }
+
+  footer{
+    margin-top:56px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:#8a94a3;
+    font-family:var(--mono);
+  }
+
+  @media (max-width: 640px){
+    .wrap{ padding:32px 16px 60px; }
+    h1{ font-size:24px; }
+    .ratings{ grid-template-columns:1fr; }
+    nav.toc ol{ columns:1; }
+    table.summary{ font-size:11.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">TECH-STACK / web-framework-survey / rev.1</div>
+    <h1>เปรียบเทียบ Web Stack และ Framework สายต่างๆ</h1>
+    <p class="subtitle">
+      สรุปเปรียบเทียบ framework สายเว็บที่ใช้กันแพร่หลาย โดยเน้น learning curve, การต่อยอดโค้ดในระยะยาว,
+      ความง่ายในการอ่านไล่โค้ด และความยากง่ายในการ debug
+    </p>
+  </header>
+
+  <div class="baseline">
+    <b>เกณฑ์เปรียบเทียบ:</b> ทีมปัจจุบันพัฒนาด้วย <b>SQLRPG</b> และ <b>LANSA RDML</b> ซึ่งเป็นสาย
+    structured / low-code ที่มีจุดเด่นคือ syntax ตรงไปตรงมา อ่านจากบนลงล่างได้ ไม่มี async/callback ซับซ้อน
+    และ debug ได้แบบ step-by-step ชัดเจน (เช่น STRDBG บน IBM i) เอกสารนี้จะใช้จุดนี้เป็นหลักอ้างอิงเทียบกับแต่ละ stack
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">สารบัญ</div>
+    <ol>
+      <li><a href="#react">React / Next.js</a></li>
+      <li><a href="#vue">Vue / Nuxt</a></li>
+      <li><a href="#angular">Angular</a></li>
+      <li><a href="#svelte">Svelte / SvelteKit</a></li>
+      <li><a href="#django">Django (Python)</a></li>
+      <li><a href="#laravel">Laravel (PHP)</a></li>
+      <li><a href="#rails">Ruby on Rails</a></li>
+      <li><a href="#aspnet">ASP.NET Core (C#)</a></li>
+      <li><a href="#lowcode">Low-code (OutSystems / Retool / Visual LANSA Web)</a></li>
+      <li><a href="#summary">ตารางสรุปทั้งหมด</a></li>
+    </ol>
+  </nav>
+
+  <!-- ============ FRONTEND-CENTRIC ============ -->
+  <section class="group-title"><h2>สาย frontend-centric (แยก frontend/backend ชัดเจน หรือ full-stack แบบ JS)</h2></section>
+
+  <div class="stack-card" id="react">
+    <div class="stack-head">
+      <div class="stack-name">React / Next.js</div>
+      <div class="stack-tagline">JavaScript / TypeScript — component-based UI + full-stack framework</div>
+    </div>
+    <div class="stack-body">
+      <div class="ratings">
+        <div class="rating"><div class="rating-label">learning curve</div><span class="rating-value rv-hard">ยาก</span></div>
+        <div class="rating"><div class="rating-label">ต่อยอดโค้ด</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+        <div class="rating"><div class="rating-label">debug</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">learning curve</div>
+        <div class="field-value">
+          ต้องเรียนหลายชั้นพร้อมกัน คือ JavaScript พื้นฐาน, JSX (เขียน HTML ปนใน JS), concept ของ
+          component/state/props, และถ้าใช้ Next.js ต้องเข้าใจเพิ่มว่าโค้ดส่วนไหนรันบน server
+          ส่วนไหนรันบน browser (server component vs client component) จุดนี้เป็นคนละโลกกับ RDML
+          ที่โค้ดรันเป็น sequence เดียวบนเครื่อง IBM i ไม่ต้องคิดเรื่อง "รันที่ไหน"
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">การพัฒนาต่อยอด</div>
+        <div class="field-value">
+          ถ้าวางโครงสร้าง component ดีตั้งแต่แรก ต่อยอดง่ายและ reuse ได้เยอะ แต่ถ้าทีมไม่มีวินัย
+          (ไม่แยก component ให้เหมาะสม, state กระจัดกระจาย) โค้ดจะบวมและแก้ยากขึ้นเรื่อยๆ
+          ต่างจาก RDML ที่ subroutine เป็นหน่วยชัดเจนอยู่แล้วโดย convention ของภาษา
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">อ่านไล่โค้ด</div>
+        <div class="field-value">
+          โค้ดกระจายเป็นหลายไฟล์ตาม component และมี logic บางส่วนซ่อนอยู่ใน hook (useEffect, useState)
+          ที่ทำงานตาม lifecycle ไม่ใช่ตามลำดับที่เขียน ผู้ที่คุ้นกับโค้ดแบบ top-to-bottom อย่าง RPG
+          จะรู้สึกว่าต้อง "กระโดด" อ่านหลายจุดกว่าจะเข้าใจ flow เดียว
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">debug</div>
+        <div class="field-value">
+          ใช้ browser devtools และ React DevTools extension ดู state/props ได้ real-time ซึ่งสะดวกมากเมื่อคุ้นเคย
+          แต่ error message บางส่วน (โดยเฉพาะจาก async หรือ build-time) อ่านเข้าใจยากสำหรับมือใหม่
+          ไม่ตรงไปตรงมาเท่า error ของ RPG ที่บอกบรรทัดและ field ชัดเจน
+        </div>
+      </div>
+      <div class="compare-note">
+        <b>เทียบกับ RDML:</b> Next.js เหมาะกับงานที่ต้องมี UI โต้ตอบซับซ้อน (dashboard, form ที่มี
+        validation แบบ real-time) แต่ทีมต้องลงทุนเวลาเรียนรู้เยอะกว่า low-code พอสมควร
+        ecosystem ใหญ่ที่สุดในบรรดา JS framework ทำให้หาความช่วยเหลือง่ายในระยะยาว
+      </div>
+    </div>
+  </div>
+
+  <div class="stack-card" id="vue">
+    <div class="stack-head">
+      <div class="stack-name">Vue 3 / Nuxt</div>
+      <div class="stack-tagline">JavaScript / TypeScript — component-based UI ที่เน้นความอ่านง่าย</div>
+    </div>
+    <div class="stack-body">
+      <div class="ratings">
+        <div class="rating"><div class="rating-label">learning curve</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+        <div class="rating"><div class="rating-label">ต่อยอดโค้ด</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+        <div class="rating"><div class="rating-label">debug</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">learning curve</div>
+        <div class="field-value">
+          ไฟล์ .vue แยก template (HTML), script (logic), style (CSS) ไว้เป็นสัดส่วนชัดเจนในไฟล์เดียว
+          อ่านง่ายกว่า JSX ของ React ตั้งแต่แรกเห็น เพราะ template ยังหน้าตาคล้าย HTML ปกติ
+          ผู้เริ่มต้นจากภาษาที่ไม่ใช่ JS มักบอกว่า Vue เข้าใจง่ายกว่า React ในช่วง 2-3 สัปดาห์แรก
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">การพัฒนาต่อยอด</div>
+        <div class="field-value">
+          convention ของ Vue ค่อนข้างชัดเจนและเป็นมาตรฐานเดียวกันในชุมชน (ไม่มีทางเลือกหลากหลายเท่า React)
+          ทำให้โค้ดจากคนละคนหน้าตาคล้ายกัน ต่อยอดและอ่านโค้ดคนอื่นง่ายกว่า เหมาะกับทีมที่ไม่ specialize สูง
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">อ่านไล่โค้ด</div>
+        <div class="field-value">
+          ดีกว่า React ตรงที่ template แยกจาก logic ชัดเจน อ่านแล้วรู้ทันทีว่าส่วนไหนคือ UI ส่วนไหนคือการคำนวณ
+          ยังคงมี concept ของ reactivity (data เปลี่ยนแล้ว UI อัพเดทเอง) ที่ต้องทำความเข้าใจ ซึ่งไม่มีใน RDML
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">debug</div>
+        <div class="field-value">
+          มี Vue DevTools คล้าย React ใช้งานง่ายไม่แพ้กัน error message อ่านเข้าใจง่ายกว่า React
+          ในหลายกรณีเพราะ Vue ออกแบบมาให้ error message เป็นมิตรกับผู้เริ่มต้นเป็นพิเศษ
+        </div>
+      </div>
+      <div class="compare-note">
+        <b>เทียบกับ RDML:</b> ถ้าอยากได้ความยืดหยุ่นแบบ modern JS framework แต่ไม่อยากเจอ learning curve
+        สูงเท่า React, Vue/Nuxt เป็นจุดกึ่งกลางที่ดี เหมาะกับทีมผสมที่ไม่มีคนถนัด JS ลึกมาก่อน
+      </div>
+    </div>
+  </div>
+
+  <div class="stack-card" id="angular">
+    <div class="stack-head">
+      <div class="stack-name">Angular</div>
+      <div class="stack-tagline">TypeScript-first — framework แบบครบชุด (opinionated) จาก Google</div>
+    </div>
+    <div class="stack-body">
+      <div class="ratings">
+        <div class="rating"><div class="rating-label">learning curve</div><span class="rating-value rv-hard">ยากมาก</span></div>
+        <div class="rating"><div class="rating-label">ต่อยอดโค้ด</div><span class="rating-value rv-ok rv-easy">ง่าย (ระยะยาว)</span></div>
+        <div class="rating"><div class="rating-label">debug</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">learning curve</div>
+        <div class="field-value">
+          ต้องเรียน TypeScript, dependency injection, RxJS (reactive programming ด้วย Observable),
+          module system, และ decorator syntax พร้อมกัน เป็น framework ที่ชันที่สุดในกลุ่มนี้
+          แต่พอเรียนผ่านแล้ว โครงสร้างที่ชัดเจนของ Angular จะทำให้ทำงานเร็วขึ้นเรื่อยๆ
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">การพัฒนาต่อยอด</div>
+        <div class="field-value">
+          Angular บังคับโครงสร้างโปรเจกต์และ pattern ที่ตายตัว (opinionated) ต่างจาก React ที่ปล่อยอิสระ
+          ข้อดีคือทีมใหญ่ระยะยาวจะมีโค้ดที่หน้าตาสม่ำเสมอ ไม่ต้องมาถกกันว่าจะจัดโครงสร้างยังไง
+          เหมาะกับองค์กรที่มีทีมพัฒนาเว็บถาวรและอยากได้ maintainability สูงในระยะ 3-5 ปี
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">อ่านไล่โค้ด</div>
+        <div class="field-value">
+          โค้ดกระจายเป็นหลายไฟล์ต่อ 1 component (template, style, logic, spec test) และมี
+          dependency injection ที่ทำให้ต้องไล่ดูว่า service ไหนถูก inject เข้ามาจากที่ไหน
+          ต้องใช้เวลาปรับตัวนานกว่ากลุ่มอื่นก่อนจะไล่โค้ดได้คล่อง
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">debug</div>
+        <div class="field-value">
+          RxJS/Observable เป็นจุดที่มือใหม่ debug ยากที่สุดใน stack นี้ เพราะ error อาจเกิดจาก
+          stream ของข้อมูลที่ไหลผ่านหลาย operator กว่าจะถึงจุดที่ error แสดงออกมา
+          Angular DevTools ช่วยได้ระดับหนึ่งแต่ไม่ตรงไปตรงมาเท่า console.log แบบที่คุ้นเคย
+        </div>
+      </div>
+      <div class="compare-note">
+        <b>เทียบกับ RDML:</b> Angular อยู่คนละขั้วกับความง่ายของ low-code เกือบสุดทาง
+        เหมาะกับโปรเจกต์ enterprise ขนาดใหญ่ที่มีทีม dedicated จริงจัง ไม่แนะนำสำหรับทีมผสมที่เพิ่งเริ่มสาย web
+      </div>
+    </div>
+  </div>
+
+  <div class="stack-card" id="svelte">
+    <div class="stack-head">
+      <div class="stack-name">Svelte / SvelteKit</div>
+      <div class="stack-tagline">JavaScript / TypeScript — compiler-based, เขียนน้อย ได้ผลลัพธ์เยอะ</div>
+    </div>
+    <div class="stack-body">
+      <div class="ratings">
+        <div class="rating"><div class="rating-label">learning curve</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+        <div class="rating"><div class="rating-label">ต่อยอดโค้ด</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+        <div class="rating"><div class="rating-label">debug</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">learning curve</div>
+        <div class="field-value">
+          syntax ใกล้เคียง HTML/JS ปกติที่สุดในกลุ่มนี้ ไม่ต้องเรียน concept แปลกใหม่เยอะ
+          (ไม่มี virtual DOM, ไม่ต้องเข้าใจ JSX) เพราะ Svelte แปลงโค้ดเป็น JavaScript ธรรมดาตอน build
+          ทำให้เขียนน้อยกว่ากลุ่มอื่นในงานเดียวกันอย่างเห็นได้ชัด
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">การพัฒนาต่อยอด</div>
+        <div class="field-value">
+          โค้ดกระชับทำให้ไฟล์เล็กและอ่านครบในหน้าจอเดียวได้บ่อยกว่ากลุ่มอื่น เหมาะกับทีมเล็กที่อยากได้
+          ความเร็วในการพัฒนา ข้อควรระวังคือ ecosystem และจำนวน library ยังเล็กกว่า React/Vue พอสมควร
+          ถ้าต้องพึ่ง library เฉพาะทางเยอะ อาจหาของสำเร็จรูปไม่ได้เท่ากลุ่มใหญ่
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">อ่านไล่โค้ด</div>
+        <div class="field-value">
+          เพราะเขียนสั้นและใกล้เคียง HTML/JS ธรรมดา คนที่ไม่เคยเห็น Svelte มาก่อนก็มักอ่านโค้ดออกได้ทันที
+          ไม่ต้องรู้จัก syntax พิเศษเยอะเหมือน JSX หรือ RxJS ของ Angular
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">debug</div>
+        <div class="field-value">
+          error message ตรงไปตรงมา และเพราะไม่มีชั้น abstraction ซับซ้อน (ไม่มี virtual DOM diffing)
+          พฤติกรรมของโค้ดจึงคาดเดาง่าย ใกล้เคียงความรู้สึกตอน debug RDML มากที่สุดในกลุ่ม JS framework ทั้งหมด
+        </div>
+      </div>
+      <div class="compare-note">
+        <b>เทียบกับ RDML:</b> เป็น JS framework ที่ให้ความรู้สึกใกล้เคียงความง่ายของ low-code มากที่สุด
+        เหมาะกับทีมผสมที่อยากเริ่มสาย modern web โดยไม่เจอ learning curve หนักเกินไป ข้อแลกเปลี่ยนคือ
+        ตลาดแรงงานและจำนวนตัวอย่างโค้ดยังน้อยกว่า React/Vue
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FULL-STACK / BACKEND-CENTRIC ============ -->
+  <section class="group-title"><h2>สาย backend-centric full-stack framework</h2></section>
+
+  <div class="stack-card" id="django">
+    <div class="stack-head">
+      <div class="stack-name">Django</div>
+      <div class="stack-tagline">Python — full-stack framework ที่มาพร้อม admin panel สำเร็จรูป</div>
+    </div>
+    <div class="stack-body">
+      <div class="ratings">
+        <div class="rating"><div class="rating-label">learning curve</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+        <div class="rating"><div class="rating-label">ต่อยอดโค้ด</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+        <div class="rating"><div class="rating-label">debug</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">learning curve</div>
+        <div class="field-value">
+          Python เป็นภาษาที่อ่านง่ายที่สุดในบรรดาภาษาโปรแกรมยอดนิยม syntax ใกล้เคียงภาษาอังกฤษ
+          และ Django บังคับโครงสร้างโปรเจกต์ชัดเจน (models, views, templates) ทำให้เริ่มต้นเข้าใจ flow ได้เร็ว
+          ถ้าทีมยังไม่มีพื้นฐาน Python เลย ต้องใช้เวลาเรียนภาษาก่อนสัก 1-2 สัปดาห์
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">การพัฒนาต่อยอด</div>
+        <div class="field-value">
+          Django ORM ทำให้เพิ่ม field หรือ table ใหม่แล้ว migrate ได้ง่าย และ admin panel ที่มาพร้อม framework
+          ช่วยให้ทำ CRUD ภายในได้เร็วมากโดยแทบไม่ต้องเขียน UI เอง เหมาะกับงาน internal tool
+          ที่เนื้อหาหลักคือฟอร์มกรอกข้อมูลและรายงาน ใกล้เคียงกับความสะดวกของ low-code มากกว่ากลุ่ม JS
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">อ่านไล่โค้ด</div>
+        <div class="field-value">
+          โค้ดรันเป็น request-response แบบ synchronous เป็นหลัก (ไม่มี async ซับซ้อนถ้าไม่จำเป็น)
+          อ่านจากบนลงล่างได้ใกล้เคียงกับความคุ้นเคยจาก RPG/RDML มากกว่า JS framework ทั้งหมดที่กล่าวมา
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">debug</div>
+        <div class="field-value">
+          error message ของ Python (traceback) ชี้บรรทัดและสาเหตุตรงไปตรงมา คล้ายความรู้สึกตอนดู
+          error จาก RPG มากกว่า JS stack trace ที่บางครั้งชี้ไปที่ library ภายในจนงง
+        </div>
+      </div>
+      <div class="compare-note">
+        <b>เทียบกับ RDML:</b> ในบรรดา full-stack framework ทั้งหมด Django ให้ความรู้สึกใกล้เคียง
+        การเขียน RDML มากที่สุด ทั้งเรื่องความอ่านง่ายของภาษาและ flow การทำงานแบบ sequential
+        เหมาะมากถ้าอยากได้ทางเลือกที่ไม่ใช่ low-code แต่ก็ไม่อยากเจอ JS ecosystem ที่ซับซ้อน
+      </div>
+    </div>
+  </div>
+
+  <div class="stack-card" id="laravel">
+    <div class="stack-head">
+      <div class="stack-name">Laravel</div>
+      <div class="stack-tagline">PHP — full-stack framework ที่เน้น developer experience</div>
+    </div>
+    <div class="stack-body">
+      <div class="ratings">
+        <div class="rating"><div class="rating-label">learning curve</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+        <div class="rating"><div class="rating-label">ต่อยอดโค้ด</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+        <div class="rating"><div class="rating-label">debug</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">learning curve</div>
+        <div class="field-value">
+          PHP เขียนปนกับ HTML ได้ตั้งแต่ยุคแรก ทำให้เข้าใจแนวคิด "หน้าเว็บ = ผลลัพธ์ของโค้ดที่รันบน server"
+          ได้ง่าย Laravel เพิ่มโครงสร้าง MVC และ Eloquent ORM เข้ามา ต้องใช้เวลาเรียนรู้ pattern เหล่านี้
+          แต่เอกสารและ tutorial ของ Laravel ถือว่าเป็นมิตรกับผู้เริ่มต้นมากที่สุดกลุ่มหนึ่ง
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">การพัฒนาต่อยอด</div>
+        <div class="field-value">
+          Eloquent ORM และ Artisan CLI (เครื่องมือ generate code อัตโนมัติ) ช่วยลดงานซ้ำซากได้เยอะ
+          เพิ่ม feature ใหม่ทำได้เร็วเพราะมี convention ชัดเจนว่าไฟล์ไหนควรอยู่ตรงไหน
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">อ่านไล่โค้ด</div>
+        <div class="field-value">
+          โครงสร้าง MVC (Model-View-Controller) แยกส่วนชัดเจน อ่านแล้วรู้ทันทีว่า logic อยู่ที่ controller
+          ข้อมูลอยู่ที่ model และหน้าตาอยู่ที่ view ใกล้เคียงความรู้สึกแยก layer แบบที่ LANSA แยก
+          function/screen แต่เป็นคนละ syntax
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">debug</div>
+        <div class="field-value">
+          Laravel มีเครื่องมือ debug ชื่อ "Laravel Telescope" ที่ดู request, query, error ทั้งหมดผ่านหน้าเว็บได้
+          ใช้งานสะดวกและเห็นภาพรวมชัดเจนโดยไม่ต้องอ่าน log file เอง
+        </div>
+      </div>
+      <div class="compare-note">
+        <b>เทียบกับ RDML:</b> เหมาะกับทีมที่คุ้นเคยกับแนวคิด "1 หน้าจอ = 1 ไฟล์ที่จัดการทุกอย่าง"
+        มาก่อน (คล้าย screen ใน LANSA) เพราะ Laravel ยังให้ความรู้สึกนั้นอยู่บ้างผ่าน Blade template
+      </div>
+    </div>
+  </div>
+
+  <div class="stack-card" id="rails">
+    <div class="stack-head">
+      <div class="stack-name">Ruby on Rails</div>
+      <div class="stack-tagline">Ruby — full-stack framework ต้นแบบของแนวคิด "convention over configuration"</div>
+    </div>
+    <div class="stack-body">
+      <div class="ratings">
+        <div class="rating"><div class="rating-label">learning curve</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+        <div class="rating"><div class="rating-label">ต่อยอดโค้ด</div><span class="rating-value rv-ok rv-easy">ง่ายมาก</span></div>
+        <div class="rating"><div class="rating-label">debug</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">learning curve</div>
+        <div class="field-value">
+          Ruby syntax อ่านลื่นเหมือนภาษาอังกฤษ (เช่น <code>3.times do ... end</code>) แต่ Rails มี "มายากล"
+          เบื้องหลังเยอะ (metaprogramming) เช่น method บางตัวไม่ได้ถูกเขียนไว้ตรงๆ แต่ถูก generate ขึ้นมาเอง
+          ตอนแรกจะรู้สึกง่าย แต่พอเจอปัญหาลึกๆ อาจงงว่า method นี้มาจากไหน
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">การพัฒนาต่อยอด</div>
+        <div class="field-value">
+          แนวคิด "convention over configuration" ทำให้ทีมไม่ต้องตัดสินใจเรื่องโครงสร้างเยอะ
+          ทุกอย่างมีที่ทางตายตัวอยู่แล้ว เพิ่ม feature ได้เร็วมากถ้าทำตาม pattern ที่ Rails กำหนด
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">อ่านไล่โค้ด</div>
+        <div class="field-value">
+          โค้ดสั้นและอ่านลื่น แต่เพราะมี metaprogramming เบื้องหลัง บางครั้งไล่โค้ดแล้วหา definition
+          ของ method ไม่เจอตรงๆ ต้องอาศัยความคุ้นเคยกับ convention ของ Rails ก่อน
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">debug</div>
+        <div class="field-value">
+          เพราะ magic เบื้องหลังเยอะ error บางประเภทอาจไม่ชี้จุดที่แท้จริงตรงๆ ต้องอาศัยประสบการณ์
+          กับ Rails โดยเฉพาะมากกว่าจะ debug ได้เร็ว
+        </div>
+      </div>
+      <div class="compare-note">
+        <b>เทียบกับ RDML:</b> ความง่ายตอนเริ่มต้นสูง แต่ magic เบื้องหลังต่างจากความตรงไปตรงมาของ RDML
+        พอสมควร ปัจจุบันความนิยมในตลาดก็ลดลงกว่าเดิม ทำให้หาคนหรือ resource สนับสนุนยากขึ้นเรื่อยๆ
+      </div>
+    </div>
+  </div>
+
+  <div class="stack-card" id="aspnet">
+    <div class="stack-head">
+      <div class="stack-name">ASP.NET Core</div>
+      <div class="stack-tagline">C# — full-stack framework จาก Microsoft เน้น type-safety และ enterprise</div>
+    </div>
+    <div class="stack-body">
+      <div class="ratings">
+        <div class="rating"><div class="rating-label">learning curve</div><span class="rating-value rv-mid">ปานกลาง</span></div>
+        <div class="rating"><div class="rating-label">ต่อยอดโค้ด</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+        <div class="rating"><div class="rating-label">debug</div><span class="rating-value rv-ok rv-easy">ง่าย</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">learning curve</div>
+        <div class="field-value">
+          C# เป็นภาษา strongly-typed คล้ายแนวคิดของ RPG ที่กำหนด type ตายตัว ทำให้ error ส่วนใหญ่
+          ถูกจับได้ตั้งแต่ compile time สำหรับคนที่คุ้นกับภาษา typed มาก่อน (เช่น RPG) จะปรับตัวได้ค่อนข้างเร็ว
+          เมื่อเทียบกับ dynamic language อย่าง JS/Python/PHP/Ruby
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">การพัฒนาต่อยอด</div>
+        <div class="field-value">
+          Visual Studio (IDE ของ Microsoft) มี tooling ช่วย refactor, auto-complete, และหา error
+          ได้ดีที่สุดกลุ่มหนึ่ง เพราะ type system ที่แข็งแรงทำให้ IDE รู้ context ได้แม่นยำ
+          เหมาะกับโปรเจกต์ที่คาดว่าจะมีคนมาแก้ต่อในอนาคตหลายคน
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">อ่านไล่โค้ด</div>
+        <div class="field-value">
+          โครงสร้างชัดเจนแบบ enterprise (interface, dependency injection, layered architecture)
+          อ่านเข้าใจได้ไม่ยากถ้าคุ้นกับแนวคิด OOP มาก่อน แต่ถ้าไม่เคยเขียนภาษา OOP เลย
+          ต้องใช้เวลาทำความเข้าใจ class/interface/inheritance ก่อน
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">debug</div>
+        <div class="field-value">
+          debugger ใน Visual Studio ถือว่าดีที่สุดกลุ่มหนึ่งในทุก stack ที่กล่าวมา สามารถตั้ง breakpoint
+          ไล่ดู variable แบบ step-by-step ได้สะดวก ใกล้เคียงประสบการณ์ debug บน IBM i มากกว่า stack อื่น
+        </div>
+      </div>
+      <div class="compare-note">
+        <b>เทียบกับ RDML:</b> เพราะเป็นภาษา strongly-typed เหมือนกัน และมี debugger แบบ step-by-step
+        ที่ทรงพลัง ASP.NET Core จึงเป็นสายที่ทีมพื้นหลัง RPG มักปรับตัวได้เร็วรองจาก Django
+        ข้อควรพิจารณาคือ license ของ Visual Studio full edition และ hosting มักมีค่าใช้จ่ายสูงกว่า stack โอเพนซอร์ส
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LOW-CODE ============ -->
+  <section class="group-title"><h2>ทางเลือก low-code (ใกล้เคียงประสบการณ์ LANSA)</h2></section>
+
+  <div class="lowcode-box">
+    <div class="stack-name">OutSystems / Retool / Appsmith / Visual LANSA Web</div>
+    <div class="stack-tagline" style="margin-bottom:14px;">Low-code / visual builder — ลาก-วาง ประกอบหน้าจอ เขียนโค้ดเสริมเฉพาะจุด</div>
+
+    <div class="field">
+      <div class="field-label">ความหมาย</div>
+      <div class="field-value">
+        แพลตฟอร์มที่ให้สร้างหน้าจอด้วยการลาก-วาง component และผูก data source ผ่าน UI แทนการเขียนโค้ดล้วน
+        เขียนโค้ดเสริมเฉพาะจุดที่ logic ซับซ้อนเกินกว่า visual builder จะทำได้ (เช่น JavaScript function
+        เล็กๆ ใน Retool หรือ RDML function ใน Visual LANSA)
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">ทำไมถึงใกล้เคียง LANSA</div>
+      <div class="field-value">
+        Visual LANSA เองมี capability สร้าง web app ได้ (RAMP หรือ Visual LANSA Web) ซึ่งใช้ RDML
+        เขียน logic เบื้องหลังได้เลย ถ้าทีมอยากคง productivity แบบ low-code ไว้ นี่คือทางเลือกที่ต่อยอด
+        ความรู้เดิมได้ตรงที่สุด ไม่ต้องเรียนภาษาใหม่หรือ paradigm ใหม่เลย
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">ข้อจำกัดที่ต้องรู้ก่อนเลือก</div>
+      <div class="field-value">
+        แลก flexibility กับความเร็ว งานที่ visual builder ทำไม่ได้ (เช่น custom UI ที่ซับซ้อนมาก, animation
+        เฉพาะทาง, integration แปลกๆ) จะทำยากกว่าหรือทำไม่ได้เลยถ้าไม่มีช่องให้เขียนโค้ดเสริม
+        นอกจากนี้ platform เชิงพาณิชย์ (OutSystems) มักมีค่า license ตามจำนวนผู้ใช้หรือ application
+        ซึ่งต่างจาก framework โอเพนซอร์สที่ไม่มีค่าใช้จ่ายตัว license
+      </div>
+    </div>
+    <div class="compare-note" style="background:#ffffff;">
+      <b>ข้อพิจารณา:</b> ถ้า scope ของ internal tool ไม่ซับซ้อนมาก (ฟอร์ม, รายงาน, CRUD เป็นหลัก)
+      และอยากได้ความเร็วสูงสุดในการส่งมอบโดยทีมที่ไม่ต้องเรียนรู้อะไรใหม่เยอะ ทางสาย low-code
+      ยังคงตอบโจทย์ได้ดีไม่แพ้ full framework แต่ถ้ามองยาวว่าจะมีเว็บแอพหลายตัวขึ้นเรื่อยๆ และอยากมี
+      talent pool ที่กว้างกว่าคนที่รู้ LANSA เท่านั้น การลงทุนเรียนรู้ framework โอเพนซอร์สจะคุ้มค่ากว่าในระยะยาว
+    </div>
+  </div>
+
+  <!-- ============ SUMMARY TABLE ============ -->
+  <section class="group-title" id="summary"><h2>ตารางสรุปทั้งหมด</h2></section>
+
+  <table class="summary">
+    <thead>
+      <tr>
+        <th>Stack</th>
+        <th>ภาษา</th>
+        <th>Learning curve</th>
+        <th>ต่อยอดโค้ด</th>
+        <th>อ่านไล่โค้ด</th>
+        <th>Debug</th>
+        <th>ใกล้เคียง RDML</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="name">React / Next.js</td><td>JS / TS</td><td><span class="pill" style="background:var(--hard-soft);color:var(--hard);">ยาก</span></td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td><span class="pill" style="background:var(--hard-soft);color:var(--hard);">ยาก</span></td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td>น้อย</td></tr>
+      <tr><td class="name">Vue / Nuxt</td><td>JS / TS</td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td>น้อย-ปานกลาง</td></tr>
+      <tr><td class="name">Angular</td><td>TS</td><td><span class="pill" style="background:var(--hard-soft);color:var(--hard);">ยากมาก</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย (ระยะยาว)</span></td><td><span class="pill" style="background:var(--hard-soft);color:var(--hard);">ยาก</span></td><td><span class="pill" style="background:var(--hard-soft);color:var(--hard);">ยาก</span></td><td>น้อยมาก</td></tr>
+      <tr><td class="name">Svelte / SvelteKit</td><td>JS / TS</td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td>ปานกลาง</td></tr>
+      <tr><td class="name">Django</td><td>Python</td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td>สูง</td></tr>
+      <tr><td class="name">Laravel</td><td>PHP</td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td>ปานกลาง-สูง</td></tr>
+      <tr><td class="name">Ruby on Rails</td><td>Ruby</td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่ายมาก</span></td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td>ปานกลาง</td></tr>
+      <tr><td class="name">ASP.NET Core</td><td>C#</td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่าย</span></td><td>สูง</td></tr>
+      <tr><td class="name">Low-code (OutSystems ฯลฯ)</td><td>Visual + script เสริม</td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่ายมาก</span></td><td><span class="pill" style="background:var(--mid-soft);color:var(--mid);">ปานกลาง*</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่ายมาก</span></td><td><span class="pill" style="background:var(--ok-soft);color:var(--ok);">ง่ายมาก</span></td><td>สูงมาก</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:#8a94a3;margin-top:-6px;">
+    * low-code ต่อยอดง่ายในงานทั่วไป แต่ติดขัดถ้า requirement ซับซ้อนเกินกว่า visual builder รองรับ
+  </p>
+
+  <div class="verdict-box">
+    <h3>ข้อสรุปเชิงเปรียบเทียบ</h3>
+    <p style="margin:0 0 10px;">
+      ถ้าเรียงจาก "ใกล้เคียงประสบการณ์ SQLRPG/LANSA RDML มากที่สุด" ไปหา "ต่างจากเดิมมากที่สุด"
+      จะได้ประมาณนี้: <b>Low-code (OutSystems/Visual LANSA)</b> → <b>Django</b> ≈ <b>ASP.NET Core</b>
+      → <b>Laravel</b> ≈ <b>Ruby on Rails</b> → <b>Svelte</b> → <b>Vue</b> → <b>React/Next.js</b> → <b>Angular</b>
+    </p>
+    <p style="margin:0;">
+      ยิ่งอยู่ทางซ้าย ยิ่งเรียนรู้เร็วและ debug ง่ายในช่วงแรก แต่มักแลกกับความยืดหยุ่นหรือ talent pool ที่แคบกว่า
+      ยิ่งอยู่ทางขวา ยิ่งต้องลงทุนเวลาเรียนรู้มากกว่า แต่ทำ UI ที่ซับซ้อนได้ดีกว่าและหา developer
+      ในตลาดง่ายกว่าในระยะยาว การเลือกจึงขึ้นกับว่าทีมให้น้ำหนักกับ "ความเร็วในการเริ่มงาน" หรือ
+      "ความยืดหยุ่นและตลาดแรงงานในระยะยาว" มากกว่ากัน
+    </p>
+  </div>
+
+  <footer>
+    เอกสารนี้เปรียบเทียบในเชิงภาพรวมสำหรับใช้ประกอบการตัดสินใจเบื้องต้น ความเหมาะสมจริงยังขึ้นกับ
+    requirement เฉพาะของแต่ละโปรเจกต์และความถนัดของทีมพัฒนา
+  </footer>
+
+</div>
+</body>
+</html>

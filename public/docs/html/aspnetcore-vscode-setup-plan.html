@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setup Plan — ASP.NET Core บน VS Code</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #2f5d8a;
+    --accent-soft: #dce6f0;
+    --razor: #8a5a2f;
+    --razor-soft: #f0e3d6;
+    --blazor: #4b2f8a;
+    --blazor-soft: #e4dcf0;
+    --react: #0c6b6b;
+    --react-soft: #d6efee;
+    --code-bg: #1b2430;
+    --code-ink: #e8ecf1;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.65;
+    font-size:15px;
+  }
+
+  .wrap{
+    max-width:980px;
+    margin:0 auto;
+    padding:48px 24px 100px;
+  }
+
+  header{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:24px;
+    margin-bottom:32px;
+  }
+
+  .doc-id{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+
+  h1{
+    font-size:27px;
+    margin:0 0 12px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+
+  .subtitle{
+    color:#4a5568;
+    max-width:75ch;
+    font-size:14.5px;
+  }
+
+  .goal-box{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:4px solid var(--accent);
+    padding:18px 20px;
+    margin:28px 0 36px;
+    font-size:14px;
+  }
+
+  .goal-box dl{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:6px 16px;
+    margin:0;
+  }
+  .goal-box dt{
+    font-family:var(--mono);
+    color:#4a5568;
+    font-size:12.5px;
+    white-space:nowrap;
+  }
+  .goal-box dd{ margin:0; }
+
+  nav.toc{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:18px 22px;
+    margin-bottom:44px;
+    font-size:13.5px;
+  }
+  nav.toc .toc-title{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:#4a5568;
+    margin-bottom:10px;
+  }
+  nav.toc ol{ columns:2; margin:0; padding-left:18px; }
+  nav.toc a{ color:var(--ink); text-decoration:none; border-bottom:1px solid transparent; }
+  nav.toc a:hover{ border-bottom-color:var(--accent); }
+
+  section.shared{
+    margin-bottom:48px;
+  }
+  section.shared h2{
+    font-size:19px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:10px;
+    margin-bottom:20px;
+  }
+
+  .step{
+    background:var(--panel);
+    border:1px solid var(--line);
+    margin-bottom:14px;
+  }
+  .step-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 16px;
+    background:#f6f8fa;
+    border-bottom:1px solid var(--line);
+  }
+  .step-num{
+    font-family:var(--mono);
+    font-size:12px;
+    background:var(--ink);
+    color:#fff;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .step-title{ font-weight:600; font-size:14px; }
+  .step-body{ padding:14px 16px; }
+  .step-body p{ margin:0 0 10px; font-size:13.5px; }
+  .step-body p:last-child{ margin-bottom:0; }
+
+  pre{
+    margin:0 0 10px;
+    padding:12px 14px;
+    background:var(--code-bg);
+    color:var(--code-ink);
+    font-family:var(--mono);
+    font-size:12.5px;
+    overflow-x:auto;
+    line-height:1.6;
+  }
+  pre:last-child{ margin-bottom:0; }
+
+  .approach{
+    margin-top:56px;
+  }
+  .approach-head{
+    padding:20px 24px;
+    border:1px solid var(--line);
+    border-bottom:none;
+  }
+  .approach.razor .approach-head{ background:var(--razor-soft); }
+  .approach.blazor .approach-head{ background:var(--blazor-soft); }
+  .approach.react .approach-head{ background:var(--react-soft); }
+
+  .approach-eyebrow{
+    font-family:var(--mono);
+    font-size:11.5px;
+    margin-bottom:6px;
+  }
+  .approach.razor .approach-eyebrow{ color:var(--razor); }
+  .approach.blazor .approach-eyebrow{ color:var(--blazor); }
+  .approach.react .approach-eyebrow{ color:var(--react); }
+
+  .approach-title{
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .approach-desc{
+    font-size:13.5px;
+    color:#374151;
+  }
+
+  .approach-body{
+    border:1px solid var(--line);
+    padding:20px 24px;
+  }
+
+  .fit-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-bottom:20px;
+  }
+  .fit-col{
+    background:#f6f8fa;
+    border:1px solid var(--line);
+    padding:12px 14px;
+    font-size:13px;
+  }
+  .fit-col .fit-label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:#4a5568;
+    margin-bottom:6px;
+  }
+  .fit-col ul{ margin:0; padding-left:16px; }
+  .fit-col li{ margin-bottom:4px; }
+
+  .files-affected{
+    margin-top:14px;
+    font-size:12.5px;
+    font-family:var(--mono);
+    background:#f6f8fa;
+    border:1px solid var(--line);
+    padding:10px 14px;
+    color:#374151;
+  }
+
+  .warn-note{
+    background:#f0e3d6;
+    border-left:3px solid #8a5a2f;
+    padding:10px 14px;
+    font-size:13px;
+    margin-top:10px;
+  }
+
+  footer{
+    margin-top:56px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:#8a94a3;
+    font-family:var(--mono);
+  }
+
+  @media (max-width: 700px){
+    .wrap{ padding:32px 16px 60px; }
+    h1{ font-size:21px; }
+    .fit-grid{ grid-template-columns:1fr; }
+    nav.toc ol{ columns:1; }
+    pre{ font-size:11.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">SETUP-PLAN / aspnetcore-vscode / rev.1</div>
+    <h1>Setup Plan — เตรียม VS Code สำหรับ ASP.NET Core แยกตามแนวทาง frontend</h1>
+    <p class="subtitle">
+      แผนเตรียมสภาพแวดล้อมพัฒนา แบ่งเป็นส่วนที่ต้องทำร่วมกันทุกแนวทาง และส่วนที่ต่างกันตาม
+      frontend ที่เลือก (Razor Pages / Blazor / Web API + React)
+    </p>
+  </header>
+
+  <div class="goal-box">
+    <dl>
+      <dt>เป้าหมาย</dt><dd>ติดตั้ง tooling บน VS Code ให้พร้อมเขียนโค้ดและ debug ASP.NET Core ได้ทันที</dd>
+      <dt>ขอบเขต</dt><dd>ครอบคลุมการติดตั้งเท่านั้น ไม่รวมการเขียน business logic หรือเชื่อมต่อ IWS/SQL Server จริง</dd>
+      <dt>สิ่งที่ต้องเลือกก่อน</dt><dd>แนวทาง frontend หนึ่งใน 3 แบบด้านล่าง (ทำแยกกัน ไม่ต้องทำทุกแบบ)</dd>
+    </dl>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">สารบัญ</div>
+    <ol>
+      <li><a href="#shared">ส่วนที่ทำร่วมกันทุกแนวทาง</a></li>
+      <li><a href="#razor">แนวทาง A — Razor Pages</a></li>
+      <li><a href="#blazor">แนวทาง B — Blazor Server</a></li>
+      <li><a href="#react">แนวทาง C — Web API + React</a></li>
+    </ol>
+  </nav>
+
+  <section class="shared" id="shared">
+    <h2>ส่วนที่ทำร่วมกันทุกแนวทาง (ทำก่อนเสมอ)</h2>
+
+    <div class="step">
+      <div class="step-head"><span class="step-num">1</span><span class="step-title">ติดตั้ง .NET SDK</span></div>
+      <div class="step-body">
+        <p>VS Code ไม่มี SDK มาให้ ต้องโหลดแยกจาก dotnet.microsoft.com เลือกเวอร์ชัน LTS ล่าสุด (.NET 8 หรือใหม่กว่า)</p>
+        <p>ตรวจสอบว่าติดตั้งสำเร็จด้วยคำสั่ง:</p>
+        <pre>dotnet --version</pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="step-num">2</span><span class="step-title">ติดตั้ง extension บน VS Code</span></div>
+      <div class="step-body">
+        <p>เปิด Extensions panel (Ctrl+Shift+X) แล้วติดตั้งตัวนี้เป็นอย่างน้อย:</p>
+        <pre>C# Dev Kit          (publisher: Microsoft)
+C#                  (ติดมาพร้อม C# Dev Kit อัตโนมัติ)
+.NET Install Tool   (ติดมาพร้อม C# Dev Kit อัตโนมัติ)</pre>
+        <p>หลังติดตั้งแล้ว restart VS Code หนึ่งครั้งเพื่อให้ extension โหลด SDK ที่เจอในเครื่องให้ครบ</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="step-num">3</span><span class="step-title">ตรวจสอบว่า debug ได้จริง</span></div>
+      <div class="step-body">
+        <p>สร้างโปรเจกต์ทดสอบเปล่าๆ เพื่อยืนยันว่า setup พร้อมก่อนเริ่มงานจริง:</p>
+        <pre>dotnet new web -o hello-test
+cd hello-test
+code .</pre>
+        <p>ใน VS Code กด F5 — ถ้า extension ทำงานถูกต้อง จะมี prompt ให้สร้าง <code>launch.json</code>
+        อัตโนมัติ กด generate แล้วลอง set breakpoint ในไฟล์ Program.cs ทดสอบ step debug ได้เลย</p>
+        <div class="files-affected">ไฟล์ที่เกี่ยวข้อง: .vscode/launch.json, .vscode/tasks.json (generate อัตโนมัติ ไม่ต้องเขียนเอง)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== APPROACH A: RAZOR PAGES ===================== -->
+  <div class="approach razor" id="razor">
+    <div class="approach-head">
+      <div class="approach-eyebrow">แนวทาง A — ภาษาเดียวล้วน</div>
+      <div class="approach-title">Razor Pages</div>
+      <div class="approach-desc">C# + HTML ในไฟล์เดียวกัน (.cshtml) ไม่ต้องแตะ JavaScript framework เลย</div>
+    </div>
+    <div class="approach-body">
+      <div class="fit-grid">
+        <div class="fit-col">
+          <div class="fit-label">เหมาะกับ</div>
+          <ul>
+            <li>ทีมที่ไม่อยากเรียน JS framework เพิ่ม</li>
+            <li>UI ไม่ซับซ้อน (ฟอร์ม, ตาราง, รายงาน)</li>
+            <li>อยากเริ่มงานเร็วที่สุดในบรรดา 3 แนวทาง</li>
+          </ul>
+        </div>
+        <div class="fit-col">
+          <div class="fit-label">ข้อจำกัด</div>
+          <ul>
+            <li>UI โต้ตอบแบบ real-time ทำได้จำกัด</li>
+            <li>ถ้าอนาคตอยากทำ mobile app ต้องเขียน backend แยกใหม่</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">A1</span><span class="step-title">สร้างโปรเจกต์</span></div>
+        <div class="step-body">
+          <pre>dotnet new webapp -o InternalApp
+cd InternalApp
+code .</pre>
+          <p><code>webapp</code> template คือ Razor Pages ในตัว ได้โฟลเดอร์ <code>Pages/</code> พร้อมตัวอย่างหน้าแรกมาให้ทันที</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">A2</span><span class="step-title">ติดตั้ง EF Core สำหรับต่อ SQL Server</span></div>
+        <div class="step-body">
+          <pre>dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Tools</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">A3</span><span class="step-title">รันและตรวจสอบ</span></div>
+        <div class="step-body">
+          <pre>dotnet watch run</pre>
+          <p><code>dotnet watch</code> จะ reload หน้าเว็บอัตโนมัติทุกครั้งที่แก้ไฟล์ .cshtml หรือ .cs สะดวกกว่า <code>dotnet run</code> เฉยๆ ตอนพัฒนา</p>
+        </div>
+      </div>
+
+      <div class="files-affected">ไฟล์ที่เกี่ยวข้องหลัก: Pages/*.cshtml, Pages/*.cshtml.cs, Program.cs, appsettings.json</div>
+    </div>
+  </div>
+
+  <!-- ===================== APPROACH B: BLAZOR ===================== -->
+  <div class="approach blazor" id="blazor">
+    <div class="approach-head">
+      <div class="approach-eyebrow">แนวทาง B — ภาษาเดียวล้วน แต่โต้ตอบได้มากกว่า</div>
+      <div class="approach-title">Blazor Server</div>
+      <div class="approach-desc">เขียน component ด้วย C# ทั้งหมด อัพเดท UI ผ่าน SignalR แบบ real-time</div>
+    </div>
+    <div class="approach-body">
+      <div class="fit-grid">
+        <div class="fit-col">
+          <div class="fit-label">เหมาะกับ</div>
+          <ul>
+            <li>ทีมถนัด C# ล้วน ไม่อยากรู้ JS เลย</li>
+            <li>UI ต้องโต้ตอบเยอะกว่า Razor Pages (filter/update แบบไม่ reload หน้า)</li>
+            <li>ใช้งานในวง LAN บริษัท (latency ต่ำ เหมาะกับ Blazor Server)</li>
+          </ul>
+        </div>
+        <div class="fit-col">
+          <div class="fit-label">ข้อจำกัด</div>
+          <ul>
+            <li>ต้องมี connection ค้างไว้ตลอด (SignalR) ถ้าเน็ตหลุดบ่อยจะกระทบ UX</li>
+            <li>ไม่เหมาะกับผู้ใช้จำนวนมากพร้อมกันมากๆ (ทุก session กิน memory ฝั่ง server)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">B1</span><span class="step-title">สร้างโปรเจกต์</span></div>
+        <div class="step-body">
+          <pre>dotnet new blazorserver -o InternalApp
+cd InternalApp
+code .</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">B2</span><span class="step-title">ติดตั้ง extension เสริมสำหรับ Blazor</span></div>
+        <div class="step-body">
+          <p>ติดตั้งเพิ่มจาก Extensions panel เพื่อให้ syntax highlighting ของไฟล์ .razor ทำงานถูกต้อง:</p>
+          <pre>vscode-icons          (ไม่บังคับ แต่ช่วยแยกไฟล์ .razor ให้เห็นชัด)</pre>
+          <p>C# Dev Kit ที่ติดตั้งไปแล้วในขั้นตอนร่วม รองรับ .razor ในตัวอยู่แล้ว ไม่ต้องติดตั้งอะไรเพิ่มเพื่อ debug</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">B3</span><span class="step-title">ติดตั้ง EF Core และรัน</span></div>
+        <div class="step-body">
+          <pre>dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet watch run</pre>
+        </div>
+      </div>
+
+      <div class="files-affected">ไฟล์ที่เกี่ยวข้องหลัก: Components/Pages/*.razor, Components/Layout/*.razor, Program.cs</div>
+      <div class="warn-note">
+        ข้อควรระวัง: ถ้า deploy ผ่าน reverse proxy หรือ load balancer ต้องเปิด WebSocket support ให้ SignalR
+        เชื่อมต่อได้ ไม่งั้น Blazor Server จะใช้งานไม่ได้เลย ควรแจ้ง infra team ล่วงหน้าพร้อมกับเรื่องขอ access SQL Server
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== APPROACH C: WEB API + REACT ===================== -->
+  <div class="approach react" id="react">
+    <div class="approach-head">
+      <div class="approach-eyebrow">แนวทาง C — แยก backend/frontend ชัดเจน</div>
+      <div class="approach-title">ASP.NET Core Web API + React</div>
+      <div class="approach-desc">backend ส่ง JSON อย่างเดียว frontend เป็นโปรเจกต์ React แยกต่างหาก</div>
+    </div>
+    <div class="approach-body">
+      <div class="fit-grid">
+        <div class="fit-col">
+          <div class="fit-label">เหมาะกับ</div>
+          <ul>
+            <li>ต้องการ UI ที่ซับซ้อนหรือ interactive มากที่สุดในกลุ่มนี้</li>
+            <li>วางแผนทำ mobile app ในอนาคต (แชร์ backend เดิมได้)</li>
+            <li>ทีมมีหรือจะมีคนถนัด JS/React แยกจากคนถนัด C#</li>
+          </ul>
+        </div>
+        <div class="fit-col">
+          <div class="fit-label">ข้อจำกัด</div>
+          <ul>
+            <li>ต้อง setup และ deploy 2 โปรเจกต์แยกกัน</li>
+            <li>ทีมต้องรู้ทั้ง C# และ JS/TS อย่างน้อยฝั่งใดฝั่งหนึ่งคนละคน</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">C1</span><span class="step-title">ติดตั้ง Node.js (สำหรับฝั่ง React)</span></div>
+        <div class="step-body">
+          <p>ดาวน์โหลด Node.js LTS จาก nodejs.org แล้วตรวจสอบ:</p>
+          <pre>node --version
+npm --version</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">C2</span><span class="step-title">สร้าง backend (Web API)</span></div>
+        <div class="step-body">
+          <pre>dotnet new webapi -o InternalApp.Api
+cd InternalApp.Api
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+code .</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">C3</span><span class="step-title">สร้าง frontend (React + TypeScript)</span></div>
+        <div class="step-body">
+          <pre>npm create vite@latest InternalApp.Web -- --template react-ts
+cd InternalApp.Web
+npm install</pre>
+          <p>แนะนำ Vite แทน Create React App เพราะ dev server เร็วกว่ามาก และเป็นตัวที่ชุมชน React แนะนำเป็นค่าเริ่มต้นในปัจจุบัน</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">C4</span><span class="step-title">ติดตั้ง extension เสริมสำหรับ React</span></div>
+        <div class="step-body">
+          <pre>ES7+ React/Redux/React-Native snippets   (publisher: dsznajder)
+ESLint                                    (publisher: Microsoft)
+Prettier - Code formatter                 (publisher: Prettier)</pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">C5</span><span class="step-title">รันสองโปรเจกต์พร้อมกัน</span></div>
+        <div class="step-body">
+          <p>ต้องเปิด terminal 2 หน้าต่างแยกกันใน VS Code (Terminal → Split Terminal):</p>
+          <pre>cd InternalApp.Api && dotnet watch run
+cd InternalApp.Web && npm run dev</pre>
+          <p>frontend เรียก backend ผ่าน URL ที่ dotnet watch แสดงตอนรัน (ปกติ https://localhost:5001)
+          ต้องตั้งค่า CORS ฝั่ง Web API ให้อนุญาต origin ของ Vite dev server (ปกติ http://localhost:5173) ก่อน frontend จะเรียกได้</p>
+        </div>
+      </div>
+
+      <div class="files-affected">ไฟล์ที่เกี่ยวข้องหลัก: InternalApp.Api/Controllers/*.cs, InternalApp.Web/src/*.tsx, InternalApp.Api/Program.cs (ตั้งค่า CORS)</div>
+    </div>
+  </div>
+
+  <footer>
+    แผนนี้ครอบคลุมเฉพาะการเตรียมสภาพแวดล้อมพัฒนา ยังไม่รวมการเชื่อมต่อ IWS หรือ SQL Server จริง
+    และยังไม่รวมการตั้งค่า deploy/production ซึ่งควรวางแผนแยกเป็นเอกสารต่างหากเมื่อเลือกแนวทางสุดท้ายแล้ว
+  </footer>
+
+</div>
+</body>
+</html>

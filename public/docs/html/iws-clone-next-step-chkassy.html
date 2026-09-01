@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>ต่อยอด IWS Clone จาก RPG จริง</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+  pre{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'IBM Plex Mono',monospace;}
+  pre code{background:none;padding:0;color:inherit;}
+
+  .layout{display:grid;grid-template-columns:210px 1fr;max-width:1140px;margin:0 auto;}
+  @media(max-width:860px){.layout{grid-template-columns:1fr;}}
+  .sidebar{padding:32px 16px;border-right:1px solid #e2e8f0;position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;}
+  @media(max-width:860px){.sidebar{position:static;border-right:none;border-bottom:1px solid #e2e8f0;max-height:none;}}
+  .sidebar .brand{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:16px;padding:0 12px;}
+  .sidebar a{display:block;padding:7px 12px;border-radius:6px;font-size:13.5px;color:#475569;text-decoration:none;}
+  .sidebar a:hover{background:#eef2ff;color:#4338ca;}
+
+  .content{padding:40px 32px 100px;max-width:820px;}
+  section{margin-bottom:36px;scroll-margin-top:24px;}
+  h1{font-size:24px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14px;max-width:66ch;margin-bottom:28px;}
+  h2{font-size:17px;font-weight:700;margin:0 0 10px;}
+
+  .key-insight{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px 20px;margin-bottom:24px;font-size:13.5px;color:#166534;}
+  .key-insight b{color:#15803d;}
+
+  .step{border:1px solid #e2e8f0;border-radius:12px;margin-bottom:14px;overflow:hidden;}
+  .step-head{background:#f8fafc;padding:13px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;}
+  .step-num{width:26px;height:26px;border-radius:7px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;}
+  .step-title{font-size:14px;font-weight:700;}
+  .step-body{padding:15px 18px;}
+
+  .th{background:#fafaf9;border-left:3px solid #c7d2fe;padding:9px 13px;border-radius:0 6px 6px 0;font-size:12.5px;color:#475569;margin:10px 0;}
+  .th b{color:#4338ca;}
+
+  .file-tree{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">IWS Clone x pub400</div>
+    <a href="#insight">0. Insight สำคัญ</a>
+    <a href="#s1">1. สร้าง Schema จำลอง</a>
+    <a href="#s2">2. Generic Query Runner</a>
+    <a href="#s3">3. จำลอง CHKASSY (talinf)</a>
+    <a href="#s4">4. ผูกกับโครงสร้างเดิม</a>
+    <a href="#s5">5. ทดสอบ</a>
+  </aside>
+
+  <main class="content">
+
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;">Next Step · IWS Clone</div>
+    <h1>ต่อยอด IWS Clone ด้วยความรู้จาก RPG จริง</h1>
+    <p class="intro">เอา pattern จาก <code>CHKASSY.SQLRPG</code> และ generic JSON engine มาสร้างเป็น Node.js + pub400 จริง</p>
+
+    <!-- 0 INSIGHT -->
+    <section id="insight">
+      <div class="key-insight">
+        <b>ข่าวดี:</b> "Generic JSON Engine" ที่ RPG ต้องเขียนโค้ดเยอะมาก (query <code>QSYS2.SYSCOLUMNS</code> เอง, dynamic SQL, PREPARE/EXECUTE) — ใน Node.js <b>ได้มาฟรีอยู่แล้ว</b> เพราะ <code>odbc</code> package คืนผลลัพธ์เป็น JS object ที่มีชื่อ column ตรงตัวอัตโนมัติ ไม่ต้อง introspect เอง สิ่งที่ต้องสร้างเลียนแบบจริงๆ คือ<b>สถาปัตยกรรมการแยกชั้น</b> (business logic ↔ response formatting) ไม่ใช่เทคนิค column-introspection
+      </div>
+    </section>
+
+    <!-- 1 SCHEMA -->
+    <section id="s1">
+      <h2>1. สร้าง Schema จำลองบน pub400</h2>
+      <p style="font-size:13px;color:#64748b;">ตาม schema ที่เจอจริงใน <code>CHKASSY.SQLRPG</code> — ใช้ข้อมูลสมมติเท่านั้น</p>
+      <pre><code>CREATE TABLE MYLIB.TALINF (
+  CNASSY   CHAR(18)   NOT NULL,   -- Assembly Lot No. (key)
+  CDDEVC   CHAR(50),              -- Device Code
+  CDWINP   CHAR(50),              -- WIP Code
+  CNMARK   CHAR(15),              -- Mark No.
+  CNWEFR   CHAR(15),              -- Wafer Lot No.
+  QTSTKP   DECIMAL(8,0),          -- Stock Qty (pcs)
+  QTSTKS   DECIMAL(6,1),          -- Stock Qty (secondary unit)
+  PRIMARY KEY (CNASSY)
+);
+
+CREATE TABLE MYLIB.MDVICE (
+  CDDEVC   CHAR(50)   NOT NULL,
+  NMDEVC   VARCHAR(30),
+  CDDGRP   CHAR(5),
+  PRIMARY KEY (CDDEVC)
+);
+
+CREATE TABLE MYLIB.MDVGRP (
+  CDDGRP   CHAR(5)    NOT NULL,
+  CDPAKG   CHAR(5),
+  PRIMARY KEY (CDDGRP)
+);
+
+CREATE TABLE MYLIB.MPACKG (
+  CDPAKG   CHAR(5)    NOT NULL,
+  NMPAKG   VARCHAR(10),
+  PRIMARY KEY (CDPAKG)
+);
+
+CREATE TABLE MYLIB.TWLINF (
+  CNWEFR   CHAR(15)   NOT NULL,
+  CDWEFR   CHAR(15),
+  PRIMARY KEY (CNWEFR)
+);
+
+CREATE TABLE MYLIB.MWAFER (
+  CDWEFR   CHAR(15)   NOT NULL,
+  NMWEFR   VARCHAR(30),
+  PRIMARY KEY (CDWEFR)
+);
+
+-- ข้อมูลตัวอย่าง
+INSERT INTO MYLIB.MPACKG VALUES ('P001', 'TO-252-3');
+INSERT INTO MYLIB.MDVGRP VALUES ('G001', 'P001');
+INSERT INTO MYLIB.MDVICE VALUES ('100451', 'MAIN ASSEMBLY BOARD', 'G001');
+INSERT INTO MYLIB.MWAFER VALUES ('WF001', 'STANDARD WAFER 8IN');
+INSERT INTO MYLIB.TWLINF VALUES ('W001', 'WF001');
+INSERT INTO MYLIB.TALINF VALUES
+  ('05245-0001-421-001', '100451', 'WIP01', 'MK01', 'W001', 500, 50.0);</code></pre>
+    </section>
+
+    <!-- 2 GENERIC RUNNER -->
+    <section id="s2">
+      <h2>2. Generic Query Runner (แทนส่วน error-handling ที่ RPG ทำซ้ำทุกที่)</h2>
+      <p style="font-size:13px;color:#64748b;">เลียนแบบ pattern <code>Monitor/On-Error</code> ที่ RPG ใช้ครอบทุก SQL block — ทำเป็นฟังก์ชันกลางครั้งเดียว ใช้ซ้ำได้ทุก route</p>
+      <pre><code>// lib/queryRunner.js
+const { getConnection } = require('./db');
+
+async function runQuery(sql, params = []) {
+  let connection;
+  try {
+    connection = await getConnection();
+    const result = await connection.query(sql, params);
+    return { ok: true, data: result };
+  } catch (err) {
+    // เลียนแบบ pattern error JSON ที่เจอใน RPG:
+    // '{"status": "error", "message": "..." }'
+    return { ok: false, error: err.message };
+  } finally {
+    if (connection) await connection.close();
+  }
+}
+
+module.exports = { runQuery };</code></pre>
+    </section>
+
+    <!-- 3 CHKASSY -->
+    <section id="s3">
+      <h2>3. จำลอง CHKASSY.SQLRPG — join chain เดียวกันเป๊ะ</h2>
+      <p style="font-size:13px;color:#64748b;">แปลง logic จาก RPG (query ทีละตาราง, ถ้าไม่เจอให้เป็นค่าว่าง ไม่ throw error) เป็น Node.js ตรงๆ</p>
+      <pre><code>// routes/talinf.js
+const express = require('express');
+const router = express.Router();
+const { runQuery } = require('../lib/queryRunner');
+
+router.get('/talinf', async (req, res) => {
+  const lotNo = req.query.lotno;
+  if (!lotNo) return res.status(400).json({ error: 'lotno is required' });
+
+  // Step 1: หาใน talinf ด้วย CNASSY (ตรงกับ CHAIN/SELECT แรกใน CHKASSY)
+  const main = await runQuery(
+    'SELECT CDDEVC, CDWINP, CNMARK, CNWEFR, QTSTKP, QTSTKS FROM MYLIB.TALINF WHERE CNASSY = ?',
+    [lotNo]
+  );
+
+  if (!main.ok || main.data.length === 0) {
+    // ตรงกับ p_isFound = *off ใน RPG
+    return res.json({ P_ISFOUND: "0" });
+  }
+
+  const row = main.data[0];
+  let nmwefr = "";
+  let nmdevc = "";
+  let nmpakg = "";
+
+  // Step 2: resolve wafer name (twlinf → mwafer) — ถ้าไม่เจอ ปล่อยว่างไว้ ไม่ error
+  const wefr = await runQuery(
+    'SELECT CDWEFR FROM MYLIB.TWLINF WHERE CNWEFR = ?', [row.CNWEFR]
+  );
+  if (wefr.ok && wefr.data.length > 0) {
+    const wafer = await runQuery(
+      'SELECT NMWEFR FROM MYLIB.MWAFER WHERE CDWEFR = ?', [wefr.data[0].CDWEFR]
+    );
+    if (wafer.ok && wafer.data.length > 0) nmwefr = wafer.data[0].NMWEFR;
+  }
+
+  // Step 3: resolve device + package name (mdvice → MDVGRP → mpackg)
+  const dvice = await runQuery(
+    'SELECT NMDEVC, CDDGRP FROM MYLIB.MDVICE WHERE CDDEVC = ?', [row.CDDEVC]
+  );
+  if (dvice.ok && dvice.data.length > 0) {
+    nmdevc = dvice.data[0].NMDEVC;
+    const dgrp = await runQuery(
+      'SELECT CDPAKG FROM MYLIB.MDVGRP WHERE CDDGRP = ?', [dvice.data[0].CDDGRP]
+    );
+    if (dgrp.ok && dgrp.data.length > 0) {
+      const pakg = await runQuery(
+        'SELECT NMPAKG FROM MYLIB.MPACKG WHERE CDPAKG = ?', [dgrp.data[0].CDPAKG]
+      );
+      if (pakg.ok && pakg.data.length > 0) nmpakg = pakg.data[0].NMPAKG;
+    }
+  }
+
+  // Mapping layer — จำลองสิ่งที่ IWS ทำอัตโนมัติตอน deploy
+  res.json({
+    P_ISFOUND: "1",
+    DEVICE_CODE: row.CDDEVC,
+    WIP_CODE: row.CDWINP,
+    MARK_NO: row.CNMARK,
+    WAFER_LOT_NO: row.CNWEFR,
+    QTY_PCS: row.QTSTKP,
+    QTY_SEC: row.QTSTKS,
+    DEVICE_NAME: nmdevc,
+    PACKAGE_NAME: nmpakg,
+    WAFER_NAME: nmwefr,
+  });
+});
+
+module.exports = router;</code></pre>
+      <div class="th"><b>เทียบกับ RPG ต้นฉบับ:</b> RPG ใช้ <code>if sqlcode = 0 ... else ... endif</code> ซ้อนกันหลายชั้น — Node.js ใช้ <code>if (x.ok && x.data.length > 0)</code> pattern เดียวกันเป๊ะ แค่ syntax คนละภาษา logic เหมือนกัน 100%</div>
+    </section>
+
+    <!-- 4 STRUCTURE -->
+    <section id="s4">
+      <h2>4. ผูกกับโครงสร้าง IWS Clone เดิม</h2>
+      <div class="file-tree">
+my-iws-api/<br>
+&nbsp;&nbsp;├── .env<br>
+&nbsp;&nbsp;├── server.js<br>
+&nbsp;&nbsp;├── db.js<br>
+&nbsp;&nbsp;├── lib/<br>
+&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── queryRunner.js &nbsp;<span style="color:#16a34a;">← เพิ่มใหม่</span><br>
+&nbsp;&nbsp;└── routes/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── minpop.js<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── talinf.js &nbsp;<span style="color:#16a34a;">← เพิ่มใหม่ (join logic จริง)</span>
+      </div>
+      <pre><code>// server.js — เพิ่ม route talinf
+const talinfRoute = require('./routes/talinf');
+app.use('/api', talinfRoute);</code></pre>
+    </section>
+
+    <!-- 5 TEST -->
+    <section id="s5">
+      <h2>5. ทดสอบ</h2>
+      <pre><code>http://localhost:3001/api/talinf?lotno=05245-0001-421-001
+
+คาดว่าจะได้:
+{
+  "P_ISFOUND": "1",
+  "DEVICE_CODE": "100451",
+  "DEVICE_NAME": "MAIN ASSEMBLY BOARD",
+  "PACKAGE_NAME": "TO-252-3",
+  "WAFER_NAME": "STANDARD WAFER 8IN",
+  ...
+}</code></pre>
+      <p style="font-size:13px;color:#64748b;">ถ้าได้แบบนี้ แปลว่าจำลอง join chain จาก <code>CHKASSY.SQLRPG</code> ได้ครบถูกต้องแล้ว — ต่อกับ frontend Next.js (<code>lib/api/talinf.ts</code>) ได้เลยแบบเดียวกับที่เคยต่อ pub400 กับ minpop</p>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

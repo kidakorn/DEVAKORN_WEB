@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>IWS Clone — Phase Plan + Agent Prompts</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body{background:#ffffff !important;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;color:#1e293b;line-height:1.65;}
+  code{font-family:'IBM Plex Mono',monospace;background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+  pre{background:#0f172a;color:#e2e8f0;border-radius:8px;padding:16px;overflow-x:auto;font-size:12px;line-height:1.65;font-family:'IBM Plex Mono',monospace;white-space:pre-wrap;}
+  pre code{background:none;padding:0;color:inherit;}
+
+  .wrap{max-width:840px;margin:0 auto;padding:48px 24px 100px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#4f46e5;text-transform:uppercase;margin-bottom:8px;}
+  h1{font-size:25px;font-weight:800;margin:0 0 10px;}
+  .intro{color:#64748b;font-size:14px;max-width:66ch;margin-bottom:32px;}
+
+  .phase{border:1px solid #e2e8f0;border-radius:14px;margin-bottom:20px;overflow:hidden;}
+  .phase-head{
+    background:#f8fafc;padding:16px 22px;border-bottom:1px solid #e2e8f0;
+    display:flex;align-items:center;gap:12px;
+  }
+  .phase-num{
+    width:30px;height:30px;border-radius:9px;background:#4f46e5;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13.5px;flex-shrink:0;
+  }
+  .phase-title{font-size:15.5px;font-weight:700;}
+  .phase-sub{font-size:11.5px;color:#94a3b8;font-family:'IBM Plex Mono',monospace;}
+  .phase-body{padding:18px 22px;}
+  .phase-body p.goal{font-size:13px;color:#64748b;margin:0 0 12px;}
+  .phase-body ul{margin:0 0 14px;padding-left:18px;font-size:13px;color:#475569;}
+  .phase-body li{margin-bottom:6px;}
+
+  .prompt-label{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a78bfa;text-transform:uppercase;
+    letter-spacing:.05em;margin-bottom:6px;display:block;
+  }
+
+  .files-touched{font-size:12px;color:#64748b;margin-top:10px;}
+  .files-touched code{margin-right:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">IWS Clone — Extension Plan</div>
+  <h1>Phase Plan + Agent Prompts</h1>
+  <p class="intro">5 phase ต่อยอดจาก RPG source จริงที่วิเคราะห์ไว้ แต่ละ phase มี prompt สั่ง agent พร้อมใช้ทันที ก็อปวางได้เลย</p>
+
+  <!-- PHASE 1 -->
+  <div class="phase">
+    <div class="phase-head">
+      <div class="phase-num">1</div>
+      <div><div class="phase-title">Bulk/List Endpoint</div><div class="phase-sub">แก้ปัญหาที่ค้างมานาน — priority สูงสุด</div></div>
+    </div>
+    <div class="phase-body">
+      <p class="goal">🎯 เพิ่ม endpoint ดึงข้อมูลทั้งหมด (ไม่ต้องใส่ key) ตาม pattern จาก <code>MINPOP.SQLRPG</code></p>
+      <ul>
+        <li>สร้าง <code>GET /api/operators</code> — คืน array operator ทั้งหมด</li>
+        <li>จำกัดจำนวนสูงสุด (เลียนแบบ 9999 limit ใน RPG) กันดึงข้อมูลเยอะเกินจน server ค้าง</li>
+        <li>เผื่อ pagination (<code>?limit=50&offset=0</code>) ไว้ตั้งแต่ต้น แม้ยังไม่ใช้จริงตอนนี้</li>
+      </ul>
+      <span class="prompt-label">Prompt</span>
+      <pre><code>เพิ่ม endpoint bulk list ให้ IWS clone นี้ ตาม pattern จาก MINPOP.SQLRPG 
+ที่ดึงข้อมูลทั้งตารางแบบ array (ไม่ใช่ key-based lookup แบบ minpop เดิม)
+
+งานที่ต้องทำ:
+1. สร้าง routes/operators.js ใหม่ (แยกจาก routes/minpop.js เดิม 
+   ห้ามแก้ minpop.js เดิม)
+2. เพิ่ม GET /api/operators รองรับ query param ?limit= และ ?offset= 
+   (default limit=100, จำกัดสูงสุดไม่เกิน 9999 แถวต่อครั้ง เลียนแบบ 
+   limit ที่เจอใน RPG ต้นฉบับ)
+3. ใช้ lib/queryRunner.js ที่มีอยู่แล้ว (ห้ามเขียน connection logic ใหม่)
+4. Response format: { P_ISFOUND: "1"/"0", DATA: [...], TOTAL: number }
+5. เพิ่ม route นี้ใน server.js
+6. ห้ามแก้ routes/minpop.js, routes/talinf.js, lib/db.js เดิมเลย</code></pre>
+      <div class="files-touched">ไฟล์ที่แตะ: <code>routes/operators.js</code> (ใหม่), <code>server.js</code> (เพิ่ม 1 บรรทัด)</div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase">
+    <div class="phase-head">
+      <div class="phase-num">2</div>
+      <div><div class="phase-title">Resolve Chain Helper</div><div class="phase-sub">Generalize จาก CHKASSY pattern</div></div>
+    </div>
+    <div class="phase-body">
+      <p class="goal">🎯 ดึง logic "หา code → resolve name จากตารางอื่น → ถ้าไม่เจอปล่อยว่าง" จาก <code>talinf.js</code> มาทำเป็นฟังก์ชันกลาง ใช้ซ้ำได้กับ endpoint อื่น</p>
+      <ul>
+        <li>สร้าง <code>lib/resolveField.js</code> — ฟังก์ชัน generic รับ (table, keyColumn, keyValue, targetColumn)</li>
+        <li>Refactor <code>routes/talinf.js</code> ให้เรียกใช้ helper นี้แทนการเขียน query ซ้อนมือ</li>
+      </ul>
+      <span class="prompt-label">Prompt</span>
+      <pre><code>สร้าง generic resolve helper จาก pattern ที่เจอใน routes/talinf.js 
+(การ query หา code แล้ว resolve name จากตารางอื่น ถ้าไม่เจอให้ปล่อยว่าง 
+ไม่ throw error)
+
+งานที่ต้องทำ:
+1. สร้าง lib/resolveField.js มีฟังก์ชัน:
+   async function resolveField(table, keyColumn, keyValue, targetColumn)
+   คืนค่า string ว่าง "" ถ้าไม่เจอ หรือ throw error เฉพาะกรณี DB connection พัง
+   (ไม่ throw กรณีแค่ไม่เจอข้อมูล)
+2. ใช้ lib/queryRunner.js เดิมเป็นฐาน ห้ามเขียน connection logic ใหม่
+3. Refactor routes/talinf.js ให้เรียกใช้ resolveField() แทนโค้ด query 
+   ซ้อนกัน 3 ชั้นที่มีอยู่ตอนนี้ — ผลลัพธ์ response ต้องเหมือนเดิมทุกประการ
+4. เขียน unit test ง่ายๆ เช็คว่า resolveField คืนค่าว่างถูกต้องเมื่อไม่เจอ 
+   ข้อมูล ไม่ throw error
+5. ห้ามเปลี่ยน response format ของ /api/talinf ที่มีอยู่แล้ว</code></pre>
+      <div class="files-touched">ไฟล์ที่แตะ: <code>lib/resolveField.js</code> (ใหม่), <code>routes/talinf.js</code> (refactor)</div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase">
+    <div class="phase-head">
+      <div class="phase-num">3</div>
+      <div><div class="phase-title">Input Validation Middleware</div><div class="phase-sub">มาตรฐานเดียวกันทุก endpoint</div></div>
+    </div>
+    <div class="phase-body">
+      <p class="goal">🎯 ทำ middleware เช็ค query param ก่อนเข้า route ทุกตัว เลียนแบบการเช็ค parameter ที่เจอใน <code>MINPOP03.SQLRPG</code></p>
+      <ul>
+        <li>เช็คว่า param จำเป็นมีค่าไหม, ความยาวเกินกำหนดไหม</li>
+        <li>ตอบ error format สม่ำเสมอ (<code>{ error: string, field: string }</code>)</li>
+      </ul>
+      <span class="prompt-label">Prompt</span>
+      <pre><code>สร้าง input validation middleware กลางสำหรับ Express routes ทั้งหมด 
+เลียนแบบการเช็ค parameter length/empty ที่เจอใน MINPOP03.SQLRPG
+
+งานที่ต้องทำ:
+1. สร้าง lib/validateParams.js มีฟังก์ชัน 
+   validateParams(rules) ที่คืน Express middleware
+   rules เป็น object เช่น { empid: { required: true, maxLength: 6 } }
+2. ถ้า validation ไม่ผ่าน ตอบ 400 พร้อม format: 
+   { error: "message", field: "ชื่อ field ที่ผิด" }
+3. เอาไปใช้กับ routes/minpop.js, routes/talinf.js, routes/operators.js 
+   (ถ้า phase 1 ทำแล้ว) แทน if-check ที่เขียนซ้ำอยู่ตอนนี้ในแต่ละไฟล์
+4. ห้ามเปลี่ยน business logic อื่นนอกจากส่วน validation
+5. ทดสอบว่า error message เดิมที่เคยได้ (เช่น "empid is required") 
+   ยังคงข้อความเดิมหรือใกล้เคียง ไม่ทำให้ frontend ที่เชื่อมอยู่พัง</code></pre>
+      <div class="files-touched">ไฟล์ที่แตะ: <code>lib/validateParams.js</code> (ใหม่), <code>routes/*.js</code> (แก้เพิ่ม middleware)</div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase">
+    <div class="phase-head">
+      <div class="phase-num">4</div>
+      <div><div class="phase-title">JSON Escape Utility</div><div class="phase-sub">เตรียมไว้เผื่อใช้ (priority ต่ำ)</div></div>
+    </div>
+    <div class="phase-body">
+      <p class="goal">🎯 เตรียม utility escape อักขระพิเศษ เผื่อวันไหนต้อง build JSON string เอง (ไม่ใช้ <code>res.json()</code> อัตโนมัติ) — จาก pattern ใน <code>GETMINPOP.SQLRPG</code></p>
+      <ul>
+        <li>Node.js ปกติไม่ต้องใช้เพราะ <code>JSON.stringify</code>/<code>res.json()</code> escape ให้อัตโนมัติอยู่แล้ว</li>
+        <li>ทำไว้เป็น reference/utility เผื่อ debug หรือ export CSV/text format ในอนาคต</li>
+      </ul>
+      <span class="prompt-label">Prompt</span>
+      <pre><code>สร้าง utility function escapeText(str) ใน lib/textUtils.js 
+สำหรับ escape อักขระพิเศษ (quote, newline, backslash) 
+เลียนแบบ concept จาก GETMINPOP.SQLRPG ที่ escape ก่อน build JSON string มือ
+
+งานที่ต้องทำ:
+1. สร้าง lib/textUtils.js มีฟังก์ชัน escapeText(str) 
+   คืน string ที่ escape แล้วปลอดภัยสำหรับใส่ใน JSON string หรือ CSV
+2. เขียน comment อธิบายว่านี่คือ utility สำรอง เผื่ออนาคตต้อง build 
+   response แบบ manual string (ปกติ res.json() ของ Express จัดการให้แล้ว 
+   ไม่ต้องเรียกใช้ฟังก์ชันนี้ในโค้ดปกติ)
+3. ไม่ต้องเอาไปใช้ใน route ไหนตอนนี้ แค่เตรียมไว้เป็น utility เฉยๆ</code></pre>
+      <div class="files-touched">ไฟล์ที่แตะ: <code>lib/textUtils.js</code> (ใหม่, ยังไม่ต้องเรียกใช้จริง)</div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase">
+    <div class="phase-head">
+      <div class="phase-num">5</div>
+      <div><div class="phase-title">Config-driven Endpoint</div><div class="phase-sub">ใหญ่สุด ทำท้ายสุด — "IWS Studio จิ๋ว"</div></div>
+    </div>
+    <div class="phase-body">
+      <p class="goal">🎯 ระบบที่เพิ่ม endpoint ใหม่แค่เขียน config (table, key, join chain) ไม่ต้องเขียนไฟล์ route ใหม่ทุกครั้ง — เลียนแบบ generic engine (<code>GENHANDHELD</code>/<code>MINPOP03</code>)</p>
+      <ul>
+        <li>ทำหลัง phase 1-3 เสร็จก่อน เพราะต้องพึ่ง <code>resolveField</code>, <code>validateParams</code>, <code>queryRunner</code> ที่มีอยู่แล้ว</li>
+        <li>Config เป็นไฟล์ JSON/JS เช่น <code>config/endpoints/talinf.json</code> ระบุ table, key field, join chain ที่ต้องการ</li>
+        <li>มี 1 route กลาง (<code>routes/dynamic.js</code>) อ่าน config แล้วสร้าง response ให้อัตโนมัติ</li>
+      </ul>
+      <span class="prompt-label">Prompt (ทำหลังสุด หลัง phase 1-3 เสร็จแล้วเท่านั้น)</span>
+      <pre><code>สร้างระบบ config-driven endpoint ให้ IWS clone นี้ เลียนแบบ 
+generic JSON engine ที่เจอใน GENHANDHELD.SQLRPG/MINPOP03.SQLRPG 
+(RPG ตัวนั้นรับชื่อ table+keys แล้ว generate JSON อัตโนมัติ)
+
+ก่อนเริ่ม เช็คว่ามีไฟล์เหล่านี้อยู่แล้วหรือยัง (ต้องมีก่อนถึงทำต่อได้):
+- lib/queryRunner.js
+- lib/resolveField.js  
+- lib/validateParams.js
+ถ้ายังไม่มีครบ ให้หยุดแล้วแจ้งกลับมาก่อน อย่าทำต่อ
+
+งานที่ต้องทำ:
+1. ออกแบบ schema ของ config file เช่น:
+   {
+     "table": "MYLIB.TALINF",
+     "keyColumn": "CNASSY",
+     "keyParam": "lotno",
+     "selectColumns": ["CDDEVC", "CDWINP", "CNMARK", "CNWEFR"],
+     "resolves": [
+       { "sourceColumn": "CDDEVC", "table": "MYLIB.MDVICE", 
+         "keyColumn": "CDDEVC", "targetColumn": "NMDEVC", 
+         "responseKey": "DEVICE_NAME" }
+     ]
+   }
+2. สร้าง config/endpoints/ folder เก็บไฟล์ config แบบนี้ 
+   (สร้างตัวอย่าง talinf.json จาก logic ที่มีอยู่แล้วใน routes/talinf.js)
+3. สร้าง routes/dynamic.js — 1 route กลางที่:
+   - อ่าน config ตามชื่อ endpoint จาก URL param
+   - validate input ด้วย lib/validateParams.js
+   - query หลักด้วย lib/queryRunner.js
+   - resolve field เพิ่มเติมด้วย lib/resolveField.js ตามที่ config ระบุ
+4. ทำเป็น "เพิ่มเติม" ไม่ใช่แทนที่ — เก็บ routes/talinf.js, 
+   routes/minpop.js เดิมไว้ทำงานคู่ขนานได้ ยังไม่ต้องลบทิ้ง
+5. ทดสอบว่า config ของ talinf ให้ผลลัพธ์เหมือนกับ routes/talinf.js 
+   เดิมทุกประการก่อนค่อยพิจารณาย้ายมาใช้จริง</code></pre>
+      <div class="files-touched">ไฟล์ที่แตะ: <code>config/endpoints/*.json</code> (ใหม่), <code>routes/dynamic.js</code> (ใหม่)</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

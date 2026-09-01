@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Stack — Internal Web App</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #2f5d8a;
+    --accent-soft: #dce6f0;
+    --ok: #2f6b4f;
+    --ok-soft: #dcece2;
+    --warn: #8a5a2f;
+    --warn-soft: #f0e3d6;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:48px 24px 80px;
+  }
+
+  header{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:24px;
+    margin-bottom:40px;
+  }
+
+  .doc-id{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--accent);
+    letter-spacing:0.02em;
+    margin-bottom:8px;
+  }
+
+  h1{
+    font-size:32px;
+    margin:0 0 12px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+
+  .subtitle{
+    color:#4a5568;
+    font-size:15px;
+    max-width:70ch;
+  }
+
+  .context-box{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:4px solid var(--accent);
+    padding:18px 20px;
+    margin:32px 0 40px;
+    font-size:14px;
+  }
+
+  .context-box dl{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:6px 16px;
+    margin:0;
+  }
+
+  .context-box dt{
+    font-family:var(--mono);
+    color:#4a5568;
+    font-size:12.5px;
+    white-space:nowrap;
+  }
+
+  .context-box dd{
+    margin:0;
+  }
+
+  .layer{
+    background:var(--panel);
+    border:1px solid var(--line);
+    margin-bottom:20px;
+    overflow:hidden;
+  }
+
+  .layer-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding:16px 20px;
+    background:#f6f8fa;
+    border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .layer-name{
+    font-family:var(--mono);
+    font-size:17px;
+    font-weight:600;
+  }
+
+  .layer-role{
+    font-size:12.5px;
+    color:#4a5568;
+  }
+
+  .layer-body{
+    padding:18px 20px 20px;
+  }
+
+  .field{
+    margin-bottom:14px;
+  }
+
+  .field:last-child{
+    margin-bottom:0;
+  }
+
+  .field-label{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--accent);
+    margin-bottom:4px;
+    text-transform:lowercase;
+  }
+
+  .field-value{
+    font-size:14.5px;
+  }
+
+  .tag{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:11px;
+    padding:2px 8px;
+    border-radius:2px;
+    margin-right:6px;
+  }
+
+  .tag.core{ background:var(--accent-soft); color:var(--accent); }
+  .tag.read{ background:var(--ok-soft); color:var(--ok); }
+  .tag.write{ background:var(--warn-soft); color:var(--warn); }
+
+  .connections{
+    margin-top:48px;
+  }
+
+  .connections h2{
+    font-size:18px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:10px;
+    margin-bottom:20px;
+  }
+
+  .flow{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:24px;
+    font-family:var(--mono);
+    font-size:13px;
+    overflow-x:auto;
+  }
+
+  .flow-line{
+    white-space:pre;
+    line-height:1.9;
+  }
+
+  .flow-note{
+    color:#4a5568;
+    font-size:12.5px;
+    margin-top:2px;
+  }
+
+  .open-question{
+    margin-top:40px;
+    background:var(--warn-soft);
+    border:1px solid #d8bb96;
+    padding:18px 20px;
+  }
+
+  .open-question h3{
+    margin:0 0 10px;
+    font-size:14px;
+    font-family:var(--mono);
+    color:var(--warn);
+  }
+
+  .open-question ul{
+    margin:0;
+    padding-left:20px;
+    font-size:14px;
+  }
+
+  .open-question li{
+    margin-bottom:6px;
+  }
+
+  footer{
+    margin-top:56px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:#8a94a3;
+    font-family:var(--mono);
+  }
+
+  @media (max-width: 600px){
+    .wrap{ padding:32px 16px 60px; }
+    h1{ font-size:26px; }
+    .context-box dl{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">TECH-STACK / internal-web-app / rev.1</div>
+    <h1>ทางเลือก Tech Stack สำหรับเว็บแอพภายในบริษัท</h1>
+    <p class="subtitle">
+      เอกสารสรุปสำหรับส่งต่อให้ทีมพัฒนาเว็บ อธิบายว่าแต่ละส่วนของ stack คืออะไร ใช้ทำอะไร
+      และทำไมถึงเหมาะกับ requirement ที่มีอยู่
+    </p>
+  </header>
+
+  <div class="context-box">
+    <dl>
+      <dt>ประเภทระบบ</dt><dd>Internal tool (ใช้งานภายในบริษัท)</dd>
+      <dt>แหล่งข้อมูล 1</dt><dd>IWS บน IBM i — อ่านข้อมูลอย่างเดียว (read-only)</dd>
+      <dt>แหล่งข้อมูล 2</dt><dd>Microsoft SQL Server แยกเครื่อง — อ่านและเขียน (ฝั่ง admin)</dd>
+      <dt>ทีมพัฒนา</dt><dd>ทีมผสม ถนัดหลายด้าน แยกทีมกับทีมเขียนเอกสารนี้</dd>
+      <dt>Network</dt><dd>SQL Server อยู่คนละ network กับตัวเว็บแอพ ต้องเปิด access เพิ่ม</dd>
+    </dl>
+  </div>
+
+  <div class="layer">
+    <div class="layer-head">
+      <span class="layer-name">Next.js</span>
+      <span class="layer-role">Frontend + Backend framework</span>
+    </div>
+    <div class="layer-body">
+      <div class="field">
+        <div class="field-label">ความหมาย</div>
+        <div class="field-value">
+          เฟรมเวิร์กที่สร้างบน React รวมทั้งส่วนแสดงผล (UI) และส่วน backend (API routes)
+          ไว้ในโปรเจกต์เดียวกัน ไม่ต้องแยกสอง repo หรือสอง deploy pipeline
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">ทำไมถึงเหมาะ</div>
+        <div class="field-value">
+          ทีมผสมความถนัด ไม่มี specialist แยก frontend/backend ชัดเจน การมี stack เดียวที่ทำได้ทั้งสองฝั่ง
+          ลดจำนวนสิ่งที่ต้องเรียนรู้และดูแล นอกจากนี้ API routes ยังใช้เป็นตัวกลาง (proxy)
+          เชื่อมต่อ IWS และ SQL Server แทนที่จะให้ browser เรียกตรง ซึ่งปลอดภัยกว่า
+        </div>
+      </div>
+      <div><span class="tag core">core framework</span></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-head">
+      <span class="layer-name">TypeScript</span>
+      <span class="layer-role">ภาษาที่ครอบ JavaScript ด้วยระบบ type</span>
+    </div>
+    <div class="layer-body">
+      <div class="field">
+        <div class="field-label">ความหมาย</div>
+        <div class="field-value">
+          เขียนโค้ดโดยกำหนด type ของตัวแปรและข้อมูลชัดเจน ตัว compiler จะเช็คความถูกต้องให้ก่อนรันจริง
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">ทำไมถึงเหมาะ</div>
+        <div class="field-value">
+          ข้อมูลจาก IWS และ SQL Server มี structure ตายตัว (คล้าย fixed field ใน RPG) การกำหนด
+          type ให้ตรงกับ structure จริงช่วยจับข้อผิดพลาดตอน build แทนที่จะไปพังตอน production
+          โดยเฉพาะจุดที่ต้องเขียนข้อมูลกลับ (insert/update) ซึ่งผิดพลาดแล้วกระทบข้อมูลจริง
+        </div>
+      </div>
+      <div><span class="tag core">core language</span></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-head">
+      <span class="layer-name">IWS Client Layer</span>
+      <span class="layer-role">ตัวเชื่อมต่อ IBM i (Integrated Web Services)</span>
+    </div>
+    <div class="layer-body">
+      <div class="field">
+        <div class="field-label">ความหมาย</div>
+        <div class="field-value">
+          ชั้นโค้ดเฉพาะ (ไม่ใช่ library สำเร็จรูป) ที่เรียก IWS endpoint แล้วแปลงผลลัพธ์ให้เป็น
+          TypeScript object ที่ frontend ใช้งานง่าย เขียนอยู่ฝั่ง Next.js API routes เท่านั้น
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">ทำไมถึงเหมาะ</div>
+        <div class="field-value">
+          IWS เป็นระบบที่ทีมไม่ได้เป็นเจ้าของ schema (RPG program เป็นคนกำหนด) จึงมองเป็น
+          external API แบบอ่านอย่างเดียว ไม่ต้องมี ORM ครอบ เรียกผ่าน fetch ธรรมดาได้
+          รูปแบบการเชื่อมต่อ (REST/JSON หรือ SOAP/XML) ต้องยืนยันก่อนเริ่มงาน เพราะกำหนด
+          library ที่ต้องใช้เพิ่ม
+        </div>
+      </div>
+      <div><span class="tag read">read only</span></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-head">
+      <span class="layer-name">Prisma</span>
+      <span class="layer-role">ORM สำหรับ SQL Server</span>
+    </div>
+    <div class="layer-body">
+      <div class="field">
+        <div class="field-label">ความหมาย</div>
+        <div class="field-value">
+          เครื่องมือที่แปลง table ใน SQL Server ให้เรียกใช้งานผ่านโค้ด TypeScript ได้โดยตรง
+          พร้อม generate type ให้อัตโนมัติจาก schema จริง
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">ทำไมถึงเหมาะ</div>
+        <div class="field-value">
+          ฝั่ง admin ต้องเขียนข้อมูลกลับ (insert/update) ซึ่งเป็นจุดเสี่ยงกว่าการอ่านอย่างเดียว
+          Prisma ช่วยจัดการ transaction และจับ column/type mismatch ตอน build ลดโอกาสเขียน
+          ข้อมูลผิด table หรือผิด type โดยไม่รู้ตัว
+        </div>
+      </div>
+      <div><span class="tag write">read + write</span></div>
+    </div>
+  </div>
+
+  <div class="connections">
+    <h2>ภาพรวมการเชื่อมต่อ</h2>
+    <div class="flow">
+<div class="flow-line">Browser  ──────────▶  Next.js (frontend)</div>
+<div class="flow-note">                            │</div>
+<div class="flow-line">                            ▼</div>
+<div class="flow-line">                     Next.js API routes  (ตัวกลาง / proxy)</div>
+<div class="flow-note">                        │                  │</div>
+<div class="flow-line">              ┌─────────┘                  └─────────┐</div>
+<div class="flow-line">              ▼                                        ▼</div>
+<div class="flow-line">     IWS Client Layer                              Prisma</div>
+<div class="flow-line">     (fetch, read only)                    (read + write)</div>
+<div class="flow-line">              │                                        │</div>
+<div class="flow-line">              ▼                                        ▼</div>
+<div class="flow-line">     IWS  →  IBM i / RPG                    SQL Server (แยกเครื่อง)</div>
+    </div>
+    <p class="flow-note" style="margin-top:14px;">
+      Browser ไม่เรียก IWS หรือ SQL Server ตรง ทุกอย่างผ่าน Next.js API routes เท่านั้น
+      เพื่อไม่ให้ credential หรือ endpoint จริงหลุดออกไปที่ client-side
+    </p>
+  </div>
+
+  <div class="open-question">
+    <h3>จุดที่ต้องยืนยันก่อนเริ่ม phase แรก</h3>
+    <ul>
+      <li>IWS endpoint เป็น REST/JSON หรือ SOAP/XML — กำหนด library ที่ต้องติดตั้งเพิ่ม</li>
+      <li>การเปิด network access ไปยัง SQL Server ต้องขอผ่าน infra team ล่วงหน้า เพราะมี lead time</li>
+      <li>สิทธิ์การเข้าถึง SQL Server (user/password หรือ service account) สำหรับใช้กับ Prisma</li>
+    </ul>
+  </div>
+
+  <footer>
+    เอกสารนี้สรุปจากการพูดคุยเรื่อง requirement เบื้องต้น ใช้เป็นจุดเริ่มต้นสำหรับทีมพัฒนา
+    ยังไม่ใช่แผนงานละเอียด (phase / timeline)
+  </footer>
+
+</div>
+</body>
+</html>
