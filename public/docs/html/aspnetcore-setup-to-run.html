@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASP.NET Core — ตั้งแต่เริ่มจนรันสำเร็จ</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #4b2f8a;
+    --accent-soft: #e4dcf0;
+    --ok: #2f6b4f;
+    --ok-soft: #dcece2;
+    --warn: #8a5a2f;
+    --warn-soft: #f0e3d6;
+    --code-bg: #1b2430;
+    --code-ink: #e8ecf1;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.7; font-size:15px;
+  }
+  .wrap{ max-width:880px; margin:0 auto; padding:48px 24px 100px; }
+  header{ border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:32px; }
+  .doc-id{ font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:8px; }
+  h1{ font-size:26px; margin:0 0 12px; font-weight:700; letter-spacing:-0.01em; }
+  .subtitle{ color:#4a5568; max-width:75ch; font-size:14.5px; }
+
+  .overview-box{
+    background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent);
+    padding:18px 20px; margin:28px 0 36px; font-size:14px;
+  }
+  .overview-box dl{ display:grid; grid-template-columns:auto 1fr; gap:6px 16px; margin:0; }
+  .overview-box dt{ font-family:var(--mono); color:#4a5568; font-size:12.5px; white-space:nowrap; }
+  .overview-box dd{ margin:0; }
+
+  .progress-track{
+    display:flex; gap:6px; margin-bottom:40px; flex-wrap:wrap;
+  }
+  .progress-track a{
+    font-family:var(--mono); font-size:11.5px; padding:5px 10px;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink);
+    text-decoration:none; border-radius:2px;
+  }
+  .progress-track a:hover{ border-color:var(--accent); color:var(--accent); }
+
+  .step{
+    background:var(--panel); border:1px solid var(--line); margin-bottom:22px; scroll-margin-top:20px;
+  }
+  .step-head{
+    display:flex; align-items:center; gap:14px; padding:16px 20px;
+    background:var(--accent-soft); border-bottom:1px solid var(--line);
+  }
+  .step-num{
+    font-family:var(--mono); font-size:14px; font-weight:700; color:#fff;
+    background:var(--accent); width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .step-title{ font-size:16.5px; font-weight:700; }
+  .step-body{ padding:18px 20px 20px; }
+  .step-body p{ margin:0 0 12px; }
+  .step-body p:last-child{ margin-bottom:0; }
+
+  pre{
+    margin:10px 0; padding:12px 14px; background:var(--code-bg); color:var(--code-ink);
+    font-family:var(--mono); font-size:12.5px; overflow-x:auto; line-height:1.6;
+  }
+
+  .expect-box{
+    background:var(--ok-soft); border-left:3px solid var(--ok); padding:12px 16px; margin:10px 0; font-size:13.5px;
+  }
+  .expect-box .expect-label{ font-family:var(--mono); font-size:11px; color:var(--ok); margin-bottom:4px; }
+
+  .warn-box{
+    background:var(--warn-soft); border-left:3px solid var(--warn); padding:12px 16px; margin:10px 0; font-size:13.5px;
+  }
+  .warn-box .warn-label{ font-family:var(--mono); font-size:11px; color:var(--warn); margin-bottom:4px; }
+
+  .try-it{
+    background:#f6f8fa; border:1px dashed var(--line); padding:10px 14px; font-size:13.5px; margin-top:12px;
+  }
+  .try-it b{ color:var(--ink); }
+
+  table.trouble{
+    width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); font-size:13px; margin-top:8px;
+  }
+  table.trouble th, table.trouble td{ border:1px solid var(--line); padding:9px 10px; text-align:left; vertical-align:top; }
+  table.trouble th{ background:#f6f8fa; font-family:var(--mono); font-weight:600; font-size:11px; color:#4a5568; }
+
+  .final-box{
+    margin-top:44px; background:var(--ok-soft); border:1px solid #a8c9b5; padding:22px 24px; text-align:center;
+  }
+  .final-box .final-title{ font-size:17px; font-weight:700; color:var(--ok); margin-bottom:8px; }
+
+  footer{
+    margin-top:56px; padding-top:16px; border-top:1px solid var(--line);
+    font-size:12px; color:#8a94a3; font-family:var(--mono);
+  }
+
+  @media (max-width: 700px){
+    .wrap{ padding:32px 16px 60px; }
+    h1{ font-size:20px; }
+    pre{ font-size:11.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">GETTING-STARTED / aspnetcore-setup-to-run / rev.1</div>
+    <h1>ASP.NET Core — ตั้งแต่เริ่มจนรันสำเร็จ</h1>
+    <p class="subtitle">
+      ไล่ทีละขั้นตั้งแต่เช็คเครื่องมือที่ต้องมี ไปจนถึงเห็นเว็บแอปแรกทำงานจริงในเบราว์เซอร์ ทุกขั้นบอกคำสั่งที่ต้องพิมพ์
+      และผลลัพธ์ที่ควรเห็น เพื่อให้รู้ทันทีว่าทำถูกหรือทำพลาดตรงไหน
+    </p>
+  </header>
+
+  <div class="overview-box">
+    <dl>
+      <dt>ขอบเขตเอกสารนี้</dt><dd>เฉพาะ setup และรันโปรเจกต์แรกให้สำเร็จเท่านั้น ยังไม่สอนเขียนหน้าเว็บหรือ logic ใดๆ</dd>
+      <dt>ใช้เวลา</dt><dd>ประมาณ 20-30 นาที (ถ้าเครื่องมือยังไม่เคยติดตั้งมาก่อนเลย)</dd>
+      <dt>สิ่งที่ต้องมี</dt><dd>เครื่องคอมพิวเตอร์ที่ต่ออินเทอร์เน็ตได้ และ VS Code ติดตั้งไว้แล้ว</dd>
+    </dl>
+  </div>
+
+  <div class="progress-track">
+    <a href="#s1">ขั้น 1 — เช็ค SDK</a>
+    <a href="#s2">ขั้น 2 — ติดตั้ง extension</a>
+    <a href="#s3">ขั้น 3 — สร้างโปรเจกต์</a>
+    <a href="#s4">ขั้น 4 — สำรวจไฟล์</a>
+    <a href="#s5">ขั้น 5 — รันจริง</a>
+    <a href="#s6">ขั้น 6 — ดูผลใน browser</a>
+    <a href="#s7">ขั้น 7 — แก้โค้ดแล้วเห็นผลทันที</a>
+    <a href="#s8">ขั้น 8 — หยุดการรัน</a>
+    <a href="#trouble">แก้ปัญหาที่เจอบ่อย</a>
+  </div>
+
+  <div class="step" id="s1">
+    <div class="step-head"><span class="step-num">1</span><span class="step-title">เช็คว่า .NET SDK ติดตั้งอยู่หรือยัง</span></div>
+    <div class="step-body">
+      <p>เปิด VS Code แล้วเปิด terminal ข้างในโปรแกรม (กด <code>Ctrl+`</code> — ปุ่มเครื่องหมายเน้นเสียงข้างเลข 1
+      บนคีย์บอร์ด ไม่ใช่เครื่องหมายคำพูด) พิมพ์คำสั่งนี้แล้วกด Enter:</p>
+      <pre>dotnet --version</pre>
+      <div class="expect-box">
+        <div class="expect-label">ควรเห็น</div>
+        ตัวเลขเวอร์ชัน เช่น <code>8.0.100</code> หรือ <code>9.0.200</code> (ขึ้นต้นด้วย 8 หรือมากกว่า)
+      </div>
+      <div class="warn-box">
+        <div class="warn-label">ถ้าเจอแบบนี้แทน</div>
+        ข้อความ <code>'dotnet' is not recognized</code> หรือ <code>command not found</code> แปลว่ายังไม่ได้ติดตั้ง
+        .NET SDK ให้ไปที่ https://dotnet.microsoft.com/download เลือกเวอร์ชัน LTS (ตัวที่แนะนำสำหรับใช้งานทั่วไป)
+        ดาวน์โหลดแล้วติดตั้งตามขั้นตอนของโปรแกรมติดตั้งปกติ (กด Next ไปเรื่อยๆ) เสร็จแล้ว <b>ปิด terminal เดิมแล้วเปิดใหม่</b>
+        ก่อนลองพิมพ์คำสั่งนี้อีกครั้ง
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="s2">
+    <div class="step-head"><span class="step-num">2</span><span class="step-title">ติดตั้ง extension สำหรับเขียน C#</span></div>
+    <div class="step-body">
+      <p>คลิกไอคอน Extensions ทางแถบซ้ายของ VS Code (รูปสี่เหลี่ยมต่อกัน 4 ชิ้น) หรือกด
+      <code>Ctrl+Shift+X</code> แล้วพิมพ์ค้นหา:</p>
+      <pre>C# Dev Kit</pre>
+      <p>เลือกตัวที่ publisher เป็น <b>Microsoft</b> (มักจะขึ้นเป็นอันดับแรก) กด Install แล้วรอจนติดตั้งเสร็จ
+      extension นี้จะติดตั้ง C# ตัวพื้นฐานและ .NET Install Tool มาให้อัตโนมัติด้วย</p>
+      <div class="expect-box">
+        <div class="expect-label">ควรเห็น</div>
+        ปุ่ม Install เปลี่ยนเป็นไอคอนฟันเฟือง (แปลว่าติดตั้งเสร็จแล้ว) และถ้าเปิดไฟล์ .cs ใดๆ จะมีสีไฮไลต์ของโค้ดขึ้นมา
+      </div>
+      <p>ติดตั้งเสร็จแล้ว <b>ปิด VS Code แล้วเปิดใหม่ 1 ครั้ง</b> เพื่อให้ extension โหลดค่าทั้งหมดสมบูรณ์</p>
+    </div>
+  </div>
+
+  <div class="step" id="s3">
+    <div class="step-head"><span class="step-num">3</span><span class="step-title">สร้างโปรเจกต์เว็บแอปแรก</span></div>
+    <div class="step-body">
+      <p>เลือกตำแหน่งที่จะเก็บงานฝึก (เช่น Desktop หรือ Documents) เปิด terminal ใน VS Code แล้วพิมพ์ทีละบรรทัด:</p>
+      <pre>cd Desktop
+mkdir learn-aspnetcore
+cd learn-aspnetcore
+dotnet new webapp -o FirstWebApp</pre>
+      <p><b>อธิบายทีละคำสั่ง:</b></p>
+      <p><code>cd Desktop</code> — เข้าไปในโฟลเดอร์ Desktop (เปลี่ยนเป็นโฟลเดอร์อื่นที่ต้องการได้)</p>
+      <p><code>mkdir learn-aspnetcore</code> — สร้างโฟลเดอร์ใหม่ชื่อ learn-aspnetcore สำหรับเก็บงานฝึกทั้งหมด</p>
+      <p><code>cd learn-aspnetcore</code> — เข้าไปในโฟลเดอร์ที่เพิ่งสร้าง</p>
+      <p><code>dotnet new webapp -o FirstWebApp</code> — สั่งให้ .NET สร้างโปรเจกต์เว็บแอปเปล่าๆ (มีตัวอย่างมาให้พร้อม)
+      ใส่ไว้ในโฟลเดอร์ชื่อ FirstWebApp</p>
+      <div class="expect-box">
+        <div class="expect-label">ควรเห็น</div>
+        ข้อความประมาณ <code>The template "ASP.NET Core Web App" was created successfully.</code>
+        และมีโฟลเดอร์ชื่อ FirstWebApp เกิดขึ้นมา
+      </div>
+      <div class="warn-box">
+        <div class="warn-label">ถ้าเจอ error</div>
+        ถ้าขึ้น error เกี่ยวกับ template ไม่รู้จัก มักเกิดจาก SDK ที่ติดตั้งเป็นเวอร์ชันเก่ามากหรือมีปัญหาตอนติดตั้ง
+        ลองรัน <code>dotnet --version</code> ซ้ำตามขั้น 1 อีกครั้งเพื่อยืนยันว่า SDK ยังใช้งานได้ปกติ
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="s4">
+    <div class="step-head"><span class="step-num">4</span><span class="step-title">เปิดโปรเจกต์และสำรวจไฟล์คร่าวๆ</span></div>
+    <div class="step-body">
+      <p>เข้าไปในโฟลเดอร์โปรเจกต์แล้วเปิดด้วย VS Code:</p>
+      <pre>cd FirstWebApp
+code .</pre>
+      <p>VS Code จะเปิดหน้าต่างใหม่ขึ้นมา (หรือเปลี่ยนโฟลเดอร์ในหน้าต่างเดิม) แสดง sidebar ทางซ้ายมีไฟล์และโฟลเดอร์
+      หลายอย่าง ตอนนี้ยังไม่ต้องเข้าใจทุกไฟล์ ให้รู้จักแค่ 3 อย่างที่จะเจอบ่อยที่สุด:</p>
+      <p><b>โฟลเดอร์ Pages/</b> — เก็บหน้าเว็บทั้งหมด</p>
+      <p><b>ไฟล์ Program.cs</b> — จุดเริ่มต้นของโปรแกรม</p>
+      <p><b>ไฟล์ FirstWebApp.csproj</b> — ไฟล์ตั้งค่าโปรเจกต์ (บอกว่าใช้ .NET เวอร์ชันไหน)</p>
+      <div class="try-it"><b>ลองทำ:</b> คลิกเปิดโฟลเดอร์ Pages/ ดูว่ามีไฟล์อะไรอยู่ข้างในบ้าง ไม่ต้องเปิดอ่านเนื้อหา
+      แค่ดูชื่อไฟล์ผ่านๆ ก็พอสำหรับตอนนี้</div>
+    </div>
+  </div>
+
+  <div class="step" id="s5">
+    <div class="step-head"><span class="step-num">5</span><span class="step-title">รันเว็บแอปจริง</span></div>
+    <div class="step-body">
+      <p>กลับไปที่ terminal (ต้องอยู่ในโฟลเดอร์ FirstWebApp ถ้า path ใน terminal ไม่ตรง ให้พิมพ์
+      <code>cd FirstWebApp</code> ก่อน) แล้วพิมพ์:</p>
+      <pre>dotnet run</pre>
+      <div class="expect-box">
+        <div class="expect-label">ควรเห็น</div>
+        ข้อความหลายบรรทัด บรรทัดสำคัญที่ต้องมองหาคือแบบนี้:
+        <pre>Now listening on: http://localhost:5000
+Now listening on: https://localhost:5001</pre>
+        ตัวเลข port (5000, 5001) อาจไม่ตรงเป๊ะทุกเครื่อง ให้จำ URL ที่ terminal แสดงไว้ในขั้นถัดไป
+      </div>
+      <p>ตอนนี้ terminal จะ "ค้าง" อยู่แบบนั้น ไม่ขึ้น prompt ให้พิมพ์คำสั่งต่อ — นั่นคือพฤติกรรมปกติ
+      แปลว่าเว็บแอปกำลังรันอยู่และรอรับ request ตลอดเวลา ไม่ใช่ error</p>
+    </div>
+  </div>
+
+  <div class="step" id="s6">
+    <div class="step-head"><span class="step-num">6</span><span class="step-title">เปิดดูผลใน browser</span></div>
+    <div class="step-body">
+      <p>เปิด browser (Chrome, Edge, อะไรก็ได้) แล้วพิมพ์ URL ที่เห็นจาก terminal ในขั้นก่อนหน้า เช่น:</p>
+      <pre>http://localhost:5000</pre>
+      <div class="expect-box">
+        <div class="expect-label">ควรเห็น</div>
+        หน้าเว็บตัวอย่างที่มีข้อความต้อนรับประมาณ "Welcome" พร้อมเมนูด้านบน (Home, Privacy) —
+        นี่คือเว็บแอป ASP.NET Core ตัวแรกที่รันสำเร็จจริงบนเครื่องคุณ
+      </div>
+      <div class="warn-box">
+        <div class="warn-label">ถ้าเปิดแล้วขึ้น "This site can't be reached"</div>
+        เช็คว่าพิมพ์ URL ตรงกับที่ terminal แสดงจริงไหม (บาง port อาจไม่ใช่ 5000) และเช็คว่า terminal
+        ยังรันอยู่ (ยังไม่ได้กด Ctrl+C ปิดไปก่อน)
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="s7">
+    <div class="step-head"><span class="step-num">7</span><span class="step-title">ลองแก้โค้ดแล้วดูผลแบบสด</span></div>
+    <div class="step-body">
+      <p>กลับไปที่ terminal กด <code>Ctrl+C</code> เพื่อหยุดการรันชั่วคราวก่อน แล้วพิมพ์คำสั่งใหม่แทน
+      <code>dotnet run</code>:</p>
+      <pre>dotnet watch run</pre>
+      <p>คำสั่งนี้ทำงานเหมือน <code>dotnet run</code> ทุกอย่าง แต่เพิ่มความสามารถพิเศษคือ
+      <b>รีเฟรชหน้าเว็บให้อัตโนมัติทุกครั้งที่มีการแก้ไขไฟล์และบันทึก</b> สะดวกมากตอนพัฒนาจริง
+      ไม่ต้องกด Ctrl+C แล้วรันใหม่เองทุกครั้งที่แก้โค้ด</p>
+      <p>ลองเปิดไฟล์ <code>Pages/Index.cshtml</code> ใน VS Code หาข้อความที่แสดงอยู่บนหน้าเว็บ
+      (เช่นคำว่า "Welcome") แก้เป็นข้อความอื่น แล้วกด <code>Ctrl+S</code> เพื่อบันทึก</p>
+      <div class="expect-box">
+        <div class="expect-label">ควรเห็น</div>
+        กลับไปที่ browser ที่เปิดค้างไว้ หน้าเว็บจะรีเฟรชและแสดงข้อความใหม่ให้อัตโนมัติ โดยไม่ต้องกดรีเฟรชเอง
+        (อาจใช้เวลา 1-2 วินาที)
+      </div>
+      <div class="try-it"><b>ลองทำ:</b> แก้ข้อความอีก 2-3 รอบ สังเกตว่าทุกครั้งที่บันทึกไฟล์ browser
+      อัพเดทให้เองโดยไม่ต้องสลับกลับไปที่ terminal เลย</div>
+    </div>
+  </div>
+
+  <div class="step" id="s8">
+    <div class="step-head"><span class="step-num">8</span><span class="step-title">หยุดการรันเมื่อเลิกใช้งาน</span></div>
+    <div class="step-body">
+      <p>เมื่อเลิกฝึกในแต่ละครั้ง กลับไปที่ terminal ที่ยังรันค้างอยู่ แล้วกด:</p>
+      <pre>Ctrl+C</pre>
+      <p>terminal จะกลับมาพร้อมพิมพ์คำสั่งใหม่ได้ตามปกติ (สังเกตว่า prompt กลับมาแสดง) เว็บแอปจะหยุดทำงาน
+      ถ้าเปิด browser ที่ URL เดิมอีกครั้งจะขึ้นว่าเชื่อมต่อไม่ได้ ซึ่งเป็นเรื่องปกติเพราะไม่มีอะไรรันอยู่แล้ว</p>
+      <p>ครั้งถัดไปที่อยากรันใหม่ แค่เปิด terminal ใน VS Code ที่โฟลเดอร์ FirstWebApp แล้วพิมพ์
+      <code>dotnet watch run</code> อีกครั้งได้เลย</p>
+    </div>
+  </div>
+
+  <div class="step" id="trouble">
+    <div class="step-head" style="background:var(--warn-soft);"><span class="step-num" style="background:var(--warn);">!</span><span class="step-title">แก้ปัญหาที่เจอบ่อย</span></div>
+    <div class="step-body">
+      <table class="trouble">
+        <thead><tr><th style="width:35%;">อาการ</th><th>วิธีแก้</th></tr></thead>
+        <tbody>
+          <tr><td><code>dotnet: command not found</code></td><td>SDK ยังไม่ได้ติดตั้ง หรือติดตั้งแล้วแต่ยังไม่ได้ปิด-เปิด terminal ใหม่ ย้อนไปทำขั้น 1</td></tr>
+          <tr><td>รัน dotnet run แล้วค้างไม่ขึ้นอะไรเลยนานผิดปกติ</td><td>รอบแรกที่รันโปรเจกต์ ระบบต้อง restore package ก่อน อาจใช้เวลา 30 วินาที-1 นาที ถ้านานเกิน 3 นาทีค่อยลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</td></tr>
+          <tr><td>เปิด URL แล้วเจอ "Your connection is not private" (https)</td><td>เป็นเพราะ certificate สำหรับพัฒนา (development certificate) ยังไม่ได้รับความเชื่อถือจากเครื่อง ลองใช้ URL แบบ http (port 5000) แทน https (port 5001) ไปก่อนสำหรับการฝึก</td></tr>
+          <tr><td>แก้โค้ดแล้ว browser ไม่อัพเดทให้เอง</td><td>เช็คว่ารันด้วย <code>dotnet watch run</code> ไม่ใช่ <code>dotnet run</code> เฉยๆ (watch เท่านั้นที่มีระบบรีเฟรชอัตโนมัติ)</td></tr>
+          <tr><td>Port 5000 ถูกใช้งานอยู่แล้ว (address already in use)</td><td>มักเกิดจากลืมปิด terminal ที่รันค้างไว้จากรอบก่อน ลองหา terminal เก่าแล้วกด Ctrl+C หรือปิดหน้าต่าง terminal นั้นทิ้งไปเลย</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="final-box">
+    <div class="final-title">ถึงตรงนี้แปลว่าพร้อมแล้ว</div>
+    <p style="margin:0;">
+      เครื่องมือครบ โปรเจกต์รันได้จริง เห็นผลลัพธ์ใน browser และแก้โค้ดแล้วเห็นผลแบบสดได้แล้ว
+      ขั้นต่อไปคือเริ่มเรียนเขียนหน้าเว็บจริงตามแผนการเรียนรู้ที่วางไว้
+    </p>
+  </div>
+
+  <footer>
+    เอกสารนี้ครอบคลุมเฉพาะการเตรียมเครื่องมือและรันโปรเจกต์เปล่าให้สำเร็จ ยังไม่มีการเขียนโค้ดเนื้อหาใดๆ
+  </footer>
+
+</div>
+</body>
+</html>

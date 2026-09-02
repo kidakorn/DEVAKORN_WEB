@@ -124,16 +124,16 @@
     <div class="doc-id">LEARNING-PLAN / aspnetcore-basic-vscode / rev.1</div>
     <h1>Learning Plan — ASP.NET Core Basic แบบ Step by Step ผ่าน VS Code</h1>
     <p class="subtitle">
-      แผนการเรียนรู้ตั้งแต่พื้นฐาน C# ไปจนถึงสร้าง Web API เล็กๆ ได้เอง ครอบคลุม syntax, โครงสร้างโปรเจกต์,
-      และแนวคิดเฉพาะของ ASP.NET Core ที่ต่างจาก RPG/LANSA ที่คุ้นเคย
+      แผนการเรียนรู้ตั้งแต่พื้นฐาน C# ไปจนถึงสร้าง web app เต็มรูปแบบด้วย Razor Pages และ Blazor
+      ครอบคลุม full stack ภายใน ASP.NET Core ทั้งหมด (ไม่ต้องใช้ JavaScript framework แยก)
     </p>
   </header>
 
   <div class="overview-box">
     <dl>
-      <dt>เป้าหมายจบแผน</dt><dd>เข้าใจ syntax C# พื้นฐาน + โครงสร้าง ASP.NET Core + สร้าง CRUD Web API ต่อ SQL Server ได้เอง</dd>
-      <dt>เครื่องมือ</dt><dd>VS Code + C# Dev Kit + .NET SDK (ตาม setup plan ที่ทำไปก่อนหน้านี้)</dd>
-      <dt>ระยะเวลารวมโดยประมาณ</dt><dd>4-6 สัปดาห์ ถ้าเรียนวันละ 1-1.5 ชั่วโมง (ปรับตามเวลาว่างจริงได้)</dd>
+      <dt>เป้าหมายจบแผน</dt><dd>เข้าใจ syntax C# พื้นฐาน + โครงสร้าง ASP.NET Core + สร้าง web app เต็มรูปแบบ (Razor Pages และ Blazor) ต่อ SQL Server ได้เอง — ครบ full stack ภายใน ASP.NET Core โดยไม่ต้องใช้ JavaScript framework แยก</dd>
+      <dt>เครื่องมือ</dt><dd>VS Code + C# Dev Kit + .NET SDK เท่านั้น (ตาม setup plan ที่ทำไปก่อนหน้านี้)</dd>
+      <dt>ระยะเวลารวมโดยประมาณ</dt><dd>5-7 สัปดาห์ ถ้าเรียนวันละ 1-1.5 ชั่วโมง (ปรับตามเวลาว่างจริงได้)</dd>
       <dt>สมมติฐาน</dt><dd>มีพื้นฐานเขียนโปรแกรมมาก่อน (RPG/RDML) แต่ยังไม่เคยเขียน C# หรือ OOP มาก่อน</dd>
     </dl>
   </div>
@@ -150,6 +150,10 @@
     <a href="#p7">Phase 7 — โปรเจกต์จริง CRUD</a>
     <a href="#p8">Phase 8 — Debug และ Test ใน VS Code</a>
     <a href="#p9">Phase 9 — ก้าวต่อไป</a>
+    <a href="#p10" style="border-color:var(--accent); color:var(--ink);">Phase 10 — Razor Pages พื้นฐาน</a>
+    <a href="#p11">Phase 11 — ฟอร์มและ validation</a>
+    <a href="#p12">Phase 12 — CRUD เต็มรูปแบบด้วย EF Core</a>
+    <a href="#p13">Phase 13 — Blazor แบบ real-time</a>
   </div>
 
   <section class="phase" id="glossary" style="border-color:var(--accent);">
@@ -189,8 +193,74 @@
           <tr><td><code>CORS</code> (Cross-Origin Resource Sharing)</td><td>กลไกอนุญาตให้ frontend ที่รันคนละ URL/port เรียก backend ได้ ต้องตั้งค่าเปิดเองถ้าแยก frontend/backend</td></tr>
           <tr><td><code>Environment (Development/Production)</code></td><td>ตัวแปรบอกว่าโปรแกรมกำลังรันในโหมดไหน มีผลต่อ error message ที่แสดง (Development เห็น error ละเอียด, Production ซ่อนรายละเอียดเพื่อความปลอดภัย)</td></tr>
           <tr><td><code>xUnit</code></td><td>library สำหรับเขียน unit test ที่นิยมที่สุดใน .NET ปัจจุบัน ใช้ attribute <code>[Fact]</code> กำหนดว่า method ไหนคือ test</td></tr>
+          <tr><td colspan="2" style="background:#f6f8fa; font-family:var(--mono); font-size:11px; color:#4a5568;">— ศัพท์ฝั่ง UI (Razor Pages / Blazor) —</td></tr>
+          <tr><td><code>Razor Pages</code></td><td>วิธีสร้างหน้าเว็บใน ASP.NET Core โดยเขียน HTML ปนกับ C# ในไฟล์ .cshtml คู่กับไฟล์ logic .cshtml.cs</td></tr>
+          <tr><td><code>PageModel</code></td><td>class ที่เก็บ logic ของ Razor Page หนึ่งหน้า (อยู่ในไฟล์ .cshtml.cs) มี method อย่าง OnGet, OnPost ให้ override</td></tr>
+          <tr><td><code>Tag Helper</code></td><td>attribute พิเศษในไฟล์ .cshtml ที่ขึ้นต้นด้วย <code>asp-</code> เช่น <code>asp-for</code>, <code>asp-page-handler</code> ใช้ผูก HTML เข้ากับ C# โดยไม่ต้องเขียน JavaScript</td></tr>
+          <tr><td><code>[BindProperty]</code></td><td>attribute ที่บอกว่า property นี้จะรับค่าจากฟอร์มที่ submit เข้ามาโดยอัตโนมัติ</td></tr>
+          <tr><td><code>Blazor</code></td><td>เฟรมเวิร์กสร้าง UI แบบ component ด้วย C# ล้วน (ไม่ใช้ JavaScript) เหมาะกับ UI ที่ต้องโต้ตอบแบบ real-time</td></tr>
+          <tr><td><code>Razor Component (.razor)</code></td><td>ไฟล์ของ Blazor ที่รวม HTML และ C# ไว้ในไฟล์เดียว เทียบได้กับ Component ของ React แต่เขียนด้วย C#</td></tr>
+          <tr><td><code>@@code { }</code></td><td>ส่วนของไฟล์ .razor ที่เก็บ property และ method (คล้ายส่วน logic ของ component)</td></tr>
+          <tr><td><code>@@bind</code></td><td>ผูกค่าตัวแปรเข้ากับ input แบบสองทางอัตโนมัติ ไม่ต้องเขียน event handler เอง</td></tr>
+          <tr><td><code>@@inject</code></td><td>วิธี inject service (DI) เข้ามาใช้ในไฟล์ .razor โดยตรง</td></tr>
         </tbody>
       </table>
+    </div>
+  </section>
+
+  <section class="phase" id="kickoff" style="border-color:var(--ok);">
+    <div class="phase-head" style="background:var(--ok-soft);">
+      <div class="phase-head-left"><span class="phase-num">KICKOFF</span><span class="phase-title">เริ่มสร้างโปรเจกต์แรกจริง (ทำตามทีละขั้นในเครื่องตัวเอง)</span></div>
+    </div>
+    <div class="phase-body">
+      <p style="margin-top:0;">ก่อนเริ่ม Phase 0 อย่างเป็นทางการ ให้ลงมือสร้างโปรเจกต์จริงตามนี้ก่อน เพื่อให้มีของจริงไว้ทดลองระหว่างเรียนแต่ละ phase</p>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">1</span><span class="step-title">เช็คว่า .NET SDK พร้อมหรือยัง</span></div>
+        <div class="step-body">
+          <p>เปิด terminal ใน VS Code (กด Ctrl+`) แล้วรัน:</p>
+          <pre>dotnet --version</pre>
+          <p><b>ควรเห็น:</b> เลขเวอร์ชันแบบ 8.0.x หรือ 9.0.x (ขึ้นต้นด้วย 8 หรือมากกว่า)</p>
+          <p><b>ถ้าขึ้น error ว่าไม่รู้จักคำสั่ง dotnet</b> แปลว่ายังไม่ได้ติดตั้ง SDK ต้องโหลดจาก
+          dotnet.microsoft.com/download เลือก LTS version แล้วติดตั้งตาม installer ปกติก่อน</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">2</span><span class="step-title">เช็ค extension ใน VS Code</span></div>
+        <div class="step-body">
+          <p>เปิด Extensions panel (Ctrl+Shift+X) พิมพ์ค้นหา <code>C# Dev Kit</code> — ถ้ายังไม่มีให้กด Install
+          (publisher ต้องเป็น Microsoft)</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">3</span><span class="step-title">สร้างโปรเจกต์จริง</span></div>
+        <div class="step-body">
+          <p>เลือก folder ที่จะเก็บงานฝึก (แนะนำแยกโฟลเดอร์ใหม่ ไม่ปนกับงานจริง) แล้วรัน:</p>
+          <pre>mkdir learn-aspnetcore
+cd learn-aspnetcore
+dotnet new webapi -o FirstApi
+cd FirstApi
+code .</pre>
+          <p><b>อธิบายทีละคำสั่ง:</b></p>
+          <p><code>dotnet new webapi -o FirstApi</code> — สั่งให้ .NET สร้างโปรเจกต์ตาม template ชื่อ webapi
+          (มี Controller ตัวอย่างมาให้แล้ว) ใส่ในโฟลเดอร์ชื่อ FirstApi</p>
+          <p><code>code .</code> — เปิดโฟลเดอร์ปัจจุบันด้วย VS Code (จุดหมายถึง "โฟลเดอร์นี้")</p>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <div class="cl-label">เช็คก่อนไปต่อ Phase 0</div>
+        <ul>
+          <li><code>dotnet --version</code> ขึ้นเลขเวอร์ชันได้ปกติ ไม่ error</li>
+          <li>สร้างโปรเจกต์ FirstApi สำเร็จ ไม่มี error ระหว่างสร้าง</li>
+          <li>VS Code เปิดขึ้นมาเจอไฟล์ในโปรเจกต์ (Program.cs, Controllers/, appsettings.json ฯลฯ)</li>
+        </ul>
+      </div>
+      <div class="vscode-tip"><b>หมายเหตุ:</b> ขั้นตอนนี้ต้องรันบนเครื่องจริงเอง เพราะเป็นคำสั่งที่ทำงานกับ
+      environment ของแต่ละเครื่อง ถ้าเจอ error ระหว่างทำ ให้บันทึกข้อความ error ไว้เทียบกับ troubleshooting
+      ทั่วไป หรือค้นหาข้อความ error นั้นตรงๆ ก่อนไปต่อ</div>
     </div>
   </section>
 
@@ -648,6 +718,306 @@ dotnet ef database update</pre>
           <tr><td>Clean Architecture / layered structure</td><td>โปรเจกต์เริ่มใหญ่ขึ้น มีหลายคนดูแลพร้อมกัน</td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 10 ================= -->
+  <div class="phase" id="p10">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 10</span><span class="phase-title">Razor Pages พื้นฐาน — สร้าง webapp หน้าแรก</span></div>
+      <span class="phase-duration">4-5 วัน</span>
+    </div>
+    <div class="phase-body">
+      <p style="margin-top:0;">Razor Pages คือวิธีสร้าง web app แบบง่ายที่สุดใน ASP.NET Core เขียน HTML ปนกับ C# ในไฟล์เดียว
+      (.cshtml) ยังนับเป็นส่วนหนึ่งของ ASP.NET Core stack โดยตรง ไม่ต้องเรียน JavaScript framework แยก</p>
+      <ul class="concept-list">
+        <li>สร้างโปรเจกต์ด้วย template <code>webapp</code></li>
+        <li>โครงสร้างไฟล์คู่ — .cshtml (หน้าตา) กับ .cshtml.cs (logic) ของหน้าเดียวกัน</li>
+        <li>Razor syntax เบื้องต้น — การสลับไปมาระหว่าง HTML กับ C# ด้วย <code>@</code></li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">สร้างโปรเจกต์</div>
+        <pre>dotnet new webapp -o InternalWebApp
+cd InternalWebApp
+code .</pre>
+        <p>ได้โฟลเดอร์ <code>Pages/</code> มาพร้อมหน้าตัวอย่าง เช่น <code>Index.cshtml</code> คู่กับ
+        <code>Index.cshtml.cs</code> ทันที</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ตัวอย่างไฟล์คู่ — หน้าแสดงรายการสินค้า</div>
+        <pre>@* Products.cshtml — ส่วนหน้าตา (HTML + Razor syntax) *@
+@page
+@model ProductsModel
+
+&lt;h1&gt;รายการสินค้า&lt;/h1&gt;
+
+&lt;ul&gt;
+@foreach (var product in Model.Products)
+{
+    &lt;li&gt;@product.Name — @product.Price บาท&lt;/li&gt;
+}
+&lt;/ul&gt;</pre>
+        <pre>// Products.cshtml.cs — ส่วน logic (C# ล้วน)
+public class ProductsModel : PageModel
+{
+    public List&lt;Product&gt; Products { get; set; } = new();
+
+    public void OnGet()
+    {
+        // ตอนนี้ hardcode ไปก่อน ต่อ database จริงใน Phase 12
+        Products = new List&lt;Product&gt;
+        {
+            new Product { Name = "สินค้า A", Price = 100 },
+            new Product { Name = "สินค้า B", Price = 250 },
+        };
+    }
+}</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ความหมายของ syntax สำคัญ</div>
+        <p><code>@page</code> — บอกว่าไฟล์นี้คือ Razor Page ที่เข้าถึงได้ผ่าน URL โดยตรง (ต้องมีบรรทัดนี้เสมอ
+        เป็นบรรทัดแรกของไฟล์ .cshtml)</p>
+        <p><code>@model ProductsModel</code> — ผูกไฟล์ .cshtml นี้เข้ากับ class <code>ProductsModel</code>
+        ที่อยู่ในไฟล์ .cshtml.cs คู่กัน ทำให้เรียกใช้ <code>Model.Products</code> ในหน้า HTML ได้</p>
+        <p><code>@foreach</code> — เขียน C# loop ปนอยู่ใน HTML ได้ตรงๆ โดยขึ้นต้นด้วย <code>@</code></p>
+        <p><code>OnGet()</code> — method พิเศษที่ Razor Pages เรียกอัตโนมัติทุกครั้งที่มีคนเปิดหน้านี้ด้วย
+        HTTP GET (ถ้ามี <code>OnPost()</code> คู่กัน จะถูกเรียกตอนมีการ submit ฟอร์ม)</p>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> สร้างหน้า Razor Page ใหม่ชื่อ <code>Orders</code> แสดง list ออเดอร์แบบ hardcode
+        ข้อมูลไว้ก่อน (ยังไม่ต่อ database) ให้มีทั้งไฟล์ .cshtml และ .cshtml.cs คู่กันตามตัวอย่าง
+      </div>
+      <div class="checklist">
+        <div class="cl-label">พร้อมไป phase ถัดไปเมื่อ</div>
+        <ul>
+          <li>เข้าใจว่าทำไมต้องมีไฟล์ .cshtml และ .cshtml.cs คู่กันเสมอ</li>
+          <li>เขียน @foreach วน list มาแสดงใน HTML ได้เอง</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 11 ================= -->
+  <div class="phase" id="p11">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 11</span><span class="phase-title">Razor Pages — ฟอร์มและการรับข้อมูลกลับ</span></div>
+      <span class="phase-duration">3-4 วัน</span>
+    </div>
+    <div class="phase-body">
+      <ul class="concept-list">
+        <li>Tag Helper — attribute พิเศษที่ผูกฟอร์ม HTML เข้ากับ C# property โดยตรง</li>
+        <li><code>[BindProperty]</code> — รับค่าจากฟอร์มเข้ามาเป็น property อัตโนมัติ</li>
+        <li><code>OnPost()</code> — จัดการตอนมีการ submit ฟอร์ม</li>
+        <li>validation เบื้องต้นด้วย <code>[Required]</code>, <code>ModelState.IsValid</code></li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">ฟอร์มเพิ่มสินค้าใหม่</div>
+        <pre>@* Create.cshtml *@
+@page
+@model CreateModel
+
+&lt;form method="post"&gt;
+    &lt;label&gt;ชื่อสินค้า&lt;/label&gt;
+    &lt;input asp-for="NewProduct.Name" /&gt;
+
+    &lt;label&gt;ราคา&lt;/label&gt;
+    &lt;input asp-for="NewProduct.Price" /&gt;
+
+    &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
+&lt;/form&gt;</pre>
+        <pre>// Create.cshtml.cs
+public class CreateModel : PageModel
+{
+    [BindProperty]
+    public Product NewProduct { get; set; } = new();
+
+    public void OnGet() { }
+
+    public IActionResult OnPost()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();   // ส่งกลับไปหน้าเดิมพร้อมข้อความ error
+        }
+
+        // บันทึกข้อมูลจริง (ต่อ EF Core ใน Phase 12)
+        return RedirectToPage("Products");
+    }
+}</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ความหมายของ syntax สำคัญ</div>
+        <p><code>asp-for="NewProduct.Name"</code> — Tag Helper ที่ผูก input นี้เข้ากับ property
+        <code>NewProduct.Name</code> โดยอัตโนมัติ ทั้งตอนแสดงค่าเดิมและตอนรับค่าใหม่กลับมา ไม่ต้องเขียน
+        JavaScript ผูกข้อมูลเอง</p>
+        <p><code>[BindProperty]</code> — บอกว่า property นี้จะรับค่าจากฟอร์มที่ submit เข้ามาอัตโนมัติ
+        ไม่ต้องเขียนโค้ดดึงค่าจาก request เอง</p>
+        <p><code>ModelState.IsValid</code> — เช็คว่าข้อมูลที่ submit เข้ามาผ่านกฎ validation ที่กำหนดไว้บน
+        property หรือไม่ (เช่น <code>[Required]</code> เหนือ property ที่ห้ามว่าง)</p>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> เพิ่มหน้าฟอร์มสำหรับสร้างออเดอร์ใหม่ในโปรเจกต์ฝึกจาก Phase 10 พร้อม validation
+        อย่างน้อย 1 field (เช่น ชื่อลูกค้าห้ามว่าง)
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 12 ================= -->
+  <div class="phase" id="p12">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 12</span><span class="phase-title">ต่อ EF Core จริง — CRUD เต็มรูปแบบใน Razor Pages</span></div>
+      <span class="phase-duration">5-6 วัน</span>
+    </div>
+    <div class="phase-body">
+      <p style="margin-top:0;">รวม Phase 6 (EF Core) เข้ากับ Phase 10-11 (Razor Pages) ให้กลายเป็น webapp ที่ทำงานกับข้อมูลจริง</p>
+      <ul class="concept-list">
+        <li>Inject DbContext เข้าไปใน PageModel ผ่าน constructor</li>
+        <li>ทำ Read (list + detail), Create, Update, Delete ให้ครบผ่านหน้าเว็บจริง</li>
+        <li>ใช้ Tag Helper <code>asp-page-handler</code> สำหรับปุ่มลบในหน้า list</li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">ตัวอย่าง PageModel ที่ต่อ database จริง</div>
+        <pre>public class ProductsModel : PageModel
+{
+    private readonly AppDbContext _db;
+
+    // รับ DbContext ผ่าน DI เหมือนที่เรียนใน Phase 2-3
+    public ProductsModel(AppDbContext db)
+    {
+        _db = db;
+    }
+
+    public List&lt;Product&gt; Products { get; set; } = new();
+
+    public async Task OnGetAsync()
+    {
+        Products = await _db.Products.ToListAsync();
+    }
+
+    public async Task&lt;IActionResult&gt; OnPostDeleteAsync(int id)
+    {
+        var product = await _db.Products.FindAsync(id);
+        if (product is not null)
+        {
+            _db.Products.Remove(product);
+            await _db.SaveChangesAsync();
+        }
+        return RedirectToPage();
+    }
+}</pre>
+        <pre>&lt;!-- ปุ่มลบในหน้า list เรียก handler ชื่อ Delete โดยเฉพาะ --&gt;
+&lt;form method="post" asp-page-handler="Delete" asp-route-id="@product.Id"&gt;
+    &lt;button type="submit"&gt;ลบ&lt;/button&gt;
+&lt;/form&gt;</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ความหมายของ syntax สำคัญ</div>
+        <p><code>OnPostDeleteAsync</code> — ชื่อ method ตามด้วยคำว่า "Delete" ทำให้ Razor Pages รู้ว่า method
+        นี้คือ handler พิเศษ ต้องเรียกผ่าน <code>asp-page-handler="Delete"</code> เท่านั้น แยกจาก
+        <code>OnPostAsync</code> ปกติที่ไม่มีคำต่อท้าย</p>
+        <p><code>asp-route-id="@product.Id"</code> — ส่งค่า id ของแถวนั้นไปพร้อมกับการ submit form
+        เพื่อบอกว่าจะลบแถวไหน</p>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> ทำให้โปรเจกต์ฝึกมี CRUD ครบ 4 อย่างผ่านหน้าเว็บจริง (list, สร้างใหม่, แก้ไข, ลบ)
+        ต่อกับ SQLite หรือ SQL Server LocalDB เหมือนที่ฝึกไว้ใน Phase 6
+      </div>
+      <div class="checklist">
+        <div class="cl-label">พร้อมไป phase ถัดไปเมื่อ</div>
+        <ul>
+          <li>ทำ CRUD ครบทั้ง 4 อย่างผ่านหน้าเว็บได้เองโดยไม่ต้องเปิดตัวอย่างดู</li>
+          <li>เข้าใจว่า handler พิเศษ (เช่น OnPostDeleteAsync) ทำงานต่างจาก OnPostAsync ปกติอย่างไร</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 13 ================= -->
+  <div class="phase" id="p13">
+    <div class="phase-head">
+      <div class="phase-head-left"><span class="phase-num">PHASE 13</span><span class="phase-title">Blazor — เพิ่มความโต้ตอบแบบ real-time (ยังเป็น C# ล้วน)</span></div>
+      <span class="phase-duration">5-6 วัน</span>
+    </div>
+    <div class="phase-body">
+      <p style="margin-top:0;">Razor Pages เหมาะกับหน้าที่ submit แล้ว reload หน้าใหม่ทุกครั้ง ถ้าอยากได้ UI ที่อัพเดททันที
+      โดยไม่ reload หน้า (เช่น filter ตาราง, นับจำนวนแบบ real-time) ให้ใช้ Blazor แทน ยังคงเป็น C# 100% เหมือนเดิม</p>
+      <ul class="concept-list">
+        <li>Component ใน Blazor คือไฟล์ .razor ที่รวม HTML + C# ไว้ในไฟล์เดียว</li>
+        <li><code>@code { }</code> block — ที่เก็บ property และ method ของ component</li>
+        <li>event binding ด้วย <code>@onclick</code>, two-way binding ด้วย <code>@bind</code></li>
+        <li>วงจรชีวิตของ component — <code>OnInitializedAsync</code></li>
+      </ul>
+
+      <div class="subblock">
+        <div class="subblock-label">สร้างโปรเจกต์ Blazor</div>
+        <pre>dotnet new blazorserver -o InternalWebApp
+cd InternalWebApp
+code .</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ตัวอย่าง Component ที่ filter แบบ real-time</div>
+        <pre>@* ProductFilter.razor *@
+@inject AppDbContext Db
+
+&lt;input @bind="keyword" @bind:event="oninput" placeholder="ค้นหาสินค้า..." /&gt;
+
+&lt;ul&gt;
+@foreach (var product in FilteredProducts)
+{
+    &lt;li&gt;@product.Name — @product.Price บาท&lt;/li&gt;
+}
+&lt;/ul&gt;
+
+@code {
+    private string keyword = "";
+    private List&lt;Product&gt; products = new();
+
+    private List&lt;Product&gt; FilteredProducts =&gt;
+        products.Where(p =&gt; p.Name.Contains(keyword)).ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await Db.Products.ToListAsync();
+    }
+}</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ความหมายของ syntax สำคัญ</div>
+        <p><code>@inject AppDbContext Db</code> — วิธี inject service (DI) เข้ามาใช้ใน component โดยตรง
+        คล้ายการ inject ผ่าน constructor ใน Controller แต่ syntax ต่างกันเพราะเป็นไฟล์ .razor</p>
+        <p><code>@bind="keyword"</code> — ผูกค่าใน input เข้ากับตัวแปร <code>keyword</code> แบบสองทาง
+        (พิมพ์ในช่อง input แล้วตัวแปรเปลี่ยนทันที ไม่ต้องเขียน event handler เอง)</p>
+        <p><code>@bind:event="oninput"</code> — กำหนดว่าจะอัพเดทค่าทันทีที่พิมพ์ (ปกติ @bind เฉยๆ จะอัพเดท
+        ตอนออกจากช่อง input เท่านั้น)</p>
+        <p><code>FilteredProducts</code> — เป็น computed property (คำนวณใหม่ทุกครั้งที่ถูกเรียก) ทำให้ UI
+        กรองข้อมูลใหม่ทันทีที่ <code>keyword</code> เปลี่ยน โดยไม่ต้อง reload หน้าเลย</p>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> แปลงหน้า list สินค้าจาก Phase 12 ให้เป็น Blazor component ที่มีช่องค้นหาแบบ real-time
+        (พิมพ์แล้ว list กรองทันทีโดยไม่ต้องกดปุ่ม submit)
+      </div>
+      <div class="vscode-tip"><b>VS Code tip:</b> ไฟล์ .razor ใช้ C# Dev Kit ตัวเดียวกับที่ติดตั้งไว้ตั้งแต่ต้น
+      ไม่ต้องติดตั้ง extension เพิ่มเพื่อให้ syntax highlighting ทำงาน</div>
+      <div class="checklist">
+        <div class="cl-label">พร้อมไป phase ถัดไปเมื่อ</div>
+        <ul>
+          <li>เข้าใจความต่างระหว่าง Razor Pages (reload ทั้งหน้า) กับ Blazor (อัพเดทบางส่วนแบบ real-time)</li>
+          <li>ใช้ @bind และ @onclick ได้เองโดยไม่ต้องเปิดตัวอย่าง</li>
+        </ul>
+      </div>
     </div>
   </div>
 
