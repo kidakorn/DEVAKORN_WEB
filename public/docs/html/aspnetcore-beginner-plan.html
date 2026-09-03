@@ -85,6 +85,20 @@
   }
   .try-it b{ color:var(--ink); }
 
+  details.answer{
+    margin-top:8px; background:#f6f8fa; border:1px solid var(--ok); border-radius:2px; font-size:13px;
+  }
+  details.answer summary{
+    cursor:pointer; padding:8px 12px; font-family:var(--mono); font-size:12px; color:var(--ok);
+    font-weight:600; list-style:none; user-select:none;
+  }
+  details.answer summary::-webkit-details-marker{ display:none; }
+  details.answer summary::before{ content:"▸ "; }
+  details.answer[open] summary::before{ content:"▾ "; }
+  details.answer[open] summary{ border-bottom:1px solid var(--line); }
+  details.answer .answer-body{ padding:10px 14px 12px; }
+  details.answer pre{ margin:6px 0 0; }
+
   footer{
     margin-top:56px; padding-top:16px; border-top:1px solid var(--line);
     font-size:12px; color:#8a94a3; font-family:var(--mono);
@@ -176,6 +190,29 @@
       </div>
       <p>สำหรับภาษา C# ตัวที่ทำหน้าที่ "อ่านแล้วรันตามคำสั่ง" เรียกว่า .NET (อ่านว่า ดอท-เน็ต)
       เราจะติดตั้งมันในหัวข้อถัดไป</p>
+
+      <div class="idea-box">
+        <b>สิ่งที่มักเกิดขึ้นตอนรัน — Error:</b> ถ้าเราเขียนคำสั่งผิด (เช่น สะกดผิด ลืมใส่เครื่องหมาย)
+        ตอนรันโค้ด .NET จะไม่ทำงานให้แล้วแจ้ง <b>error</b> (ข้อผิดพลาด) กลับมาบอกว่าพังตรงไหน
+        error ไม่ใช่เรื่องน่ากลัว มันคือข้อความช่วยบอกว่าต้องแก้ตรงไหน โปรแกรมเมอร์ทุกคนเจอ error
+        ทุกวันแม้จะเขียนมานานแล้วก็ตาม ส่วนการหาสาเหตุที่โค้ดพังแล้วแก้ไข เรียกว่า <b>debug</b>
+      </div>
+      <div class="idea-box">
+        <b>Compile กับ Run ต่างกันยังไง:</b> ก่อนที่ .NET จะรันโค้ด C# ได้จริง มันต้อง "แปล" source code
+        (ที่มนุษย์อ่านเข้าใจ) ให้กลายเป็นภาษาที่คอมพิวเตอร์เข้าใจก่อน ขั้นตอนแปลนี้เรียกว่า <b>compile</b>
+        ถ้า source code เขียนผิดหลักไวยากรณ์ (เช่น ลืมใส่ <code>;</code>) จะ compile ไม่ผ่านและไม่ได้รันเลย
+        ต่างจาก error บางแบบที่ compile ผ่านแต่พังตอนรันจริง (เช่น เอา 10 หารด้วย 0)
+      </div>
+      <div class="idea-box">
+        <b>ทำไมบางทีรันไม่ได้:</b> ก่อนรันจริง .NET จะ "ตรวจสอบ" source code ก่อนว่าเขียนถูกไวยากรณ์ไหม
+        ขั้นตอนนี้เรียกว่า <b>compile</b> ถ้าเขียนผิด (เช่น ลืมใส่เครื่องหมาย <code>;</code> ท้ายบรรทัด หรือสะกดคำสั่งผิด)
+        จะเจอ "compile error" และโปรแกรมจะไม่รันเลยแม้แต่บรรทัดเดียว ต่างจากตอนรันแล้วเกิดปัญหาระหว่างทาง
+        (เรียกว่า "runtime error") ที่อย่างน้อยโปรแกรมได้เริ่มทำงานไปบ้างแล้วก่อนจะพัง จุดนี้สำคัญเวลา debug
+        เพราะบอกได้ทันทีว่าปัญหาอยู่ที่ "เขียนผิดไวยากรณ์" หรือ "ตรรกะผิดตอนรัน"
+      </div>
+      <div class="try-it"><b>ลองนึกภาพ:</b> เทียบกับสูตรอาหารที่เขียนขั้นตอนไม่ครบ (เช่น "ผัดจนสุก" แต่ไม่บอกว่าผัดอะไร)
+      คนทำอาหารอาจงงตั้งแต่ยังไม่เริ่มทำ นั่นคล้ายกับ compile error ส่วนถ้าสูตรเขียนครบแต่ทำไปแล้วไฟไหม้กลางทาง
+      (เช่น ลืมปิดเตา) นั่นคล้ายกับ runtime error — ยังไม่ต้องเขียนโค้ดในหัวข้อนี้ แค่จำภาพนี้ไว้ก่อน</div>
     </div>
   </div>
 
@@ -205,9 +242,36 @@ dotnet run</pre>
       <p>คำสั่ง <code>dotnet new console</code> คือการสร้างโปรแกรมเปล่าๆ แบบง่ายที่สุดให้ ส่วน
       <code>dotnet run</code> คือการสั่งรันโปรแกรมนั้น ถ้าทำถูกต้อง จะเห็นคำว่า <code>Hello, World!</code>
       ปรากฏขึ้นมาในหน้าจอ terminal</p>
+      <div class="idea-box">
+        <b>ตอนพิมพ์ dotnet run เกิดอะไรขึ้นบ้าง:</b> เบื้องหลังมี 2 ขั้นตอนซ้อนกันอยู่ ต่อเนื่องจากหัวข้อ 2
+        ขั้นแรก .NET จะ compile source code ในไฟล์ Program.cs ก่อน (ตรวจไวยากรณ์ให้) ถ้าผ่านแล้วถึงจะเข้าขั้นที่สอง
+        คือรันจริง ถ้าเจอ compile error จะเห็นข้อความ error สีแดงแทนคำว่า Hello, World! และโปรแกรมจะไม่เริ่มทำงานเลย
+      </div>
       <div class="try-it"><b>ลองทำ:</b> เปิดไฟล์ Program.cs ที่ถูกสร้างขึ้นมา (อยู่ในโฟลเดอร์ hello-world)
       จะเห็นบรรทัดเดียวที่เขียนว่า <code>Console.WriteLine("Hello, World!");</code> ลองแก้ข้อความในเครื่องหมายคำพูด
       เป็นชื่อตัวเองแล้วรัน <code>dotnet run</code> ใหม่ ดูว่าข้อความเปลี่ยนไหม</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>Console.WriteLine("Somchai");</pre>
+เปลี่ยนแค่ข้อความในเครื่องหมายคำพูด ผลลัพธ์ตอนรัน dotnet run จะแสดงชื่อแทนคำว่า Hello, World!</div></details>
+
+      <div class="idea-box">
+        <b>Comment คืออะไร:</b> บางครั้งอยากเขียนโน้ตไว้ในโค้ดเพื่อเตือนความจำตัวเองหรืออธิบายให้คนอื่นเข้าใจ
+        โดยไม่ให้คอมพิวเตอร์เอาไปรันด้วย ใช้เครื่องหมาย <code>//</code> นำหน้าบรรทัดนั้น
+        <pre>// บรรทัดนี้คือ comment คอมพิวเตอร์จะข้ามไปเลย ไม่รันอะไร
+Console.WriteLine("Hello, World!");   // เขียนโน้ตต่อท้ายบรรทัดโค้ดก็ได้</pre>
+        comment มีประโยชน์มากตอนกลับมาอ่านโค้ดตัวเองหลังผ่านไปนานๆ หรือมีคนอื่นมาอ่านโค้ดของเรา
+      </div>
+      <div class="idea-box">
+        <b>Console.WriteLine ทำอะไรกันแน่:</b> <code>Console</code> คือชื่อของหน้าจอ terminal ที่กำลังใช้อยู่
+        <code>WriteLine</code> คือคำสั่ง "เขียนข้อความแล้วขึ้นบรรทัดใหม่" ส่วนข้อความในวงเล็บคือสิ่งที่จะให้แสดง
+        ถ้าอยากเขียนโดยไม่ขึ้นบรรทัดใหม่ ใช้ <code>Console.Write</code> แทน (ไม่มี Line ต่อท้าย)
+      </div>
+      <div class="try-it"><b>ลองทำอีกอย่าง:</b> ลองลบเครื่องหมาย <code>;</code> ท้ายบรรทัดออกไปก่อน 1 ตัว
+      แล้วรัน <code>dotnet run</code> ดูว่าเจอ compile error แบบไหน (นี่คือตัวอย่าง compile error จริงที่เพิ่งพูดถึง)
+      แก้กลับคืนเป็นเดิมก่อนไปหัวข้อถัดไป</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">ลบ <code>;</code> ออกแล้วรัน จะเห็น compile error ประมาณ
+<pre>error CS1002: ; expected</pre>
+นี่คือตัวอย่าง error ที่เกิดตอน compile (ก่อนรันจริง) เพราะ C# บังคับให้ทุกคำสั่งจบด้วย ; เสมอ
+อย่าลืมใส่ ; กลับคืนก่อนไปหัวข้อถัดไป</div></details>
     </div>
   </div>
 
@@ -226,9 +290,60 @@ string name = "Somchai";</pre>
       <p>อ่านว่า "สร้างตัวแปรชื่อ age เก็บค่าเป็นตัวเลข 25" และ "สร้างตัวแปรชื่อ name เก็บค่าเป็นข้อความ Somchai"
       คำว่า <code>int</code> และ <code>string</code> ด้านหน้า คือการบอกว่าของในกล่องนี้เป็น "ชนิด" ไหน
       ซึ่งจะอธิบายละเอียดในหัวข้อถัดไป</p>
+      <div class="idea-box">
+        <b>เปลี่ยนค่าในตัวแปรได้ตลอด:</b> ตัวแปรเรียกว่า "แปร" เพราะเปลี่ยนค่าได้ ไม่ใช่กำหนดครั้งเดียวแล้วตายตัว
+        <pre>int age = 25;
+Console.WriteLine(age);   // แสดง 25
+
+age = 26;                 // เปลี่ยนค่าในกล่องเดิม ไม่ต้องเขียน int ซ้ำ
+Console.WriteLine(age);   // แสดง 26</pre>
+        สังเกตว่าบรรทัดที่สองไม่มีคำว่า <code>int</code> นำหน้าอีก เพราะกล่องชื่อ age ถูกสร้างไปแล้วตั้งแต่บรรทัดแรก
+        บรรทัดนี้แค่ "เปลี่ยนของข้างใน" เท่านั้น
+      </div>
+      <div class="idea-box">
+        <b>กฎการตั้งชื่อตัวแปร:</b> ต้องขึ้นต้นด้วยตัวอักษรหรือ underscore (ห้ามขึ้นต้นด้วยตัวเลข) ห้ามมีช่องว่าง
+        และห้ามซ้ำกับคำสั่งที่ภาษา C# ใช้เอง (เช่นห้ามตั้งชื่อตัวแปรว่า <code>int</code>) ธรรมเนียมที่นิยมใช้กันคือ
+        ตั้งชื่อแบบ camelCase (ตัวแรกเล็ก คำถัดไปขึ้นต้นด้วยตัวใหญ่) เช่น <code>customerName</code>,
+        <code>totalAmount</code> เพื่อให้อ่านง่ายเมื่อชื่อมีหลายคำ
+      </div>
       <div class="try-it"><b>ลองทำ:</b> ในไฟล์ Program.cs เดิม เพิ่มบรรทัด
       <code>int age = 25;</code> ไว้ก่อนบรรทัด Console.WriteLine แล้วเปลี่ยนบรรทัดนั้นเป็น
       <code>Console.WriteLine(age);</code> รันดูว่าเห็นเลข 25 ปรากฏขึ้นมาไหม</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>int age = 25;
+Console.WriteLine(age);</pre>
+รันแล้วจะเห็นเลข 25 ปรากฏในหน้าจอ terminal</div></details>
+
+      <div class="idea-box">
+        <b>เปลี่ยนค่าในตัวแปรได้ทีหลัง:</b> ตัวแปรเรียกว่า "ตัวแปร" เพราะค่าข้างในเปลี่ยนได้ตลอดเวลา
+        <pre>int age = 25;
+Console.WriteLine(age);   // แสดง 25
+
+age = 26;                 // เปลี่ยนค่าใหม่ (ไม่ต้องเขียน int ซ้ำ)
+Console.WriteLine(age);   // แสดง 26</pre>
+        สังเกตว่าตอนเปลี่ยนค่าครั้งที่สอง ไม่ต้องเขียน <code>int</code> นำหน้าอีก เพราะกล่องชื่อ age
+        ถูกสร้างไปแล้วตั้งแต่บรรทัดแรก แค่ใส่ของใหม่ลงไปแทนของเดิม
+      </div>
+      <div class="idea-box">
+        <b>ค่าคงที่ (const):</b> ถ้ามีค่าที่ไม่อยากให้ใครเผลอไปเปลี่ยนทีหลัง ใช้ <code>const</code> แทน
+        <code>int</code>/<code>string</code> ปกติ
+        <pre>const double TaxRate = 0.07;
+// TaxRate = 0.08;   ถ้าเขียนบรรทัดนี้จะ error ทันที เพราะ const ห้ามเปลี่ยนค่า</pre>
+      </div>
+      <div class="idea-box">
+        <b>วิธีตั้งชื่อตัวแปรที่นิยมใน C#:</b> ตัวแปรทั่วไปมักตั้งชื่อแบบ <code>camelCase</code>
+        (ขึ้นต้นตัวเล็ก คำถัดไปขึ้นตัวใหญ่) เช่น <code>customerName</code>, <code>totalAmount</code>
+        ชื่อควรสื่อความหมายชัดเจน หลีกเลี่ยงชื่อสั้นๆ กำกวมอย่าง <code>x</code>, <code>data1</code>
+        เพราะทำให้กลับมาอ่านโค้ดทีหลังยากขึ้นมาก
+      </div>
+      <div class="try-it"><b>ลองทำอีกอย่าง:</b> เพิ่มบรรทัด <code>age = 30;</code> ต่อจากบรรทัดเดิม
+      แล้ว Console.WriteLine(age) อีกครั้ง สังเกตว่าครั้งที่สองแสดงผลเป็น 30 ไม่ใช่ 25 แล้ว
+      เพราะค่าถูกเปลี่ยนไปแล้ว</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>int age = 25;
+Console.WriteLine(age);   // แสดง 25
+
+age = 30;
+Console.WriteLine(age);   // แสดง 30</pre>
+สังเกตว่าบรรทัดที่สองไม่ต้องเขียน int ซ้ำ เพราะ age ถูกสร้างไปแล้วตั้งแต่บรรทัดแรก</div></details>
     </div>
   </div>
 
@@ -247,8 +362,64 @@ bool isActive = true;     // ค่าจริง/เท็จ (true หรื�
         <b>ทำไมต้อง decimal สำหรับเงิน:</b> ตัวเลขทศนิยมแบบปกติ (เรียกว่า double หรือ float) อาจคำนวณเงินแล้วเพี้ยน
         เล็กน้อยจากการปัดเศษของคอมพิวเตอร์ ภาษา C# เลยมีชนิดพิเศษชื่อ decimal ที่แม่นยำกว่าสำหรับงานเงินโดยเฉพาะ
       </div>
+      <div class="idea-box">
+        <b>ชนิดข้อมูลอื่นที่จะเจอเพิ่มเติม:</b>
+        <pre>long bigNumber = 10000000000;   // ตัวเลขจำนวนเต็มที่ใหญ่กว่า int รับได้ (ใช้เมื่อ int ไม่พอ)
+double score = 88.5;             // ตัวเลขทศนิยมทั่วไป (ไม่ใช่เงิน)
+char grade = 'A';                // ตัวอักษรเดี่ยว 1 ตัว (ใช้เครื่องหมายคำพูดเดี่ยว ไม่ใช่คู่)</pre>
+        ส่วนใหญ่ในงานจริงจะใช้แค่ int, decimal, string, bool บ่อยที่สุด ที่เหลือเจอเป็นครั้งคราว
+      </div>
+      <div class="idea-box">
+        <b>แปลงชนิดข้อมูล (type conversion):</b> บางครั้งมีค่าชนิดหนึ่งแต่ต้องใช้อีกชนิด เช่น รับตัวเลขมาเป็น string
+        แล้วอยากเอาไปคำนวณจริง ต้องแปลงก่อน
+        <pre>string ageText = "25";
+int age = int.Parse(ageText);     // แปลงข้อความเป็นตัวเลข
+Console.WriteLine(age + 5);        // ได้ 30
+
+int score = 90;
+string scoreText = score.ToString();   // แปลงตัวเลขเป็นข้อความ</pre>
+        ถ้าลืมแปลงแล้วเอาชนิดที่เข้ากันไม่ได้มาบวกกันตรงๆ (เช่น string บวก int โดยไม่แปลง) จะเจอ compile error
+        ตามที่พูดถึงในหัวข้อ 2-3
+      </div>
       <div class="try-it"><b>ลองทำ:</b> เพิ่มตัวแปร 4 ชนิดข้างบนในโปรแกรมเดิม แล้วลอง Console.WriteLine
       แต่ละตัวดูทีละบรรทัด สังเกตว่าแสดงผลต่างกันยังไง</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>int quantity = 10;
+decimal price = 25.50m;
+string name = "Somchai";
+bool isActive = true;
+
+Console.WriteLine(quantity);   // 10
+Console.WriteLine(price);      // 25.50
+Console.WriteLine(name);       // Somchai
+Console.WriteLine(isActive);   // True</pre>
+สังเกตว่า bool แสดงผลเป็น True/False (ขึ้นต้นด้วยตัวใหญ่) ต่างจาก true/false ตอนเขียนโค้ด</div></details>
+
+      <div class="idea-box">
+        <b>การแปลงชนิดข้อมูล (Type Conversion):</b> บางครั้งข้อมูลมาเป็นข้อความ แต่เราอยากเอาไปคำนวณเป็นตัวเลข
+        ต้อง "แปลงชนิด" ก่อน
+        <pre>string ageText = "25";
+int age = int.Parse(ageText);    // แปลงข้อความเป็นตัวเลข
+Console.WriteLine(age + 5);      // ได้ 30
+
+int number = 100;
+string text = number.ToString(); // แปลงตัวเลขเป็นข้อความ</pre>
+        ถ้าเผลอเอาข้อความที่ไม่ใช่ตัวเลขไปแปลง เช่น <code>int.Parse("abc")</code> โปรแกรมจะ error ทันที
+        เพราะ "abc" แปลงเป็นตัวเลขไม่ได้
+      </div>
+      <div class="idea-box">
+        <b>คำว่า var — ให้คอมพิวเตอร์เดา type ให้:</b> แทนที่จะพิมพ์ type เองทุกครั้ง ใช้ <code>var</code>
+        แทนได้ คอมพิวเตอร์จะดูจากค่าที่ใส่แล้วเดา type ให้อัตโนมัติ
+        <pre>var age = 25;              // C# เดาว่าเป็น int เอง
+var name = "Somchai";      // C# เดาว่าเป็น string เอง</pre>
+        ผลลัพธ์เหมือนกับเขียน <code>int age = 25;</code> ทุกประการ แค่สั้นกว่า นิยมใช้เมื่อเห็นชัดอยู่แล้วว่า
+        ค่าทางขวาเป็น type อะไร
+      </div>
+      <div class="try-it"><b>ลองทำอีกอย่าง:</b> สร้างตัวแปร string เก็บค่า "100" แล้วใช้ int.Parse
+      แปลงเป็นตัวเลข บวกกับ 50 แล้ว Console.WriteLine ผลลัพธ์ ควรได้ 150</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>string numberText = "100";
+int number = int.Parse(numberText);
+Console.WriteLine(number + 1);   // แสดง 101 (บวกกันได้จริงเพราะแปลงเป็น int แล้ว)</pre>
+ถ้าลอง Console.WriteLine(numberText + 1) โดยไม่แปลงก่อน จะได้ผลเป็น "1001" (ต่อข้อความ) แทนการบวกจริง</div></details>
     </div>
   </div>
 
@@ -275,8 +446,120 @@ else
         สังเกตว่าเครื่องหมาย "เท่ากับ" ในการเปรียบเทียบต้องใช้ <code>==</code> สองตัว ไม่ใช่ <code>=</code>
         ตัวเดียว (ตัวเดียวใช้สำหรับ "กำหนดค่า" อย่างที่เจอในหัวข้อ 4)
       </div>
+      <div class="idea-box">
+        <b>ตัดสินใจมากกว่า 2 ทาง — else if:</b> ถ้ามีเงื่อนไขมากกว่าแค่ "ใช่หรือไม่ใช่" ใช้ <code>else if</code>
+        ต่อกันได้เรื่อยๆ
+        <pre>int score = 75;
+
+if (score >= 80)
+{
+    Console.WriteLine("เกรด A");
+}
+else if (score >= 60)
+{
+    Console.WriteLine("เกรด B");
+}
+else
+{
+    Console.WriteLine("เกรด C");
+}</pre>
+        คอมพิวเตอร์เช็คจากบนลงล่างทีละเงื่อนไข พอเจอเงื่อนไขไหนที่เป็นจริงก่อน จะทำตามนั้นแล้วข้ามที่เหลือไปเลย
+        (ในตัวอย่างนี้ score = 75 ไม่เข้าเงื่อนไขแรก แต่เข้าเงื่อนไขที่สอง เลยได้ "เกรด B")
+      </div>
+      <div class="idea-box">
+        <b>รวมหลายเงื่อนไขในบรรทัดเดียว:</b> ใช้ <code>&amp;&amp;</code> (และ — ต้องจริงทั้งคู่) กับ
+        <code>||</code> (หรือ — จริงแค่อันใดอันหนึ่งก็พอ)
+        <pre>int age = 20;
+bool hasId = true;
+
+if (age >= 18 &amp;&amp; hasId)
+{
+    Console.WriteLine("เข้าได้");   // ต้องอายุถึงและมีบัตร ถึงจะเข้าเงื่อนไขนี้
+}</pre>
+      </div>
       <div class="try-it"><b>ลองทำ:</b> เขียนโปรแกรมเช็คว่าตัวเลขที่กำหนดเป็นเลขคู่หรือเลขคี่
       (ใบ้: ใช้ <code>number % 2 == 0</code> เช็คว่าหารด้วย 2 ลงตัวไหม เครื่องหมาย % คือหาเศษที่เหลือจากการหาร)</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>int number = 7;
+
+if (number % 2 == 0)
+{
+    Console.WriteLine("เลขคู่");
+}
+else
+{
+    Console.WriteLine("เลขคี่");
+}</pre>
+% คือการหาเศษเหลือจากการหาร ถ้าหารด้วย 2 แล้วเศษเป็น 0 แปลว่าหารลงตัว คือเลขคู่</div></details>
+
+      <div class="idea-box">
+        <b>เลือกได้มากกว่า 2 ทางด้วย else if:</b> ถ้ามีเงื่อนไขมากกว่า "ใช่/ไม่ใช่" ใช้ <code>else if</code>
+        ต่อกันได้เรื่อยๆ
+        <pre>int score = 75;
+
+if (score >= 80)
+{
+    Console.WriteLine("เกรด A");
+}
+else if (score >= 70)
+{
+    Console.WriteLine("เกรด B");
+}
+else if (score >= 60)
+{
+    Console.WriteLine("เกรด C");
+}
+else
+{
+    Console.WriteLine("เกรด D");
+}</pre>
+        คอมพิวเตอร์จะเช็คจากบนลงล่าง เจอเงื่อนไขไหนที่เป็นจริงก่อน ก็ทำตามนั้นแล้วหยุดเช็คอันที่เหลือทันที
+      </div>
+      <div class="idea-box">
+        <b>รวมหลายเงื่อนไขด้วย && และ ||:</b> <code>&&</code> อ่านว่า "และ" (ต้องจริงทั้งคู่)
+        ส่วน <code>||</code> อ่านว่า "หรือ" (จริงแค่อันใดอันหนึ่งก็พอ)
+        <pre>int age = 25;
+bool hasId = true;
+
+if (age >= 18 && hasId)
+{
+    Console.WriteLine("เข้าได้");   // ต้องอายุถึงและมีบัตร ถึงจะเข้าได้
+}</pre>
+      </div>
+      <div class="idea-box">
+        <b>switch — ทางเลือกอื่นเมื่อเทียบค่าเดียวกันหลายแบบ:</b>
+        <pre>string day = "Monday";
+
+switch (day)
+{
+    case "Monday":
+        Console.WriteLine("วันจันทร์");
+        break;
+    case "Tuesday":
+        Console.WriteLine("วันอังคาร");
+        break;
+    default:
+        Console.WriteLine("วันอื่นๆ");
+        break;
+}</pre>
+        อ่านง่ายกว่า if/else if ยาวๆ เมื่อเทียบค่าตัวแปรเดียวกับหลายค่า อย่าลืม <code>break;</code>
+        ท้ายแต่ละ case เพื่อบอกว่าจบเงื่อนไขนั้นแล้ว
+      </div>
+      <div class="try-it"><b>ลองทำอีกอย่าง:</b> เขียนโปรแกรมให้เกรดจากคะแนน (A ถ้า &gt;= 80, B ถ้า &gt;= 60,
+      C ถ้าน้อยกว่านั้น) ตามตัวอย่าง else if ข้างบน แล้วลองเปลี่ยนค่า score หลายๆ ค่าดูว่าผลลัพธ์เปลี่ยนถูกไหม</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>int score = 65;
+
+if (score >= 80)
+{
+    Console.WriteLine("A");
+}
+else if (score >= 60)
+{
+    Console.WriteLine("B");
+}
+else
+{
+    Console.WriteLine("C");
+}</pre></div></details>
     </div>
   </div>
 
@@ -295,8 +578,85 @@ else
         <b>เปรียบเทียบ:</b> เหมือนบอกให้ใครทำ squat 5 ครั้ง แทนที่จะบอกทีละครั้งว่า "squat 1 ครั้ง" ซ้ำ 5 รอบ
         เราแค่บอกครั้งเดียวว่า "ทำ squat 5 ครั้ง" loop ก็ทำหน้าที่แบบนั้น
       </div>
+      <div class="idea-box">
+        <b>while loop — ทำซ้ำโดยไม่รู้จำนวนรอบล่วงหน้า:</b> for loop เหมาะกับตอนที่รู้แน่ชัดว่าจะวนกี่รอบ
+        แต่บางสถานการณ์ไม่รู้จำนวนรอบล่วงหน้า เช่น "ทำไปเรื่อยๆ จนกว่าจะครบเงื่อนไข" ใช้ while แทน
+        <pre>int total = 0;
+int i = 1;
+
+while (total < 20)
+{
+    total = total + i;
+    i++;
+}
+
+Console.WriteLine(total);</pre>
+        อ่านว่า "ทำซ้ำไปเรื่อยๆ ตราบใดที่ total ยังน้อยกว่า 20" คอมพิวเตอร์จะเช็คเงื่อนไขก่อนทุกรอบ
+        ถ้าเงื่อนไขเป็นเท็จเมื่อไหร่ก็หยุดทันที
+      </div>
+      <div class="idea-box">
+        <b>break และ continue — ควบคุม loop เพิ่มเติม:</b>
+        <pre>for (int i = 1; i <= 10; i++)
+{
+    if (i == 5)
+    {
+        break;          // หยุด loop ทันทีเมื่อ i เท่ากับ 5
+    }
+    Console.WriteLine(i);
+}
+// ผลลัพธ์: print 1, 2, 3, 4 แล้วหยุด (ไม่ถึง 5)</pre>
+        <code>break</code> คือ "หยุด loop ทั้งหมดทันที" ส่วน <code>continue</code> คือ "ข้ามรอบนี้ไปทำรอบถัดไปเลย"
+        โดยไม่หยุดทั้ง loop
+      </div>
       <div class="try-it"><b>ลองทำ:</b> เขียน loop ที่ print ตัวเลข 1 ถึง 10 แต่ให้ print เฉพาะเลขคู่เท่านั้น
       (รวมความรู้จากหัวข้อ 6 กับ 7 เข้าด้วยกัน)</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>for (int i = 1; i <= 10; i++)
+{
+    if (i % 2 == 0)
+    {
+        Console.WriteLine(i);
+    }
+}</pre>
+ผลลัพธ์คือ 2, 4, 6, 8, 10 (รวม if จากหัวข้อ 6 เข้ากับ for loop จากหัวข้อ 7)</div></details>
+
+      <div class="idea-box">
+        <b>while — วนซ้ำตราบใดที่เงื่อนไขยังจริง:</b> ใช้เมื่อไม่รู้แน่ชัดว่าจะวนกี่รอบ (ต่างจาก for
+        ที่มักรู้จำนวนรอบล่วงหน้า)
+        <pre>int count = 1;
+
+while (count <= 5)
+{
+    Console.WriteLine("รอบที่ " + count);
+    count++;   // ต้องเพิ่มค่าเอง ไม่งั้นจะวนไม่จบ (infinite loop)
+}</pre>
+        <b>ข้อควรระวัง:</b> ถ้าลืมเขียน <code>count++</code> เงื่อนไข <code>count <= 5</code>
+        จะเป็นจริงตลอดไป โปรแกรมจะวนไม่หยุดเรียกว่า infinite loop ต้องกด Ctrl+C เพื่อหยุดเอง
+      </div>
+      <div class="idea-box">
+        <b>break และ continue:</b> <code>break</code> คือ "หยุดวนทันที ออกจาก loop เลย"
+        ส่วน <code>continue</code> คือ "ข้ามรอบนี้ไปทำรอบถัดไปเลย ไม่ต้องทำที่เหลือในรอบนี้"
+        <pre>for (int i = 1; i <= 10; i++)
+{
+    if (i == 5)
+    {
+        break;   // พอ i ครบ 5 หยุด loop ทันที ไม่วนต่อจนถึง 10
+    }
+    Console.WriteLine(i);
+}</pre>
+      </div>
+      <div class="try-it"><b>ลองทำอีกอย่าง:</b> เขียน while loop ที่บวกเลข 1+2+3+... ไปเรื่อยๆ จนกว่าผลรวม
+      จะเกิน 50 แล้ว print ว่าผลรวมสุดท้ายคือเท่าไหร่ และบวกไปกี่รอบถึงเกิน</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>int sum = 0;
+int number = 1;
+
+while (sum <= 50)
+{
+    sum = sum + number;
+    number++;
+}
+
+Console.WriteLine(sum);</pre>
+วนบวกไปเรื่อยๆ จนกว่า sum จะเกิน 50 แล้วหยุดเอง ไม่ต้องกำหนดจำนวนรอบล่วงหน้าแบบ for</div></details>
     </div>
   </div>
 
@@ -329,6 +689,41 @@ int result = Add(3, 5);   // result จะเก็บค่า 8</pre>
       </div>
       <div class="try-it"><b>ลองทำ:</b> เขียน method ชื่อ <code>IsEven</code> ที่รับตัวเลข 1 ตัว
       แล้ว return ค่า true/false ว่าเป็นเลขคู่ไหม (เอาความรู้จากหัวข้อ 6 มาใช้)</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>static bool IsEven(int number)
+{
+    return number % 2 == 0;
+}
+
+Console.WriteLine(IsEven(4));   // True
+Console.WriteLine(IsEven(7));   // False</pre></div></details>
+
+      <div class="idea-box">
+        <b>รับหลาย parameter พร้อมกัน:</b> method รับ parameter กี่ตัวก็ได้ คั่นด้วยเครื่องหมายจุลภาค
+        <pre>static decimal CalculateTotal(int quantity, decimal unitPrice, decimal discount)
+{
+    decimal subtotal = quantity * unitPrice;
+    return subtotal - discount;
+}
+
+decimal total = CalculateTotal(3, 100, 20);   // ส่งค่าตามลำดับ: 3, 100, 20</pre>
+        เวลาเรียกใช้ ต้องส่งค่าตามลำดับและจำนวนให้ตรงกับที่ method กำหนดไว้เป๊ะ
+      </div>
+      <div class="idea-box">
+        <b>parameter ที่มีค่าเริ่มต้น (optional parameter):</b> กำหนดค่าเริ่มต้นไว้ได้ ถ้าไม่ส่งค่ามาก็ใช้ค่านั้นแทน
+        <pre>static void Greet(string name, string greeting = "สวัสดี")
+{
+    Console.WriteLine(greeting + " " + name);
+}
+
+Greet("Somchai");              // ใช้ค่าเริ่มต้น พิมพ์ "สวัสดี Somchai"
+Greet("Somchai", "หวัดดี");     // ส่งค่าเอง พิมพ์ "หวัดดี Somchai"</pre>
+      </div>
+      <div class="idea-box">
+        <b>ทำไมต้องแยกงานเป็น method:</b> นอกจากลดโค้ดซ้ำ ยังช่วยให้อ่านโปรแกรมง่ายขึ้นมาก
+        เพราะแต่ละ method มีชื่อบอกว่า "ทำอะไร" คนอ่านโค้ดไม่ต้องไล่อ่านทุกบรรทัดก็รู้ภาพรวมได้
+        นี่คือจุดเริ่มต้นของสิ่งที่เรียกว่า "โครงสร้างโปรแกรมที่ดี" (good code structure) — แบ่งงานใหญ่
+        เป็นงานย่อยที่แต่ละอันทำหน้าที่เดียวชัดเจน
+      </div>
     </div>
   </div>
 
@@ -357,6 +752,63 @@ Console.WriteLine(customer1.Name);</pre>
       </div>
       <div class="try-it"><b>ลองทำ:</b> สร้าง class ชื่อ <code>Product</code> มี field ชื่อ Name และ Price
       แล้วสร้างสินค้า 2 ชิ้นขึ้นมาจริง print ราคาทั้งสองออกมา</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>class Product
+{
+    public string Name;
+    public decimal Price;
+}
+
+Product item1 = new Product();
+item1.Name = "เสื้อยืด";
+item1.Price = 200;
+
+Product item2 = new Product();
+item2.Name = "กางเกง";
+item2.Price = 350;
+
+Console.WriteLine(item1.Price);   // 200
+Console.WriteLine(item2.Price);   // 350</pre></div></details>
+
+      <div class="idea-box">
+        <b>class มี method ข้างในได้ด้วย:</b> นอกจากเก็บข้อมูล class ยังใส่ "การกระทำ" ที่เกี่ยวกับข้อมูลนั้นได้
+        <pre>class Product
+{
+    public string Name;
+    public decimal Price;
+
+    // method ที่อยู่ใน class เรียกว่า "การกระทำของ object นี้"
+    public void ApplyDiscount(decimal percent)
+    {
+        Price = Price - (Price * percent / 100);
+    }
+}
+
+Product item = new Product();
+item.Name = "เสื้อยืด";
+item.Price = 200;
+item.ApplyDiscount(10);          // ลดราคา 10%
+Console.WriteLine(item.Price);   // แสดง 180</pre>
+        สังเกตว่า <code>ApplyDiscount</code> ทำงานกับ <code>Price</code> ของ item ตัวนั้นโดยเฉพาะ
+        ถ้ามีสินค้าอีกชิ้นก็มี Price ของตัวเองแยกกัน ไม่ปนกัน
+      </div>
+      <div class="idea-box">
+        <b>Constructor — กำหนดค่าตอนสร้างเลย:</b> แทนที่จะสร้างแล้วมากำหนดค่าทีละบรรทัด (แบบตัวอย่างข้างบน)
+        เขียน constructor ให้กำหนดค่าตอนสร้างได้เลยในบรรทัดเดียว
+        <pre>class Product
+{
+    public string Name;
+    public decimal Price;
+
+    // constructor — method พิเศษชื่อเดียวกับ class ทำงานตอนสร้าง object ใหม่
+    public Product(string name, decimal price)
+    {
+        Name = name;
+        Price = price;
+    }
+}
+
+Product item = new Product("เสื้อยืด", 200);   // กำหนดค่าตอนสร้างเลย บรรทัดเดียวจบ</pre>
+      </div>
     </div>
   </div>
 
@@ -385,6 +837,49 @@ customers.Add(customer2);</pre>
       </div>
       <div class="try-it"><b>ลองทำ:</b> สร้าง List ของ Product จากหัวข้อ 9 ใส่สินค้า 3 ชิ้น
       แล้วใช้ foreach print ชื่อและราคาของทุกชิ้นออกมา — ถือว่าจบ Part B แล้ว!</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>List&lt;Product&gt; products = new List&lt;Product&gt;();
+products.Add(new Product { Name = "เสื้อยืด", Price = 200 });
+products.Add(new Product { Name = "กางเกง", Price = 350 });
+products.Add(new Product { Name = "หมวก", Price = 150 });
+
+foreach (var product in products)
+{
+    Console.WriteLine(product.Name + " — " + product.Price + " บาท");
+}</pre></div></details>
+
+      <div class="idea-box">
+        <b>CRUD กับ List — คำที่จะได้ยินบ่อยมากตอนเขียนเว็บแอป:</b> CRUD ย่อมาจาก Create (สร้าง),
+        Read (อ่าน), Update (แก้ไข), Delete (ลบ) เป็น 4 การกระทำพื้นฐานที่สุดที่ทำกับข้อมูลเกือบทุกระบบ
+        ลองดูว่าแต่ละอย่างเขียนกับ List ยังไง:
+        <pre>List&lt;string&gt; fruits = new List&lt;string&gt;();
+
+// Create — เพิ่มของใหม่เข้าไป
+fruits.Add("แอปเปิ้ล");
+fruits.Add("กล้วย");
+
+// Read — อ่านค่าออกมาดู (index เริ่มนับจาก 0 เสมอ)
+Console.WriteLine(fruits[0]);   // แสดง "แอปเปิ้ล" (ตัวแรกคือ index 0)
+
+// Update — แก้ไขค่าที่ตำแหน่งเดิม
+fruits[0] = "ส้ม";              // เปลี่ยนตัวแรกจาก "แอปเปิ้ล" เป็น "ส้ม"
+
+// Delete — ลบออกจาก List
+fruits.Remove("กล้วย");         // ลบ "กล้วย" ออก</pre>
+        นี่คือแนวคิดเดียวกันเป๊ะกับที่จะเจอตอนทำเว็บแอปจริงใน Part D แค่ตอนนั้นข้อมูลจะเก็บถาวรในฐานข้อมูล
+        แทนที่จะเก็บชั่วคราวใน List ธรรมดา
+      </div>
+      <div class="idea-box">
+        <b>method อื่นของ List ที่ใช้บ่อย:</b>
+        <pre>fruits.Count            // จำนวนของทั้งหมดใน List (ไม่ใช่ index สุดท้าย)
+fruits.Contains("ส้ม")  // เช็คว่ามี "ส้ม" อยู่ใน List ไหม ได้ true/false
+fruits.IndexOf("ส้ม")   // หาว่า "ส้ม" อยู่ตำแหน่ง (index) ไหน ถ้าไม่เจอได้ -1
+fruits.Sort()           // เรียงลำดับตามตัวอักษร/ตัวเลข</pre>
+      </div>
+      <div class="idea-box">
+        <b>ระวังเรื่อง index เกินขอบเขต:</b> ถ้า List มี 3 ตัว (index 0, 1, 2) แล้วพยายามเข้าถึง
+        <code>fruits[3]</code> จะ error ทันที เพราะไม่มี index นั้นอยู่จริง เป็น error ที่เจอบ่อยมาก
+        เวลาทำงานกับ List ควรเช็ค <code>fruits.Count</code> ก่อนเสมอถ้าไม่แน่ใจว่ามีของอยู่กี่ชิ้น
+      </div>
     </div>
   </div>
 
@@ -449,6 +944,9 @@ code .</pre>
       จะเห็นหน้าเว็บตัวอย่างขึ้นมา นี่คือเว็บแอปตัวแรกของคุณที่รันสำเร็จแล้ว</p>
       <div class="try-it"><b>ลองทำ:</b> เปิดดูไฟล์ในโฟลเดอร์ Pages/ มีกี่หน้า แต่ละหน้าชื่ออะไรบ้าง
       ไม่ต้องเข้าใจเนื้อหาข้างใน แค่สำรวจโครงสร้างก่อน</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">ไฟล์ที่เจอตามปกติในโฟลเดอร์ Pages/ ของ template webapp: <code>Index.cshtml</code> (หน้าแรก),
+<code>Privacy.cshtml</code> (หน้านโยบายตัวอย่าง), แต่ละไฟล์ .cshtml จะมีไฟล์ .cshtml.cs คู่กันเสมอ
+และมีโฟลเดอร์ <code>Shared/</code> เก็บไฟล์ที่ใช้ร่วมกันหลายหน้า เช่น _Layout.cshtml</div></details>
     </div>
   </div>
 
@@ -468,6 +966,11 @@ code .</pre>
         เลยยังไม่จำเป็นต้องมีไฟล์คู่ จะเริ่มใช้ไฟล์คู่ในหัวขัดถัดไปที่ต้องมีข้อมูลจาก C# มาแสดง
       </div>
       <div class="try-it"><b>ลองทำ:</b> แก้ข้อความในไฟล์ Greeting.cshtml เป็นชื่อตัวเอง แล้วรีเฟรชหน้าเว็บดูผล</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>@page
+
+&lt;h1&gt;สวัสดีจาก Somchai&lt;/h1&gt;</pre>
+แค่แก้ข้อความในเครื่องหมาย &lt;h1&gt; แล้ว save ไฟล์ รีเฟรชหน้าเว็บก็เห็นผลทันที (ถ้ารันด้วย dotnet watch run
+จะรีเฟรชให้อัตโนมัติโดยไม่ต้องกดรีเฟรชเอง)</div></details>
     </div>
   </div>
 
@@ -504,6 +1007,13 @@ public class ProductsModel : PageModel
       <p><code>OnGet()</code> — method พิเศษที่ ASP.NET Core เรียกให้อัตโนมัติทุกครั้งที่มีคนเปิดหน้านี้</p>
       <div class="try-it"><b>ลองทำ:</b> เพิ่มสินค้าชิ้นที่ 3 ใน OnGet() แล้วรีเฟรชหน้าเว็บ ดูว่า list
       ที่แสดงมีครบ 3 ชิ้นไหม (ต้องสร้าง class Product ไว้ก่อนตามหัวข้อ 9 ด้วย)</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>public void OnGet()
+{
+    Products.Add(new Product { Name = "สินค้า A", Price = 100 });
+    Products.Add(new Product { Name = "สินค้า B", Price = 250 });
+    Products.Add(new Product { Name = "สินค้า C", Price = 300 });
+}</pre>
+รีเฟรชหน้าเว็บ list ที่แสดงควรมีครบ 3 รายการ ต้องมี class Product (มี Name และ Price) นิยามไว้ก่อนแล้ว</div></details>
     </div>
   </div>
 
@@ -544,6 +1054,10 @@ public class CreateModel : PageModel
       ส่วน OnPost ทำงานตอน "กดปุ่ม submit ฟอร์ม"</p>
       <div class="try-it"><b>ลองทำ:</b> ลองกรอกฟอร์มแล้วกด submit เปิด terminal ดูว่าข้อความ
       "ได้รับสินค้า: ..." ปรากฏขึ้นมาพร้อมชื่อที่กรอกไปจริงไหม</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">ไม่มีโค้ดเพิ่ม เป็นการทดสอบของเดิม — ถ้ากรอกชื่อ "เสื้อยืด" แล้วกด submit ควรเห็นข้อความ
+<pre>ได้รับสินค้า: เสื้อยืด</pre>
+ปรากฏใน terminal ที่รัน dotnet watch run อยู่ ถ้าไม่เห็นข้อความ ให้เช็คว่า asp-for ในฟอร์มผูกกับ
+property ชื่อ NewProduct.Name ตรงกับใน .cshtml.cs หรือไม่</div></details>
     </div>
   </div>
 
@@ -615,6 +1129,28 @@ dotnet ef database update</pre>
       </div>
       <div class="try-it"><b>ลองทำ:</b> ทำให้โปรเจกต์ฝึกมีครบ 4 อย่าง (Create, Read, Update, Delete)
       ผ่านหน้าเว็บจริง ต่อกับฐานข้อมูล SQLite ที่ตั้งไว้ ใช้เวลาหัวข้อนี้นานกว่าหัวข้ออื่น เพราะเป็นการรวมทุกอย่างเข้าด้วยกัน</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">โจทย์นี้ใหญ่และรวมทุกอย่างจาก Part D เข้าด้วยกัน แนวทางคร่าวๆ:
+<pre>// Read — แสดง list (ทำแล้วในหัวข้อ 15/17)
+public async Task OnGetAsync() { Products = await _db.Products.ToListAsync(); }
+
+// Create — ฟอร์มเพิ่มใหม่ (ทำแล้วในหัวข้อ 16)
+public async Task OnPostAsync() { _db.Products.Add(NewProduct); await _db.SaveChangesAsync(); }
+
+// Update — โหลดค่าเดิมมาก่อน แล้วบันทึกทับ
+public async Task OnGetAsync(int id) { EditProduct = await _db.Products.FindAsync(id); }
+public async Task OnPostAsync()
+{
+    _db.Products.Update(EditProduct);
+    await _db.SaveChangesAsync();
+}
+
+// Delete — ลบตาม id (ทำแล้วในหัวข้อ 18)
+public async Task OnPostDeleteAsync(int id)
+{
+    var product = await _db.Products.FindAsync(id);
+    if (product is not null) { _db.Products.Remove(product); await _db.SaveChangesAsync(); }
+}</pre>
+ถ้าทำครบ 4 อย่างและทดสอบผ่านหน้าเว็บได้จริง ถือว่าจบ Part D แล้ว</div></details>
     </div>
   </div>
 
