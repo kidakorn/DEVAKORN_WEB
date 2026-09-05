@@ -1184,6 +1184,16 @@ public async Task OnPostDeleteAsync(int id)
       <p><code>@bind="keyword"</code> คือการผูกค่าในช่อง input เข้ากับตัวแปร keyword โดยอัตโนมัติ
       พิมพ์อะไรลงไป ตัวแปรก็เปลี่ยนทันที ทำให้ <code>FilteredProducts</code> คำนวณใหม่และหน้าจอกรองผลลัพธ์ให้เอง
       โดยไม่ต้อง reload หน้าเลย</p>
+      <div class="try-it"><b>ลองทำ:</b> เพิ่มสินค้าอีก 1 ชิ้นใน <code>products</code> (เช่น "ส้ม")
+      แล้วลองพิมพ์คำค้นหาในช่อง input ดูว่า list กรองผลลัพธ์แบบสดจริงโดยไม่ต้องกดปุ่มอะไรเลยไหม</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>private List&lt;Product&gt; products = new()
+{
+    new Product { Name = "แอปเปิ้ล" },
+    new Product { Name = "กล้วย" },
+    new Product { Name = "ส้ม" },
+};</pre>
+เพิ่มแค่บรรทัดเดียวใน list เดิม ไม่ต้องแก้ส่วนอื่น พอพิมพ์ "ส้ม" หรือแม้แต่ "ส" ในช่อง input
+list ด้านล่างจะกรองเหลือแค่รายการที่ชื่อมีคำนั้นอยู่ทันที เพราะ FilteredProducts คำนวณใหม่ทุกครั้งที่ keyword เปลี่ยน</div></details>
       <div class="idea-box">
         <b>ถือว่าครบพื้นฐานแล้ว:</b> ถ้าทำมาถึงหัวข้อนี้ได้ แปลว่าเข้าใจตั้งแต่ "โปรแกรมคืออะไร" ไปจนถึง
         สร้างเว็บแอปเต็มรูปแบบด้วย ASP.NET Core แล้ว ขั้นต่อไปคือลองทำโปรเจกต์ฝึกของตัวเองที่ไม่ใช่ตัวอย่างในเอกสารนี้

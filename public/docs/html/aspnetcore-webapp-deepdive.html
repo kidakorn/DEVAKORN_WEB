@@ -87,6 +87,20 @@
   }
   .exercise b{ color:var(--ok); }
 
+  details.answer{
+    margin-top:8px; background:#f6f8fa; border:1px solid var(--ok); border-radius:2px; font-size:13px;
+  }
+  details.answer summary{
+    cursor:pointer; padding:8px 12px; font-family:var(--mono); font-size:12px; color:var(--ok);
+    font-weight:600; list-style:none; user-select:none;
+  }
+  details.answer summary::-webkit-details-marker{ display:none; }
+  details.answer summary::before{ content:"▸ "; }
+  details.answer[open] summary::before{ content:"▾ "; }
+  details.answer[open] summary{ border-bottom:1px solid var(--line); }
+  details.answer .answer-body{ padding:10px 14px 12px; }
+  details.answer .answer-body pre{ margin:6px 0; }
+
   .pitfall{
     background:var(--warn-soft); border-left:3px solid var(--warn); padding:12px 14px; font-size:13.5px; margin-top:12px;
   }
@@ -217,6 +231,17 @@
         <b>แบบฝึกหัด:</b> แก้ _Layout.cshtml ของโปรเจกต์ฝึกให้มีเมนูลิงก์ไปหน้า Products และ Orders
         แล้วแยกการ์ดแสดงสินค้าออกเป็น Partial View ตามตัวอย่าง
       </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+เพิ่มลิงก์ในส่วน nav ของ _Layout.cshtml:
+<pre>&lt;nav&gt;
+    &lt;a asp-page="/Index"&gt;หน้าแรก&lt;/a&gt;
+    &lt;a asp-page="/Products/Index"&gt;สินค้า&lt;/a&gt;
+    &lt;a asp-page="/Orders/Index"&gt;ออเดอร์&lt;/a&gt;
+&lt;/nav&gt;</pre>
+สร้างไฟล์ Pages/Shared/_ProductCard.cshtml ตามตัวอย่างในเนื้อหา แล้วเปลี่ยนโค้ดที่ foreach แสดงสินค้าเดิม
+(ที่เคย print ด้วย @foreach ตรงๆ) ให้เรียก <code>&lt;partial name="_ProductCard" model="product" /&gt;</code> แทน
+ผลลัพธ์ควรแสดงผลเหมือนเดิมทุกประการ ต่างแค่โค้ดถูกแยกไฟล์ออกมา
+</div></details>
     </div>
   </div>
 
@@ -287,6 +312,16 @@
         <b>แบบฝึกหัด:</b> สร้างหน้า Detail ที่รับ id จาก URL ตามตัวอย่าง แล้วลิงก์จากหน้า list สินค้า
         ไปหน้า Detail ของแต่ละชิ้น
       </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+ในหน้า list สินค้า เพิ่มลิงก์ไปหน้า Detail พร้อมส่ง id:
+<pre>@foreach (var product in Model.Products)
+{
+    &lt;a asp-page="/Products/Detail" asp-route-id="@product.Id"&gt;@product.Name&lt;/a&gt;
+}</pre>
+<code>asp-route-id</code> คือ Tag Helper ที่เติมค่า id ต่อท้าย URL ให้อัตโนมัติ ตรงกับ <code>{id:int}</code>
+ที่ประกาศไว้ใน @page ของหน้า Detail พอคลิกลิงก์จะไปที่ URL เช่น /Products/Detail/3 แล้ว OnGetAsync(int id)
+จะได้ id เท่ากับ 3 ไปดึงข้อมูลสินค้าตัวนั้นมาแสดง
+</div></details>
     </div>
   </div>
 
@@ -358,6 +393,23 @@
         <b>แบบฝึกหัด:</b> เพิ่ม Data Annotation ให้ Model Product ครบทุก field ที่เหมาะสม
         แล้วทดสอบ submit ฟอร์มโดยเว้นช่องชื่อว่างไว้ ดูว่าข้อความ error แสดงถูกต้องไหม
       </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+<pre>public class Product
+{
+    public int Id { get; set; }
+
+    [Required(ErrorMessage = "กรุณากรอกชื่อสินค้า")]
+    [StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [Range(1, 1000000, ErrorMessage = "ราคาต้องมากกว่า 0")]
+    public decimal Price { get; set; }
+}</pre>
+ถ้าเว้นช่องชื่อว่างแล้ว submit ต้องเห็นข้อความ "กรุณากรอกชื่อสินค้า" ปรากฏใต้ช่อง input โดยที่หน้าเว็บ
+"ไม่ reload" เลยด้วยซ้ำ (เพราะ client-side validation ดักไว้ก่อนส่งจริง) ถ้ายังไม่เห็นข้อความ error
+ให้เช็คว่าใส่ <code>&lt;span asp-validation-for="..."&gt;</code> คู่กับทุก input และมี
+<code>_ValidationScriptsPartial</code> อยู่ท้ายไฟล์แล้วหรือยัง
+</div></details>
     </div>
   </div>
 
@@ -429,6 +481,20 @@ foreach (var order in orders)
         <b>แบบฝึกหัด:</b> เพิ่ม Model Customer และผูกกับ Order ตามตัวอย่าง สร้าง migration ใหม่
         แล้วทำหน้า list ออเดอร์ที่แสดงชื่อลูกค้าเจ้าของแต่ละออเดอร์ด้วย
       </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+เพิ่ม DbSet ให้ AppDbContext ก่อน:
+<pre>public DbSet&lt;Customer&gt; Customers => Set&lt;Customer&gt;();</pre>
+สร้าง migration:
+<pre>dotnet ef migrations add AddCustomerOrderRelation
+dotnet ef database update</pre>
+ใน PageModel ของหน้า list ออเดอร์ ต้องมี Include เสมอ ไม่งั้น Customer จะเป็น null:
+<pre>public async Task OnGetAsync()
+{
+    Orders = await _db.Orders.Include(o =&gt; o.Customer).ToListAsync();
+}</pre>
+แล้วในหน้า .cshtml แสดงด้วย <code>@order.Customer?.Name</code> (ใส่ <code>?</code> กันไว้เผื่อกรณี
+ลืม Include หรือข้อมูลลูกค้าถูกลบไปแล้วจริงๆ จะได้ไม่ error ทันที)
+</div></details>
     </div>
   </div>
 
@@ -492,6 +558,19 @@ public class ReportsModel : PageModel
         <b>แบบฝึกหัด:</b> เพิ่ม Identity เข้าโปรเจกต์ฝึก ทดลอง register ผู้ใช้ใหม่ 1 คน login เข้าใช้งาน
         แล้วใส่ <code>[Authorize]</code> ที่หน้า Create สินค้า ทดสอบว่าคนที่ยังไม่ login เข้าหน้านั้นไม่ได้จริง
       </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+ติดตั้งและตั้งค่าตามตัวอย่างในเนื้อหา จากนั้นเปิด URL <code>/Identity/Account/Register</code>
+(หน้านี้มาให้พร้อมกับ AddDefaultIdentity โดยไม่ต้องสร้างเอง) กรอกอีเมลและรหัสผ่านเพื่อสมัคร
+จากนั้นเพิ่ม attribute บนไฟล์ Create.cshtml.cs:
+<pre>[Authorize]
+public class CreateModel : PageModel
+{
+    // ...
+}</pre>
+ทดสอบโดยเปิด browser แบบ Incognito/Private (เพื่อไม่ให้มี session login เดิมค้างอยู่) แล้วพิมพ์ URL
+ของหน้า Create ตรงๆ ควรถูก redirect ไปหน้า login อัตโนมัติ ถ้ายังเข้าได้ตรงๆ แปลว่าลืมใส่
+<code>app.UseAuthentication()</code> ก่อน <code>app.UseAuthorization()</code> ใน Program.cs
+</div></details>
     </div>
   </div>
 
@@ -572,6 +651,16 @@ public class ReportsModel : PageModel
         <b>แบบฝึกหัด:</b> แปลงหน้า list สินค้าให้แยกเป็น component ย่อย ProductRow ตามตัวอย่าง
         พร้อมปุ่มลบที่ยิง event กลับไปหา component แม่
       </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+สร้างไฟล์ ProductRow.razor และ ProductList.razor ตามตัวอย่างในเนื้อหาทุกประการ จุดที่มักพลาดบ่อยคือ
+ลืมประกาศ <code>[Parameter]</code> หน้า property ที่รับค่าจากแม่:
+<pre>@code {
+    [Parameter] public Product Product { get; set; } = default!;
+    [Parameter] public EventCallback&lt;int&gt; OnDelete { get; set; }
+}</pre>
+ถ้าลืม <code>[Parameter]</code> จะได้ error ตอน compile ทันทีว่า attribute ไม่ตรงกับที่ component แม่ส่งมา
+ทดสอบโดยกดปุ่มลบที่แถวใดแถวหนึ่ง สินค้าแถวนั้นควรหายไปจากหน้าจอทันทีโดยไม่ reload หน้าเลย
+</div></details>
     </div>
   </div>
 
@@ -633,6 +722,27 @@ public class ReportsModel : PageModel
         <b>แบบฝึกหัด:</b> เพิ่ม try/catch ในทุก OnPost ที่บันทึกข้อมูลลงฐานข้อมูลในโปรเจกต์ฝึก
         พร้อม log error เมื่อเกิดปัญหา
       </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+เพิ่ม ILogger เข้า constructor ของ PageModel ที่มี OnPost ทุกไฟล์ ตามตัวอย่างในเนื้อหา แล้วครอบโค้ด
+บันทึกข้อมูลเดิมด้วย try/catch:
+<pre>public async Task&lt;IActionResult&gt; OnPostAsync()
+{
+    try
+    {
+        _db.Products.Add(NewProduct);
+        await _db.SaveChangesAsync();
+        return RedirectToPage("Index");
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "บันทึกสินค้าไม่สำเร็จ");
+        ModelState.AddModelError("", "เกิดข้อผิดพลาด กรุณาลองใหม่");
+        return Page();
+    }
+}</pre>
+ทดสอบโดยลองปิด SQLite/SQL Server ไม่ให้เชื่อมต่อได้ชั่วคราว (เช่น เปลี่ยนชื่อไฟล์ database ทิ้งไว้)
+แล้วลอง submit ฟอร์ม ควรเห็นข้อความ error ที่เป็นมิตร ไม่ใช่หน้า error สีเหลืองของ .NET ที่โชว์ stack trace เต็ม
+</div></details>
     </div>
   </div>
 
@@ -672,6 +782,21 @@ dotnet user-secrets set "ConnectionStrings:Default" "Server=...;Password=..."</p
         <p>ได้โฟลเดอร์ <code>publish</code> ที่มีไฟล์พร้อมนำไปวางบน server จริง (IIS, Docker, หรือ hosting อื่น)
         รายละเอียดการตั้งค่า server ปลายทางเป็นหัวข้อเฉพาะทางที่ควรวางแผนแยกอีกเอกสารเมื่อรู้ว่าจะ deploy ไปที่ไหนจริง</p>
       </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> ย้าย connection string ของโปรเจกต์ฝึกออกจาก appsettings.json ไปเก็บด้วย
+        User Secrets แทน แล้วรัน <code>dotnet publish</code> ดูว่าได้โฟลเดอร์ publish ออกมาจริง
+      </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+<pre>dotnet user-secrets init
+dotnet user-secrets set "ConnectionStrings:Default" "Data Source=app.db"</pre>
+ลบบรรทัด connection string ออกจาก appsettings.json (หรือเปลี่ยนเป็นค่าว่าง) โค้ดที่อ่านค่า
+<code>builder.Configuration.GetConnectionString("Default")</code> จะยังทำงานได้ปกติตอน develop
+เพราะ .NET จะไปอ่านจาก User Secrets โดยอัตโนมัติเมื่อ environment เป็น Development จากนั้นรัน
+<pre>dotnet publish -c Release -o ./publish</pre>
+ตรวจว่ามีโฟลเดอร์ publish เกิดขึ้นพร้อมไฟล์ .dll และ appsettings.json (ที่ไม่มี connection string จริงติดไปด้วย
+ปลอดภัยกว่าเดิม)
+</div></details>
     </div>
   </div>
 

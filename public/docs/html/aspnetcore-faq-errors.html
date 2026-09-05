@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASP.NET Core — FAQ Error ที่เจอบ่อยที่สุด</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #4b2f8a;
+    --accent-soft: #e4dcf0;
+    --warn: #8a3a2f;
+    --warn-soft: #f0dcd6;
+    --ok: #2f6b4f;
+    --ok-soft: #dcece2;
+    --code-bg: #1b2430;
+    --code-ink: #e8ecf1;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.65; font-size:15px;
+  }
+  .wrap{ max-width:900px; margin:0 auto; padding:48px 24px 100px; }
+  header{ border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:32px; }
+  .doc-id{ font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:8px; }
+  h1{ font-size:26px; margin:0 0 12px; font-weight:700; }
+  .subtitle{ color:#4a5568; max-width:75ch; font-size:14.5px; }
+
+  nav.toc{
+    background:var(--panel); border:1px solid var(--line); padding:18px 22px; margin-bottom:40px; font-size:13.5px;
+  }
+  nav.toc .toc-title{ font-family:var(--mono); font-size:11.5px; color:#4a5568; margin-bottom:10px; }
+  nav.toc ol{ columns:2; margin:0; padding-left:18px; }
+  nav.toc a{ color:var(--ink); text-decoration:none; border-bottom:1px solid transparent; }
+  nav.toc a:hover{ border-bottom-color:var(--accent); }
+
+  .cat-divider{
+    margin:44px 0 18px; padding:12px 18px; background:var(--ink); color:#fff;
+  }
+  .cat-divider .cat-title{ font-size:15px; font-weight:700; }
+
+  .item{
+    background:var(--panel); border:1px solid var(--line); margin-bottom:14px; scroll-margin-top:20px;
+  }
+  .item-symptom{
+    padding:14px 18px; background:var(--warn-soft); border-bottom:1px solid var(--line);
+    display:flex; gap:10px; align-items:baseline;
+  }
+  .item-symptom .qmark{ font-family:var(--mono); color:var(--warn); font-weight:700; }
+  .item-symptom .symptom-text{ font-weight:600; font-size:14.5px; }
+  .item-body{ padding:16px 18px; }
+  .item-body p{ margin:0 0 10px; }
+  .item-body p:last-child{ margin-bottom:0; }
+
+  .cause-label, .fix-label{
+    font-family:var(--mono); font-size:11px; margin-bottom:4px; font-weight:700;
+  }
+  .cause-label{ color:var(--warn); }
+  .fix-label{ color:var(--ok); }
+
+  pre{
+    margin:6px 0 10px; padding:10px 12px; background:var(--code-bg); color:var(--code-ink);
+    font-family:var(--mono); font-size:12px; overflow-x:auto; line-height:1.55;
+  }
+
+  footer{
+    margin-top:48px; padding-top:16px; border-top:1px solid var(--line);
+    font-size:12px; color:#8a94a3; font-family:var(--mono);
+  }
+
+  @media (max-width: 700px){
+    .wrap{ padding:32px 16px 60px; }
+    h1{ font-size:20px; }
+    nav.toc ol{ columns:1; }
+    pre{ font-size:11px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">FAQ / aspnetcore-common-errors / rev.1</div>
+    <h1>ASP.NET Core — FAQ Error ที่เจอบ่อยที่สุด</h1>
+    <p class="subtitle">
+      รวม error ที่มือใหม่หัดเขียน ASP.NET Core เจอบ่อยที่สุด แต่ละอันบอกอาการ สาเหตุ และวิธีแก้ตรงจุด
+      ถ้าเจอ error ที่ไม่มีในนี้ ลองคัดลอกข้อความ error ไปค้นหาตรงๆ ได้ มักมีคนเจอปัญหาเดียวกันมาก่อนแล้ว
+    </p>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-title">หมวดหมู่</div>
+    <ol>
+      <li><a href="#c1">ตอน Setup / รันครั้งแรก</a></li>
+      <li><a href="#c2">Error ตอนเขียน C# พื้นฐาน</a></li>
+      <li><a href="#c3">Error ในหน้า Razor Pages</a></li>
+      <li><a href="#c4">Error เกี่ยวกับฐานข้อมูล (EF Core)</a></li>
+      <li><a href="#c5">Error ใน Blazor</a></li>
+      <li><a href="#c6">Error ตอน Runtime ทั่วไป</a></li>
+    </ol>
+  </nav>
+
+  <div class="cat-divider" id="c1"><div class="cat-title">ตอน Setup / รันครั้งแรก</div></div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">'dotnet' is not recognized as a command / command not found</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>.NET SDK ยังไม่ได้ติดตั้ง หรือติดตั้งแล้วแต่ terminal ยังไม่รู้จัก path เพราะเปิด terminal ค้างไว้ก่อนติดตั้ง</p>
+      <div class="fix-label">วิธีแก้</div>
+      <p>โหลด SDK จาก dotnet.microsoft.com/download ติดตั้งให้เสร็จ แล้ว<b>ปิด terminal เดิมและเปิดใหม่</b>
+      (สำคัญมาก หลายคนพลาดตรงนี้ ลืมปิด-เปิดใหม่แล้วคิดว่าติดตั้งไม่สำเร็จ)</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Address already in use / port ถูกใช้งานอยู่แล้ว</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>มี terminal เก่าที่รัน dotnet run/watch ค้างอยู่จากรอบก่อน ยังไม่ได้ปิด</p>
+      <div class="fix-label">วิธีแก้</div>
+      <p>หา terminal เก่าที่ยังรันค้างอยู่ กด <code>Ctrl+C</code> เพื่อหยุด หรือปิดหน้าต่าง terminal นั้นทิ้งไปเลย
+      แล้วค่อยรันใหม่ในหน้าต่างเดียว</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">เปิด URL แล้วเจอ "Your connection is not private"</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>certificate สำหรับพัฒนา (development HTTPS certificate) ยังไม่ได้รับความเชื่อถือจากเครื่อง</p>
+      <div class="fix-label">วิธีแก้</div>
+      <p>ลองใช้ URL แบบ http (port 5000) แทน https (port 5001) ไปก่อนสำหรับการฝึก
+      หรือรันคำสั่ง <code>dotnet dev-certs https --trust</code> เพื่อให้เครื่องเชื่อถือ certificate นี้</p>
+    </div>
+  </div>
+
+  <div class="cat-divider" id="c2"><div class="cat-title">Error ตอนเขียน C# พื้นฐาน</div></div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">error CS1002: ; expected</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>ลืมใส่เครื่องหมาย <code>;</code> ท้ายบรรทัดคำสั่ง เป็น error ที่พบบ่อยที่สุดของคนเริ่มเขียน C#</p>
+      <div class="fix-label">วิธีแก้</div>
+      <p>เช็คบรรทัดที่ error บอก (เลขบรรทัดมักตรงหรือใกล้เคียงจุดที่ลืมจริง) เติม <code>;</code> ท้ายบรรทัดนั้น</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">error CS0103: The name 'x' does not exist in the current context</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>ใช้ตัวแปรที่ยังไม่ได้ประกาศ หรือสะกดชื่อตัวแปรผิด (พิมพ์ใหญ่-เล็กไม่ตรงกันก็นับว่าคนละชื่อ เช่น
+      <code>Age</code> กับ <code>age</code> คือคนละตัวแปรกันใน C#)</p>
+      <div class="fix-label">วิธีแก้</div>
+      <p>เช็คว่าประกาศตัวแปรนี้ไว้แล้วหรือยัง (มีบรรทัด <code>int age = ...</code> อยู่ก่อนบรรทัดที่ error ไหม)
+      และเช็คตัวสะกดให้ตรงกันทุกตัวอักษรรวมถึงตัวพิมพ์ใหญ่-เล็ก</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Unhandled exception: System.FormatException ตอนใช้ int.Parse</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>พยายามแปลงข้อความที่ไม่ใช่ตัวเลขให้เป็น int เช่น <code>int.Parse("abc")</code> หรือข้อความมีช่องว่าง/
+      อักขระแปลกปนอยู่</p>
+      <div class="fix-label">วิธีแก้</div>
+      <p>ใช้ <code>int.TryParse</code> แทน ซึ่งไม่ throw error แต่คืนค่า true/false บอกว่าแปลงสำเร็จไหม:</p>
+      <pre>if (int.TryParse(text, out int number))
+{
+    Console.WriteLine(number);
+}
+else
+{
+    Console.WriteLine("ไม่ใช่ตัวเลข");
+}</pre>
+    </div>
+  </div>
+
+  <div class="cat-divider" id="c3"><div class="cat-title">Error ในหน้า Razor Pages</div></div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">404 Not Found ทั้งที่สร้างไฟล์ .cshtml แล้ว</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>ลืมใส่ <code>@page</code> ไว้บรรทัดแรกสุดของไฟล์ หรือชื่อไฟล์/URL ที่พิมพ์ไม่ตรงกับชื่อไฟล์จริง
+      (case-sensitive บางระบบปฏิบัติการ เช่น Linux)</p>
+      <div class="fix-label">วิธีแก้</div>
+      <p>เช็คว่าบรรทัดแรกสุดของไฟล์ .cshtml คือ <code>@page</code> เช็คว่าไฟล์อยู่ในโฟลเดอร์ Pages/ จริง
+      และเช็ค URL ที่พิมพ์ตรงกับชื่อไฟล์ทุกตัวอักษร</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">The model item passed into the dictionary is null / ไม่พบ property ของ Model</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>ไฟล์ .cshtml ไม่มี <code>@model XxxModel</code> หรือชื่อ class ใน @model ไม่ตรงกับ PageModel จริง</p>
+      <div class="fix-label">วิธีแก้</div>
+      <p>เช็คว่ามีบรรทัด <code>@model XxxModel</code> อยู่ใกล้บนสุดของไฟล์ และชื่อ XxxModel ตรงกับชื่อ class
+      ในไฟล์ .cshtml.cs เป๊ะ (รวมตัวพิมพ์ใหญ่-เล็ก)</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">กด submit ฟอร์มแล้วค่าที่กรอกไม่เข้ามาที่ [BindProperty]</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>ชื่อใน <code>asp-for</code> ไม่ตรงกับชื่อ property ที่มี <code>[BindProperty]</code> หรือ form
+      ไม่มี <code>method="post"</code></p>
+      <div class="fix-label">วิธีแก้</div>
+      <p>เช็คว่า <code>&lt;form method="post"&gt;</code> ครบ และ <code>asp-for="NewProduct.Name"</code>
+      สะกดตรงกับ property จริงในไฟล์ .cshtml.cs (รวมถึงชื่อ object ครอบด้านหน้าอย่าง NewProduct ด้วย)</p>
+    </div>
+  </div>
+
+  <div class="cat-divider" id="c4"><div class="cat-title">Error เกี่ยวกับฐานข้อมูล (EF Core)</div></div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">No database provider has been configured / Unable to resolve DbContext</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>ลืมลงทะเบียน DbContext ใน Program.cs หรือลืม inject package provider (เช่น Sqlite, SqlServer)</p>
+      <div class="fix-label">วิธีแก้</div>
+      <pre>builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite("Data Source=app.db"));</pre>
+      <p>ต้องมีบรรทัดนี้อยู่ก่อน <code>builder.Build()</code> เสมอ และต้องติดตั้ง package
+      <code>Microsoft.EntityFrameworkCore.Sqlite</code> (หรือตัวที่ตรงกับ database ที่ใช้) ไว้ก่อน</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">ดึงข้อมูลที่เชื่อมกัน (เช่น order.Customer) ได้ null ตลอด ทั้งที่มีข้อมูลจริง</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>ลืมเขียน <code>.Include()</code> ตอน query เป็น error ที่เจอบ่อยที่สุดในหัวข้อ relationship</p>
+      <div class="fix-label">วิธีแก้</div>
+      <pre>var orders = await db.Orders
+    .Include(o =&gt; o.Customer)   // ต้องมีบรรทัดนี้
+    .ToListAsync();</pre>
+      <p>EF Core ไม่ดึงข้อมูลที่เชื่อมกันมาให้อัตโนมัติ ต้องสั่งชัดเจนทุกครั้งที่ต้องการใช้ข้อมูลนั้น</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Pending model changes / No migrations found ตอนรันโปรเจกต์</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>แก้ Model (เพิ่ม/ลบ field) แล้วแต่ยังไม่ได้สร้าง migration ใหม่ ทำให้โครงสร้างในโค้ดกับใน
+      database จริงไม่ตรงกัน</p>
+      <div class="fix-label">วิธีแก้</div>
+      <pre>dotnet ef migrations add ชื่อที่อธิบายการเปลี่ยนแปลง
+dotnet ef database update</pre>
+      <p>ต้องรันสองบรรทัดนี้ทุกครั้งหลังแก้โครงสร้าง Model (เพิ่ม field, เปลี่ยน type, เพิ่ม relationship ฯลฯ)</p>
+    </div>
+  </div>
+
+  <div class="cat-divider" id="c5"><div class="cat-title">Error ใน Blazor</div></div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">แก้ค่าตัวแปรแล้วหน้าจอไม่อัพเดทให้</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>แก้ค่าจากที่ที่ Blazor ไม่รู้ว่าต้องวาดใหม่ (เช่น callback จาก JavaScript, Timer, event ที่ไม่ใช่ของ Blazor เอง)</p>
+      <div class="fix-label">วิธีแก้</div>
+      <pre>private void OnSomeExternalEvent()
+{
+    someValue = newValue;
+    StateHasChanged();   // สั่งให้วาด UI ใหม่ด้วยตัวเอง
+}</pre>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Object reference not set to an instance of an object ใน component</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>พยายามแสดงข้อมูลก่อนที่ <code>OnInitializedAsync</code> จะโหลดข้อมูลเสร็จ (component render
+      ครั้งแรกก่อนข้อมูลจะมาถึง)</p>
+      <div class="fix-label">วิธีแก้</div>
+      <pre>@if (products is null)
+{
+    &lt;p&gt;กำลังโหลด...&lt;/p&gt;
+}
+else
+{
+    @foreach (var p in products) { &lt;p&gt;@p.Name&lt;/p&gt; }
+}</pre>
+      <p>เช็คว่าข้อมูล null หรือยังก่อนแสดงผลเสมอ โดยเฉพาะข้อมูลที่โหลดจากฐานข้อมูลแบบ async</p>
+    </div>
+  </div>
+
+  <div class="cat-divider" id="c6"><div class="cat-title">Error ตอน Runtime ทั่วไป</div></div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Object reference not set to an instance of an object (NullReferenceException)</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>พยายามเข้าถึง property ของตัวแปรที่เป็น null เช่น หาสินค้าด้วย id ที่ไม่มีอยู่จริง แล้วเอา
+      ผลลัพธ์ (ซึ่งเป็น null) ไปใช้ต่อทันทีโดยไม่เช็คก่อน เป็น error ที่พบบ่อยที่สุดโดยรวม</p>
+      <div class="fix-label">วิธีแก้</div>
+      <pre>var product = await db.Products.FindAsync(id);
+if (product is null)
+{
+    return NotFound();
+}
+// ใช้ product ต่อได้อย่างปลอดภัยตรงนี้</pre>
+      <p>เช็ค null ทุกครั้งหลัง query ข้อมูลที่อาจไม่เจอ ก่อนเอาไปใช้งานต่อเสมอ</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">โปรแกรมค้าง (deadlock) ตอนเรียก method แบบ async</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>เรียก async method แบบผิดวิธี เช่น ใช้ <code>.Result</code> หรือ <code>.Wait()</code>
+      แทนที่จะใช้ <code>await</code> ทำให้ thread รอกันเองแบบวนไม่จบ</p>
+      <div class="fix-label">วิธีแก้</div>
+      <pre>// ผิด — อาจทำให้ deadlock
+var order = GetOrderAsync(id).Result;
+
+// ถูก — ใช้ await เสมอ
+var order = await GetOrderAsync(id);</pre>
+      <p>กฎง่ายๆ: ถ้า method เป็น async ให้ใช้ <code>await</code> เรียกเสมอ อย่าใช้ .Result หรือ .Wait()</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">CORS policy ไม่อนุญาต (ตอนมี frontend แยก เช่น React)</span></div>
+    <div class="item-body">
+      <div class="cause-label">สาเหตุ</div>
+      <p>backend ยังไม่ได้เปิด CORS ให้ origin ของ frontend ที่กำลังเรียกเข้ามา</p>
+      <div class="fix-label">วิธีแก้</div>
+      <pre>builder.Services.AddCors(options =&gt;
+{
+    options.AddPolicy("AllowDev", policy =&gt;
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader().AllowAnyMethod());
+});
+// ...
+app.UseCors("AllowDev");</pre>
+    </div>
+  </div>
+
+  <footer>ถ้าลองแก้ตามนี้แล้วยังไม่หาย ลองคัดลอกข้อความ error ตัวเต็มไปค้นหาตรงๆ ระบุคำว่า "ASP.NET Core" ต่อท้ายด้วยเพื่อผลลัพธ์ที่ตรงประเด็นกว่า</footer>
+
+</div>
+</body>
+</html>

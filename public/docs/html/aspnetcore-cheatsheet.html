@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C# / ASP.NET Core — Cheat Sheet</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #4b2f8a;
+    --accent-soft: #e4dcf0;
+    --code-bg: #1b2430;
+    --code-ink: #e8ecf1;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.5; font-size:14px;
+  }
+  .wrap{ max-width:1100px; margin:0 auto; padding:40px 24px 80px; }
+  header{ border-bottom:2px solid var(--ink); padding-bottom:20px; margin-bottom:28px; }
+  .doc-id{ font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:8px; }
+  h1{ font-size:24px; margin:0 0 8px; font-weight:700; }
+  .subtitle{ color:#4a5568; font-size:13.5px; }
+
+  .grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:16px;
+  }
+  @media (max-width: 800px){ .grid{ grid-template-columns:1fr; } }
+
+  .section{
+    background:var(--panel); border:1px solid var(--line); margin-bottom:16px; break-inside:avoid;
+  }
+  .section-head{
+    padding:10px 16px; background:var(--accent-soft); border-bottom:1px solid var(--line);
+    font-weight:700; font-size:14px;
+  }
+  .section-body{ padding:14px 16px; }
+
+  .row{ margin-bottom:12px; }
+  .row:last-child{ margin-bottom:0; }
+  .row-label{ font-family:var(--mono); font-size:11px; color:var(--accent); margin-bottom:3px; }
+
+  pre{
+    margin:0; padding:8px 10px; background:var(--code-bg); color:var(--code-ink);
+    font-family:var(--mono); font-size:11.5px; overflow-x:auto; line-height:1.5;
+  }
+
+  table.mini{
+    width:100%; border-collapse:collapse; font-size:12.5px;
+  }
+  table.mini th, table.mini td{ border:1px solid var(--line); padding:5px 8px; text-align:left; }
+  table.mini th{ background:#f6f8fa; font-family:var(--mono); font-size:10.5px; color:#4a5568; }
+  table.mini code{ font-size:11.5px; }
+
+  footer{
+    margin-top:32px; padding-top:14px; border-top:1px solid var(--line);
+    font-size:11.5px; color:#8a94a3; font-family:var(--mono);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="doc-id">CHEAT-SHEET / csharp-aspnetcore / rev.1</div>
+    <h1>C# / ASP.NET Core — Cheat Sheet</h1>
+    <p class="subtitle">สรุป syntax ที่ใช้บ่อยที่สุดไว้หน้าเดียว เปิดดูเร็วตอนลืม ไม่มีคำอธิบายยาว (ดูคำอธิบายเต็มได้ในไฟล์ learning plan)</p>
+  </header>
+
+  <div class="grid">
+    <div>
+
+      <div class="section">
+        <div class="section-head">ตัวแปรและชนิดข้อมูล</div>
+        <div class="section-body">
+          <pre>int quantity = 10;
+decimal price = 25.50m;
+string name = "Somchai";
+bool isActive = true;
+var age = 25;              // ให้เดา type เอง
+const double TaxRate = 0.07;
+
+string s = "100";
+int n = int.Parse(s);      // string → int
+string back = n.ToString(); // int → string</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">การตัดสินใจ</div>
+        <div class="section-body">
+          <pre>if (age >= 18) { }
+else if (age >= 13) { }
+else { }
+
+if (age >= 18 && hasId) { }   // และ
+if (isVip || total > 1000) { } // หรือ
+
+switch (day)
+{
+    case "Mon": break;
+    default: break;
+}</pre>
+          <table class="mini">
+            <tr><th>เครื่องหมาย</th><th>ความหมาย</th></tr>
+            <tr><td><code>==</code></td><td>เท่ากับ</td></tr>
+            <tr><td><code>!=</code></td><td>ไม่เท่ากับ</td></tr>
+            <tr><td><code>&gt;= &lt;=</code></td><td>มากกว่า/น้อยกว่าหรือเท่ากับ</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">การทำซ้ำ</div>
+        <div class="section-body">
+          <pre>for (int i = 1; i <= 5; i++) { }
+
+while (count <= 5) { count++; }
+
+foreach (var item in list) { }
+
+if (i == 5) break;      // หยุด loop
+if (i == 5) continue;   // ข้ามรอบนี้</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">Method</div>
+        <div class="section-body">
+          <pre>static int Add(int a, int b)
+{
+    return a + b;
+}
+
+static void Greet(string name, string greeting = "สวัสดี")
+{
+    Console.WriteLine(greeting + " " + name);
+}
+
+async Task&lt;Order&gt; GetOrderAsync(int id)
+{
+    return await db.Orders.FindAsync(id);
+}</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">Class / Interface / DI</div>
+        <div class="section-body">
+          <pre>class Product
+{
+    public string Name;
+    public decimal Price;
+
+    public Product(string name, decimal price)
+    {
+        Name = name; Price = price;
+    }
+
+    public void ApplyDiscount(decimal pct)
+        =&gt; Price -= Price * pct / 100;
+}
+
+interface IRepo { Order? GetById(int id); }
+
+class OrderService
+{
+    private readonly IRepo _repo;
+    public OrderService(IRepo repo) => _repo = repo;
+}</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">List / LINQ</div>
+        <div class="section-body">
+          <pre>List&lt;string&gt; items = new();
+items.Add("A");             // Create
+var first = items[0];       // Read
+items[0] = "B";              // Update
+items.Remove("A");           // Delete
+items.Count;
+items.Contains("B");
+
+var result = await db.Orders
+    .Where(o =&gt; o.Total > 1000)
+    .OrderByDescending(o =&gt; o.CreatedAt)
+    .Take(10)
+    .ToListAsync();</pre>
+        </div>
+      </div>
+
+    </div>
+    <div>
+
+      <div class="section">
+        <div class="section-head">คำสั่ง terminal ที่ใช้บ่อย</div>
+        <div class="section-body">
+          <pre>dotnet --version
+dotnet new webapp -o Name
+dotnet new webapi -o Name
+dotnet run
+dotnet watch run
+dotnet add package ชื่อ
+
+dotnet tool install --global dotnet-ef
+dotnet ef migrations add ชื่อ
+dotnet ef database update
+
+dotnet publish -c Release -o ./publish</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">Razor Pages — ไฟล์คู่</div>
+        <div class="section-body">
+          <pre>@* Xxx.cshtml *@
+@page
+@model XxxModel
+
+&lt;h1&gt;@Model.Title&lt;/h1&gt;
+@foreach (var x in Model.Items) { &lt;p&gt;@x.Name&lt;/p&gt; }
+
+&lt;form method="post"&gt;
+    &lt;input asp-for="NewItem.Name" /&gt;
+    &lt;span asp-validation-for="NewItem.Name"&gt;&lt;/span&gt;
+    &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
+&lt;/form&gt;</pre>
+          <pre>// Xxx.cshtml.cs
+public class XxxModel : PageModel
+{
+    [BindProperty]
+    public Item NewItem { get; set; } = new();
+
+    public void OnGet() { }
+
+    public IActionResult OnPost()
+    {
+        if (!ModelState.IsValid) return Page();
+        return RedirectToPage("Index");
+    }
+
+    public async Task&lt;IActionResult&gt; OnPostDeleteAsync(int id)
+    { /* handler พิเศษ ต้องคู่กับ asp-page-handler="Delete" */ }
+}</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">EF Core — DbContext</div>
+        <div class="section-body">
+          <pre>public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; o) : base(o) { }
+    public DbSet&lt;Product&gt; Products => Set&lt;Product&gt;();
+    public DbSet&lt;Order&gt; Orders => Set&lt;Order&gt;();
+}
+
+// ความสัมพันธ์ one-to-many
+public class Order
+{
+    public int CustomerId { get; set; }
+    public Customer? Customer { get; set; }
+}
+
+// ต้อง Include เสมอ ไม่งั้นได้ null
+var orders = await db.Orders.Include(o =&gt; o.Customer).ToListAsync();</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">Data Annotation (Validation)</div>
+        <div class="section-body">
+          <pre>[Required(ErrorMessage = "กรุณากรอก")]
+[StringLength(100)]
+public string Name { get; set; } = "";
+
+[Range(1, 1000000)]
+public decimal Price { get; set; }
+
+[EmailAddress]
+public string? Email { get; set; }</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">Blazor</div>
+        <div class="section-body">
+          <pre>&lt;input @bind="keyword" @bind:event="oninput" /&gt;
+&lt;button @onclick="HandleClick"&gt;กด&lt;/button&gt;
+
+@code {
+    [Parameter] public Product Item { get; set; } = default!;
+    [Parameter] public EventCallback&lt;int&gt; OnDelete { get; set; }
+    [CascadingParameter] public string User { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await Db.Products.ToListAsync();
+    }
+
+    private void Refresh() => StateHasChanged();
+}</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">Program.cs โครงมาตรฐาน</div>
+        <div class="section-body">
+          <pre>var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();
+builder.Services.AddDbContext&lt;AppDbContext&gt;(o =&gt;
+    o.UseSqlite("Data Source=app.db"));
+builder.Services.AddScoped&lt;IRepo, Repo&gt;();
+
+var app = builder.Build();
+
+app.UseHttpsRedirection();
+app.UseAuthentication();   // ต้องมาก่อน UseAuthorization
+app.UseAuthorization();
+app.MapRazorPages();
+
+app.Run();</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">Attribute ที่ใช้บ่อยใน Web API Controller</div>
+        <div class="section-body">
+          <table class="mini">
+            <tr><th>Attribute</th><th>ใช้ทำอะไร</th></tr>
+            <tr><td><code>[ApiController]</code></td><td>ประกาศ class เป็น API controller</td></tr>
+            <tr><td><code>[Route("api/x")]</code></td><td>กำหนด URL prefix</td></tr>
+            <tr><td><code>[HttpGet("{id}")]</code></td><td>รับ GET พร้อม parameter จาก URL</td></tr>
+            <tr><td><code>[FromQuery]</code></td><td>รับค่าจาก query string</td></tr>
+            <tr><td><code>[FromBody]</code></td><td>รับค่าจาก JSON body</td></tr>
+            <tr><td><code>[Authorize]</code></td><td>ต้อง login ก่อนถึงเข้าได้</td></tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>ดูคำอธิบายละเอียดของแต่ละหัวข้อได้ใน aspnetcore-beginner-plan.html และ aspnetcore-webapp-deepdive.html</footer>
+</div>
+</body>
+</html>
