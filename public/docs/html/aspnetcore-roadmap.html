@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASP.NET Core — Zero to Hero Roadmap</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #4b2f8a;
+    --accent-soft: #e4dcf0;
+    --ok: #2f6b4f;
+    --ok-soft: #dcece2;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.65; font-size:15px;
+  }
+  .wrap{ max-width:880px; margin:0 auto; padding:48px 24px 100px; }
+  header{ border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:36px; }
+  .doc-id{ font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:8px; }
+  h1{ font-size:27px; margin:0 0 12px; font-weight:700; }
+  .subtitle{ color:#4a5568; max-width:75ch; font-size:14.5px; }
+
+  .path{
+    position:relative; padding-left:40px; margin-top:20px;
+  }
+  .path::before{
+    content:""; position:absolute; left:15px; top:8px; bottom:8px; width:2px; background:var(--line);
+  }
+
+  .stage{
+    position:relative; margin-bottom:22px;
+  }
+  .stage-dot{
+    position:absolute; left:-40px; top:0; width:32px; height:32px; border-radius:50%;
+    background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-weight:700; font-size:13px; border:3px solid var(--paper);
+  }
+  .stage-card{
+    background:var(--panel); border:1px solid var(--line); padding:18px 20px;
+  }
+  .stage-filename{
+    font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:6px; word-break:break-all;
+  }
+  .stage-title{ font-size:16.5px; font-weight:700; margin-bottom:8px; }
+  .stage-desc{ font-size:13.5px; color:#374151; margin-bottom:10px; }
+  .stage-meta{
+    display:flex; gap:10px; flex-wrap:wrap; font-size:12px;
+  }
+  .tag{
+    font-family:var(--mono); padding:2px 9px; border-radius:2px; background:#f6f8fa;
+    border:1px solid var(--line); color:#4a5568;
+  }
+  .tag.core{ background:var(--ok-soft); color:var(--ok); border-color:#a8c9b5; }
+  .tag.ref{ background:var(--accent-soft); color:var(--accent); border-color:#c9b8e3; }
+
+  .optional-note{
+    font-size:12.5px; color:#8a94a3; margin-top:6px; font-style:italic;
+  }
+
+  .side-tools{
+    margin-top:52px; padding:20px 22px; background:var(--panel); border:1px solid var(--line);
+  }
+  .side-tools h2{ font-size:16px; margin:0 0 6px; }
+  .side-tools p{ font-size:13.5px; color:#4a5568; margin:0 0 16px; }
+
+  .tool-row{
+    display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+    padding:10px 0; border-top:1px solid var(--line);
+  }
+  .tool-row:first-of-type{ border-top:none; }
+  .tool-name{ font-family:var(--mono); font-size:13px; color:var(--accent); }
+  .tool-desc{ font-size:13px; color:#374151; text-align:right; }
+
+  footer{
+    margin-top:48px; padding-top:16px; border-top:1px solid var(--line);
+    font-size:12px; color:#8a94a3; font-family:var(--mono);
+  }
+
+/* ===== Extra responsive polish ===== */
+table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+table thead, table tbody{ display:table; width:100%; }
+pre, img, svg{ max-width:100%; }
+body{ overflow-x:hidden; }
+
+@media (max-width: 640px){
+  .grid{ grid-template-columns:1fr !important; }
+  .overview-box dl{ grid-template-columns:1fr !important; }
+  .overview-box dt{ margin-top:8px; }
+  .fit-grid, .ide-grid, .compare-row, .ratings{ grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px){
+  h1{ font-size:20px !important; }
+  .wrap{ padding-left:16px !important; padding-right:16px !important; }
+}
+
+@media (max-width: 860px){
+  summary{ padding:10px 12px; }
+  nav.toc a{ display:inline-block; padding:2px 0; }
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">ROADMAP / aspnetcore-zero-to-hero / rev.1</div>
+    <h1>ASP.NET Core — Zero to Hero Roadmap</h1>
+    <p class="subtitle">
+      รวมทุกไฟล์ที่ทำไว้ให้เป็นเส้นทางเดียว เปิดไฟล์ตามลำดับที่ 1-4 (แกนหลัก) และเปิดฝั่งขวา (เครื่องมือเสริม)
+      ประกอบเมื่อจำเป็น ไม่ต้องเปิดพร้อมกันทั้งหมด
+    </p>
+  </header>
+
+  <div class="path">
+
+    <div class="stage">
+      <div class="stage-dot">1</div>
+      <div class="stage-card">
+        <div class="stage-filename">aspnetcore-setup-to-run.html</div>
+        <div class="stage-title">เตรียมเครื่องมือ + รันเว็บแอปแรกให้สำเร็จ</div>
+        <div class="stage-desc">
+          เช็ค .NET SDK, ติดตั้ง C# Dev Kit, สร้างโปรเจกต์, รันจริง, เห็นผลใน browser ยังไม่มีการเขียนโค้ดเนื้อหา
+        </div>
+        <div class="stage-meta"><span class="tag core">เริ่มที่นี่</span><span class="tag">~20-30 นาที</span></div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-dot">2</div>
+      <div class="stage-card">
+        <div class="stage-filename">aspnetcore-beginner-plan.html</div>
+        <div class="stage-title">พื้นฐานโปรแกรมมิ่งจนถึง Web App เต็มรูปแบบ (19 หัวข้อ)</div>
+        <div class="stage-desc">
+          เริ่มจาก "โปรแกรมคืออะไร" ไม่อิงพื้นฐานเดิม ไล่ผ่าน C# พื้นฐาน (ตัวแปร, if/else, loop, method, class, List)
+          จนถึงสร้าง Razor Pages + Blazor + EF Core CRUD ครบ มีโจทย์พร้อมเฉลยที่ซ่อนไว้ทุกหัวข้อ
+        </div>
+        <div class="stage-meta"><span class="tag core">แกนหลัก</span><span class="tag">6-8 สัปดาห์</span><span class="tag">19 หัวข้อ</span></div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-dot">3</div>
+      <div class="stage-card">
+        <div class="stage-filename">aspnetcore-webapp-deepdive.html</div>
+        <div class="stage-title">ยกระดับสู่เว็บแอปใช้งานจริง (8 module)</div>
+        <div class="stage-desc">
+          ต่อยอดจากไฟล์ที่ 2 — Layout กลาง, Validation เต็มรูปแบบ, ข้อมูลเชื่อมหลาย table, ระบบ Login,
+          Blazor แบบจัดการ state ข้าม component, error handling, เตรียม deploy มีเฉลยซ่อนไว้ทุก module เช่นกัน
+        </div>
+        <div class="stage-meta"><span class="tag core">แกนหลัก</span><span class="tag">4-5 สัปดาห์</span><span class="tag">8 module</span></div>
+        <div class="optional-note">ทำหลังจบไฟล์ที่ 2 แล้วเท่านั้น เพราะอ้างอิงโค้ดจากพื้นฐานที่วางไว้ก่อน</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-dot">4</div>
+      <div class="stage-card">
+        <div class="stage-filename">โปรเจกต์ฝึกของตัวเอง</div>
+        <div class="stage-title">ลงมือทำโปรเจกต์จริงที่ไม่มีเฉลย</div>
+        <div class="stage-desc">
+          เลือกระบบเล็กๆ ที่อยากทำ (เช่น ระบบจัดการสต๊อกสินค้าง่ายๆ) แล้วสร้างเองทั้งหมดโดยไม่เปิดไฟล์ 2-3 ดู
+          ใช้ cheat sheet และ FAQ ช่วยเมื่อติดขัดแทน นี่คือจุดที่วัดว่าเนื้อหาที่เรียนมาแปลงเป็นทักษะจริงแค่ไหน
+        </div>
+        <div class="stage-meta"><span class="tag core">บทพิสูจน์</span><span class="tag">2-3 สัปดาห์</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="side-tools">
+    <h2>เครื่องมือเสริม (เปิดคู่กันระหว่างเรียน ไม่ต้องอ่านเรียงลำดับ)</h2>
+    <p>ไม่ใช่ส่วนหนึ่งของเส้นทางหลัก แต่ควรเปิดค้างไว้ข้างๆ ระหว่างลงมือเขียนโค้ดจริง</p>
+
+    <div class="tool-row">
+      <span class="tool-name">aspnetcore-cheatsheet.html</span>
+      <span class="tool-desc">สรุป syntax หน้าเดียว เปิดดูเร็วตอนลืมว่าเขียนยังไง</span>
+    </div>
+    <div class="tool-row">
+      <span class="tool-name">aspnetcore-faq-errors.html</span>
+      <span class="tool-desc">เจอ error แดงๆ เปิดไฟล์นี้ก่อนค้นหาที่อื่น</span>
+    </div>
+  </div>
+
+  <footer>
+    สรุปเส้นทาง: ไฟล์ 1 → ไฟล์ 2 (ห้ามข้ามหัวข้อ) → ไฟล์ 3 → ลงมือทำโปรเจกต์เอง — ระหว่างทางเปิด
+    cheat sheet และ FAQ ประกอบเมื่อจำเป็น
+  </footer>
+
+</div>
+</body>
+</html>

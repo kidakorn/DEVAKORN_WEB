@@ -110,6 +110,30 @@
     nav.toc ol{ columns:1; }
     pre{ font-size:11.5px; }
   }
+
+/* ===== Extra responsive polish ===== */
+table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+table thead, table tbody{ display:table; width:100%; }
+pre, img, svg{ max-width:100%; }
+body{ overflow-x:hidden; }
+
+@media (max-width: 640px){
+  .grid{ grid-template-columns:1fr !important; }
+  .overview-box dl{ grid-template-columns:1fr !important; }
+  .overview-box dt{ margin-top:8px; }
+  .fit-grid, .ide-grid, .compare-row, .ratings{ grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px){
+  h1{ font-size:20px !important; }
+  .wrap{ padding-left:16px !important; padding-right:16px !important; }
+}
+
+@media (max-width: 860px){
+  summary{ padding:10px 12px; }
+  nav.toc a{ display:inline-block; padding:2px 0; }
+}
+
 </style>
 </head>
 <body>

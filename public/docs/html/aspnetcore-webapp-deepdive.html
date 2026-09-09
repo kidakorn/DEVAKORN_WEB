@@ -123,6 +123,30 @@
     nav.toc ol{ columns:1; }
     pre{ font-size:11.5px; }
   }
+
+/* ===== Extra responsive polish ===== */
+table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+table thead, table tbody{ display:table; width:100%; }
+pre, img, svg{ max-width:100%; }
+body{ overflow-x:hidden; }
+
+@media (max-width: 640px){
+  .grid{ grid-template-columns:1fr !important; }
+  .overview-box dl{ grid-template-columns:1fr !important; }
+  .overview-box dt{ margin-top:8px; }
+  .fit-grid, .ide-grid, .compare-row, .ratings{ grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px){
+  h1{ font-size:20px !important; }
+  .wrap{ padding-left:16px !important; padding-right:16px !important; }
+}
+
+@media (max-width: 860px){
+  summary{ padding:10px 12px; }
+  nav.toc a{ display:inline-block; padding:2px 0; }
+}
+
 </style>
 </head>
 <body>
@@ -156,6 +180,10 @@
       <li><a href="#m6">Module 6 — Blazor: การจัดการ State ระหว่าง Component</a></li>
       <li><a href="#m7">Module 7 — จัดการ Error และบันทึก Log</a></li>
       <li><a href="#m8">Module 8 — เตรียม Deploy ขึ้นใช้งานจริง</a></li>
+      <li><a href="#m9">Module 9 — Security เชิงลึก</a></li>
+      <li><a href="#m10">Module 10 — Performance และ Caching</a></li>
+      <li><a href="#m11">Module 11 — เดินผ่านระบบเดียวครบทุกชั้น</a></li>
+      <li><a href="#m12">Module 12 — Service Layer / Repository Pattern</a></li>
     </ol>
   </nav>
 
@@ -796,6 +824,450 @@ dotnet user-secrets set "ConnectionStrings:Default" "Data Source=app.db"</pre>
 <pre>dotnet publish -c Release -o ./publish</pre>
 ตรวจว่ามีโฟลเดอร์ publish เกิดขึ้นพร้อมไฟล์ .dll และ appsettings.json (ที่ไม่มี connection string จริงติดไปด้วย
 ปลอดภัยกว่าเดิม)
+</div></details>
+    </div>
+  </div>
+
+  <!-- ================= MODULE 9 ================= -->
+  <div class="module" id="m9">
+    <div class="module-head">
+      <div class="module-head-left"><span class="module-num">MODULE 9</span><span class="module-title">Security เชิงลึก</span></div>
+      <span class="module-duration">3-4 วัน</span>
+    </div>
+    <div class="module-body">
+      <div class="why-box">
+        <b>ทำไมต้องมี:</b> เว็บแอปที่เปิดให้คนอื่นใช้งาน (โดยเฉพาะระบบภายในที่มีข้อมูลบริษัท) เป็นเป้าหมายของการโจมตี
+        3 แบบที่พบบ่อยที่สุดเสมอ ASP.NET Core ป้องกันให้อัตโนมัติในหลายจุด แต่ต้องรู้ว่าจุดไหนป้องกันเอง
+        จุดไหนต้องระวังเอง
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">XSS (Cross-Site Scripting) — แทรก script ผ่านข้อมูลที่ผู้ใช้กรอก</div>
+        <p>ถ้าผู้ใช้กรอกชื่อเป็น <code>&lt;script&gt;alert('hacked')&lt;/script&gt;</code> แล้วระบบเอาไปแสดงตรงๆ
+        โดยไม่ป้องกัน script นั้นจะรันจริงในเบราว์เซอร์ของคนอื่นที่มาดูหน้านั้น</p>
+        <pre>&lt;!-- ปลอดภัย — Razor encode ให้อัตโนมัติเสมอเมื่อใช้ @ --&gt;
+&lt;p&gt;@product.Name&lt;/p&gt;
+
+&lt;!-- อันตราย — Html.Raw ข้าม encode ทำให้ script รันได้จริง --&gt;
+&lt;p&gt;@Html.Raw(product.Name)&lt;/p&gt;</pre>
+        <p>Razor Pages เข้ารหัส (encode) ข้อความที่แสดงด้วย <code>@</code> ให้อัตโนมัติเสมอ ตัวอักษรอย่าง
+        <code>&lt;</code> จะกลายเป็น <code>&amp;lt;</code> ทำให้ browser แสดงเป็นข้อความธรรมดา ไม่รันเป็นโค้ด
+        ใช้ <code>Html.Raw</code> เฉพาะตอนมั่นใจ 100% ว่าข้อมูลนั้นปลอดภัยจริงเท่านั้น (เช่น เนื้อหาที่แอดมินเขียนเอง
+        ไม่ใช่ input จากผู้ใช้ทั่วไป)</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">CSRF (Cross-Site Request Forgery) — หลอกให้ browser ส่ง request แทนเรา</div>
+        <p>ถ้าเรา login เว็บแอปไว้แล้วเผลอเปิดเว็บอันตรายในแท็บอื่น เว็บนั้นอาจแอบสั่ง submit ฟอร์มไปยัง
+        เว็บแอปของเราโดยที่เราไม่รู้ตัว (เพราะ browser แนบ cookie login ไปให้อัตโนมัติ)</p>
+        <pre>&lt;!-- Tag Helper ของ ASP.NET Core แทรก anti-forgery token ให้อัตโนมัติ --&gt;
+&lt;form method="post"&gt;
+    &lt;input asp-for="NewProduct.Name" /&gt;
+    &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
+&lt;/form&gt;
+&lt;!-- ไม่ต้องเขียนอะไรเพิ่ม แค่ใช้ &lt;form&gt; ธรรมดา ASP.NET Core แทรก token ที่มองไม่เห็นให้เอง --&gt;</pre>
+        <p>ทุกฟอร์มที่สร้างผ่าน Razor Pages ปกติ (ไม่ใช้ raw HTML form ที่เขียนเองทั้งหมด) จะมี anti-forgery
+        token แทรกมาให้อัตโนมัติอยู่แล้ว server จะเช็ค token นี้ทุกครั้งที่ submit ถ้าไม่ตรงจะปฏิเสธ request ทันที</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">SQL Injection — แทรกคำสั่ง SQL ผ่านข้อมูลที่กรอก</div>
+        <pre>// ปลอดภัย — EF Core แปลง LINQ เป็น parameterized query ให้อัตโนมัติเสมอ
+var product = await db.Products
+    .Where(p =&gt; p.Name == userInput)
+    .FirstOrDefaultAsync();
+
+// อันตรายมาก — เอา userInput มาต่อ string ตรงๆ
+var sql = "SELECT * FROM Products WHERE Name = '" + userInput + "'";
+// ถ้า userInput คือ  ' OR '1'='1  จะดึงข้อมูลทั้ง table ออกมาหมด</pre>
+        <p>ตราบใดที่ใช้ LINQ ผ่าน EF Core ตามปกติ (ไม่เขียน raw SQL เอง) จะปลอดภัยจาก SQL Injection
+        โดยอัตโนมัติ เพราะ EF Core ไม่เคยเอาค่าจากผู้ใช้มาต่อ string ตรงๆ แต่ส่งเป็น parameter แยกเสมอ
+        ถ้าจำเป็นต้องเขียน raw SQL จริงๆ (เช่น query ซับซ้อนมาก) ต้องใช้ <code>FromSqlInterpolated</code>
+        ไม่ใช่ต่อ string เอง</p>
+      </div>
+
+      <div class="pitfall">
+        <b>ข้อผิดพลาดที่เจอบ่อย:</b> ใช้ <code>Html.Raw</code> เพราะอยากให้ HTML ที่ผู้ใช้กรอกแสดงผลสวยงาม
+        (เช่น bold, italic) โดยไม่ผ่านการกรองก่อน วิธีที่ถูกต้องคือใช้ library กรอง HTML ที่อนุญาตเฉพาะ tag
+        ปลอดภัย (เช่น HtmlSanitizer) ไม่ใช่ปล่อยผ่านทั้งหมด
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> ทดลองกรอกชื่อสินค้าเป็น <code>&lt;b&gt;ทดสอบ&lt;/b&gt;</code> ในฟอร์มของโปรเจกต์ฝึก
+        แล้วดูว่าหน้า list แสดงเป็นตัวหนาจริงไหม หรือแสดงเป็นข้อความ &lt;b&gt;...&lt;/b&gt; ตรงๆ (ควรเป็นแบบหลัง
+        เพราะ Razor encode ให้อัตโนมัติ)
+      </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+ถ้าใช้ <code>@product.Name</code> ตามปกติ หน้าเว็บควรแสดงข้อความ <code>&lt;b&gt;ทดสอบ&lt;/b&gt;</code> ตรงตัว
+(ไม่ตัวหนา) เพราะ Razor เข้ารหัสเครื่องหมาย &lt; &gt; ให้เป็นข้อความธรรมดาไปแล้ว นี่คือพฤติกรรมที่ถูกต้องและปลอดภัย
+ถ้าอยากทดสอบด้านตรงข้าม ลองเปลี่ยนเป็น <code>@Html.Raw(product.Name)</code> ชั่วคราว จะเห็นว่าคำว่า "ทดสอบ"
+กลายเป็นตัวหนาจริง — นั่นคือช่องโหว่ที่ต้องหลีกเลี่ยงในโค้ดจริง ห้ามใช้ Html.Raw กับข้อมูลที่มาจากผู้ใช้โดยไม่กรองก่อน
+</div></details>
+    </div>
+  </div>
+
+  <!-- ================= MODULE 10 ================= -->
+  <div class="module" id="m10">
+    <div class="module-head">
+      <div class="module-head-left"><span class="module-num">MODULE 10</span><span class="module-title">Performance และ Caching</span></div>
+      <span class="module-duration">3-4 วัน</span>
+    </div>
+    <div class="module-body">
+      <div class="why-box">
+        <b>ทำไมต้องมี:</b> พอเว็บแอปมีข้อมูลเยอะขึ้นหรือคนใช้พร้อมกันมากขึ้น การ query ฐานข้อมูลซ้ำๆ โดยไม่จำเป็น
+        ทำให้ช้าลงเรื่อยๆ Caching คือการ "จำผลลัพธ์ไว้ใช้ซ้ำ" แทนที่จะไปถามฐานข้อมูลใหม่ทุกครั้ง
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">AsNoTracking — เร็วขึ้นสำหรับ query ที่แค่อ่านอย่างเดียว</div>
+        <pre>// ปกติ EF Core จะ "ติดตาม" การเปลี่ยนแปลงของทุกแถวที่ query มา เผื่อจะ Update ทีหลัง
+var products = await db.Products.ToListAsync();
+
+// ถ้ารู้แน่ชัดว่าแค่อ่านอย่างเดียว ไม่แก้ไข ปิดการติดตามได้ เร็วขึ้นและกินหน่วยความจำน้อยลง
+var products = await db.Products.AsNoTracking().ToListAsync();</pre>
+        <p>ใช้ <code>AsNoTracking()</code> กับทุก query ที่เอาไว้แค่แสดงผล (เช่นหน้า list, report)
+        เก็บไว้เฉพาะ query ที่จะเอาผลลัพธ์ไปแก้ไขแล้ว SaveChanges ต่อเท่านั้นที่ต้อง track</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">In-Memory Cache — จำผลลัพธ์ไว้ในหน่วยความจำ</div>
+        <pre>// Program.cs
+builder.Services.AddMemoryCache();</pre>
+        <pre>public class ProductsModel : PageModel
+{
+    private readonly IMemoryCache _cache;
+    private readonly AppDbContext _db;
+
+    public ProductsModel(IMemoryCache cache, AppDbContext db)
+    {
+        _cache = cache;
+        _db = db;
+    }
+
+    public async Task OnGetAsync()
+    {
+        Products = await _cache.GetOrCreateAsync("all-products", async entry =&gt;
+        {
+            entry.SlidingExpiration = TimeSpan.FromMinutes(5);
+            return await _db.Products.AsNoTracking().ToListAsync();
+        });
+    }
+}</pre>
+        <p><code>GetOrCreateAsync</code> เช็คก่อนว่ามีค่าชื่อ "all-products" ใน cache อยู่ไหม ถ้ามีแล้วก็คืนค่าจาก
+        cache ทันทีโดยไม่ query ฐานข้อมูลเลย ถ้ายังไม่มีถึงจะรัน query จริงแล้วเก็บผลลัพธ์ไว้ใน cache ต่อ
+        <code>SlidingExpiration</code> คือ "ถ้าไม่มีใครเรียกใช้ cache นี้เกิน 5 นาที ให้ลบทิ้ง"</p>
+      </div>
+
+      <div class="pitfall">
+        <b>ข้อควรระวัง:</b> ข้อมูลใน cache อาจ "เก่า" กว่าข้อมูลจริงในฐานข้อมูล ถ้ามีคนแก้ไขข้อมูลแต่ cache
+        ยังไม่หมดอายุ คนอื่นจะยังเห็นข้อมูลเก่าอยู่ ต้องจำไว้ลบ cache (<code>_cache.Remove("all-products")</code>)
+        ทุกครั้งที่มีการ Create/Update/Delete ข้อมูลนั้น ไม่งั้นข้อมูลที่แสดงจะไม่ตรงกับความจริง
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ปัญหา N+1 Query — สาเหตุความช้าที่พบบ่อยที่สุด</div>
+        <pre>// ผิด — query ฐานข้อมูล 1 ครั้งสำหรับ list + อีก 1 ครั้งต่อออเดอร์ (N+1 ครั้งรวม)
+var orders = await db.Orders.ToListAsync();
+foreach (var order in orders)
+{
+    var customer = await db.Customers.FindAsync(order.CustomerId);  // ยิง query ทุกรอบ loop
+    Console.WriteLine(customer.Name);
+}
+
+// ถูก — Include ดึงมาครั้งเดียวพร้อมกันหมด
+var orders = await db.Orders.Include(o =&gt; o.Customer).ToListAsync();</pre>
+        <p>ถ้ามีออเดอร์ 100 รายการ โค้ดแบบผิดจะยิง query ไปฐานข้อมูลถึง 101 ครั้ง (1 ครั้งสำหรับ list +
+        100 ครั้งในลูป) ขณะที่ใช้ Include จะยิงแค่ 1-2 ครั้งเท่านั้น ต่างกันมากเมื่อข้อมูลเยอะขึ้น</p>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> เพิ่ม caching ให้หน้า list สินค้าของโปรเจกต์ฝึก ตั้ง SlidingExpiration 2 นาที
+        แล้วทดสอบว่าพอแก้ไขสินค้าแล้วกลับมาหน้า list ข้อมูลอัพเดทถูกต้องไหม (ถ้าไม่ถูก ต้องเพิ่มการลบ cache
+        ในหน้า edit ด้วย)
+      </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+<pre>public async Task&lt;IActionResult&gt; OnPostAsync()
+{
+    // ... บันทึกข้อมูลที่แก้ไขแล้ว ...
+    await _db.SaveChangesAsync();
+    _cache.Remove("all-products");   // ลบ cache เก่าทิ้ง บังคับให้ query ใหม่รอบหน้า
+    return RedirectToPage("Index");
+}</pre>
+ถ้าลืมลบ cache หลังแก้ไข พอกลับไปหน้า list จะยังเห็นข้อมูลเก่าอยู่จนกว่า SlidingExpiration จะหมดอายุ
+(2 นาทีตามที่ตั้งไว้) เป็นพฤติกรรมที่ถูกต้องของ caching แต่ต้องออกแบบให้ล้าง cache ทุกจุดที่มีการแก้ไขข้อมูล
+</div></details>
+    </div>
+  </div>
+
+  <!-- ================= MODULE 11 ================= -->
+  <div class="module" id="m11">
+    <div class="module-head">
+      <div class="module-head-left"><span class="module-num">MODULE 11</span><span class="module-title">เดินผ่านระบบเดียวครบทุกชั้น</span></div>
+      <span class="module-duration">4-5 วัน</span>
+    </div>
+    <div class="module-body">
+      <div class="why-box">
+        <b>ทำไมต้องมี:</b> module ก่อนหน้าทั้งหมดสอนทีละหัวข้อแยกกัน module นี้เอาทุกอย่างมาเดินให้ดูพร้อมกันใน
+        1 feature เดียว — ตั้งแต่กดปุ่มบนหน้าเว็บ ไปจนถึงข้อมูลกลับมาแสดงผล เพื่อให้เห็นภาพว่าแต่ละชั้นเรียกกันยังไงจริงๆ
+      </div>
+
+      <p>สมมติ feature: <b>"อนุมัติออเดอร์"</b> — พนักงานกดปุ่มอนุมัติที่หน้าเว็บ ระบบต้องเช็คสต๊อกสินค้าจาก
+      API ภายนอกก่อน (เช่น IWS) ถ้าพอถึงบันทึกลงฐานข้อมูล ถ้าไม่พอแสดงข้อความเตือน</p>
+
+      <div class="subblock">
+        <div class="subblock-label">ชั้นที่ 1 — UI (Razor Page)</div>
+        <pre>&lt;!-- OrderApproval.cshtml --&gt;
+@page "{id:int}"
+@model OrderApprovalModel
+
+&lt;h1&gt;อนุมัติออเดอร์ #@Model.Order.Id&lt;/h1&gt;
+
+&lt;form method="post"&gt;
+    &lt;input type="hidden" asp-for="Order.Id" /&gt;
+    &lt;button type="submit"&gt;อนุมัติ&lt;/button&gt;
+&lt;/form&gt;
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    &lt;div class="alert"&gt;@Model.ErrorMessage&lt;/div&gt;
+}</pre>
+        <p>หน้าเว็บไม่รู้เรื่อง logic ข้างในเลย รู้แค่ว่ากดปุ่มแล้วเรียก OnPost แล้วอาจมีข้อความ error กลับมา
+        แสดง — เป็นหน้าที่ของ "การแสดงผล" อย่างเดียว</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ชั้นที่ 2 — PageModel (ตัวกลาง ไม่มี logic ธุรกิจ)</div>
+        <pre>public class OrderApprovalModel : PageModel
+{
+    private readonly IOrderApprovalService _service;
+
+    public OrderApprovalModel(IOrderApprovalService service)
+    {
+        _service = service;
+    }
+
+    public Order Order { get; set; } = default!;
+    public string? ErrorMessage { get; set; }
+
+    public async Task&lt;IActionResult&gt; OnPostAsync(int id)
+    {
+        var result = await _service.ApproveOrderAsync(id);
+
+        if (!result.Success)
+        {
+            ErrorMessage = result.ErrorMessage;
+            Order = await _service.GetOrderAsync(id);
+            return Page();
+        }
+
+        return RedirectToPage("Index");
+    }
+}</pre>
+        <p>PageModel แค่ "ส่งต่อ" งานไปให้ Service ทำ ไม่มี logic ธุรกิจอยู่ในนี้เลย (ไม่เช็คสต๊อกเอง
+        ไม่คุย EF Core ตรงๆ) หน้าที่เดียวคือแปลงผลลัพธ์จาก Service ให้เป็นสิ่งที่หน้าเว็บแสดงได้</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ชั้นที่ 3 — Service (business logic + คุยกับ external API)</div>
+        <pre>public class OrderApprovalService : IOrderApprovalService
+{
+    private readonly AppDbContext _db;
+    private readonly HttpClient _httpClient;   // ใช้เรียก external API เช่น IWS
+
+    public OrderApprovalService(AppDbContext db, HttpClient httpClient)
+    {
+        _db = db;
+        _httpClient = httpClient;
+    }
+
+    public async Task&lt;ApprovalResult&gt; ApproveOrderAsync(int orderId)
+    {
+        var order = await _db.Orders.FindAsync(orderId);
+
+        // เรียก external API เช็คสต๊อกจริงก่อนอนุมัติ
+        var response = await _httpClient.GetAsync($"https://iws.example.com/api/stock/{order.ProductId}");
+        var stockInfo = await response.Content.ReadFromJsonAsync&lt;StockInfo&gt;();
+
+        if (stockInfo!.Quantity &lt; order.Quantity)
+        {
+            return new ApprovalResult { Success = false, ErrorMessage = "สต๊อกไม่พอ" };
+        }
+
+        order.Status = "Approved";
+        await _db.SaveChangesAsync();
+        return new ApprovalResult { Success = true };
+    }
+}</pre>
+        <p>ชั้นนี้คือที่ที่ "งานจริง" เกิดขึ้น ทั้งคุยกับฐานข้อมูล (EF Core) และคุยกับระบบภายนอก
+        (<code>HttpClient</code> เรียก IWS หรือ API อื่น) PageModel ไม่ต้องรู้เลยว่าข้างในเช็คสต๊อกยังไง
+        รู้แค่ว่าเรียกแล้วได้ผลลัพธ์ success/fail กลับมา</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ลงทะเบียนทุกชั้นใน Program.cs</div>
+        <pre>builder.Services.AddHttpClient&lt;IOrderApprovalService, OrderApprovalService&gt;();
+builder.Services.AddDbContext&lt;AppDbContext&gt;(o =&gt; o.UseSqlite("Data Source=app.db"));</pre>
+        <p><code>AddHttpClient&lt;TInterface, TImplementation&gt;</code> เป็นวิธีพิเศษที่ลงทะเบียนทั้ง
+        Service และ HttpClient ที่ใช้ข้างในให้พร้อมกันในบรรทัดเดียว ปลอดภัยกว่าสร้าง
+        <code>new HttpClient()</code> เองตรงๆ เพราะ .NET จัดการเรื่อง connection pool ให้อัตโนมัติ</p>
+      </div>
+
+      <div class="pitfall">
+        <b>สรุปภาพรวมที่ควรจำ:</b> UI ไม่ควรรู้จัก DbContext หรือ HttpClient เลย, PageModel ไม่ควรมี business
+        logic เอง (แค่ส่งต่อ), Service เท่านั้นที่คุยกับฐานข้อมูลและ external API โดยตรง การแยกแบบนี้ทำให้
+        ถ้าต้องเปลี่ยนวิธีเช็คสต๊อก (เช่นเปลี่ยนจาก IWS เป็นระบบอื่น) แก้แค่ใน Service จุดเดียว
+        ไม่ต้องแตะ UI หรือ PageModel เลย
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> ลองสร้าง feature เล็กๆ ที่มี 3 ชั้นแบบนี้ในโปรเจกต์ฝึก เช่น "ตรวจสอบราคาสินค้า
+        จาก API ภายนอกก่อนบันทึกออเดอร์" (ใช้ API สาธารณะที่ทดสอบได้ฟรี เช่น jsonplaceholder.typicode.com
+        แทน IWS จริงไปก่อน)
+      </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+โครงเหมือนตัวอย่างในเนื้อหาทุกประการ แค่เปลี่ยน URL ที่เรียกเป็น
+<code>https://jsonplaceholder.typicode.com/posts/1</code> (คืนค่า JSON ตัวอย่างกลับมาเสมอ ใช้ฝึก
+HttpClient ได้โดยไม่ต้องมี API จริงของบริษัท) โครงสร้าง 3 ชั้นควรเป็น:
+Razor Page (ปุ่มกดตรวจสอบ) → PageModel (เรียก Service) → Service (เรียก HttpClient ไปยัง URL ข้างต้น
+แล้วแปลงผลลัพธ์ JSON กลับมา) ทดสอบว่ากดปุ่มแล้วเห็นข้อมูลจาก API จริงแสดงบนหน้าเว็บได้หรือไม่
+</div></details>
+    </div>
+  </div>
+
+  <!-- ================= MODULE 12 ================= -->
+  <div class="module" id="m12">
+    <div class="module-head">
+      <div class="module-head-left"><span class="module-num">MODULE 12</span><span class="module-title">Service Layer / Repository Pattern</span></div>
+      <span class="module-duration">4-5 วัน</span>
+    </div>
+    <div class="module-body">
+      <div class="why-box">
+        <b>ทำไมต้องมี:</b> ถ้าเขียนทุกอย่าง (query database, business logic, validation) อยู่ใน PageModel
+        โดยตรงแบบที่ทำมาตลอด พอโปรเจกต์ใหญ่ขึ้น PageModel แต่ละไฟล์จะยาวมากและซ้ำกันเยอะ
+        Repository Pattern และ Service Layer คือวิธีจัดระเบียบให้แต่ละชั้นทำหน้าที่ของตัวเองชัดเจน
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">Repository — ห่อการคุยกับฐานข้อมูลไว้ในที่เดียว</div>
+        <pre>public interface IProductRepository
+{
+    Task&lt;List&lt;Product&gt;&gt; GetAllAsync();
+    Task&lt;Product?&gt; GetByIdAsync(int id);
+    Task AddAsync(Product product);
+    Task DeleteAsync(int id);
+}
+
+public class ProductRepository : IProductRepository
+{
+    private readonly AppDbContext _db;
+    public ProductRepository(AppDbContext db) =&gt; _db = db;
+
+    public async Task&lt;List&lt;Product&gt;&gt; GetAllAsync()
+        =&gt; await _db.Products.AsNoTracking().ToListAsync();
+
+    public async Task&lt;Product?&gt; GetByIdAsync(int id)
+        =&gt; await _db.Products.FindAsync(id);
+
+    public async Task AddAsync(Product product)
+    {
+        _db.Products.Add(product);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var product = await _db.Products.FindAsync(id);
+        if (product is not null)
+        {
+            _db.Products.Remove(product);
+            await _db.SaveChangesAsync();
+        }
+    }
+}</pre>
+        <p>Repository รู้เรื่อง EF Core อย่างเดียว ไม่มี business rule ใดๆ ปนอยู่ (เช่น ไม่เช็คว่าราคาต้อง
+        มากกว่า 0 ตรงนี้ — นั่นเป็นหน้าที่ของ Service) ถ้าวันหนึ่งเปลี่ยนจาก EF Core ไปใช้เทคโนโลยีอื่น
+        แก้แค่ไฟล์นี้ไฟล์เดียว โค้ดส่วนอื่นไม่กระทบเลย</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">Service — business logic ที่ใช้ Repository เป็นเครื่องมือ</div>
+        <pre>public interface IProductService
+{
+    Task&lt;List&lt;Product&gt;&gt; GetAllAsync();
+    Task&lt;ServiceResult&gt; CreateAsync(Product product);
+}
+
+public class ProductService : IProductService
+{
+    private readonly IProductRepository _repo;
+    public ProductService(IProductRepository repo) =&gt; _repo = repo;
+
+    public Task&lt;List&lt;Product&gt;&gt; GetAllAsync() =&gt; _repo.GetAllAsync();
+
+    public async Task&lt;ServiceResult&gt; CreateAsync(Product product)
+    {
+        // business rule อยู่ตรงนี้ ไม่ใช่ใน Repository
+        if (product.Price &lt;= 0)
+        {
+            return ServiceResult.Fail("ราคาต้องมากกว่า 0");
+        }
+
+        await _repo.AddAsync(product);
+        return ServiceResult.Ok();
+    }
+}</pre>
+        <p>Service คือชั้นที่มี "กฎทางธุรกิจ" (business rule) เช่น เงื่อนไขการอนุมัติ, การคำนวณราคาพิเศษ
+        ส่วน Repository มีหน้าที่แค่ "เก็บ/ดึงข้อมูล" ล้วนๆ การแยกสองอย่างนี้ทำให้ทดสอบ business rule
+        ได้โดยไม่ต้องพึ่งฐานข้อมูลจริง (mock Repository แทนได้ตอนเขียน unit test)</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">PageModel หลังจัดระเบียบ — สั้นลงมาก</div>
+        <pre>public class CreateModel : PageModel
+{
+    private readonly IProductService _service;
+    public CreateModel(IProductService service) =&gt; _service = service;
+
+    [BindProperty]
+    public Product NewProduct { get; set; } = new();
+
+    public async Task&lt;IActionResult&gt; OnPostAsync()
+    {
+        var result = await _service.CreateAsync(NewProduct);
+        if (!result.Success)
+        {
+            ModelState.AddModelError("", result.ErrorMessage!);
+            return Page();
+        }
+        return RedirectToPage("Index");
+    }
+}</pre>
+        <p>เทียบกับตอนที่เขียนทุกอย่างใน PageModel ตรงๆ (แบบที่ทำมาตลอดในหัวข้อก่อนหน้า) โค้ดตรงนี้สั้นลงมาก
+        และอ่านง่ายขึ้น เพราะ PageModel รู้แค่ "เรียก Service แล้วแปลผลลัพธ์เป็นหน้าจอ" เท่านั้น</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ลงทะเบียนทั้งสองชั้นใน Program.cs</div>
+        <pre>builder.Services.AddScoped&lt;IProductRepository, ProductRepository&gt;();
+builder.Services.AddScoped&lt;IProductService, ProductService&gt;();</pre>
+      </div>
+
+      <div class="pitfall">
+        <b>ข้อควรระวัง:</b> ไม่ต้องรีบใช้ pattern นี้ตั้งแต่ต้นถ้าโปรเจกต์เล็กมาก (เช่นโปรเจกต์ฝึกที่ทำมาตลอด)
+        การเพิ่มชั้น Repository/Service ให้กับระบบเล็กๆ อาจทำให้โค้ดซับซ้อนเกินความจำเป็น (over-engineering)
+        pattern นี้คุ้มค่าที่สุดเมื่อโปรเจกต์เริ่มมี business rule เยอะขึ้น หรือมีทีมทำงานพร้อมกันหลายคน
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> เลือกฟีเจอร์หนึ่งในโปรเจกต์ฝึก (เช่น การสร้างสินค้าใหม่) แล้วแยกออกเป็น Repository
+        และ Service ตามตัวอย่าง เทียบดูว่า PageModel สั้นลงแค่ไหนจากก่อนแยก
+      </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+สร้างไฟล์ IProductRepository, ProductRepository, IProductService, ProductService ตามตัวอย่างในเนื้อหา
+ลงทะเบียนทั้งคู่ใน Program.cs แล้วแก้ CreateModel ให้ inject IProductService แทนที่จะ inject AppDbContext
+ตรงๆ ผลลัพธ์ที่ควรเห็น: CreateModel เหลือแค่ประมาณ 15-20 บรรทัด (จากเดิมที่อาจมี logic เช็คราคาปนอยู่ในนั้นด้วย)
+และ business rule เรื่องราคาต้องมากกว่า 0 ย้ายไปอยู่ใน ProductService แทน ทดสอบว่าฟอร์มยังทำงานเหมือนเดิมทุกประการ
+เพียงแต่โค้ดแบ่งชั้นชัดเจนขึ้น
 </div></details>
     </div>
   </div>
