@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ASP.NET Core — Zero to Hero</title>
 <style>
+
 :root{
     --ink: #1b2430;
     --paper: #eef1f4;
@@ -109,6 +110,26 @@ body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--san
     pre{ font-size:11.5px; }
   }
 
+/* ===== Extra responsive polish ===== */
+table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+table thead, table tpre, img, svg{ max-width:100%; }
+@media (max-width: 640px){
+  .grid{ grid-template-columns:1fr !important; }
+  .overview-box dl{ grid-template-columns:1fr !important; }
+  .overview-box dt{ margin-top:8px; }
+  .fit-grid, .ide-grid, .compare-row, .ratings{ grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px){
+  h1{ font-size:20px !important; }
+  .wrap{ padding-left:16px !important; padding-right:16px !important; }
+}
+
+@media (max-width: 860px){
+  summary{ padding:10px 12px; }
+  nav.toc a{ display:inline-block; padding:2px 0; }
+}
+
 /* ==== beginner-plan ==== */
 .wrap{ max-width:920px; margin:0 auto; padding:48px 24px 100px; }
   header{ border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:32px; }
@@ -194,6 +215,26 @@ body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--san
     nav.toc ol{ columns:1; }
     pre{ font-size:11.5px; }
   }
+
+/* ===== Extra responsive polish ===== */
+table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+table thead, table tpre, img, svg{ max-width:100%; }
+@media (max-width: 640px){
+  .grid{ grid-template-columns:1fr !important; }
+  .overview-box dl{ grid-template-columns:1fr !important; }
+  .overview-box dt{ margin-top:8px; }
+  .fit-grid, .ide-grid, .compare-row, .ratings{ grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px){
+  h1{ font-size:20px !important; }
+  .wrap{ padding-left:16px !important; padding-right:16px !important; }
+}
+
+@media (max-width: 860px){
+  summary{ padding:10px 12px; }
+  nav.toc a{ display:inline-block; padding:2px 0; }
+}
 
 /* ==== webapp-deepdive ==== */
 .wrap{ max-width:980px; margin:0 auto; padding:48px 24px 100px; }
@@ -292,6 +333,26 @@ body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--san
     pre{ font-size:11.5px; }
   }
 
+/* ===== Extra responsive polish ===== */
+table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+table thead, table tpre, img, svg{ max-width:100%; }
+@media (max-width: 640px){
+  .grid{ grid-template-columns:1fr !important; }
+  .overview-box dl{ grid-template-columns:1fr !important; }
+  .overview-box dt{ margin-top:8px; }
+  .fit-grid, .ide-grid, .compare-row, .ratings{ grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px){
+  h1{ font-size:20px !important; }
+  .wrap{ padding-left:16px !important; padding-right:16px !important; }
+}
+
+@media (max-width: 860px){
+  summary{ padding:10px 12px; }
+  nav.toc a{ display:inline-block; padding:2px 0; }
+}
+
 /* ==== cheatsheet ==== */
 .wrap{ max-width:1100px; margin:0 auto; padding:40px 24px 80px; }
   header{ border-bottom:2px solid var(--ink); padding-bottom:20px; margin-bottom:28px; }
@@ -331,6 +392,26 @@ body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--san
     margin-top:32px; padding-top:14px; border-top:1px solid var(--line);
     font-size:11.5px; color:#8a94a3; font-family:var(--mono);
   }
+
+/* ===== Extra responsive polish ===== */
+table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+table thead, table tpre, img, svg{ max-width:100%; }
+@media (max-width: 640px){
+  .grid{ grid-template-columns:1fr !important; }
+  .overview-box dl{ grid-template-columns:1fr !important; }
+  .overview-box dt{ margin-top:8px; }
+  .fit-grid, .ide-grid, .compare-row, .ratings{ grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px){
+  h1{ font-size:20px !important; }
+  .wrap{ padding-left:16px !important; padding-right:16px !important; }
+}
+
+@media (max-width: 860px){
+  summary{ padding:10px 12px; }
+  nav.toc a{ display:inline-block; padding:2px 0; }
+}
 
 /* ==== faq-errors ==== */
 .wrap{ max-width:900px; margin:0 auto; padding:48px 24px 100px; }
@@ -387,8 +468,28 @@ body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--san
     pre{ font-size:11px; }
   }
 
+/* ===== Extra responsive polish ===== */
+table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+table thead, table tpre, img, svg{ max-width:100%; }
+@media (max-width: 640px){
+  .grid{ grid-template-columns:1fr !important; }
+  .overview-box dl{ grid-template-columns:1fr !important; }
+  .overview-box dt{ margin-top:8px; }
+  .fit-grid, .ide-grid, .compare-row, .ratings{ grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px){
+  h1{ font-size:20px !important; }
+  .wrap{ padding-left:16px !important; padding-right:16px !important; }
+}
+
+@media (max-width: 860px){
+  summary{ padding:10px 12px; }
+  nav.toc a{ display:inline-block; padding:2px 0; }
+}
+
 html{ scroll-behavior:smooth; }
-body{ display:block; padding-top:54px; }
+body{ display:block; padding-top:54px; overflow-x:hidden; }
 .topbar{
   position:fixed; top:0; left:0; right:0; height:54px; background:#161d29; color:#fff;
   display:flex; align-items:center; padding:0 18px; z-index:60; gap:16px;
@@ -427,7 +528,7 @@ body{ display:block; padding-top:54px; }
 .content-area{ flex:1; min-width:0; }
 .page{ display:none; }
 .page.active{ display:block; }
-.page-inner{ max-width:800px; margin:0 auto; padding:32px 36px 60px; }
+.page-inner{ max-width:800px; margin:0 auto; padding:32px 36px 60px; overflow-x:hidden; }
 .page-inner .wrap{ max-width:none; padding:0; margin:0; }
 .breadcrumb{ font-family:var(--mono); font-size:11.5px; color:#8a94a3; margin-bottom:10px; }
 .breadcrumb .crumb-sep{ margin:0 6px; }
@@ -466,52 +567,33 @@ body{ display:block; padding-top:54px; }
   .page-inner{ padding:22px 18px 50px; }
   .nav-btn-title{ display:none; }
   .topbar-search{ display:none; }
+  .nav-link{ padding:10px 12px; font-size:14px; }
+  .nav-btn{ padding:14px 16px; }
+  summary{ padding:10px 12px !important; }
 }
 
-/* ===== Extra responsive polish (tables, code, very small phones) ===== */
-
-/* Make every table horizontally scrollable instead of overflowing the page */
-table{
-  display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%;
-}
+/* ===== Extra responsive polish ===== */
+table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
 table thead, table tbody{ display:table; width:100%; }
-
-/* Code blocks and images never wider than their container */
 pre, img, svg{ max-width:100%; }
 pre{ -webkit-overflow-scrolling:touch; }
 
-/* Sidebar shouldn't exceed the viewport on narrow phones */
 @media (max-width: 380px){
   .sidebar{ width:min(270px, 88vw); }
   .topbar-brand{ font-size:13.5px; }
   h1{ font-size:19px !important; }
   .page-inner{ padding:18px 14px 44px; }
 }
-
-/* Stack the prev/next buttons on very narrow screens instead of squeezing side by side */
 @media (max-width: 480px){
   .page-nav{ flex-wrap:wrap; }
   .nav-btn{ max-width:100%; flex-basis:100%; }
 }
-
-/* Two-column grids (cheat sheet, module fit-grid, etc) collapse to one column earlier on touch devices */
 @media (max-width: 640px){
-  .fit-grid, .ratings, .ide-grid{ grid-template-columns:1fr !important; }
+  .fit-grid, .ratings, .ide-grid, .grid{ grid-template-columns:1fr !important; }
   .overview-box dl{ grid-template-columns:1fr !important; }
   .overview-box dt{ margin-top:8px; }
 }
 
-/* Larger tap targets for sidebar links and buttons on touch devices */
-@media (max-width: 860px){
-  .nav-link{ padding:10px 12px; font-size:14px; }
-  .nav-btn{ padding:14px 16px; }
-  summary{ padding:10px 12px !important; }
-}
-
-/* Prevent horizontal page scroll caused by any stray wide element */
-body{ overflow-x:hidden; }
-.page-inner{ overflow-x:hidden; }
-table{ overflow-x:auto; } /* re-assert: table itself may scroll, page must not */
 
 </style>
 </head>
@@ -574,6 +656,9 @@ table{ overflow-x:auto; } /* re-assert: table itself may scroll, page must not *
 <li><a href="#deep-m10" class="nav-link" data-page="deep-m10" data-search="performance และ caching"><span class="nav-dot"></span>Performance และ Caching</a></li>
 <li><a href="#deep-m11" class="nav-link" data-page="deep-m11" data-search="เดินผ่านระบบเดียวครบทุกชั้น"><span class="nav-dot"></span>เดินผ่านระบบเดียวครบทุกชั้น</a></li>
 <li><a href="#deep-m12" class="nav-link" data-page="deep-m12" data-search="service layer / repository pattern"><span class="nav-dot"></span>Service Layer / Repository Pattern</a></li>
+<li><a href="#deep-m13" class="nav-link" data-page="deep-m13" data-search="package เสริมที่ควรรู้จัก"><span class="nav-dot"></span>Package เสริมที่ควรรู้จัก</a></li>
+<li><a href="#deep-m14" class="nav-link" data-page="deep-m14" data-search="โครงสร้างโปรเจกต์แบบละเอียด"><span class="nav-dot"></span>โครงสร้างโปรเจกต์แบบละเอียด</a></li>
+<li><a href="#deep-m15" class="nav-link" data-page="deep-m15" data-search="full project — ตั้งแต่สร้างจนรันจริง"><span class="nav-dot"></span>Full Project — ตั้งแต่สร้างจนรันจริง</a></li>
 </ul></div>
 <div class="nav-group" data-group="6"><div class="nav-group-title">4. Cheat Sheet</div><ul class="nav-list">
 <li><a href="#cheat-1" class="nav-link" data-page="cheat-1" data-search="ตัวแปรและชนิดข้อมูล"><span class="nav-dot"></span>ตัวแปรและชนิดข้อมูล</a></li>
@@ -624,7 +709,7 @@ table{ overflow-x:auto; } /* re-assert: table itself may scroll, page must not *
   
 <section class="page" id="page-setup-s1" data-pageid="setup-s1">
   <div class="page-inner">
-    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 1 จาก 70</span></div>
+    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 1 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:1%"></div></div>
     <div class="step" id="s1">
 <div class="step-head"><span class="step-num">1</span><span class="step-title">เช็คว่า .NET SDK ติดตั้งอยู่หรือยัง</span></div>
@@ -654,7 +739,7 @@ table{ overflow-x:auto; } /* re-assert: table itself may scroll, page must not *
 
 <section class="page" id="page-setup-s2" data-pageid="setup-s2">
   <div class="page-inner">
-    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 2 จาก 70</span></div>
+    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 2 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:3%"></div></div>
     <div class="step" id="s2">
 <div class="step-head"><span class="step-num">2</span><span class="step-title">ติดตั้ง extension สำหรับเขียน C#</span></div>
@@ -683,7 +768,7 @@ table{ overflow-x:auto; } /* re-assert: table itself may scroll, page must not *
 
 <section class="page" id="page-setup-s3" data-pageid="setup-s3">
   <div class="page-inner">
-    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 3 จาก 70</span></div>
+    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 3 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:4%"></div></div>
     <div class="step" id="s3">
 <div class="step-head"><span class="step-num">3</span><span class="step-title">สร้างโปรเจกต์เว็บแอปแรก</span></div>
@@ -723,8 +808,8 @@ dotnet new webapp -o FirstWebApp</pre>
 
 <section class="page" id="page-setup-s4" data-pageid="setup-s4">
   <div class="page-inner">
-    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 4 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:6%"></div></div>
+    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 4 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:5%"></div></div>
     <div class="step" id="s4">
 <div class="step-head"><span class="step-num">4</span><span class="step-title">เปิดโปรเจกต์และสำรวจไฟล์คร่าวๆ</span></div>
 <div class="step-body">
@@ -752,7 +837,7 @@ code .</pre>
 
 <section class="page" id="page-setup-s5" data-pageid="setup-s5">
   <div class="page-inner">
-    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 5 จาก 70</span></div>
+    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 5 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:7%"></div></div>
     <div class="step" id="s5">
 <div class="step-head"><span class="step-num">5</span><span class="step-title">รันเว็บแอปจริง</span></div>
@@ -783,8 +868,8 @@ Now listening on: https://localhost:5001</pre>
 
 <section class="page" id="page-setup-s6" data-pageid="setup-s6">
   <div class="page-inner">
-    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 6 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:9%"></div></div>
+    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 6 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:8%"></div></div>
     <div class="step" id="s6">
 <div class="step-head"><span class="step-num">6</span><span class="step-title">เปิดดูผลใน browser</span></div>
 <div class="step-body">
@@ -814,7 +899,7 @@ Now listening on: https://localhost:5001</pre>
 
 <section class="page" id="page-setup-s7" data-pageid="setup-s7">
   <div class="page-inner">
-    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 7 จาก 70</span></div>
+    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 7 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div>
     <div class="step" id="s7">
 <div class="step-head"><span class="step-num">7</span><span class="step-title">ลองแก้โค้ดแล้วดูผลแบบสด</span></div>
@@ -848,7 +933,7 @@ Now listening on: https://localhost:5001</pre>
 
 <section class="page" id="page-setup-s8" data-pageid="setup-s8">
   <div class="page-inner">
-    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 8 จาก 70</span></div>
+    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 8 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:11%"></div></div>
     <div class="step" id="s8">
 <div class="step-head"><span class="step-num">8</span><span class="step-title">หยุดการรันเมื่อเลิกใช้งาน</span></div>
@@ -873,8 +958,8 @@ Now listening on: https://localhost:5001</pre>
 
 <section class="page" id="page-setup-trouble" data-pageid="setup-trouble">
   <div class="page-inner">
-    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 9 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:13%"></div></div>
+    <div class="breadcrumb">1. เตรียมเครื่องมือ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 9 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:12%"></div></div>
     <div class="step" id="trouble">
 <div class="step-head" style="background:var(--warn-soft);"><span class="step-num" style="background:var(--warn);">!</span><span class="step-title">แก้ปัญหาที่เจอบ่อย</span></div>
 <div class="step-body">
@@ -902,7 +987,7 @@ Now listening on: https://localhost:5001</pre>
 
 <section class="page" id="page-beg-t1" data-pageid="beg-t1">
   <div class="page-inner">
-    <div class="breadcrumb">2. แนวคิดการเขียนโปรแกรม (ยังไม่มีโค้ด) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 10 จาก 70</span></div>
+    <div class="breadcrumb">2. แนวคิดการเขียนโปรแกรม (ยังไม่มีโค้ด) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 10 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:14%"></div></div>
     <div class="topic" id="t1">
 <div class="topic-head"><span class="topic-num">01</span><span class="topic-title">โปรแกรมคืออะไร</span></div>
@@ -930,8 +1015,8 @@ Now listening on: https://localhost:5001</pre>
 
 <section class="page" id="page-beg-t2" data-pageid="beg-t2">
   <div class="page-inner">
-    <div class="breadcrumb">2. แนวคิดการเขียนโปรแกรม (ยังไม่มีโค้ด) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 11 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:16%"></div></div>
+    <div class="breadcrumb">2. แนวคิดการเขียนโปรแกรม (ยังไม่มีโค้ด) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 11 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:15%"></div></div>
     <div class="topic" id="t2">
 <div class="topic-head"><span class="topic-num">02</span><span class="topic-title">Source Code กับการรันโค้ด ต่างกันยังไง</span></div>
 <div class="topic-body">
@@ -979,8 +1064,8 @@ Now listening on: https://localhost:5001</pre>
 
 <section class="page" id="page-beg-t3" data-pageid="beg-t3">
   <div class="page-inner">
-    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 12 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:17%"></div></div>
+    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 12 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:16%"></div></div>
     <div class="topic" id="t3">
 <div class="topic-head"><span class="topic-num">03</span><span class="topic-title">เขียนบรรทัดแรก (Hello World)</span></div>
 <div class="topic-body">
@@ -1044,8 +1129,8 @@ Console.WriteLine("Hello, World!");   // เขียนโน้ตต่อท
 
 <section class="page" id="page-beg-t4" data-pageid="beg-t4">
   <div class="page-inner">
-    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 13 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:19%"></div></div>
+    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 13 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:18%"></div></div>
     <div class="topic" id="t4">
 <div class="topic-head"><span class="topic-num">04</span><span class="topic-title">ตัวแปรคืออะไร</span></div>
 <div class="topic-body">
@@ -1128,8 +1213,8 @@ Console.WriteLine(age);   // แสดง 30</pre>
 
 <section class="page" id="page-beg-t5" data-pageid="beg-t5">
   <div class="page-inner">
-    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 14 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
+    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 14 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:19%"></div></div>
     <div class="topic" id="t5">
 <div class="topic-head"><span class="topic-num">05</span><span class="topic-title">ชนิดข้อมูล (Data Type)</span></div>
 <div class="topic-body">
@@ -1216,7 +1301,7 @@ Console.WriteLine(number + 1);   // แสดง 101 (บวกกันได�
 
 <section class="page" id="page-beg-t6" data-pageid="beg-t6">
   <div class="page-inner">
-    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 15 จาก 70</span></div>
+    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 15 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:21%"></div></div>
     <div class="topic" id="t6">
 <div class="topic-head"><span class="topic-num">06</span><span class="topic-title">การตัดสินใจ (if/else)</span></div>
@@ -1368,8 +1453,8 @@ else
 
 <section class="page" id="page-beg-t7" data-pageid="beg-t7">
   <div class="page-inner">
-    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 16 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:23%"></div></div>
+    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 16 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:22%"></div></div>
     <div class="topic" id="t7">
 <div class="topic-head"><span class="topic-num">07</span><span class="topic-title">การทำซ้ำ (Loop)</span></div>
 <div class="topic-body">
@@ -1477,8 +1562,8 @@ Console.WriteLine(sum);</pre>
 
 <section class="page" id="page-beg-t8" data-pageid="beg-t8">
   <div class="page-inner">
-    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 17 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:24%"></div></div>
+    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 17 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:23%"></div></div>
     <div class="topic" id="t8">
 <div class="topic-head"><span class="topic-num">08</span><span class="topic-title">Method — การตั้งชื่อ "งาน" ที่ทำซ้ำได้</span></div>
 <div class="topic-body">
@@ -1556,8 +1641,8 @@ Greet("Somchai", "หวัดดี");     // ส่งค่าเอง พ�
 
 <section class="page" id="page-beg-t9" data-pageid="beg-t9">
   <div class="page-inner">
-    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 18 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:26%"></div></div>
+    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 18 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div>
     <div class="topic" id="t9">
 <div class="topic-head"><span class="topic-num">09</span><span class="topic-title">Class — การจัดกลุ่มข้อมูลที่เกี่ยวกัน</span></div>
 <div class="topic-body">
@@ -1653,8 +1738,8 @@ Product item = new Product("เสื้อยืด", 200);   // กำหน�
 
 <section class="page" id="page-beg-t10" data-pageid="beg-t10">
   <div class="page-inner">
-    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 19 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:27%"></div></div>
+    <div class="breadcrumb">2. C# ทีละก้าวเล็กๆ <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 19 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:26%"></div></div>
     <div class="topic" id="t10">
 <div class="topic-head"><span class="topic-num">10</span><span class="topic-title">List — เก็บของหลายชิ้นไว้ด้วยกัน</span></div>
 <div class="topic-body">
@@ -1736,8 +1821,8 @@ fruits.Sort()           // เรียงลำดับตามตัวอ�
 
 <section class="page" id="page-beg-t11" data-pageid="beg-t11">
   <div class="page-inner">
-    <div class="breadcrumb">2. เว็บแอปคืออะไร (ก่อนแตะ ASP.NET Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 20 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:29%"></div></div>
+    <div class="breadcrumb">2. เว็บแอปคืออะไร (ก่อนแตะ ASP.NET Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 20 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:27%"></div></div>
     <div class="topic" id="t11">
 <div class="topic-head"><span class="topic-num">11</span><span class="topic-title">เว็บทำงานยังไง</span></div>
 <div class="topic-body">
@@ -1766,8 +1851,8 @@ fruits.Sort()           // เรียงลำดับตามตัวอ�
 
 <section class="page" id="page-beg-t12" data-pageid="beg-t12">
   <div class="page-inner">
-    <div class="breadcrumb">2. เว็บแอปคืออะไร (ก่อนแตะ ASP.NET Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 21 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+    <div class="breadcrumb">2. เว็บแอปคืออะไร (ก่อนแตะ ASP.NET Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 21 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:29%"></div></div>
     <div class="topic" id="t12">
 <div class="topic-head"><span class="topic-num">12</span><span class="topic-title">ASP.NET Core คืออะไรในภาพนั้น</span></div>
 <div class="topic-body">
@@ -1795,8 +1880,8 @@ fruits.Sort()           // เรียงลำดับตามตัวอ�
 
 <section class="page" id="page-beg-t13" data-pageid="beg-t13">
   <div class="page-inner">
-    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 22 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:31%"></div></div>
+    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 22 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
     <div class="topic" id="t13">
 <div class="topic-head"><span class="topic-num">13</span><span class="topic-title">สร้างโปรเจกต์แรกและทำความรู้จักไฟล์</span></div>
 <div class="topic-body">
@@ -1830,8 +1915,8 @@ code .</pre>
 
 <section class="page" id="page-beg-t14" data-pageid="beg-t14">
   <div class="page-inner">
-    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 23 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 23 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:32%"></div></div>
     <div class="topic" id="t14">
 <div class="topic-head"><span class="topic-num">14</span><span class="topic-title">หน้าเว็บหน้าแรกของตัวเอง</span></div>
 <div class="topic-body">
@@ -1867,14 +1952,15 @@ code .</pre>
 
 <section class="page" id="page-beg-t15" data-pageid="beg-t15">
   <div class="page-inner">
-    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 24 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:34%"></div></div>
+    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 24 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
     <div class="topic" id="t15">
 <div class="topic-head"><span class="topic-num">15</span><span class="topic-title">แสดงข้อมูลบนหน้าเว็บ</span></div>
 <div class="topic-body">
-<p>ตอนนี้จะเอาความรู้เรื่อง class และ List จาก Part B มาแสดงบนหน้าเว็บจริง สร้างไฟล์คู่ 2 ไฟล์ในโฟลเดอร์ Pages/:</p>
-<pre>@* Products.cshtml — ส่วนหน้าตา *@
-@page
+<p>ตอนนี้จะเอาความรู้เรื่อง class และ List จาก Part B มาแสดงบนหน้าเว็บจริง ต้องสร้างไฟล์คู่ 2 ไฟล์
+      ในโฟลเดอร์ <code>Pages/</code> (โฟลเดอร์เดียวกับที่เจอ Greeting.cshtml ในหัวข้อ 14)</p>
+<p><b>สร้างไฟล์ที่:</b> <code>Pages/Products.cshtml</code></p>
+<pre>@page
 @model ProductsModel
 
 &lt;h1&gt;รายการสินค้า&lt;/h1&gt;
@@ -1884,8 +1970,9 @@ code .</pre>
     &lt;li&gt;@product.Name — @product.Price บาท&lt;/li&gt;
 }
 &lt;/ul&gt;</pre>
-<pre>// Products.cshtml.cs — ส่วน C# (logic)
-public class ProductsModel : PageModel
+<p><b>สร้างไฟล์ที่:</b> <code>Pages/Products.cshtml.cs</code> (ไฟล์คู่ ชื่อเดียวกันแต่เติม .cs
+      ต้องอยู่ในโฟลเดอร์เดียวกับไฟล์ .cshtml เสมอ)</p>
+<pre>public class ProductsModel : PageModel
 {
     public List&lt;Product&gt; Products = new();
 
@@ -1923,14 +2010,15 @@ public class ProductsModel : PageModel
 
 <section class="page" id="page-beg-t16" data-pageid="beg-t16">
   <div class="page-inner">
-    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 25 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:36%"></div></div>
+    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 25 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:34%"></div></div>
     <div class="topic" id="t16">
 <div class="topic-head"><span class="topic-num">16</span><span class="topic-title">รับข้อมูลจากผู้ใช้ (ฟอร์ม)</span></div>
 <div class="topic-body">
-<p>ตอนนี้ข้อมูลสินค้ายัง hardcode ไว้ในโค้ด ขั้นถัดไปคือให้ผู้ใช้กรอกข้อมูลผ่านฟอร์มแล้วส่งเข้ามาได้จริง</p>
-<pre>@* Create.cshtml *@
-@page
+<p>ตอนนี้ข้อมูลสินค้ายัง hardcode ไว้ในโค้ด ขั้นถัดไปคือให้ผู้ใช้กรอกข้อมูลผ่านฟอร์มแล้วส่งเข้ามาได้จริง
+      สร้างไฟล์คู่ใหม่อีกชุด (แยกจาก Products.cshtml ในหัวข้อก่อน)</p>
+<p><b>สร้างไฟล์ที่:</b> <code>Pages/Create.cshtml</code></p>
+<pre>@page
 @model CreateModel
 
 &lt;form method="post"&gt;
@@ -1942,8 +2030,8 @@ public class ProductsModel : PageModel
 
     &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
 &lt;/form&gt;</pre>
-<pre>// Create.cshtml.cs
-public class CreateModel : PageModel
+<p><b>สร้างไฟล์ที่:</b> <code>Pages/Create.cshtml.cs</code></p>
+<pre>public class CreateModel : PageModel
 {
     [BindProperty]
     public Product NewProduct { get; set; } = new();
@@ -1980,18 +2068,18 @@ property ชื่อ NewProduct.Name ตรงกับใน .cshtml.cs หร
 
 <section class="page" id="page-beg-t17" data-pageid="beg-t17">
   <div class="page-inner">
-    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 26 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:37%"></div></div>
+    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 26 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:36%"></div></div>
     <div class="topic" id="t17">
 <div class="topic-head"><span class="topic-num">17</span><span class="topic-title">เก็บข้อมูลจริงด้วยฐานข้อมูล</span></div>
 <div class="topic-body">
 <p>ตอนนี้ข้อมูลที่กรอกในหัวข้อ 16 ยังหายไปทันทีที่ปิดโปรแกรม เพราะเก็บไว้แค่ในหน่วยความจำชั่วคราว
       ถ้าอยากให้ข้อมูลอยู่ถาวร ต้องเก็บลงฐานข้อมูล เครื่องมือที่ช่วยให้ C# คุยกับฐานข้อมูลได้ง่ายขึ้นเรียกว่า
       <b>Entity Framework Core (EF Core)</b></p>
-<p>ติดตั้ง EF Core เพิ่ม (ใช้ SQLite ก่อนเพราะติดตั้งง่ายที่สุดสำหรับฝึก):</p>
+<p>ติดตั้ง EF Core เพิ่ม (รันคำสั่งนี้ใน terminal ที่ root ของโปรเจกต์ ใช้ SQLite ก่อนเพราะติดตั้งง่ายที่สุดสำหรับฝึก):</p>
 <pre>dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 dotnet add package Microsoft.EntityFrameworkCore.Design</pre>
-<p>สร้างไฟล์ตัวแทนการเชื่อมต่อฐานข้อมูล:</p>
+<p><b>สร้างไฟล์ที่:</b> <code>AppDbContext.cs</code> (วางไว้ที่ root ของโปรเจกต์ก่อนได้ ยังไม่ต้องแยกโฟลเดอร์)</p>
 <pre>public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options) { }
@@ -1999,10 +2087,26 @@ dotnet add package Microsoft.EntityFrameworkCore.Design</pre>
 }</pre>
 <p><code>DbSet&lt;Product&gt; Products</code> คือการบอกว่า "มี table ชื่อ Products เก็บข้อมูลตาม class
       Product ที่สร้างไว้แล้วในหัวข้อ 9" AppDbContext คือจุดเดียวที่ใช้คุยกับฐานข้อมูลทั้งหมด</p>
+<p><b>แก้ไขไฟล์ที่:</b> <code>Program.cs</code> (ไฟล์นี้มีอยู่แล้วตั้งแต่สร้างโปรเจกต์ในหัวข้อ 13
+      ต้องเพิ่มบรรทัดใหม่เข้าไปเพื่อให้เว็บแอป "รู้จัก" AppDbContext ที่เพิ่งสร้าง — ขาดขั้นตอนนี้ไปหัวข้อ 18
+      จะใช้ฐานข้อมูลไม่ได้เลย)</p>
+<pre>var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();
+
+// เพิ่ม 2 บรรทัดนี้ก่อน builder.Build() เสมอ
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite("Data Source=app.db"));
+
+var app = builder.Build();
+// ... โค้ดเดิมที่เหลือของ Program.cs ไม่ต้องแก้ ...</pre>
+<p>บรรทัด <code>AddDbContext&lt;AppDbContext&gt;</code> คือการ "ลงทะเบียน" AppDbContext เข้าสู่ระบบ DI
+      (ตามที่เรียนหลักการไว้ใน Module 2-3 ของ webapp-deepdive) ทำให้ตอนนี้ PageModel ไฟล์ไหนก็ตาม
+      สามารถ "ขอ" AppDbContext มาใช้ผ่าน constructor ได้ทันที ซึ่งจะเห็นตัวอย่างจริงในหัวข้อ 18</p>
 <div class="idea-box">
-<b>ทำไมยังไม่ลงรายละเอียดการตั้งค่าเต็มรูปแบบ:</b> การตั้งค่าเชื่อมต่อฐานข้อมูลมีรายละเอียดปลีกย่อยเยอะ
-        (connection string, migration) หัวข้อนี้แค่ให้เห็นภาพว่า AppDbContext ทำหน้าที่อะไร ส่วนขั้นตอนเชื่อมต่อ
-        และสร้าง table จริงจะฝึกละเอียดในหัวข้อ 18 ที่รวมทุกอย่างเป็นโปรเจกต์เดียว
+<b>ทำไมยังไม่ลงรายละเอียด migration ในหัวข้อนี้:</b> การสร้าง table จริงในฐานข้อมูล (migration)
+        จะฝึกละเอียดในหัวข้อ 18 ที่รวมทุกอย่างเป็นโปรเจกต์เดียว หัวข้อนี้แค่ให้เห็นภาพว่า AppDbContext
+        ทำหน้าที่อะไรและต้องลงทะเบียนใน Program.cs อย่างไรก่อน
       </div>
 </div>
 </div>
@@ -2018,8 +2122,8 @@ dotnet add package Microsoft.EntityFrameworkCore.Design</pre>
 
 <section class="page" id="page-beg-t18" data-pageid="beg-t18">
   <div class="page-inner">
-    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 27 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:39%"></div></div>
+    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 27 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:37%"></div></div>
     <div class="topic" id="t18">
 <div class="topic-head"><span class="topic-num">18</span><span class="topic-title">CRUD ครบวงจร — รวมทุกอย่างเข้าด้วยกัน</span></div>
 <div class="topic-body">
@@ -2029,11 +2133,17 @@ dotnet add package Microsoft.EntityFrameworkCore.Design</pre>
 <p><b>R</b>ead — อ่าน/แสดงข้อมูล (list จากหัวข้อ 15)</p>
 <p><b>U</b>pdate — แก้ไขข้อมูลเดิม (คล้ายฟอร์ม Create แต่โหลดค่าเดิมมาแสดงก่อน)</p>
 <p><b>D</b>elete — ลบข้อมูล</p>
-<p>สร้าง migration เพื่อให้ EF Core สร้าง table จริงในฐานข้อมูลตามที่นิยามไว้ในหัวข้อ 17:</p>
+<p>ก่อนไปต่อ ต้องมี 2 อย่างนี้ครบจากหัวข้อ 17 แล้ว: ไฟล์ <code>AppDbContext.cs</code> ที่ root โปรเจกต์
+      และบรรทัด <code>AddDbContext&lt;AppDbContext&gt;</code> ใน <code>Program.cs</code> ถ้ายังไม่มี
+      ให้กลับไปทำหัวข้อ 17 ให้ครบก่อน ไม่งั้นขั้นตอนนี้จะ error</p>
+<p>ขั้นแรก สร้าง table จริงในฐานข้อมูลด้วย migration (รันคำสั่งนี้ที่ root ของโปรเจกต์):</p>
 <pre>dotnet tool install --global dotnet-ef
 dotnet ef migrations add InitialCreate
 dotnet ef database update</pre>
-<p>ตัวอย่างปุ่มลบใน list (Read) ที่เชื่อมกับฐานข้อมูลจริง:</p>
+<p>คำสั่งนี้จะสร้างโฟลเดอร์ <code>Migrations/</code> และไฟล์ <code>app.db</code> ขึ้นมาเองอัตโนมัติ
+      ที่ root ของโปรเจกต์ (ตรงกับชื่อที่ตั้งไว้ใน connection string ของหัวข้อ 17) ไม่ต้องสร้างไฟล์พวกนี้เอง</p>
+<p><b>แก้ไขไฟล์ที่:</b> <code>Pages/Products.cshtml.cs</code> (ไฟล์เดียวกับที่สร้างไว้ในหัวข้อ 15
+      แก้จากที่ hardcode ข้อมูล ให้ดึงจากฐานข้อมูลจริงแทน พร้อมเพิ่มปุ่มลบ)</p>
 <pre>public class ProductsModel : PageModel
 {
     private readonly AppDbContext _db;
@@ -2056,6 +2166,26 @@ dotnet ef database update</pre>
         }
     }
 }</pre>
+<p>สังเกตว่า constructor รับ <code>AppDbContext db</code> เข้ามาได้เลยโดยไม่ต้องสร้างเอง
+      (<code>new AppDbContext()</code>) เพราะลงทะเบียนไว้ใน Program.cs แล้วตั้งแต่หัวข้อ 17 — นี่คือผลลัพธ์จริง
+      ของการลงทะเบียน DI ที่เพิ่งทำไป</p>
+<p><b>แก้ไขไฟล์ที่:</b> <code>Pages/Create.cshtml.cs</code> (ไฟล์จากหัวข้อ 16 แก้จาก
+      Console.WriteLine ให้บันทึกลงฐานข้อมูลจริงแทน)</p>
+<pre>public class CreateModel : PageModel
+{
+    private readonly AppDbContext _db;
+    public CreateModel(AppDbContext db) { _db = db; }
+
+    [BindProperty]
+    public Product NewProduct { get; set; } = new();
+
+    public async Task&lt;IActionResult&gt; OnPostAsync()
+    {
+        _db.Products.Add(NewProduct);
+        await _db.SaveChangesAsync();
+        return RedirectToPage("Products");
+    }
+}</pre>
 <div class="idea-box">
 <b>คำว่า async/await ที่เพิ่งเห็น:</b> เป็นวิธีบอกว่า "ระหว่างรอฐานข้อมูลตอบกลับ ให้เว็บแอปไปรับ
         request อื่นก่อนได้ ไม่ต้องหยุดรอเฉยๆ" เป็น pattern มาตรฐานที่ใช้ทุกครั้งที่คุยกับฐานข้อมูลใน ASP.NET Core
@@ -2063,23 +2193,37 @@ dotnet ef database update</pre>
       </div>
 <div class="try-it"><b>ลองทำ:</b> ทำให้โปรเจกต์ฝึกมีครบ 4 อย่าง (Create, Read, Update, Delete)
       ผ่านหน้าเว็บจริง ต่อกับฐานข้อมูล SQLite ที่ตั้งไว้ ใช้เวลาหัวข้อนี้นานกว่าหัวข้ออื่น เพราะเป็นการรวมทุกอย่างเข้าด้วยกัน</div>
-<details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">โจทย์นี้ใหญ่และรวมทุกอย่างจาก Part D เข้าด้วยกัน แนวทางคร่าวๆ:
-<pre>// Read — แสดง list (ทำแล้วในหัวข้อ 15/17)
-public async Task OnGetAsync() { Products = await _db.Products.ToListAsync(); }
+<details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">โจทย์นี้ใหญ่และรวมทุกอย่างจาก Part D เข้าด้วยกัน แนวทางคร่าวๆ ตามไฟล์ที่ต้องแตะ:
+<p><b>Pages/Products.cshtml.cs</b> — Read (มีอยู่แล้วจากด้านบน) + ลิงก์ไปหน้า Create/Edit</p>
+<pre>public async Task OnGetAsync() { Products = await _db.Products.ToListAsync(); }</pre>
+<p><b>Pages/Create.cshtml.cs</b> — Create (มีอยู่แล้วจากด้านบน)</p>
+<pre>public async Task OnPostAsync() { _db.Products.Add(NewProduct); await _db.SaveChangesAsync(); }</pre>
+<p><b>สร้างไฟล์ใหม่ที่ Pages/Edit.cshtml และ Pages/Edit.cshtml.cs</b> — Update (หน้าใหม่ คล้าย Create
+แต่ต้องรับ id จาก URL มาโหลดค่าเดิมก่อน คล้ายรูปแบบที่เรียนใน Module 2 ของ webapp-deepdive)</p>
+<pre>@page "{id:int}"   // เพิ่มบรรทัดนี้ใน Edit.cshtml แทน @page เฉยๆ เพื่อรับ id จาก URL
 
-// Create — ฟอร์มเพิ่มใหม่ (ทำแล้วในหัวข้อ 16)
-public async Task OnPostAsync() { _db.Products.Add(NewProduct); await _db.SaveChangesAsync(); }
-
-// Update — โหลดค่าเดิมมาก่อน แล้วบันทึกทับ
-public async Task OnGetAsync(int id) { EditProduct = await _db.Products.FindAsync(id); }
-public async Task OnPostAsync()
+public class EditModel : PageModel
 {
-    _db.Products.Update(EditProduct);
-    await _db.SaveChangesAsync();
-}
+    private readonly AppDbContext _db;
+    public EditModel(AppDbContext db) { _db = db; }
 
-// Delete — ลบตาม id (ทำแล้วในหัวข้อ 18)
-public async Task OnPostDeleteAsync(int id)
+    [BindProperty]
+    public Product EditProduct { get; set; } = new();
+
+    public async Task OnGetAsync(int id)
+    {
+        EditProduct = await _db.Products.FindAsync(id) ?? new Product();
+    }
+
+    public async Task&lt;IActionResult&gt; OnPostAsync()
+    {
+        _db.Products.Update(EditProduct);
+        await _db.SaveChangesAsync();
+        return RedirectToPage("Products");
+    }
+}</pre>
+<p><b>Pages/Products.cshtml.cs</b> — Delete (มีอยู่แล้วจากด้านบน)</p>
+<pre>public async Task OnPostDeleteAsync(int id)
 {
     var product = await _db.Products.FindAsync(id);
     if (product is not null) { _db.Products.Remove(product); await _db.SaveChangesAsync(); }
@@ -2099,16 +2243,23 @@ public async Task OnPostDeleteAsync(int id)
 
 <section class="page" id="page-beg-t19" data-pageid="beg-t19">
   <div class="page-inner">
-    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 28 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div>
+    <div class="breadcrumb">2. สร้างเว็บแอปจริงทีละก้าว <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 28 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:38%"></div></div>
     <div class="topic" id="t19">
 <div class="topic-head"><span class="topic-num">19</span><span class="topic-title">Blazor เบื้องต้น (ถ้าอยากได้ UI โต้ตอบเร็วขึ้น)</span></div>
 <div class="topic-body">
 <p>เว็บแอปที่ทำมาถึงตอนนี้ ทุกครั้งที่กดปุ่มหรือ submit ฟอร์ม หน้าเว็บจะ reload ใหม่ทั้งหน้า
       ถ้าอยากได้ UI ที่อัพเดททันทีโดยไม่ reload (เช่น พิมพ์ค้นหาแล้ว list กรองทันที) ใช้ <b>Blazor</b> แทน
       ยังเป็น C# เหมือนเดิมทุกอย่าง แค่เขียนในไฟล์รูปแบบใหม่ (.razor)</p>
-<pre>@* ProductSearch.razor *@
-&lt;input @bind="keyword" @bind:event="oninput" /&gt;
+<div class="idea-box">
+<b>ข้อควรรู้ก่อนลองหัวข้อนี้:</b> โปรเจกต์ที่สร้างด้วย <code>dotnet new webapp</code> ตั้งแต่หัวข้อ 13
+        เป็น Razor Pages ธรรมดา ยังไม่รองรับไฟล์ .razor ทันที ถ้าอยากลองโค้ดข้างล่างนี้จริง ต้องสร้างโปรเจกต์ใหม่แยกต่างหาก
+        ด้วยคำสั่ง <code>dotnet new blazorserver -o BlazorTest</code> (รายละเอียดเต็มอยู่ใน Module 13 ของ
+        webapp-deepdive) หัวข้อนี้จึงเน้นให้ "อ่านเข้าใจ syntax" เป็นหลักก่อน ยังไม่ต้องรันจริงก็ได้
+      </div>
+<p><b>ถ้าจะลองจริง สร้างไฟล์ที่:</b> <code>Components/Pages/ProductSearch.razor</code>
+      (ในโปรเจกต์ Blazor ที่สร้างแยกต่างหากตามด้านบน)</p>
+<pre>&lt;input @bind="keyword" @bind:event="oninput" /&gt;
 
 &lt;ul&gt;
 @foreach (var p in FilteredProducts)
@@ -2160,8 +2311,8 @@ list ด้านล่างจะกรองเหลือแค่ราย
 
 <section class="page" id="page-deep-m1" data-pageid="deep-m1">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 29 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:41%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 29 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div>
     <div class="module" id="m1">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 1</span><span class="module-title">Layout กลางและโครงหน้าเว็บ</span></div>
@@ -2254,8 +2405,8 @@ list ด้านล่างจะกรองเหลือแค่ราย
 
 <section class="page" id="page-deep-m2" data-pageid="deep-m2">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 30 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:43%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 30 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:41%"></div></div>
     <div class="module" id="m2">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 2</span><span class="module-title">Navigation และ Route ที่ซับซ้อนขึ้น</span></div>
@@ -2342,8 +2493,8 @@ list ด้านล่างจะกรองเหลือแค่ราย
 
 <section class="page" id="page-deep-m3" data-pageid="deep-m3">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 31 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:44%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 31 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:42%"></div></div>
     <div class="module" id="m3">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 3</span><span class="module-title">ฟอร์มและ Validation แบบเต็มรูปแบบ</span></div>
@@ -2438,8 +2589,8 @@ list ด้านล่างจะกรองเหลือแค่ราย
 
 <section class="page" id="page-deep-m4" data-pageid="deep-m4">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 32 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:46%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 32 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:44%"></div></div>
     <div class="module" id="m4">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 4</span><span class="module-title">ข้อมูลที่เชื่อมกันหลาย Table (Relationship)</span></div>
@@ -2531,8 +2682,8 @@ dotnet ef database update</pre>
 
 <section class="page" id="page-deep-m5" data-pageid="deep-m5">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 33 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:47%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 33 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
     <div class="module" id="m5">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 5</span><span class="module-title">ระบบ Login (Authentication / Authorization)</span></div>
@@ -2615,8 +2766,8 @@ public class CreateModel : PageModel
 
 <section class="page" id="page-deep-m6" data-pageid="deep-m6">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 34 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:49%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 34 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:47%"></div></div>
     <div class="module" id="m6">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 6</span><span class="module-title">Blazor — การจัดการ State ระหว่าง Component</span></div>
@@ -2713,8 +2864,8 @@ public class CreateModel : PageModel
 
 <section class="page" id="page-deep-m7" data-pageid="deep-m7">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 35 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 35 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:48%"></div></div>
     <div class="module" id="m7">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 7</span><span class="module-title">จัดการ Error และบันทึก Log</span></div>
@@ -2804,8 +2955,8 @@ public class CreateModel : PageModel
 
 <section class="page" id="page-deep-m8" data-pageid="deep-m8">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 36 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:51%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 36 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:49%"></div></div>
     <div class="module" id="m8">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 8</span><span class="module-title">เตรียม Deploy ขึ้นใช้งานจริง</span></div>
@@ -2866,8 +3017,8 @@ dotnet user-secrets set "ConnectionStrings:Default" "Data Source=app.db"</pre>
 
 <section class="page" id="page-deep-m9" data-pageid="deep-m9">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 37 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:53%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 37 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:51%"></div></div>
     <div class="module" id="m9">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 9</span><span class="module-title">Security เชิงลึก</span></div>
@@ -2951,8 +3102,8 @@ var sql = "SELECT * FROM Products WHERE Name = '" + userInput + "'";
 
 <section class="page" id="page-deep-m10" data-pageid="deep-m10">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 38 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:54%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 38 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:52%"></div></div>
     <div class="module" id="m10">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 10</span><span class="module-title">Performance และ Caching</span></div>
@@ -3051,8 +3202,8 @@ var orders = await db.Orders.Include(o =&gt; o.Customer).ToListAsync();</pre>
 
 <section class="page" id="page-deep-m11" data-pageid="deep-m11">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 39 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:56%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 39 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:53%"></div></div>
     <div class="module" id="m11">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 11</span><span class="module-title">เดินผ่านระบบเดียวครบทุกชั้น</span></div>
@@ -3191,8 +3342,8 @@ Razor Page (ปุ่มกดตรวจสอบ) → PageModel (เรีย
 
 <section class="page" id="page-deep-m12" data-pageid="deep-m12">
   <div class="page-inner">
-    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 40 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:57%"></div></div>
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 40 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:55%"></div></div>
     <div class="module" id="m12">
 <div class="module-head">
 <div class="module-head-left"><span class="module-num">MODULE 12</span><span class="module-title">Service Layer / Repository Pattern</span></div>
@@ -3326,6 +3477,467 @@ builder.Services.AddScoped&lt;IProductService, ProductService&gt;();</pre>
     <div class="page-nav"><a href="#deep-m11" class="nav-btn prev-btn" data-page="deep-m11">
         <span class="nav-btn-arrow">&larr;</span>
         <span class="nav-btn-text"><span class="nav-btn-caption">ก่อนหน้า</span><span class="nav-btn-title">เดินผ่านระบบเดียวครบทุกชั้น</span></span>
+      </a><a href="#deep-m13" class="nav-btn next-btn" data-page="deep-m13">
+        <span class="nav-btn-text"><span class="nav-btn-caption">ถัดไป</span><span class="nav-btn-title">Package เสริมที่ควรรู้จัก</span></span>
+        <span class="nav-btn-arrow">&rarr;</span>
+      </a></div>
+  </div>
+</section>
+
+<section class="page" id="page-deep-m13" data-pageid="deep-m13">
+  <div class="page-inner">
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 41 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:56%"></div></div>
+    <div class="module" id="m13">
+<div class="module-head">
+<div class="module-head-left"><span class="module-num">MODULE 13</span><span class="module-title">Package เสริมที่ควรรู้จัก</span></div>
+<span class="module-duration">อ้างอิง — ติดตั้งตามที่ใช้จริง</span>
+</div>
+<div class="module-body">
+<div class="why-box">
+<b>วิธีใช้หน้านี้:</b> ไม่ต้องติดตั้งทุกตัวพร้อมกัน เลือกตามงานที่กำลังทำจริง ทุกตัวติดตั้งด้วยรูปแบบคำสั่งเดียวกัน:
+        <pre>dotnet add package ชื่อ Package</pre>
+</div>
+<div class="subblock">
+<div class="subblock-label">Database (เลือกตาม database ที่ใช้จริง)</div>
+<pre>Microsoft.EntityFrameworkCore.SqlServer     # ต่อ SQL Server
+Microsoft.EntityFrameworkCore.Sqlite        # ต่อ SQLite (เหมาะกับฝึก)
+Npgsql.EntityFrameworkCore.PostgreSQL       # ต่อ PostgreSQL
+Microsoft.EntityFrameworkCore.Tools         # คำสั่ง migration (dotnet ef)
+Microsoft.EntityFrameworkCore.Design        # จำเป็นคู่กับ Tools เสมอ</pre>
+<p>ติดตั้งแค่ provider เดียวที่ตรงกับ database จริงที่ใช้ ไม่ต้องลงหลายตัวพร้อมกัน
+        ส่วน Tools กับ Design ต้องมีคู่กันเสมอถ้าจะใช้คำสั่ง <code>dotnet ef migrations add</code></p>
+</div>
+<div class="subblock">
+<div class="subblock-label">Authentication</div>
+<pre>Microsoft.AspNetCore.Identity.EntityFrameworkCore   # ระบบ login สำเร็จรูป (Module 5)</pre>
+</div>
+<div class="subblock">
+<div class="subblock-label">API Documentation — ดูและทดสอบ endpoint ผ่านหน้าเว็บ</div>
+<pre>Swashbuckle.AspNetCore</pre>
+<p>สร้างหน้าเว็บ Swagger UI อัตโนมัติที่แสดงทุก endpoint ของ Web API พร้อมปุ่มทดลองยิง request ได้เลย
+        โดยไม่ต้องพึ่ง Postman หรือ REST Client extension มีประโยชน์มากตอนทำ Web API แยกจาก frontend</p>
+</div>
+<div class="subblock">
+<div class="subblock-label">Logging — บันทึก log แบบมีโครงสร้างและส่งออกไฟล์ได้</div>
+<pre>Serilog.AspNetCore
+Serilog.Sinks.File</pre>
+<p>ต่อยอดจาก <code>ILogger</code> ที่เรียนใน Module 7 — Serilog ทำให้ log ออกมาเป็นไฟล์ที่ดูย้อนหลังได้
+        แยกตามวันที่ ค้นหาง่ายกว่า log ที่เห็นแค่ตอนรันบน terminal</p>
+</div>
+<div class="subblock">
+<div class="subblock-label">Testing</div>
+<pre>xunit                    # เขียน unit test (ใช้แล้วใน Module 8 ของ beginner plan)
+xunit.runner.visualstudio
+Moq                      # จำลอง (mock) Interface เช่น IProductRepository ตอนเทสต์ Service</pre>
+</div>
+<div class="subblock">
+<div class="subblock-label">Resilience / Retry — สำคัญมากสำหรับงานที่ต้องเรียก IWS</div>
+<pre>Microsoft.Extensions.Http.Polly</pre>
+<pre>// Program.cs — ให้ HttpClient ที่เรียก IWS retry อัตโนมัติเมื่อเจอปัญหาชั่วคราว
+builder.Services.AddHttpClient&lt;IOrderApprovalService, OrderApprovalService&gt;()
+    .AddTransientHttpErrorPolicy(policy =&gt;
+        policy.WaitAndRetryAsync(3, retryAttempt =&gt;
+            TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));</pre>
+<p>ตรงกับสถานการณ์ในโปรเจกต์จริงของคุณที่ต้องเรียก IWS จาก IBM i — ถ้า network สะดุดชั่วคราว
+        หรือ IWS ตอบช้าเกินเวลา Polly จะ retry ให้อัตโนมัติ (ในตัวอย่างคือ retry 3 ครั้ง แต่ละครั้งรอนานขึ้นเรื่อยๆ
+        แบบ exponential backoff) แทนที่จะให้ทั้งระบบ error ทันทีตั้งแต่ครั้งแรกที่เจอปัญหาชั่วคราว</p>
+</div>
+<div class="subblock">
+<div class="subblock-label">Object Mapping — แปลง Model เป็น DTO อัตโนมัติ</div>
+<pre>Mapster       # เบาและเร็ว นิยมมากขึ้นเรื่อยๆ ในโปรเจกต์ใหม่
+# หรือ
+AutoMapper    # ตัวเก่าแก่ ใช้กันมานาน เอกสารเยอะ</pre>
+<p>ตอนโปรเจกต์มี Model และ DTO แยกกันหลายคู่ (ตามที่พูดถึงในตารางศัพท์ Module 1 ของ beginner plan)
+        การเขียนแปลงค่าเองทุก field ทุกครั้งจะซ้ำซากมาก library พวกนี้แปลงให้อัตโนมัติตาม field ที่ชื่อตรงกัน</p>
+</div>
+<div class="subblock">
+<div class="subblock-label">Excel / CSV — เผื่อ import/export ข้อมูลจาก AS400</div>
+<pre>ClosedXML     # อ่าน/เขียนไฟล์ Excel (.xlsx)
+CsvHelper     # อ่าน/เขียนไฟล์ CSV</pre>
+<p>มีประโยชน์ถ้าต้อง export รายงานจากเว็บแอปเป็น Excel ให้ผู้ใช้ดาวน์โหลด หรือ import ข้อมูล
+        ที่ export มาจาก AS400 เป็นไฟล์ CSV เข้าสู่ระบบใหม่</p>
+</div>
+<div class="pitfall">
+<b>ข้อควรระวังทั่วไป:</b> อย่าติดตั้ง package ทิ้งไว้ "เผื่อได้ใช้" ทุกตัวที่เพิ่มเข้ามาทำให้โปรเจกต์
+        ใหญ่ขึ้นและมีความเสี่ยงด้าน security เพิ่มขึ้น (ต้องคอยอัพเดทเวอร์ชันตาม) ติดตั้งเฉพาะตอนที่รู้แน่ชัด
+        ว่าจะใช้งานจริงเท่านั้น
+      </div>
+<div class="exercise">
+<b>แบบฝึกหัด:</b> ติดตั้ง Swashbuckle.AspNetCore ในโปรเจกต์ฝึกที่เป็น Web API แล้วเปิด
+        <code>/swagger</code> ดูว่าเห็นหน้า Swagger UI พร้อม endpoint ทั้งหมดที่เคยสร้างไว้ไหม
+      </div>
+<details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+<pre>dotnet add package Swashbuckle.AspNetCore</pre>
+เพิ่มใน Program.cs (ปกติ template webapi ใส่มาให้เกือบครบอยู่แล้ว เช็คว่ามีหรือยัง):
+<pre>builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+// ...
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}</pre>
+รัน <code>dotnet watch run</code> แล้วเปิด <code>https://localhost:5001/swagger</code> ควรเห็นรายการ
+endpoint ทั้งหมดพร้อมปุ่ม "Try it out" ให้กดทดสอบยิง request ได้ทันทีจากหน้าเว็บนี้เลย โดยไม่ต้องพึ่งเครื่องมือภายนอก
+</div></details>
+</div>
+</div>
+    <div class="page-nav"><a href="#deep-m12" class="nav-btn prev-btn" data-page="deep-m12">
+        <span class="nav-btn-arrow">&larr;</span>
+        <span class="nav-btn-text"><span class="nav-btn-caption">ก่อนหน้า</span><span class="nav-btn-title">Service Layer / Repository Pattern</span></span>
+      </a><a href="#deep-m14" class="nav-btn next-btn" data-page="deep-m14">
+        <span class="nav-btn-text"><span class="nav-btn-caption">ถัดไป</span><span class="nav-btn-title">โครงสร้างโปรเจกต์แบบละเอียด</span></span>
+        <span class="nav-btn-arrow">&rarr;</span>
+      </a></div>
+  </div>
+</section>
+
+<section class="page" id="page-deep-m14" data-pageid="deep-m14">
+  <div class="page-inner">
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 42 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:58%"></div></div>
+    <div class="module" id="m14">
+<div class="module-head">
+<div class="module-head-left"><span class="module-num">MODULE 14</span><span class="module-title">โครงสร้างโปรเจกต์แบบละเอียด</span></div>
+<span class="module-duration">อ้างอิง — เปิดดูทุกครั้งที่งงว่าไฟล์ควรอยู่ไหน</span>
+</div>
+<div class="module-body">
+<div class="why-box">
+<b>ทำไมต้องมี:</b> ปัญหาที่พบบ่อยที่สุดตอนโปรเจกต์เริ่มโตขึ้นคือ "ไม่รู้ว่าไฟล์ใหม่ควรสร้างตรงไหน"
+        โมดูลนี้รวบโครงสร้างมาตรฐานของโปรเจกต์ ASP.NET Core ที่มี Razor Pages + EF Core + Service Layer
+        ไว้ในที่เดียว ใช้เป็นแผนที่อ้างอิงได้ตลอด
+      </div>
+<div class="subblock">
+<div class="subblock-label">โครงสร้างเต็มของโปรเจกต์ระดับใช้งานจริง</div>
+<pre>MyWebApp/                          &lt;-- โฟลเดอร์โปรเจกต์ (สร้างจาก dotnet new webapp -o MyWebApp)
+│
+├── MyWebApp.csproj                &lt;-- ไฟล์ตั้งค่าโปรเจกต์ (.NET version, package ที่ติดตั้ง) — auto-generate ห้ามลบ
+├── Program.cs                     &lt;-- จุดเริ่มต้นโปรแกรม ลงทะเบียน service + middleware ทั้งหมด
+├── appsettings.json                &lt;-- ค่า config กลาง (connection string ฯลฯ)
+├── appsettings.Development.json    &lt;-- ค่า config เฉพาะตอนพัฒนา
+│
+├── Pages/                          &lt;-- ทุกหน้าเว็บ (Razor Pages) อยู่ในนี้
+│   ├── Index.cshtml                    หน้าแรกของเว็บ (มาให้ตั้งแต่สร้างโปรเจกต์)
+│   ├── Index.cshtml.cs
+│   ├── Shared/                     &lt;-- ส่วนที่ใช้ร่วมกันหลายหน้า
+│   │   ├── _Layout.cshtml              โครงหน้าเว็บกลาง (เมนู, header, footer)
+│   │   └── _ProductCard.cshtml         Partial View ตัวอย่าง (การ์ดแสดงสินค้า)
+│   │
+│   ├── Products/                   &lt;-- จัดกลุ่มตาม "เรื่อง" ไม่ใช่ทุกไฟล์แปะรวมกันที่ Pages/
+│   │   ├── Index.cshtml                หน้า list สินค้า
+│   │   ├── Index.cshtml.cs
+│   │   ├── Create.cshtml               หน้าเพิ่มสินค้า
+│   │   ├── Create.cshtml.cs
+│   │   ├── Edit.cshtml                 หน้าแก้ไขสินค้า
+│   │   ├── Edit.cshtml.cs
+│   │   ├── Detail.cshtml               หน้าดูรายละเอียด (จาก Module 2)
+│   │   └── Detail.cshtml.cs
+│   │
+│   └── Orders/                     &lt;-- อีกกลุ่มเรื่อง แยกโฟลเดอร์ชัดเจนเหมือนกัน
+│       ├── Index.cshtml
+│       └── Index.cshtml.cs
+│
+├── Models/                         &lt;-- class ที่แทนโครงสร้างข้อมูล (ตรงกับ table ในฐานข้อมูล)
+│   ├── Product.cs
+│   ├── Order.cs
+│   └── Customer.cs
+│
+├── Data/                           &lt;-- ทุกอย่างที่เกี่ยวกับการเชื่อมฐานข้อมูล
+│   ├── AppDbContext.cs                 DbContext หลักของโปรเจกต์
+│   └── Migrations/                     สร้างอัตโนมัติจาก dotnet ef migrations add (ห้ามแก้เอง)
+│       ├── 20260101000000_InitialCreate.cs
+│       └── AppDbContextModelSnapshot.cs
+│
+├── Services/                       &lt;-- business logic (จาก Module 12)
+│   ├── IProductService.cs
+│   └── ProductService.cs
+│
+├── Repositories/                   &lt;-- ชั้นคุยกับฐานข้อมูลโดยตรง (จาก Module 12)
+│   ├── IProductRepository.cs
+│   └── ProductRepository.cs
+│
+└── wwwroot/                        &lt;-- ไฟล์ static ที่ browser เรียกตรงได้ (css, js, รูปภาพ)
+    ├── css/
+    │   └── site.css
+    ├── js/
+    │   └── site.js
+    └── images/
+        └── logo.png</pre>
+</div>
+<div class="subblock">
+<div class="subblock-label">กฎการวางไฟล์ที่ใช้ได้เสมอ</div>
+<p><b>1. class ที่แทนข้อมูล (Product, Order, Customer)</b> → ไปที่ <code>Models/</code> เสมอ
+        ไม่ว่าจะใช้กับ Razor Pages, Web API, หรือ Service ก็ตาม เพราะเป็น "ของกลาง" ที่หลายส่วนใช้ร่วมกัน</p>
+<p><b>2. ไฟล์ที่เกี่ยวกับฐานข้อมูลโดยตรง (DbContext, Migrations)</b> → ไปที่ <code>Data/</code></p>
+<p><b>3. หน้าเว็บ (.cshtml + .cshtml.cs)</b> → ไปที่ <code>Pages/</code> จัดกลุ่มเป็นโฟลเดอร์ย่อยตาม
+        "เรื่อง" (Products/, Orders/) ไม่ใช่แปะทุกไฟล์ไว้ที่ Pages/ ตรงๆ เมื่อมีมากกว่า 5-6 หน้า</p>
+<p><b>4. business logic ที่ไม่เกี่ยวกับการแสดงผล</b> → ไปที่ <code>Services/</code></p>
+<p><b>5. โค้ดที่คุยกับฐานข้อมูลโดยตรง (ถ้าแยก Repository ตาม Module 12)</b> → ไปที่ <code>Repositories/</code></p>
+<p><b>6. ไฟล์ css/js/รูปภาพที่ browser โหลดตรง</b> → ไปที่ <code>wwwroot/</code> เท่านั้น
+        (ไฟล์นอก wwwroot browser เรียกตรงไม่ได้เลยด้วยเหตุผลด้านความปลอดภัย)</p>
+</div>
+<div class="pitfall">
+<b>ข้อผิดพลาดที่เจอบ่อยตอนเริ่มต้น:</b> สร้างทุกไฟล์ไว้ในโฟลเดอร์ Pages/ เดียวรวมกันหมดโดยไม่แยกโฟลเดอร์ย่อย
+        พอมีหน้าเว็บเกิน 10-15 หน้า จะหาไฟล์ไม่เจอและงงว่าไฟล์ไหนเกี่ยวกับเรื่องอะไร แนะนำให้เริ่มแยกโฟลเดอร์ย่อย
+        ตาม "เรื่อง" (Products/, Orders/, Customers/) ตั้งแต่มี 3-4 หน้าขึ้นไปในเรื่องเดียวกัน ไม่ต้องรอให้เยอะก่อน
+      </div>
+<div class="exercise">
+<b>แบบฝึกหัด:</b> เปิดโปรเจกต์ฝึกที่ทำมาตลอด (จาก beginner plan) ดูว่าตอนนี้จัดไฟล์ตรงกับโครงสร้าง
+        มาตรฐานนี้ไหม ถ้ายังไม่ตรง (เช่น Model ปนอยู่ใน Pages/) ลองย้ายไฟล์ให้ตรงตามนี้
+      </div>
+<details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+ไม่มีเฉลยตายตัวเพราะขึ้นกับว่าโปรเจกต์ฝึกของแต่ละคนจัดไว้ยังไงมาก่อน แต่เช็คลิสต์ที่ควรตรงคือ:
+class Product/Order ควรอยู่ใน Models/ ไม่ใช่ปนอยู่ในไฟล์ .cshtml.cs, AppDbContext ควรอยู่ใน Data/ ไม่ใช่
+วางไว้ที่ root ของโปรเจกต์เฉยๆ, และถ้ามีหน้าเว็บเรื่องเดียวกันเกิน 3 หน้าขึ้นไป ควรอยู่ในโฟลเดอร์ย่อยของตัวเอง
+ใต้ Pages/ เช่น Pages/Products/ ไม่ใช่ Pages/ตรงๆ ทั้งหมด
+</div></details>
+</div>
+</div>
+    <div class="page-nav"><a href="#deep-m13" class="nav-btn prev-btn" data-page="deep-m13">
+        <span class="nav-btn-arrow">&larr;</span>
+        <span class="nav-btn-text"><span class="nav-btn-caption">ก่อนหน้า</span><span class="nav-btn-title">Package เสริมที่ควรรู้จัก</span></span>
+      </a><a href="#deep-m15" class="nav-btn next-btn" data-page="deep-m15">
+        <span class="nav-btn-text"><span class="nav-btn-caption">ถัดไป</span><span class="nav-btn-title">Full Project — ตั้งแต่สร้างจนรันจริง</span></span>
+        <span class="nav-btn-arrow">&rarr;</span>
+      </a></div>
+  </div>
+</section>
+
+<section class="page" id="page-deep-m15" data-pageid="deep-m15">
+  <div class="page-inner">
+    <div class="breadcrumb">3. เว็บแอปใช้งานจริง <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 43 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:59%"></div></div>
+    <div class="module" id="m15">
+<div class="module-head">
+<div class="module-head-left"><span class="module-num">MODULE 15</span><span class="module-title">Full Project — ตั้งแต่สร้างจนรันจริง</span></div>
+<span class="module-duration">6-8 วัน</span>
+</div>
+<div class="module-body">
+<div class="why-box">
+<b>เป้าหมาย module นี้:</b> เดินตามทุกขั้นตอนตั้งแต่พิมพ์คำสั่งแรกจนได้เว็บแอปที่ทำงานจริง ระบบตัวอย่าง
+        คือ <b>"ระบบจัดการสินค้าคงคลังอย่างง่าย"</b> ทุก code block จะบอกชัดเจนว่า "สร้างไฟล์ที่ path ไหน"
+        กำกับไว้เสมอ ทำตามทีละขั้นได้เลยไม่ต้องเดา
+      </div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 1 — สร้างโปรเจกต์</div>
+<pre>dotnet new webapp -o InventoryApp
+cd InventoryApp
+code .</pre>
+<p>ได้โฟลเดอร์ <code>InventoryApp/</code> พร้อมไฟล์เริ่มต้น (Program.cs, Pages/Index.cshtml ฯลฯ)
+        ตามที่เคยเห็นใน setup-to-run</p>
+</div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 2 — สร้างโฟลเดอร์โครงสร้างตาม Module 14</div>
+<pre># รันจาก terminal ที่ root ของโปรเจกต์ (โฟลเดอร์ InventoryApp)
+mkdir Models
+mkdir Data
+mkdir Services
+mkdir Repositories
+mkdir Pages/Products</pre>
+<p>สร้างโฟลเดอร์เปล่าไว้ก่อนตามผังที่วางแผนไว้ ยังไม่มีไฟล์ข้างในก็ไม่เป็นไร</p>
+</div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 3 — สร้าง Model</div>
+<p><b>สร้างไฟล์ที่:</b> <code>Models/Product.cs</code></p>
+<pre>namespace InventoryApp.Models;
+
+public class Product
+{
+    public int Id { get; set; }
+
+    [Required(ErrorMessage = "กรุณากรอกชื่อสินค้า")]
+    [StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [Range(0, 1000000)]
+    public decimal Price { get; set; }
+
+    public int StockQuantity { get; set; }
+}</pre>
+<p>ต้องมี <code>using System.ComponentModel.DataAnnotations;</code> บนสุดของไฟล์ด้วย
+        (เพื่อให้ใช้ <code>[Required]</code>, <code>[Range]</code> ได้ ตามที่เรียนใน Module 3)</p>
+</div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 4 — สร้าง DbContext</div>
+<p><b>สร้างไฟล์ที่:</b> <code>Data/AppDbContext.cs</code></p>
+<pre>using Microsoft.EntityFrameworkCore;
+using InventoryApp.Models;
+
+namespace InventoryApp.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options) { }
+    public DbSet&lt;Product&gt; Products =&gt; Set&lt;Product&gt;();
+}</pre>
+</div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 5 — ติดตั้ง package และลงทะเบียนใน Program.cs</div>
+<pre>dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+dotnet add package Microsoft.EntityFrameworkCore.Tools</pre>
+<p><b>แก้ไขไฟล์ที่:</b> <code>Program.cs</code> (ไฟล์นี้มีอยู่แล้วตั้งแต่สร้างโปรเจกต์ แค่เพิ่มบรรทัดใหม่เข้าไป)</p>
+<pre>using InventoryApp.Data;   // เพิ่มบรรทัดนี้บนสุด
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();
+
+// เพิ่ม 2 บรรทัดนี้ก่อน builder.Build()
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite("Data Source=inventory.db"));
+
+var app = builder.Build();
+// ... โค้ดเดิมที่เหลือไม่ต้องแก้ ...</pre>
+</div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 6 — สร้างฐานข้อมูลจริงด้วย migration</div>
+<pre>dotnet tool install --global dotnet-ef
+dotnet ef migrations add InitialCreate
+dotnet ef database update</pre>
+<p>คำสั่งนี้สร้างโฟลเดอร์ <code>Data/Migrations/</code> ให้อัตโนมัติ (ตรงตามผังใน Module 14)
+        และสร้างไฟล์ <code>inventory.db</code> จริงที่ root ของโปรเจกต์</p>
+</div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 7 — สร้างหน้า list สินค้า</div>
+<p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Index.cshtml</code></p>
+<pre>@page
+@model InventoryApp.Pages.Products.IndexModel
+
+&lt;h1&gt;รายการสินค้าคงคลัง&lt;/h1&gt;
+
+&lt;a asp-page="Create"&gt;+ เพิ่มสินค้าใหม่&lt;/a&gt;
+
+&lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;ชื่อ&lt;/th&gt;&lt;th&gt;ราคา&lt;/th&gt;&lt;th&gt;คงเหลือ&lt;/th&gt;&lt;/tr&gt;
+    @foreach (var p in Model.Products)
+    {
+        &lt;tr&gt;
+            &lt;td&gt;@p.Name&lt;/td&gt;
+            &lt;td&gt;@p.Price&lt;/td&gt;
+            &lt;td&gt;@p.StockQuantity&lt;/td&gt;
+        &lt;/tr&gt;
+    }
+&lt;/table&gt;</pre>
+<p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Index.cshtml.cs</code></p>
+<pre>using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using InventoryApp.Data;
+using InventoryApp.Models;
+
+namespace InventoryApp.Pages.Products;
+
+public class IndexModel : PageModel
+{
+    private readonly AppDbContext _db;
+    public IndexModel(AppDbContext db) =&gt; _db = db;
+
+    public List&lt;Product&gt; Products { get; set; } = new();
+
+    public async Task OnGetAsync()
+    {
+        Products = await _db.Products.AsNoTracking().ToListAsync();
+    }
+}</pre>
+<div class="pitfall">
+<b>จุดที่ผิดบ่อยที่สุด:</b> namespace ในไฟล์ .cshtml.cs ต้องตรงกับตำแหน่งโฟลเดอร์จริงเสมอ
+          ไฟล์ที่อยู่ใน <code>Pages/Products/</code> ต้องมี namespace เป็น
+          <code>InventoryApp.Pages.Products</code> ถ้าพิมพ์ผิดหรือ namespace ไม่ตรงกับโฟลเดอร์ ASP.NET Core
+          จะหาไฟล์ไม่เจอและ error 404 ทั้งที่ไฟล์มีอยู่จริง
+        </div>
+</div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 8 — สร้างหน้าเพิ่มสินค้า</div>
+<p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Create.cshtml</code></p>
+<pre>@page
+@model InventoryApp.Pages.Products.CreateModel
+
+&lt;h1&gt;เพิ่มสินค้าใหม่&lt;/h1&gt;
+
+&lt;form method="post"&gt;
+    &lt;input asp-for="NewProduct.Name" /&gt;
+    &lt;span asp-validation-for="NewProduct.Name"&gt;&lt;/span&gt;
+
+    &lt;input asp-for="NewProduct.Price" /&gt;
+    &lt;input asp-for="NewProduct.StockQuantity" /&gt;
+
+    &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
+&lt;/form&gt;</pre>
+<p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Create.cshtml.cs</code></p>
+<pre>using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using InventoryApp.Data;
+using InventoryApp.Models;
+
+namespace InventoryApp.Pages.Products;
+
+public class CreateModel : PageModel
+{
+    private readonly AppDbContext _db;
+    public CreateModel(AppDbContext db) =&gt; _db = db;
+
+    [BindProperty]
+    public Product NewProduct { get; set; } = new();
+
+    public IActionResult OnGet() =&gt; Page();
+
+    public async Task&lt;IActionResult&gt; OnPostAsync()
+    {
+        if (!ModelState.IsValid) return Page();
+
+        _db.Products.Add(NewProduct);
+        await _db.SaveChangesAsync();
+        return RedirectToPage("Index");
+    }
+}</pre>
+</div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 9 — เพิ่มลิงก์เข้าเมนูหลัก</div>
+<p><b>แก้ไขไฟล์ที่:</b> <code>Pages/Shared/_Layout.cshtml</code> (ไฟล์นี้มีอยู่แล้ว หาส่วน nav แล้วเพิ่มลิงก์)</p>
+<pre>&lt;nav&gt;
+    &lt;a asp-page="/Index"&gt;หน้าแรก&lt;/a&gt;
+    &lt;a asp-page="/Products/Index"&gt;สินค้าคงคลัง&lt;/a&gt;   &lt;!-- เพิ่มบรรทัดนี้ --&gt;
+&lt;/nav&gt;</pre>
+</div>
+<div class="subblock">
+<div class="subblock-label">ขั้นที่ 10 — รันและทดสอบ</div>
+<pre>dotnet watch run</pre>
+<p>เปิด browser ไปที่ URL ที่ terminal แสดง คลิกเมนู "สินค้าคงคลัง" → กด "+ เพิ่มสินค้าใหม่" →
+        กรอกข้อมูล → บันทึก → ควรเห็นสินค้าที่เพิ่งเพิ่มปรากฏในหน้า list ทันที</p>
+</div>
+<div class="subblock">
+<div class="subblock-label">ผังไฟล์ทั้งหมดที่สร้างไปหลังทำครบ 10 ขั้น</div>
+<pre>InventoryApp/
+├── Program.cs                      (แก้ไข)
+├── inventory.db                    (สร้างอัตโนมัติจาก migration)
+├── Models/
+│   └── Product.cs                  (สร้างใหม่)
+├── Data/
+│   ├── AppDbContext.cs             (สร้างใหม่)
+│   └── Migrations/                 (สร้างอัตโนมัติ)
+├── Pages/
+│   ├── Shared/_Layout.cshtml       (แก้ไข)
+│   └── Products/
+│       ├── Index.cshtml            (สร้างใหม่)
+│       ├── Index.cshtml.cs         (สร้างใหม่)
+│       ├── Create.cshtml           (สร้างใหม่)
+│       └── Create.cshtml.cs        (สร้างใหม่)</pre>
+</div>
+<div class="exercise">
+<b>แบบฝึกหัด:</b> ทำครบ 10 ขั้นตามนี้ให้จบ แล้วเพิ่มเองต่อ (ไม่มีเฉลย): หน้า Edit และหน้า Delete
+        ตามรูปแบบเดียวกับ Create โดยอ้างอิง syntax จาก Module 1-2 ของไฟล์นี้ที่เรียนผ่านมาแล้ว
+      </div>
+<details class="answer"><summary>ดูเฉลย (เฉพาะ 10 ขั้นตอนหลัก)</summary><div class="answer-body">
+ถ้าทำตามทีละขั้นตรงตามโค้ดในเนื้อหา ผลลัพธ์ควรได้เว็บแอปที่เปิดหน้า /Products/Index แล้วเห็นตารางสินค้า
+(ว่างเปล่าตอนแรก) กดปุ่มเพิ่มสินค้าแล้วกรอกฟอร์ม บันทึกสำเร็จ กลับมาหน้า list เห็นสินค้าที่เพิ่มไป
+ถ้าเจอ error 404 ตอนเปิดหน้า Products ให้เช็คขั้นที่ 7 เรื่อง namespace ต้องตรงกับโฟลเดอร์ก่อนเป็นอันดับแรก
+เพราะเป็นจุดที่พลาดบ่อยที่สุดในทุกคนที่เพิ่งเริ่มแยกโฟลเดอร์ Pages/ เป็นกลุ่มย่อย
+</div></details>
+</div>
+</div>
+    <div class="page-nav"><a href="#deep-m14" class="nav-btn prev-btn" data-page="deep-m14">
+        <span class="nav-btn-arrow">&larr;</span>
+        <span class="nav-btn-text"><span class="nav-btn-caption">ก่อนหน้า</span><span class="nav-btn-title">โครงสร้างโปรเจกต์แบบละเอียด</span></span>
       </a><a href="#cheat-1" class="nav-btn next-btn" data-page="cheat-1">
         <span class="nav-btn-text"><span class="nav-btn-caption">ถัดไป</span><span class="nav-btn-title">ตัวแปรและชนิดข้อมูล</span></span>
         <span class="nav-btn-arrow">&rarr;</span>
@@ -3335,8 +3947,8 @@ builder.Services.AddScoped&lt;IProductService, ProductService&gt;();</pre>
 
 <section class="page" id="page-cheat-1" data-pageid="cheat-1">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 41 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:59%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 44 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
     <div class="section" id="cheat-1">
 <div class="section-head">ตัวแปรและชนิดข้อมูล</div>
 <div class="section-body">
@@ -3352,9 +3964,9 @@ int n = int.Parse(s);      // string → int
 string back = n.ToString(); // int → string</pre>
 </div>
 </div>
-    <div class="page-nav"><a href="#deep-m12" class="nav-btn prev-btn" data-page="deep-m12">
+    <div class="page-nav"><a href="#deep-m15" class="nav-btn prev-btn" data-page="deep-m15">
         <span class="nav-btn-arrow">&larr;</span>
-        <span class="nav-btn-text"><span class="nav-btn-caption">ก่อนหน้า</span><span class="nav-btn-title">Service Layer / Repository Pattern</span></span>
+        <span class="nav-btn-text"><span class="nav-btn-caption">ก่อนหน้า</span><span class="nav-btn-title">Full Project — ตั้งแต่สร้างจนรันจริง</span></span>
       </a><a href="#cheat-2" class="nav-btn next-btn" data-page="cheat-2">
         <span class="nav-btn-text"><span class="nav-btn-caption">ถัดไป</span><span class="nav-btn-title">การตัดสินใจ</span></span>
         <span class="nav-btn-arrow">&rarr;</span>
@@ -3364,8 +3976,8 @@ string back = n.ToString(); // int → string</pre>
 
 <section class="page" id="page-cheat-2" data-pageid="cheat-2">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 42 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 45 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:62%"></div></div>
     <div class="section" id="cheat-2">
 <div class="section-head">การตัดสินใจ</div>
 <div class="section-body">
@@ -3401,8 +4013,8 @@ switch (day)
 
 <section class="page" id="page-cheat-3" data-pageid="cheat-3">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 43 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:61%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 46 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:63%"></div></div>
     <div class="section" id="cheat-3">
 <div class="section-head">การทำซ้ำ</div>
 <div class="section-body">
@@ -3428,8 +4040,8 @@ if (i == 5) continue;   // ข้ามรอบนี้</pre>
 
 <section class="page" id="page-cheat-4" data-pageid="cheat-4">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 44 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:63%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 47 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:64%"></div></div>
     <div class="section" id="cheat-4">
 <div class="section-head">Method</div>
 <div class="section-body">
@@ -3461,8 +4073,8 @@ async Task&lt;Order&gt; GetOrderAsync(int id)
 
 <section class="page" id="page-cheat-5" data-pageid="cheat-5">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 45 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:64%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 48 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
     <div class="section" id="cheat-5">
 <div class="section-head">Class / Interface / DI</div>
 <div class="section-body">
@@ -3501,8 +4113,8 @@ class OrderService
 
 <section class="page" id="page-cheat-6" data-pageid="cheat-6">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 46 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 49 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:67%"></div></div>
     <div class="section" id="cheat-6">
 <div class="section-head">List / LINQ</div>
 <div class="section-body">
@@ -3533,8 +4145,8 @@ var result = await db.Orders
 
 <section class="page" id="page-cheat-7" data-pageid="cheat-7">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 47 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:67%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 50 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div>
     <div class="section" id="cheat-7">
 <div class="section-head">คำสั่ง terminal ที่ใช้บ่อย</div>
 <div class="section-body">
@@ -3564,8 +4176,8 @@ dotnet publish -c Release -o ./publish</pre>
 
 <section class="page" id="page-cheat-8" data-pageid="cheat-8">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 48 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:69%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 51 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:70%"></div></div>
     <div class="section" id="cheat-8">
 <div class="section-head">Razor Pages — ไฟล์คู่</div>
 <div class="section-body">
@@ -3612,8 +4224,8 @@ public class XxxModel : PageModel
 
 <section class="page" id="page-cheat-9" data-pageid="cheat-9">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 49 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:70%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 52 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:71%"></div></div>
     <div class="section" id="cheat-9">
 <div class="section-head">EF Core — DbContext</div>
 <div class="section-body">
@@ -3647,8 +4259,8 @@ var orders = await db.Orders.Include(o =&gt; o.Customer).ToListAsync();</pre>
 
 <section class="page" id="page-cheat-10" data-pageid="cheat-10">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 50 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:71%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 53 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:73%"></div></div>
     <div class="section" id="cheat-10">
 <div class="section-head">Data Annotation (Validation)</div>
 <div class="section-body">
@@ -3675,8 +4287,8 @@ public string? Email { get; set; }</pre>
 
 <section class="page" id="page-cheat-11" data-pageid="cheat-11">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 51 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:73%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 54 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:74%"></div></div>
     <div class="section" id="cheat-11">
 <div class="section-head">Blazor</div>
 <div class="section-body">
@@ -3709,8 +4321,8 @@ public string? Email { get; set; }</pre>
 
 <section class="page" id="page-cheat-12" data-pageid="cheat-12">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 52 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:74%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 55 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
     <div class="section" id="cheat-12">
 <div class="section-head">Program.cs โครงมาตรฐาน</div>
 <div class="section-body">
@@ -3743,8 +4355,8 @@ app.Run();</pre>
 
 <section class="page" id="page-cheat-13" data-pageid="cheat-13">
   <div class="page-inner">
-    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 53 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:76%"></div></div>
+    <div class="breadcrumb">4. Cheat Sheet <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 56 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:77%"></div></div>
     <div class="section" id="cheat-13">
 <div class="section-head">Attribute ที่ใช้บ่อยใน Web API Controller</div>
 <div class="section-body">
@@ -3771,8 +4383,8 @@ app.Run();</pre>
 
 <section class="page" id="page-faq-1" data-pageid="faq-1">
   <div class="page-inner">
-    <div class="breadcrumb">5. ตอน Setup / รันครั้งแรก <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 54 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:77%"></div></div>
+    <div class="breadcrumb">5. ตอน Setup / รันครั้งแรก <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 57 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">'dotnet' is not recognized as a command / command not found</span></div>
 <div class="item-body">
@@ -3795,7 +4407,7 @@ app.Run();</pre>
 
 <section class="page" id="page-faq-2" data-pageid="faq-2">
   <div class="page-inner">
-    <div class="breadcrumb">5. ตอน Setup / รันครั้งแรก <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 55 จาก 70</span></div>
+    <div class="breadcrumb">5. ตอน Setup / รันครั้งแรก <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 58 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:79%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Address already in use / port ถูกใช้งานอยู่แล้ว</span></div>
@@ -3819,8 +4431,8 @@ app.Run();</pre>
 
 <section class="page" id="page-faq-3" data-pageid="faq-3">
   <div class="page-inner">
-    <div class="breadcrumb">5. ตอน Setup / รันครั้งแรก <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 56 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+    <div class="breadcrumb">5. ตอน Setup / รันครั้งแรก <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 59 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:81%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">เปิด URL แล้วเจอ "Your connection is not private"</span></div>
 <div class="item-body">
@@ -3843,8 +4455,8 @@ app.Run();</pre>
 
 <section class="page" id="page-faq-4" data-pageid="faq-4">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ตอนเขียน C# พื้นฐาน <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 57 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:81%"></div></div>
+    <div class="breadcrumb">5. Error ตอนเขียน C# พื้นฐาน <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 60 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:82%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">error CS1002: ; expected</span></div>
 <div class="item-body">
@@ -3866,8 +4478,8 @@ app.Run();</pre>
 
 <section class="page" id="page-faq-5" data-pageid="faq-5">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ตอนเขียน C# พื้นฐาน <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 58 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:83%"></div></div>
+    <div class="breadcrumb">5. Error ตอนเขียน C# พื้นฐาน <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 61 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:84%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">error CS0103: The name 'x' does not exist in the current context</span></div>
 <div class="item-body">
@@ -3891,8 +4503,8 @@ app.Run();</pre>
 
 <section class="page" id="page-faq-6" data-pageid="faq-6">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ตอนเขียน C# พื้นฐาน <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 59 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:84%"></div></div>
+    <div class="breadcrumb">5. Error ตอนเขียน C# พื้นฐาน <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 62 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Unhandled exception: System.FormatException ตอนใช้ int.Parse</span></div>
 <div class="item-body">
@@ -3923,7 +4535,7 @@ else
 
 <section class="page" id="page-faq-7" data-pageid="faq-7">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ในหน้า Razor Pages <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 60 จาก 70</span></div>
+    <div class="breadcrumb">5. Error ในหน้า Razor Pages <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 63 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:86%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">404 Not Found ทั้งที่สร้างไฟล์ .cshtml แล้ว</span></div>
@@ -3948,8 +4560,8 @@ else
 
 <section class="page" id="page-faq-8" data-pageid="faq-8">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ในหน้า Razor Pages <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 61 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:87%"></div></div>
+    <div class="breadcrumb">5. Error ในหน้า Razor Pages <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 64 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:88%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">The model item passed into the dictionary is null / ไม่พบ property ของ Model</span></div>
 <div class="item-body">
@@ -3972,7 +4584,7 @@ else
 
 <section class="page" id="page-faq-9" data-pageid="faq-9">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ในหน้า Razor Pages <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 62 จาก 70</span></div>
+    <div class="breadcrumb">5. Error ในหน้า Razor Pages <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 65 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:89%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">กด submit ฟอร์มแล้วค่าที่กรอกไม่เข้ามาที่ [BindProperty]</span></div>
@@ -3997,7 +4609,7 @@ else
 
 <section class="page" id="page-faq-10" data-pageid="faq-10">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error เกี่ยวกับฐานข้อมูล (EF Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 63 จาก 70</span></div>
+    <div class="breadcrumb">5. Error เกี่ยวกับฐานข้อมูล (EF Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 66 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">No database provider has been configured / Unable to resolve DbContext</span></div>
@@ -4023,8 +4635,8 @@ else
 
 <section class="page" id="page-faq-11" data-pageid="faq-11">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error เกี่ยวกับฐานข้อมูล (EF Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 64 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:91%"></div></div>
+    <div class="breadcrumb">5. Error เกี่ยวกับฐานข้อมูล (EF Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 67 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:92%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">ดึงข้อมูลที่เชื่อมกัน (เช่น order.Customer) ได้ null ตลอด ทั้งที่มีข้อมูลจริง</span></div>
 <div class="item-body">
@@ -4049,7 +4661,7 @@ else
 
 <section class="page" id="page-faq-12" data-pageid="faq-12">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error เกี่ยวกับฐานข้อมูล (EF Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 65 จาก 70</span></div>
+    <div class="breadcrumb">5. Error เกี่ยวกับฐานข้อมูล (EF Core) <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 68 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:93%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Pending model changes / No migrations found ตอนรันโปรเจกต์</span></div>
@@ -4075,8 +4687,8 @@ dotnet ef database update</pre>
 
 <section class="page" id="page-faq-13" data-pageid="faq-13">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ใน Blazor <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 66 จาก 70</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:94%"></div></div>
+    <div class="breadcrumb">5. Error ใน Blazor <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 69 จาก 73</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">แก้ค่าตัวแปรแล้วหน้าจอไม่อัพเดทให้</span></div>
 <div class="item-body">
@@ -4102,7 +4714,7 @@ dotnet ef database update</pre>
 
 <section class="page" id="page-faq-14" data-pageid="faq-14">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ใน Blazor <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 67 จาก 70</span></div>
+    <div class="breadcrumb">5. Error ใน Blazor <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 70 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:96%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Object reference not set to an instance of an object ใน component</span></div>
@@ -4134,7 +4746,7 @@ else
 
 <section class="page" id="page-faq-15" data-pageid="faq-15">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ตอน Runtime ทั่วไป <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 68 จาก 70</span></div>
+    <div class="breadcrumb">5. Error ตอน Runtime ทั่วไป <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 71 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:97%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">Object reference not set to an instance of an object (NullReferenceException)</span></div>
@@ -4164,7 +4776,7 @@ if (product is null)
 
 <section class="page" id="page-faq-16" data-pageid="faq-16">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ตอน Runtime ทั่วไป <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 69 จาก 70</span></div>
+    <div class="breadcrumb">5. Error ตอน Runtime ทั่วไป <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 72 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:99%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">โปรแกรมค้าง (deadlock) ตอนเรียก method แบบ async</span></div>
@@ -4193,7 +4805,7 @@ var order = await GetOrderAsync(id);</pre>
 
 <section class="page" id="page-faq-17" data-pageid="faq-17">
   <div class="page-inner">
-    <div class="breadcrumb">5. Error ตอน Runtime ทั่วไป <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 70 จาก 70</span></div>
+    <div class="breadcrumb">5. Error ตอน Runtime ทั่วไป <span class="crumb-sep">/</span> <span class="crumb-current">บทที่ 73 จาก 73</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
     <div class="item">
 <div class="item-symptom"><span class="qmark">Q</span><span class="symptom-text">CORS policy ไม่อนุญาต (ตอนมี frontend แยก เช่น React)</span></div>
@@ -4219,10 +4831,9 @@ app.UseCors("AllowDev");</pre>
 </section>
 </main>
 </div>
-
 <script>
 (function(){
-  var pageOrder = ["setup-s1", "setup-s2", "setup-s3", "setup-s4", "setup-s5", "setup-s6", "setup-s7", "setup-s8", "setup-trouble", "beg-t1", "beg-t2", "beg-t3", "beg-t4", "beg-t5", "beg-t6", "beg-t7", "beg-t8", "beg-t9", "beg-t10", "beg-t11", "beg-t12", "beg-t13", "beg-t14", "beg-t15", "beg-t16", "beg-t17", "beg-t18", "beg-t19", "deep-m1", "deep-m2", "deep-m3", "deep-m4", "deep-m5", "deep-m6", "deep-m7", "deep-m8", "deep-m9", "deep-m10", "deep-m11", "deep-m12", "cheat-1", "cheat-2", "cheat-3", "cheat-4", "cheat-5", "cheat-6", "cheat-7", "cheat-8", "cheat-9", "cheat-10", "cheat-11", "cheat-12", "cheat-13", "faq-1", "faq-2", "faq-3", "faq-4", "faq-5", "faq-6", "faq-7", "faq-8", "faq-9", "faq-10", "faq-11", "faq-12", "faq-13", "faq-14", "faq-15", "faq-16", "faq-17"];
+  var pageOrder = ["setup-s1", "setup-s2", "setup-s3", "setup-s4", "setup-s5", "setup-s6", "setup-s7", "setup-s8", "setup-trouble", "beg-t1", "beg-t2", "beg-t3", "beg-t4", "beg-t5", "beg-t6", "beg-t7", "beg-t8", "beg-t9", "beg-t10", "beg-t11", "beg-t12", "beg-t13", "beg-t14", "beg-t15", "beg-t16", "beg-t17", "beg-t18", "beg-t19", "deep-m1", "deep-m2", "deep-m3", "deep-m4", "deep-m5", "deep-m6", "deep-m7", "deep-m8", "deep-m9", "deep-m10", "deep-m11", "deep-m12", "deep-m13", "deep-m14", "deep-m15", "cheat-1", "cheat-2", "cheat-3", "cheat-4", "cheat-5", "cheat-6", "cheat-7", "cheat-8", "cheat-9", "cheat-10", "cheat-11", "cheat-12", "cheat-13", "faq-1", "faq-2", "faq-3", "faq-4", "faq-5", "faq-6", "faq-7", "faq-8", "faq-9", "faq-10", "faq-11", "faq-12", "faq-13", "faq-14", "faq-15", "faq-16", "faq-17"];
   var pages = document.querySelectorAll(".page");
   var links = document.querySelectorAll(".nav-link");
   function showPage(id, updateHash){
@@ -4262,6 +4873,5 @@ app.UseCors("AllowDev");</pre>
   showPage(initial, false);
 })();
 </script>
-
 </body>
 </html>

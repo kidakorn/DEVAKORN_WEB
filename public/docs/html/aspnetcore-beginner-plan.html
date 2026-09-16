@@ -1001,9 +1001,10 @@ code .</pre>
   <div class="topic" id="t15">
     <div class="topic-head"><span class="topic-num">15</span><span class="topic-title">แสดงข้อมูลบนหน้าเว็บ</span></div>
     <div class="topic-body">
-      <p>ตอนนี้จะเอาความรู้เรื่อง class และ List จาก Part B มาแสดงบนหน้าเว็บจริง สร้างไฟล์คู่ 2 ไฟล์ในโฟลเดอร์ Pages/:</p>
-      <pre>@* Products.cshtml — ส่วนหน้าตา *@
-@page
+      <p>ตอนนี้จะเอาความรู้เรื่อง class และ List จาก Part B มาแสดงบนหน้าเว็บจริง ต้องสร้างไฟล์คู่ 2 ไฟล์
+      ในโฟลเดอร์ <code>Pages/</code> (โฟลเดอร์เดียวกับที่เจอ Greeting.cshtml ในหัวข้อ 14)</p>
+      <p><b>สร้างไฟล์ที่:</b> <code>Pages/Products.cshtml</code></p>
+      <pre>@page
 @model ProductsModel
 
 &lt;h1&gt;รายการสินค้า&lt;/h1&gt;
@@ -1013,8 +1014,9 @@ code .</pre>
     &lt;li&gt;@product.Name — @product.Price บาท&lt;/li&gt;
 }
 &lt;/ul&gt;</pre>
-      <pre>// Products.cshtml.cs — ส่วน C# (logic)
-public class ProductsModel : PageModel
+      <p><b>สร้างไฟล์ที่:</b> <code>Pages/Products.cshtml.cs</code> (ไฟล์คู่ ชื่อเดียวกันแต่เติม .cs
+      ต้องอยู่ในโฟลเดอร์เดียวกับไฟล์ .cshtml เสมอ)</p>
+      <pre>public class ProductsModel : PageModel
 {
     public List&lt;Product&gt; Products = new();
 
@@ -1044,9 +1046,10 @@ public class ProductsModel : PageModel
   <div class="topic" id="t16">
     <div class="topic-head"><span class="topic-num">16</span><span class="topic-title">รับข้อมูลจากผู้ใช้ (ฟอร์ม)</span></div>
     <div class="topic-body">
-      <p>ตอนนี้ข้อมูลสินค้ายัง hardcode ไว้ในโค้ด ขั้นถัดไปคือให้ผู้ใช้กรอกข้อมูลผ่านฟอร์มแล้วส่งเข้ามาได้จริง</p>
-      <pre>@* Create.cshtml *@
-@page
+      <p>ตอนนี้ข้อมูลสินค้ายัง hardcode ไว้ในโค้ด ขั้นถัดไปคือให้ผู้ใช้กรอกข้อมูลผ่านฟอร์มแล้วส่งเข้ามาได้จริง
+      สร้างไฟล์คู่ใหม่อีกชุด (แยกจาก Products.cshtml ในหัวข้อก่อน)</p>
+      <p><b>สร้างไฟล์ที่:</b> <code>Pages/Create.cshtml</code></p>
+      <pre>@page
 @model CreateModel
 
 &lt;form method="post"&gt;
@@ -1058,8 +1061,8 @@ public class ProductsModel : PageModel
 
     &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
 &lt;/form&gt;</pre>
-      <pre>// Create.cshtml.cs
-public class CreateModel : PageModel
+      <p><b>สร้างไฟล์ที่:</b> <code>Pages/Create.cshtml.cs</code></p>
+      <pre>public class CreateModel : PageModel
 {
     [BindProperty]
     public Product NewProduct { get; set; } = new();
@@ -1091,10 +1094,10 @@ property ชื่อ NewProduct.Name ตรงกับใน .cshtml.cs หร
       <p>ตอนนี้ข้อมูลที่กรอกในหัวข้อ 16 ยังหายไปทันทีที่ปิดโปรแกรม เพราะเก็บไว้แค่ในหน่วยความจำชั่วคราว
       ถ้าอยากให้ข้อมูลอยู่ถาวร ต้องเก็บลงฐานข้อมูล เครื่องมือที่ช่วยให้ C# คุยกับฐานข้อมูลได้ง่ายขึ้นเรียกว่า
       <b>Entity Framework Core (EF Core)</b></p>
-      <p>ติดตั้ง EF Core เพิ่ม (ใช้ SQLite ก่อนเพราะติดตั้งง่ายที่สุดสำหรับฝึก):</p>
+      <p>ติดตั้ง EF Core เพิ่ม (รันคำสั่งนี้ใน terminal ที่ root ของโปรเจกต์ ใช้ SQLite ก่อนเพราะติดตั้งง่ายที่สุดสำหรับฝึก):</p>
       <pre>dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 dotnet add package Microsoft.EntityFrameworkCore.Design</pre>
-      <p>สร้างไฟล์ตัวแทนการเชื่อมต่อฐานข้อมูล:</p>
+      <p><b>สร้างไฟล์ที่:</b> <code>AppDbContext.cs</code> (วางไว้ที่ root ของโปรเจกต์ก่อนได้ ยังไม่ต้องแยกโฟลเดอร์)</p>
       <pre>public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options) { }
@@ -1102,10 +1105,28 @@ dotnet add package Microsoft.EntityFrameworkCore.Design</pre>
 }</pre>
       <p><code>DbSet&lt;Product&gt; Products</code> คือการบอกว่า "มี table ชื่อ Products เก็บข้อมูลตาม class
       Product ที่สร้างไว้แล้วในหัวข้อ 9" AppDbContext คือจุดเดียวที่ใช้คุยกับฐานข้อมูลทั้งหมด</p>
+
+      <p><b>แก้ไขไฟล์ที่:</b> <code>Program.cs</code> (ไฟล์นี้มีอยู่แล้วตั้งแต่สร้างโปรเจกต์ในหัวข้อ 13
+      ต้องเพิ่มบรรทัดใหม่เข้าไปเพื่อให้เว็บแอป "รู้จัก" AppDbContext ที่เพิ่งสร้าง — ขาดขั้นตอนนี้ไปหัวข้อ 18
+      จะใช้ฐานข้อมูลไม่ได้เลย)</p>
+      <pre>var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();
+
+// เพิ่ม 2 บรรทัดนี้ก่อน builder.Build() เสมอ
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite("Data Source=app.db"));
+
+var app = builder.Build();
+// ... โค้ดเดิมที่เหลือของ Program.cs ไม่ต้องแก้ ...</pre>
+      <p>บรรทัด <code>AddDbContext&lt;AppDbContext&gt;</code> คือการ "ลงทะเบียน" AppDbContext เข้าสู่ระบบ DI
+      (ตามที่เรียนหลักการไว้ใน Module 2-3 ของ webapp-deepdive) ทำให้ตอนนี้ PageModel ไฟล์ไหนก็ตาม
+      สามารถ "ขอ" AppDbContext มาใช้ผ่าน constructor ได้ทันที ซึ่งจะเห็นตัวอย่างจริงในหัวข้อ 18</p>
+
       <div class="idea-box">
-        <b>ทำไมยังไม่ลงรายละเอียดการตั้งค่าเต็มรูปแบบ:</b> การตั้งค่าเชื่อมต่อฐานข้อมูลมีรายละเอียดปลีกย่อยเยอะ
-        (connection string, migration) หัวข้อนี้แค่ให้เห็นภาพว่า AppDbContext ทำหน้าที่อะไร ส่วนขั้นตอนเชื่อมต่อ
-        และสร้าง table จริงจะฝึกละเอียดในหัวข้อ 18 ที่รวมทุกอย่างเป็นโปรเจกต์เดียว
+        <b>ทำไมยังไม่ลงรายละเอียด migration ในหัวข้อนี้:</b> การสร้าง table จริงในฐานข้อมูล (migration)
+        จะฝึกละเอียดในหัวข้อ 18 ที่รวมทุกอย่างเป็นโปรเจกต์เดียว หัวข้อนี้แค่ให้เห็นภาพว่า AppDbContext
+        ทำหน้าที่อะไรและต้องลงทะเบียนใน Program.cs อย่างไรก่อน
       </div>
     </div>
   </div>
@@ -1119,11 +1140,20 @@ dotnet add package Microsoft.EntityFrameworkCore.Design</pre>
       <p><b>R</b>ead — อ่าน/แสดงข้อมูล (list จากหัวข้อ 15)</p>
       <p><b>U</b>pdate — แก้ไขข้อมูลเดิม (คล้ายฟอร์ม Create แต่โหลดค่าเดิมมาแสดงก่อน)</p>
       <p><b>D</b>elete — ลบข้อมูล</p>
-      <p>สร้าง migration เพื่อให้ EF Core สร้าง table จริงในฐานข้อมูลตามที่นิยามไว้ในหัวข้อ 17:</p>
+
+      <p>ก่อนไปต่อ ต้องมี 2 อย่างนี้ครบจากหัวข้อ 17 แล้ว: ไฟล์ <code>AppDbContext.cs</code> ที่ root โปรเจกต์
+      และบรรทัด <code>AddDbContext&lt;AppDbContext&gt;</code> ใน <code>Program.cs</code> ถ้ายังไม่มี
+      ให้กลับไปทำหัวข้อ 17 ให้ครบก่อน ไม่งั้นขั้นตอนนี้จะ error</p>
+
+      <p>ขั้นแรก สร้าง table จริงในฐานข้อมูลด้วย migration (รันคำสั่งนี้ที่ root ของโปรเจกต์):</p>
       <pre>dotnet tool install --global dotnet-ef
 dotnet ef migrations add InitialCreate
 dotnet ef database update</pre>
-      <p>ตัวอย่างปุ่มลบใน list (Read) ที่เชื่อมกับฐานข้อมูลจริง:</p>
+      <p>คำสั่งนี้จะสร้างโฟลเดอร์ <code>Migrations/</code> และไฟล์ <code>app.db</code> ขึ้นมาเองอัตโนมัติ
+      ที่ root ของโปรเจกต์ (ตรงกับชื่อที่ตั้งไว้ใน connection string ของหัวข้อ 17) ไม่ต้องสร้างไฟล์พวกนี้เอง</p>
+
+      <p><b>แก้ไขไฟล์ที่:</b> <code>Pages/Products.cshtml.cs</code> (ไฟล์เดียวกับที่สร้างไว้ในหัวข้อ 15
+      แก้จากที่ hardcode ข้อมูล ให้ดึงจากฐานข้อมูลจริงแทน พร้อมเพิ่มปุ่มลบ)</p>
       <pre>public class ProductsModel : PageModel
 {
     private readonly AppDbContext _db;
@@ -1146,6 +1176,27 @@ dotnet ef database update</pre>
         }
     }
 }</pre>
+      <p>สังเกตว่า constructor รับ <code>AppDbContext db</code> เข้ามาได้เลยโดยไม่ต้องสร้างเอง
+      (<code>new AppDbContext()</code>) เพราะลงทะเบียนไว้ใน Program.cs แล้วตั้งแต่หัวข้อ 17 — นี่คือผลลัพธ์จริง
+      ของการลงทะเบียน DI ที่เพิ่งทำไป</p>
+
+      <p><b>แก้ไขไฟล์ที่:</b> <code>Pages/Create.cshtml.cs</code> (ไฟล์จากหัวข้อ 16 แก้จาก
+      Console.WriteLine ให้บันทึกลงฐานข้อมูลจริงแทน)</p>
+      <pre>public class CreateModel : PageModel
+{
+    private readonly AppDbContext _db;
+    public CreateModel(AppDbContext db) { _db = db; }
+
+    [BindProperty]
+    public Product NewProduct { get; set; } = new();
+
+    public async Task&lt;IActionResult&gt; OnPostAsync()
+    {
+        _db.Products.Add(NewProduct);
+        await _db.SaveChangesAsync();
+        return RedirectToPage("Products");
+    }
+}</pre>
       <div class="idea-box">
         <b>คำว่า async/await ที่เพิ่งเห็น:</b> เป็นวิธีบอกว่า "ระหว่างรอฐานข้อมูลตอบกลับ ให้เว็บแอปไปรับ
         request อื่นก่อนได้ ไม่ต้องหยุดรอเฉยๆ" เป็น pattern มาตรฐานที่ใช้ทุกครั้งที่คุยกับฐานข้อมูลใน ASP.NET Core
@@ -1153,23 +1204,37 @@ dotnet ef database update</pre>
       </div>
       <div class="try-it"><b>ลองทำ:</b> ทำให้โปรเจกต์ฝึกมีครบ 4 อย่าง (Create, Read, Update, Delete)
       ผ่านหน้าเว็บจริง ต่อกับฐานข้อมูล SQLite ที่ตั้งไว้ ใช้เวลาหัวข้อนี้นานกว่าหัวข้ออื่น เพราะเป็นการรวมทุกอย่างเข้าด้วยกัน</div>
-      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">โจทย์นี้ใหญ่และรวมทุกอย่างจาก Part D เข้าด้วยกัน แนวทางคร่าวๆ:
-<pre>// Read — แสดง list (ทำแล้วในหัวข้อ 15/17)
-public async Task OnGetAsync() { Products = await _db.Products.ToListAsync(); }
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">โจทย์นี้ใหญ่และรวมทุกอย่างจาก Part D เข้าด้วยกัน แนวทางคร่าวๆ ตามไฟล์ที่ต้องแตะ:
+<p><b>Pages/Products.cshtml.cs</b> — Read (มีอยู่แล้วจากด้านบน) + ลิงก์ไปหน้า Create/Edit</p>
+<pre>public async Task OnGetAsync() { Products = await _db.Products.ToListAsync(); }</pre>
+<p><b>Pages/Create.cshtml.cs</b> — Create (มีอยู่แล้วจากด้านบน)</p>
+<pre>public async Task OnPostAsync() { _db.Products.Add(NewProduct); await _db.SaveChangesAsync(); }</pre>
+<p><b>สร้างไฟล์ใหม่ที่ Pages/Edit.cshtml และ Pages/Edit.cshtml.cs</b> — Update (หน้าใหม่ คล้าย Create
+แต่ต้องรับ id จาก URL มาโหลดค่าเดิมก่อน คล้ายรูปแบบที่เรียนใน Module 2 ของ webapp-deepdive)</p>
+<pre>@page "{id:int}"   // เพิ่มบรรทัดนี้ใน Edit.cshtml แทน @page เฉยๆ เพื่อรับ id จาก URL
 
-// Create — ฟอร์มเพิ่มใหม่ (ทำแล้วในหัวข้อ 16)
-public async Task OnPostAsync() { _db.Products.Add(NewProduct); await _db.SaveChangesAsync(); }
-
-// Update — โหลดค่าเดิมมาก่อน แล้วบันทึกทับ
-public async Task OnGetAsync(int id) { EditProduct = await _db.Products.FindAsync(id); }
-public async Task OnPostAsync()
+public class EditModel : PageModel
 {
-    _db.Products.Update(EditProduct);
-    await _db.SaveChangesAsync();
-}
+    private readonly AppDbContext _db;
+    public EditModel(AppDbContext db) { _db = db; }
 
-// Delete — ลบตาม id (ทำแล้วในหัวข้อ 18)
-public async Task OnPostDeleteAsync(int id)
+    [BindProperty]
+    public Product EditProduct { get; set; } = new();
+
+    public async Task OnGetAsync(int id)
+    {
+        EditProduct = await _db.Products.FindAsync(id) ?? new Product();
+    }
+
+    public async Task&lt;IActionResult&gt; OnPostAsync()
+    {
+        _db.Products.Update(EditProduct);
+        await _db.SaveChangesAsync();
+        return RedirectToPage("Products");
+    }
+}</pre>
+<p><b>Pages/Products.cshtml.cs</b> — Delete (มีอยู่แล้วจากด้านบน)</p>
+<pre>public async Task OnPostDeleteAsync(int id)
 {
     var product = await _db.Products.FindAsync(id);
     if (product is not null) { _db.Products.Remove(product); await _db.SaveChangesAsync(); }
@@ -1184,8 +1249,15 @@ public async Task OnPostDeleteAsync(int id)
       <p>เว็บแอปที่ทำมาถึงตอนนี้ ทุกครั้งที่กดปุ่มหรือ submit ฟอร์ม หน้าเว็บจะ reload ใหม่ทั้งหน้า
       ถ้าอยากได้ UI ที่อัพเดททันทีโดยไม่ reload (เช่น พิมพ์ค้นหาแล้ว list กรองทันที) ใช้ <b>Blazor</b> แทน
       ยังเป็น C# เหมือนเดิมทุกอย่าง แค่เขียนในไฟล์รูปแบบใหม่ (.razor)</p>
-      <pre>@* ProductSearch.razor *@
-&lt;input @bind="keyword" @bind:event="oninput" /&gt;
+      <div class="idea-box">
+        <b>ข้อควรรู้ก่อนลองหัวข้อนี้:</b> โปรเจกต์ที่สร้างด้วย <code>dotnet new webapp</code> ตั้งแต่หัวข้อ 13
+        เป็น Razor Pages ธรรมดา ยังไม่รองรับไฟล์ .razor ทันที ถ้าอยากลองโค้ดข้างล่างนี้จริง ต้องสร้างโปรเจกต์ใหม่แยกต่างหาก
+        ด้วยคำสั่ง <code>dotnet new blazorserver -o BlazorTest</code> (รายละเอียดเต็มอยู่ใน Module 13 ของ
+        webapp-deepdive) หัวข้อนี้จึงเน้นให้ "อ่านเข้าใจ syntax" เป็นหลักก่อน ยังไม่ต้องรันจริงก็ได้
+      </div>
+      <p><b>ถ้าจะลองจริง สร้างไฟล์ที่:</b> <code>Components/Pages/ProductSearch.razor</code>
+      (ในโปรเจกต์ Blazor ที่สร้างแยกต่างหากตามด้านบน)</p>
+      <pre>&lt;input @bind="keyword" @bind:event="oninput" /&gt;
 
 &lt;ul&gt;
 @foreach (var p in FilteredProducts)

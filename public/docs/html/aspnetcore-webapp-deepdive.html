@@ -184,6 +184,9 @@ body{ overflow-x:hidden; }
       <li><a href="#m10">Module 10 — Performance และ Caching</a></li>
       <li><a href="#m11">Module 11 — เดินผ่านระบบเดียวครบทุกชั้น</a></li>
       <li><a href="#m12">Module 12 — Service Layer / Repository Pattern</a></li>
+      <li><a href="#m13">Module 13 — Package เสริมที่ควรรู้จัก</a></li>
+      <li><a href="#m14">Module 14 — โครงสร้างโปรเจกต์แบบละเอียด</a></li>
+      <li><a href="#m15">Module 15 — Full Project ตั้งแต่สร้างจนรันจริง</a></li>
     </ol>
   </nav>
 
@@ -1268,6 +1271,457 @@ builder.Services.AddScoped&lt;IProductService, ProductService&gt;();</pre>
 ตรงๆ ผลลัพธ์ที่ควรเห็น: CreateModel เหลือแค่ประมาณ 15-20 บรรทัด (จากเดิมที่อาจมี logic เช็คราคาปนอยู่ในนั้นด้วย)
 และ business rule เรื่องราคาต้องมากกว่า 0 ย้ายไปอยู่ใน ProductService แทน ทดสอบว่าฟอร์มยังทำงานเหมือนเดิมทุกประการ
 เพียงแต่โค้ดแบ่งชั้นชัดเจนขึ้น
+</div></details>
+    </div>
+  </div>
+
+  <!-- ================= MODULE 13 ================= -->
+  <div class="module" id="m13">
+    <div class="module-head">
+      <div class="module-head-left"><span class="module-num">MODULE 13</span><span class="module-title">Package เสริมที่ควรรู้จัก</span></div>
+      <span class="module-duration">อ้างอิง — ติดตั้งตามที่ใช้จริง</span>
+    </div>
+    <div class="module-body">
+      <div class="why-box">
+        <b>วิธีใช้หน้านี้:</b> ไม่ต้องติดตั้งทุกตัวพร้อมกัน เลือกตามงานที่กำลังทำจริง ทุกตัวติดตั้งด้วยรูปแบบคำสั่งเดียวกัน:
+        <pre>dotnet add package ชื่อ Package</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">Database (เลือกตาม database ที่ใช้จริง)</div>
+        <pre>Microsoft.EntityFrameworkCore.SqlServer     # ต่อ SQL Server
+Microsoft.EntityFrameworkCore.Sqlite        # ต่อ SQLite (เหมาะกับฝึก)
+Npgsql.EntityFrameworkCore.PostgreSQL       # ต่อ PostgreSQL
+Microsoft.EntityFrameworkCore.Tools         # คำสั่ง migration (dotnet ef)
+Microsoft.EntityFrameworkCore.Design        # จำเป็นคู่กับ Tools เสมอ</pre>
+        <p>ติดตั้งแค่ provider เดียวที่ตรงกับ database จริงที่ใช้ ไม่ต้องลงหลายตัวพร้อมกัน
+        ส่วน Tools กับ Design ต้องมีคู่กันเสมอถ้าจะใช้คำสั่ง <code>dotnet ef migrations add</code></p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">Authentication</div>
+        <pre>Microsoft.AspNetCore.Identity.EntityFrameworkCore   # ระบบ login สำเร็จรูป (Module 5)</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">API Documentation — ดูและทดสอบ endpoint ผ่านหน้าเว็บ</div>
+        <pre>Swashbuckle.AspNetCore</pre>
+        <p>สร้างหน้าเว็บ Swagger UI อัตโนมัติที่แสดงทุก endpoint ของ Web API พร้อมปุ่มทดลองยิง request ได้เลย
+        โดยไม่ต้องพึ่ง Postman หรือ REST Client extension มีประโยชน์มากตอนทำ Web API แยกจาก frontend</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">Logging — บันทึก log แบบมีโครงสร้างและส่งออกไฟล์ได้</div>
+        <pre>Serilog.AspNetCore
+Serilog.Sinks.File</pre>
+        <p>ต่อยอดจาก <code>ILogger</code> ที่เรียนใน Module 7 — Serilog ทำให้ log ออกมาเป็นไฟล์ที่ดูย้อนหลังได้
+        แยกตามวันที่ ค้นหาง่ายกว่า log ที่เห็นแค่ตอนรันบน terminal</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">Testing</div>
+        <pre>xunit                    # เขียน unit test (ใช้แล้วใน Module 8 ของ beginner plan)
+xunit.runner.visualstudio
+Moq                      # จำลอง (mock) Interface เช่น IProductRepository ตอนเทสต์ Service</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">Resilience / Retry — สำคัญมากสำหรับงานที่ต้องเรียก IWS</div>
+        <pre>Microsoft.Extensions.Http.Polly</pre>
+        <pre>// Program.cs — ให้ HttpClient ที่เรียก IWS retry อัตโนมัติเมื่อเจอปัญหาชั่วคราว
+builder.Services.AddHttpClient&lt;IOrderApprovalService, OrderApprovalService&gt;()
+    .AddTransientHttpErrorPolicy(policy =&gt;
+        policy.WaitAndRetryAsync(3, retryAttempt =&gt;
+            TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));</pre>
+        <p>ตรงกับสถานการณ์ในโปรเจกต์จริงของคุณที่ต้องเรียก IWS จาก IBM i — ถ้า network สะดุดชั่วคราว
+        หรือ IWS ตอบช้าเกินเวลา Polly จะ retry ให้อัตโนมัติ (ในตัวอย่างคือ retry 3 ครั้ง แต่ละครั้งรอนานขึ้นเรื่อยๆ
+        แบบ exponential backoff) แทนที่จะให้ทั้งระบบ error ทันทีตั้งแต่ครั้งแรกที่เจอปัญหาชั่วคราว</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">Object Mapping — แปลง Model เป็น DTO อัตโนมัติ</div>
+        <pre>Mapster       # เบาและเร็ว นิยมมากขึ้นเรื่อยๆ ในโปรเจกต์ใหม่
+# หรือ
+AutoMapper    # ตัวเก่าแก่ ใช้กันมานาน เอกสารเยอะ</pre>
+        <p>ตอนโปรเจกต์มี Model และ DTO แยกกันหลายคู่ (ตามที่พูดถึงในตารางศัพท์ Module 1 ของ beginner plan)
+        การเขียนแปลงค่าเองทุก field ทุกครั้งจะซ้ำซากมาก library พวกนี้แปลงให้อัตโนมัติตาม field ที่ชื่อตรงกัน</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">Excel / CSV — เผื่อ import/export ข้อมูลจาก AS400</div>
+        <pre>ClosedXML     # อ่าน/เขียนไฟล์ Excel (.xlsx)
+CsvHelper     # อ่าน/เขียนไฟล์ CSV</pre>
+        <p>มีประโยชน์ถ้าต้อง export รายงานจากเว็บแอปเป็น Excel ให้ผู้ใช้ดาวน์โหลด หรือ import ข้อมูล
+        ที่ export มาจาก AS400 เป็นไฟล์ CSV เข้าสู่ระบบใหม่</p>
+      </div>
+
+      <div class="pitfall">
+        <b>ข้อควรระวังทั่วไป:</b> อย่าติดตั้ง package ทิ้งไว้ "เผื่อได้ใช้" ทุกตัวที่เพิ่มเข้ามาทำให้โปรเจกต์
+        ใหญ่ขึ้นและมีความเสี่ยงด้าน security เพิ่มขึ้น (ต้องคอยอัพเดทเวอร์ชันตาม) ติดตั้งเฉพาะตอนที่รู้แน่ชัด
+        ว่าจะใช้งานจริงเท่านั้น
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> ติดตั้ง Swashbuckle.AspNetCore ในโปรเจกต์ฝึกที่เป็น Web API แล้วเปิด
+        <code>/swagger</code> ดูว่าเห็นหน้า Swagger UI พร้อม endpoint ทั้งหมดที่เคยสร้างไว้ไหม
+      </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+<pre>dotnet add package Swashbuckle.AspNetCore</pre>
+เพิ่มใน Program.cs (ปกติ template webapi ใส่มาให้เกือบครบอยู่แล้ว เช็คว่ามีหรือยัง):
+<pre>builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+// ...
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}</pre>
+รัน <code>dotnet watch run</code> แล้วเปิด <code>https://localhost:5001/swagger</code> ควรเห็นรายการ
+endpoint ทั้งหมดพร้อมปุ่ม "Try it out" ให้กดทดสอบยิง request ได้ทันทีจากหน้าเว็บนี้เลย โดยไม่ต้องพึ่งเครื่องมือภายนอก
+</div></details>
+    </div>
+  </div>
+
+  <!-- ================= MODULE 14 ================= -->
+  <div class="module" id="m14">
+    <div class="module-head">
+      <div class="module-head-left"><span class="module-num">MODULE 14</span><span class="module-title">โครงสร้างโปรเจกต์แบบละเอียด</span></div>
+      <span class="module-duration">อ้างอิง — เปิดดูทุกครั้งที่งงว่าไฟล์ควรอยู่ไหน</span>
+    </div>
+    <div class="module-body">
+      <div class="why-box">
+        <b>ทำไมต้องมี:</b> ปัญหาที่พบบ่อยที่สุดตอนโปรเจกต์เริ่มโตขึ้นคือ "ไม่รู้ว่าไฟล์ใหม่ควรสร้างตรงไหน"
+        โมดูลนี้รวบโครงสร้างมาตรฐานของโปรเจกต์ ASP.NET Core ที่มี Razor Pages + EF Core + Service Layer
+        ไว้ในที่เดียว ใช้เป็นแผนที่อ้างอิงได้ตลอด
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">โครงสร้างเต็มของโปรเจกต์ระดับใช้งานจริง</div>
+        <pre>MyWebApp/                          <-- โฟลเดอร์โปรเจกต์ (สร้างจาก dotnet new webapp -o MyWebApp)
+│
+├── MyWebApp.csproj                <-- ไฟล์ตั้งค่าโปรเจกต์ (.NET version, package ที่ติดตั้ง) — auto-generate ห้ามลบ
+├── Program.cs                     <-- จุดเริ่มต้นโปรแกรม ลงทะเบียน service + middleware ทั้งหมด
+├── appsettings.json                <-- ค่า config กลาง (connection string ฯลฯ)
+├── appsettings.Development.json    <-- ค่า config เฉพาะตอนพัฒนา
+│
+├── Pages/                          <-- ทุกหน้าเว็บ (Razor Pages) อยู่ในนี้
+│   ├── Index.cshtml                    หน้าแรกของเว็บ (มาให้ตั้งแต่สร้างโปรเจกต์)
+│   ├── Index.cshtml.cs
+│   ├── Shared/                     <-- ส่วนที่ใช้ร่วมกันหลายหน้า
+│   │   ├── _Layout.cshtml              โครงหน้าเว็บกลาง (เมนู, header, footer)
+│   │   └── _ProductCard.cshtml         Partial View ตัวอย่าง (การ์ดแสดงสินค้า)
+│   │
+│   ├── Products/                   <-- จัดกลุ่มตาม "เรื่อง" ไม่ใช่ทุกไฟล์แปะรวมกันที่ Pages/
+│   │   ├── Index.cshtml                หน้า list สินค้า
+│   │   ├── Index.cshtml.cs
+│   │   ├── Create.cshtml               หน้าเพิ่มสินค้า
+│   │   ├── Create.cshtml.cs
+│   │   ├── Edit.cshtml                 หน้าแก้ไขสินค้า
+│   │   ├── Edit.cshtml.cs
+│   │   ├── Detail.cshtml               หน้าดูรายละเอียด (จาก Module 2)
+│   │   └── Detail.cshtml.cs
+│   │
+│   └── Orders/                     <-- อีกกลุ่มเรื่อง แยกโฟลเดอร์ชัดเจนเหมือนกัน
+│       ├── Index.cshtml
+│       └── Index.cshtml.cs
+│
+├── Models/                         <-- class ที่แทนโครงสร้างข้อมูล (ตรงกับ table ในฐานข้อมูล)
+│   ├── Product.cs
+│   ├── Order.cs
+│   └── Customer.cs
+│
+├── Data/                           <-- ทุกอย่างที่เกี่ยวกับการเชื่อมฐานข้อมูล
+│   ├── AppDbContext.cs                 DbContext หลักของโปรเจกต์
+│   └── Migrations/                     สร้างอัตโนมัติจาก dotnet ef migrations add (ห้ามแก้เอง)
+│       ├── 20260101000000_InitialCreate.cs
+│       └── AppDbContextModelSnapshot.cs
+│
+├── Services/                       <-- business logic (จาก Module 12)
+│   ├── IProductService.cs
+│   └── ProductService.cs
+│
+├── Repositories/                   <-- ชั้นคุยกับฐานข้อมูลโดยตรง (จาก Module 12)
+│   ├── IProductRepository.cs
+│   └── ProductRepository.cs
+│
+└── wwwroot/                        <-- ไฟล์ static ที่ browser เรียกตรงได้ (css, js, รูปภาพ)
+    ├── css/
+    │   └── site.css
+    ├── js/
+    │   └── site.js
+    └── images/
+        └── logo.png</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">กฎการวางไฟล์ที่ใช้ได้เสมอ</div>
+        <p><b>1. class ที่แทนข้อมูล (Product, Order, Customer)</b> → ไปที่ <code>Models/</code> เสมอ
+        ไม่ว่าจะใช้กับ Razor Pages, Web API, หรือ Service ก็ตาม เพราะเป็น "ของกลาง" ที่หลายส่วนใช้ร่วมกัน</p>
+        <p><b>2. ไฟล์ที่เกี่ยวกับฐานข้อมูลโดยตรง (DbContext, Migrations)</b> → ไปที่ <code>Data/</code></p>
+        <p><b>3. หน้าเว็บ (.cshtml + .cshtml.cs)</b> → ไปที่ <code>Pages/</code> จัดกลุ่มเป็นโฟลเดอร์ย่อยตาม
+        "เรื่อง" (Products/, Orders/) ไม่ใช่แปะทุกไฟล์ไว้ที่ Pages/ ตรงๆ เมื่อมีมากกว่า 5-6 หน้า</p>
+        <p><b>4. business logic ที่ไม่เกี่ยวกับการแสดงผล</b> → ไปที่ <code>Services/</code></p>
+        <p><b>5. โค้ดที่คุยกับฐานข้อมูลโดยตรง (ถ้าแยก Repository ตาม Module 12)</b> → ไปที่ <code>Repositories/</code></p>
+        <p><b>6. ไฟล์ css/js/รูปภาพที่ browser โหลดตรง</b> → ไปที่ <code>wwwroot/</code> เท่านั้น
+        (ไฟล์นอก wwwroot browser เรียกตรงไม่ได้เลยด้วยเหตุผลด้านความปลอดภัย)</p>
+      </div>
+
+      <div class="pitfall">
+        <b>ข้อผิดพลาดที่เจอบ่อยตอนเริ่มต้น:</b> สร้างทุกไฟล์ไว้ในโฟลเดอร์ Pages/ เดียวรวมกันหมดโดยไม่แยกโฟลเดอร์ย่อย
+        พอมีหน้าเว็บเกิน 10-15 หน้า จะหาไฟล์ไม่เจอและงงว่าไฟล์ไหนเกี่ยวกับเรื่องอะไร แนะนำให้เริ่มแยกโฟลเดอร์ย่อย
+        ตาม "เรื่อง" (Products/, Orders/, Customers/) ตั้งแต่มี 3-4 หน้าขึ้นไปในเรื่องเดียวกัน ไม่ต้องรอให้เยอะก่อน
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> เปิดโปรเจกต์ฝึกที่ทำมาตลอด (จาก beginner plan) ดูว่าตอนนี้จัดไฟล์ตรงกับโครงสร้าง
+        มาตรฐานนี้ไหม ถ้ายังไม่ตรง (เช่น Model ปนอยู่ใน Pages/) ลองย้ายไฟล์ให้ตรงตามนี้
+      </div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+ไม่มีเฉลยตายตัวเพราะขึ้นกับว่าโปรเจกต์ฝึกของแต่ละคนจัดไว้ยังไงมาก่อน แต่เช็คลิสต์ที่ควรตรงคือ:
+class Product/Order ควรอยู่ใน Models/ ไม่ใช่ปนอยู่ในไฟล์ .cshtml.cs, AppDbContext ควรอยู่ใน Data/ ไม่ใช่
+วางไว้ที่ root ของโปรเจกต์เฉยๆ, และถ้ามีหน้าเว็บเรื่องเดียวกันเกิน 3 หน้าขึ้นไป ควรอยู่ในโฟลเดอร์ย่อยของตัวเอง
+ใต้ Pages/ เช่น Pages/Products/ ไม่ใช่ Pages/ตรงๆ ทั้งหมด
+</div></details>
+    </div>
+  </div>
+
+  <!-- ================= MODULE 15 ================= -->
+  <div class="module" id="m15">
+    <div class="module-head">
+      <div class="module-head-left"><span class="module-num">MODULE 15</span><span class="module-title">Full Project — ตั้งแต่สร้างจนรันจริง</span></div>
+      <span class="module-duration">6-8 วัน</span>
+    </div>
+    <div class="module-body">
+      <div class="why-box">
+        <b>เป้าหมาย module นี้:</b> เดินตามทุกขั้นตอนตั้งแต่พิมพ์คำสั่งแรกจนได้เว็บแอปที่ทำงานจริง ระบบตัวอย่าง
+        คือ <b>"ระบบจัดการสินค้าคงคลังอย่างง่าย"</b> ทุก code block จะบอกชัดเจนว่า "สร้างไฟล์ที่ path ไหน"
+        กำกับไว้เสมอ ทำตามทีละขั้นได้เลยไม่ต้องเดา
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 1 — สร้างโปรเจกต์</div>
+        <pre>dotnet new webapp -o InventoryApp
+cd InventoryApp
+code .</pre>
+        <p>ได้โฟลเดอร์ <code>InventoryApp/</code> พร้อมไฟล์เริ่มต้น (Program.cs, Pages/Index.cshtml ฯลฯ)
+        ตามที่เคยเห็นใน setup-to-run</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 2 — สร้างโฟลเดอร์โครงสร้างตาม Module 14</div>
+        <pre># รันจาก terminal ที่ root ของโปรเจกต์ (โฟลเดอร์ InventoryApp)
+mkdir Models
+mkdir Data
+mkdir Services
+mkdir Repositories
+mkdir Pages/Products</pre>
+        <p>สร้างโฟลเดอร์เปล่าไว้ก่อนตามผังที่วางแผนไว้ ยังไม่มีไฟล์ข้างในก็ไม่เป็นไร</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 3 — สร้าง Model</div>
+        <p><b>สร้างไฟล์ที่:</b> <code>Models/Product.cs</code></p>
+        <pre>namespace InventoryApp.Models;
+
+public class Product
+{
+    public int Id { get; set; }
+
+    [Required(ErrorMessage = "กรุณากรอกชื่อสินค้า")]
+    [StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [Range(0, 1000000)]
+    public decimal Price { get; set; }
+
+    public int StockQuantity { get; set; }
+}</pre>
+        <p>ต้องมี <code>using System.ComponentModel.DataAnnotations;</code> บนสุดของไฟล์ด้วย
+        (เพื่อให้ใช้ <code>[Required]</code>, <code>[Range]</code> ได้ ตามที่เรียนใน Module 3)</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 4 — สร้าง DbContext</div>
+        <p><b>สร้างไฟล์ที่:</b> <code>Data/AppDbContext.cs</code></p>
+        <pre>using Microsoft.EntityFrameworkCore;
+using InventoryApp.Models;
+
+namespace InventoryApp.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options) { }
+    public DbSet&lt;Product&gt; Products => Set&lt;Product&gt;();
+}</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 5 — ติดตั้ง package และลงทะเบียนใน Program.cs</div>
+        <pre>dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+dotnet add package Microsoft.EntityFrameworkCore.Tools</pre>
+        <p><b>แก้ไขไฟล์ที่:</b> <code>Program.cs</code> (ไฟล์นี้มีอยู่แล้วตั้งแต่สร้างโปรเจกต์ แค่เพิ่มบรรทัดใหม่เข้าไป)</p>
+        <pre>using InventoryApp.Data;   // เพิ่มบรรทัดนี้บนสุด
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();
+
+// เพิ่ม 2 บรรทัดนี้ก่อน builder.Build()
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite("Data Source=inventory.db"));
+
+var app = builder.Build();
+// ... โค้ดเดิมที่เหลือไม่ต้องแก้ ...</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 6 — สร้างฐานข้อมูลจริงด้วย migration</div>
+        <pre>dotnet tool install --global dotnet-ef
+dotnet ef migrations add InitialCreate
+dotnet ef database update</pre>
+        <p>คำสั่งนี้สร้างโฟลเดอร์ <code>Data/Migrations/</code> ให้อัตโนมัติ (ตรงตามผังใน Module 14)
+        และสร้างไฟล์ <code>inventory.db</code> จริงที่ root ของโปรเจกต์</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 7 — สร้างหน้า list สินค้า</div>
+        <p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Index.cshtml</code></p>
+        <pre>@page
+@model InventoryApp.Pages.Products.IndexModel
+
+&lt;h1&gt;รายการสินค้าคงคลัง&lt;/h1&gt;
+
+&lt;a asp-page="Create"&gt;+ เพิ่มสินค้าใหม่&lt;/a&gt;
+
+&lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;ชื่อ&lt;/th&gt;&lt;th&gt;ราคา&lt;/th&gt;&lt;th&gt;คงเหลือ&lt;/th&gt;&lt;/tr&gt;
+    @foreach (var p in Model.Products)
+    {
+        &lt;tr&gt;
+            &lt;td&gt;@p.Name&lt;/td&gt;
+            &lt;td&gt;@p.Price&lt;/td&gt;
+            &lt;td&gt;@p.StockQuantity&lt;/td&gt;
+        &lt;/tr&gt;
+    }
+&lt;/table&gt;</pre>
+        <p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Index.cshtml.cs</code></p>
+        <pre>using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using InventoryApp.Data;
+using InventoryApp.Models;
+
+namespace InventoryApp.Pages.Products;
+
+public class IndexModel : PageModel
+{
+    private readonly AppDbContext _db;
+    public IndexModel(AppDbContext db) =&gt; _db = db;
+
+    public List&lt;Product&gt; Products { get; set; } = new();
+
+    public async Task OnGetAsync()
+    {
+        Products = await _db.Products.AsNoTracking().ToListAsync();
+    }
+}</pre>
+        <div class="pitfall">
+          <b>จุดที่ผิดบ่อยที่สุด:</b> namespace ในไฟล์ .cshtml.cs ต้องตรงกับตำแหน่งโฟลเดอร์จริงเสมอ
+          ไฟล์ที่อยู่ใน <code>Pages/Products/</code> ต้องมี namespace เป็น
+          <code>InventoryApp.Pages.Products</code> ถ้าพิมพ์ผิดหรือ namespace ไม่ตรงกับโฟลเดอร์ ASP.NET Core
+          จะหาไฟล์ไม่เจอและ error 404 ทั้งที่ไฟล์มีอยู่จริง
+        </div>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 8 — สร้างหน้าเพิ่มสินค้า</div>
+        <p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Create.cshtml</code></p>
+        <pre>@page
+@model InventoryApp.Pages.Products.CreateModel
+
+&lt;h1&gt;เพิ่มสินค้าใหม่&lt;/h1&gt;
+
+&lt;form method="post"&gt;
+    &lt;input asp-for="NewProduct.Name" /&gt;
+    &lt;span asp-validation-for="NewProduct.Name"&gt;&lt;/span&gt;
+
+    &lt;input asp-for="NewProduct.Price" /&gt;
+    &lt;input asp-for="NewProduct.StockQuantity" /&gt;
+
+    &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
+&lt;/form&gt;</pre>
+        <p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Create.cshtml.cs</code></p>
+        <pre>using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using InventoryApp.Data;
+using InventoryApp.Models;
+
+namespace InventoryApp.Pages.Products;
+
+public class CreateModel : PageModel
+{
+    private readonly AppDbContext _db;
+    public CreateModel(AppDbContext db) =&gt; _db = db;
+
+    [BindProperty]
+    public Product NewProduct { get; set; } = new();
+
+    public IActionResult OnGet() =&gt; Page();
+
+    public async Task&lt;IActionResult&gt; OnPostAsync()
+    {
+        if (!ModelState.IsValid) return Page();
+
+        _db.Products.Add(NewProduct);
+        await _db.SaveChangesAsync();
+        return RedirectToPage("Index");
+    }
+}</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 9 — เพิ่มลิงก์เข้าเมนูหลัก</div>
+        <p><b>แก้ไขไฟล์ที่:</b> <code>Pages/Shared/_Layout.cshtml</code> (ไฟล์นี้มีอยู่แล้ว หาส่วน nav แล้วเพิ่มลิงก์)</p>
+        <pre>&lt;nav&gt;
+    &lt;a asp-page="/Index"&gt;หน้าแรก&lt;/a&gt;
+    &lt;a asp-page="/Products/Index"&gt;สินค้าคงคลัง&lt;/a&gt;   &lt;!-- เพิ่มบรรทัดนี้ --&gt;
+&lt;/nav&gt;</pre>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ขั้นที่ 10 — รันและทดสอบ</div>
+        <pre>dotnet watch run</pre>
+        <p>เปิด browser ไปที่ URL ที่ terminal แสดง คลิกเมนู "สินค้าคงคลัง" → กด "+ เพิ่มสินค้าใหม่" →
+        กรอกข้อมูล → บันทึก → ควรเห็นสินค้าที่เพิ่งเพิ่มปรากฏในหน้า list ทันที</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">ผังไฟล์ทั้งหมดที่สร้างไปหลังทำครบ 10 ขั้น</div>
+        <pre>InventoryApp/
+├── Program.cs                      (แก้ไข)
+├── inventory.db                    (สร้างอัตโนมัติจาก migration)
+├── Models/
+│   └── Product.cs                  (สร้างใหม่)
+├── Data/
+│   ├── AppDbContext.cs             (สร้างใหม่)
+│   └── Migrations/                 (สร้างอัตโนมัติ)
+├── Pages/
+│   ├── Shared/_Layout.cshtml       (แก้ไข)
+│   └── Products/
+│       ├── Index.cshtml            (สร้างใหม่)
+│       ├── Index.cshtml.cs         (สร้างใหม่)
+│       ├── Create.cshtml           (สร้างใหม่)
+│       └── Create.cshtml.cs        (สร้างใหม่)</pre>
+      </div>
+
+      <div class="exercise">
+        <b>แบบฝึกหัด:</b> ทำครบ 10 ขั้นตามนี้ให้จบ แล้วเพิ่มเองต่อ (ไม่มีเฉลย): หน้า Edit และหน้า Delete
+        ตามรูปแบบเดียวกับ Create โดยอ้างอิง syntax จาก Module 1-2 ของไฟล์นี้ที่เรียนผ่านมาแล้ว
+      </div>
+      <details class="answer"><summary>ดูเฉลย (เฉพาะ 10 ขั้นตอนหลัก)</summary><div class="answer-body">
+ถ้าทำตามทีละขั้นตรงตามโค้ดในเนื้อหา ผลลัพธ์ควรได้เว็บแอปที่เปิดหน้า /Products/Index แล้วเห็นตารางสินค้า
+(ว่างเปล่าตอนแรก) กดปุ่มเพิ่มสินค้าแล้วกรอกฟอร์ม บันทึกสำเร็จ กลับมาหน้า list เห็นสินค้าที่เพิ่มไป
+ถ้าเจอ error 404 ตอนเปิดหน้า Products ให้เช็คขั้นที่ 7 เรื่อง namespace ต้องตรงกับโฟลเดอร์ก่อนเป็นอันดับแรก
+เพราะเป็นจุดที่พลาดบ่อยที่สุดในทุกคนที่เพิ่งเริ่มแยกโฟลเดอร์ Pages/ เป็นกลุ่มย่อย
 </div></details>
     </div>
   </div>
