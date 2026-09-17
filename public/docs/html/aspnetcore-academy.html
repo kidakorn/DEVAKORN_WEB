@@ -1957,8 +1957,20 @@ code .</pre>
     <div class="topic" id="t15">
 <div class="topic-head"><span class="topic-num">15</span><span class="topic-title">แสดงข้อมูลบนหน้าเว็บ</span></div>
 <div class="topic-body">
-<p>ตอนนี้จะเอาความรู้เรื่อง class และ List จาก Part B มาแสดงบนหน้าเว็บจริง ต้องสร้างไฟล์คู่ 2 ไฟล์
-      ในโฟลเดอร์ <code>Pages/</code> (โฟลเดอร์เดียวกับที่เจอ Greeting.cshtml ในหัวข้อ 14)</p>
+<p>ตอนนี้จะเอาความรู้เรื่อง class และ List จาก Part B มาแสดงบนหน้าเว็บจริง</p>
+<div class="idea-box">
+<b>สำคัญ — ต้องสร้าง class Product ในโปรเจกต์นี้ก่อน:</b> ถ้าเคยฝึกเขียน <code>class Product</code>
+        ในหัวข้อ 9 ไว้แล้ว นั่นเป็นไฟล์ฝึกแยกต่างหาก (คนละโปรเจกต์กับที่สร้างในหัวข้อ 13) โปรเจกต์เว็บที่ทำอยู่ตอนนี้
+        ยังไม่มี class Product เลย ต้องสร้างใหม่ในนี้ก่อน ไม่งั้นจะเจอ error
+        <code>The type or namespace name 'Product' could not be found</code> ทันทีที่ใช้งาน
+      </div>
+<p><b>สร้างไฟล์ที่:</b> <code>Pages/Product.cs</code> (ไฟล์ class เปล่า ไม่มี .cshtml คู่ เพราะไม่ใช่หน้าเว็บ)</p>
+<pre>public class Product
+{
+    public string Name { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+}</pre>
+<p>จากนั้นสร้างไฟล์คู่อีก 2 ไฟล์ในโฟลเดอร์ <code>Pages/</code> (โฟลเดอร์เดียวกับที่เจอ Greeting.cshtml ในหัวข้อ 14)</p>
 <p><b>สร้างไฟล์ที่:</b> <code>Pages/Products.cshtml</code></p>
 <pre>@page
 @model ProductsModel
@@ -1988,7 +2000,7 @@ code .</pre>
       ทำให้เรียก <code>Model.Products</code> ในหน้า HTML ได้</p>
 <p><code>OnGet()</code> — method พิเศษที่ ASP.NET Core เรียกให้อัตโนมัติทุกครั้งที่มีคนเปิดหน้านี้</p>
 <div class="try-it"><b>ลองทำ:</b> เพิ่มสินค้าชิ้นที่ 3 ใน OnGet() แล้วรีเฟรชหน้าเว็บ ดูว่า list
-      ที่แสดงมีครบ 3 ชิ้นไหม (ต้องสร้าง class Product ไว้ก่อนตามหัวข้อ 9 ด้วย)</div>
+      ที่แสดงมีครบ 3 ชิ้นไหม (ต้องสร้างไฟล์ Pages/Product.cs ตามด้านบนของหัวข้อนี้ไว้ก่อนแล้ว)</div>
 <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body"><pre>public void OnGet()
 {
     Products.Add(new Product { Name = "สินค้า A", Price = 100 });
