@@ -291,9 +291,14 @@ body{ overflow-x:hidden; }
 
       <div class="subblock">
         <div class="subblock-label">รับค่าจาก URL แบบมี parameter</div>
-        <pre>@* Pages/Products/Detail.cshtml *@
-@page "{id:int}"
-@model DetailModel</pre>
+        <p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Detail.cshtml</code> (ฝั่งหน้าตา)</p>
+        <pre>@page "{id:int}"
+@model DetailModel
+
+&lt;h1&gt;@Model.Product?.Name&lt;/h1&gt;
+&lt;p&gt;ราคา: @Model.Product?.Price บาท&lt;/p&gt;
+&lt;a asp-page="Index"&gt;&larr; กลับไปหน้ารายการ&lt;/a&gt;</pre>
+        <p><b>สร้างไฟล์ที่:</b> <code>Pages/Products/Detail.cshtml.cs</code> (ฝั่ง logic)</p>
         <pre>public class DetailModel : PageModel
 {
     private readonly AppDbContext _db;
@@ -501,6 +506,25 @@ foreach (var order in orders)
         Customer ที่เกี่ยวข้องมาด้วยเลย" ถ้าลืมเขียนบรรทัดนี้ <code>order.Customer</code> จะเป็น null เสมอ
         แม้ในฐานข้อมูลจะมีข้อมูลลูกค้าจริงก็ตาม เพราะ EF Core ไม่ดึงข้อมูลที่เชื่อมกันมาให้อัตโนมัติ
         ต้องสั่งชัดเจนทุกครั้ง</p>
+      </div>
+
+      <div class="subblock">
+        <div class="subblock-label">แสดงข้อมูลที่เชื่อมกันบนหน้าเว็บ (ฝั่งหน้าตา)</div>
+        <p><b>แก้ไขไฟล์ที่:</b> <code>Pages/Orders/Index.cshtml</code> (หน้า list ออเดอร์ที่เคยทำไว้
+        เพิ่มคอลัมน์แสดงชื่อลูกค้า)</p>
+        <pre>&lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;ลูกค้า&lt;/th&gt;&lt;th&gt;ยอดรวม&lt;/th&gt;&lt;/tr&gt;
+    @foreach (var order in Model.Orders)
+    {
+        &lt;tr&gt;
+            &lt;td&gt;@order.Customer?.Name&lt;/td&gt;
+            &lt;td&gt;@order.TotalAmount บาท&lt;/td&gt;
+        &lt;/tr&gt;
+    }
+&lt;/table&gt;</pre>
+        <p>ฝั่งหน้าตาไม่ต้องรู้เลยว่าเบื้องหลังมีการ Include ยังไง แค่เรียก <code>@order.Customer?.Name</code>
+        เหมือน property ธรรมดาของ order ปกติ — เครื่องหมาย <code>?</code> สำคัญตรงนี้เพราะถ้า PageModel
+        ลืม Include (จาก pitfall ด้านบน) หน้าเว็บจะไม่ error แต่แสดงช่องว่างแทนชื่อลูกค้าแทน</p>
       </div>
 
       <div class="pitfall">

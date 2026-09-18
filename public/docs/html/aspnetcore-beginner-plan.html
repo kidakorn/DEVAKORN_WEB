@@ -1192,8 +1192,38 @@ dotnet ef database update</pre>
       (<code>new AppDbContext()</code>) เพราะลงทะเบียนไว้ใน Program.cs แล้วตั้งแต่หัวข้อ 17 — นี่คือผลลัพธ์จริง
       ของการลงทะเบียน DI ที่เพิ่งทำไป</p>
 
+      <p><b>แก้ไขไฟล์ที่:</b> <code>Pages/Products.cshtml</code> (ฝั่งหน้าตา — ต้องแก้ให้มีปุ่มลบและลิงก์
+      ไปหน้า Create ด้วย ไม่งั้นแม้ backend ข้างบนจะทำงานได้ ผู้ใช้ก็ไม่มีปุ่มให้กดจากหน้าเว็บ)</p>
+      <pre>@page
+@model ProductsModel
+
+&lt;h1&gt;รายการสินค้า&lt;/h1&gt;
+
+&lt;a asp-page="Create"&gt;+ เพิ่มสินค้าใหม่&lt;/a&gt;
+
+&lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;ชื่อ&lt;/th&gt;&lt;th&gt;ราคา&lt;/th&gt;&lt;th&gt;&lt;/th&gt;&lt;/tr&gt;
+    @foreach (var product in Model.Products)
+    {
+        &lt;tr&gt;
+            &lt;td&gt;@product.Name&lt;/td&gt;
+            &lt;td&gt;@product.Price บาท&lt;/td&gt;
+            &lt;td&gt;
+                &lt;form method="post" asp-page-handler="Delete" asp-route-id="@product.Id"&gt;
+                    &lt;button type="submit"&gt;ลบ&lt;/button&gt;
+                &lt;/form&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    }
+&lt;/table&gt;</pre>
+      <p><code>asp-page-handler="Delete"</code> คือสิ่งที่บอก ASP.NET Core ว่าปุ่มนี้ต้องไปเรียก
+      <code>OnPostDeleteAsync</code> โดยเฉพาะ ไม่ใช่ <code>OnPostAsync</code> ธรรมดา (ตรงกับชื่อ method
+      ที่ตัดคำว่า "Delete" ออกจากท้ายชื่อ) ส่วน <code>asp-route-id="@product.Id"</code> คือการส่ง id
+      ของแถวนั้นแนบไปกับปุ่มลบ เพื่อบอกว่าจะลบแถวไหน</p>
+
       <p><b>แก้ไขไฟล์ที่:</b> <code>Pages/Create.cshtml.cs</code> (ไฟล์จากหัวข้อ 16 แก้จาก
-      Console.WriteLine ให้บันทึกลงฐานข้อมูลจริงแทน)</p>
+      Console.WriteLine ให้บันทึกลงฐานข้อมูลจริงแทน — ส่วน <code>Pages/Create.cshtml</code> ฝั่งหน้าตา
+      ไม่ต้องแก้อะไรเพิ่ม ใช้ฟอร์มเดิมจากหัวข้อ 16 ได้เลย)</p>
       <pre>public class CreateModel : PageModel
 {
     private readonly AppDbContext _db;
@@ -1223,9 +1253,24 @@ dotnet ef database update</pre>
 <pre>public async Task OnPostAsync() { _db.Products.Add(NewProduct); await _db.SaveChangesAsync(); }</pre>
 <p><b>สร้างไฟล์ใหม่ที่ Pages/Edit.cshtml และ Pages/Edit.cshtml.cs</b> — Update (หน้าใหม่ คล้าย Create
 แต่ต้องรับ id จาก URL มาโหลดค่าเดิมก่อน คล้ายรูปแบบที่เรียนใน Module 2 ของ webapp-deepdive)</p>
-<pre>@page "{id:int}"   // เพิ่มบรรทัดนี้ใน Edit.cshtml แทน @page เฉยๆ เพื่อรับ id จาก URL
+<p><b>Pages/Edit.cshtml (ฝั่งหน้าตา):</b></p>
+<pre>@page "{id:int}"
+@model EditModel
 
-public class EditModel : PageModel
+&lt;h1&gt;แก้ไขสินค้า&lt;/h1&gt;
+
+&lt;form method="post"&gt;
+    &lt;input asp-for="EditProduct.Id" type="hidden" /&gt;
+    &lt;label&gt;ชื่อสินค้า&lt;/label&gt;
+    &lt;input asp-for="EditProduct.Name" /&gt;
+
+    &lt;label&gt;ราคา&lt;/label&gt;
+    &lt;input asp-for="EditProduct.Price" /&gt;
+
+    &lt;button type="submit"&gt;บันทึกการแก้ไข&lt;/button&gt;
+&lt;/form&gt;</pre>
+<p><b>Pages/Edit.cshtml.cs (ฝั่ง logic):</b></p>
+<pre>public class EditModel : PageModel
 {
     private readonly AppDbContext _db;
     public EditModel(AppDbContext db) { _db = db; }
@@ -1245,6 +1290,11 @@ public class EditModel : PageModel
         return RedirectToPage("Products");
     }
 }</pre>
+<p>สังเกตว่า <code>&lt;input asp-for="EditProduct.Id" type="hidden" /&gt;</code> ใน .cshtml สำคัญมาก
+เป็นช่องที่ผู้ใช้มองไม่เห็นแต่แนบ id ของสินค้าที่กำลังแก้ไปพร้อมฟอร์มด้วย ถ้าลืมใส่บรรทัดนี้
+ตอน submit จะไม่รู้ว่ากำลังแก้ไขสินค้าชิ้นไหน</p>
+<p>สุดท้ายอย่าลืมเพิ่มลิงก์ไปหน้า Edit ใน <code>Pages/Products.cshtml</code> ต่อจากปุ่มลบที่ทำไว้ด้านบน:</p>
+<pre>&lt;a asp-page="Edit" asp-route-id="@product.Id"&gt;แก้ไข&lt;/a&gt;</pre>
 <p><b>Pages/Products.cshtml.cs</b> — Delete (มีอยู่แล้วจากด้านบน)</p>
 <pre>public async Task OnPostDeleteAsync(int id)
 {
