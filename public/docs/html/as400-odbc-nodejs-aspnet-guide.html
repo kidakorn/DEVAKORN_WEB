@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>คู่มือเชื่อมต่อ AS400 (IBM i) ผ่าน ODBC: Node.js และ ASP.NET Core แบบ best practices</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Tokens on :root so light/dark only redefine values, never rules. */
+  :root {
+    --bg: #f4f6f7;
+    --surface: #ffffff;
+    --ink: #14202b;
+    --ink-soft: #4a5a68;
+    --line: #d5dde3;
+    --accent: #1f5f7a;
+    --accent-soft: #e2eef3;
+    --gate: #9a5b00;
+    --gate-soft: #fbefd9;
+    --danger: #a3302a;
+    --danger-soft: #f8e4e2;
+    --code-bg: #eaeff2;
+    --pre-bg: #0f1a22;
+    --pre-ink: #dbe6ee;
+    --node: #3d7a4a;
+    --dotnet: #5b47a8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10181f; --surface: #182430; --ink: #e6edf2; --ink-soft: #9fb0be;
+      --line: #2b3b49; --accent: #6fb4d1; --accent-soft: #1b3341;
+      --gate: #e3a548; --gate-soft: #33260f; --danger: #ef8b84; --danger-soft: #3a1d1b;
+      --code-bg: #0d151b; --pre-bg: #0a1116; --pre-ink: #dbe6ee;
+      --node: #7cc493; --dotnet: #b3a4f0;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10181f; --surface: #182430; --ink: #e6edf2; --ink-soft: #9fb0be;
+    --line: #2b3b49; --accent: #6fb4d1; --accent-soft: #1b3341;
+    --gate: #e3a548; --gate-soft: #33260f; --danger: #ef8b84; --danger-soft: #3a1d1b;
+    --code-bg: #0d151b; --pre-bg: #0a1116; --pre-ink: #dbe6ee;
+    --node: #7cc493; --dotnet: #b3a4f0;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans Thai", "Noto Sans Thai", "Sarabun", system-ui, sans-serif;
+    font-size: 17px;
+    /* Thai has stacked vowels and tone marks, so it needs more leading than Latin script. */
+    line-height: 1.75;
+  }
+  main { max-width: 50rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+
+  h1 { font-size: 1.85rem; line-height: 1.35; margin: 0 0 0.75rem; font-weight: 600; }
+  h2 { font-size: 1.4rem; line-height: 1.4; margin: 3.5rem 0 0.5rem; font-weight: 600; padding-top: 1rem; border-top: 2px solid var(--line); }
+  h3 { font-size: 1.1rem; line-height: 1.5; margin: 2.25rem 0 0.4rem; font-weight: 600; }
+  h4 { font-size: 1rem; margin: 1.5rem 0 0.3rem; font-weight: 600; color: var(--ink-soft); }
+  p { margin: 0 0 1rem; }
+  .lede { color: var(--ink-soft); font-size: 1.05rem; }
+  .part-note { color: var(--ink-soft); margin-bottom: 1.25rem; }
+
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.86em; background: var(--code-bg); padding: 0.1em 0.4em; border-radius: 3px;
+    overflow-wrap: anywhere;
+  }
+
+  /* Code blocks keep a dark ground in both themes so long listings stay readable. */
+  .codeblock { margin: 0 0 1.25rem; border: 1px solid var(--line); background: var(--pre-bg); }
+  .fname {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.8rem; padding: 0.35rem 0.85rem; background: var(--accent-soft);
+    color: var(--accent); border-bottom: 1px solid var(--line);
+  }
+  pre { margin: 0; padding: 0.9rem 1rem; overflow-x: auto; color: var(--pre-ink); line-height: 1.55; tab-size: 2; }
+  pre code { background: none; padding: 0; font-size: 0.82rem; color: inherit; overflow-wrap: normal; }
+
+  .callout { padding: 0.85rem 1.1rem; margin: 0 0 1.25rem; border-left: 4px solid var(--accent); background: var(--accent-soft); }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.warn { border-left-color: var(--gate); background: var(--gate-soft); }
+  .callout.stop { border-left-color: var(--danger); background: var(--danger-soft); }
+  .callout b.label { display: block; margin-bottom: 0.15rem; }
+
+  .why { border: 1px solid var(--line); background: var(--surface); padding: 0.75rem 1rem; margin: 0 0 1.25rem; font-size: 0.95rem; color: var(--ink-soft); }
+  .why b { color: var(--ink); font-weight: 500; }
+  .why p:last-child { margin-bottom: 0; }
+
+  .scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); margin-bottom: 1.25rem; }
+  table { border-collapse: collapse; width: 100%; min-width: 36rem; font-size: 0.93rem; line-height: 1.6; }
+  th, td { text-align: left; padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--accent-soft); font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+
+  nav.toc { border: 1px solid var(--line); background: var(--surface); padding: 1rem 1.25rem; margin: 1.75rem 0 0; }
+  nav.toc ol { margin: 0; padding-left: 1.25rem; }
+  nav.toc li { margin: 0.2rem 0; }
+  nav.toc a { color: var(--accent); }
+
+  .tag { display: inline-block; font-size: 0.78rem; padding: 0 0.5rem; border: 1px solid currentColor; margin-left: 0.4rem; vertical-align: middle; line-height: 1.5; }
+  .tag.node { color: var(--node); }
+  .tag.dotnet { color: var(--dotnet); }
+
+  /* Flow of layers: each box is a place where a different kind of failure can happen. */
+  ol.flow { list-style: none; margin: 0 0 1.25rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  ol.flow li { border: 1px solid var(--line); background: var(--surface); padding: 0.4rem 0.75rem; font-size: 0.9rem; line-height: 1.5; }
+  ol.flow li small { display: block; color: var(--ink-soft); font-size: 0.78rem; }
+
+  ul.need, ul.check { list-style: none; margin: 0 0 1.25rem; padding: 0; }
+  ul.need li, ul.check li { position: relative; padding: 0.5rem 0 0.5rem 2rem; border-bottom: 1px solid var(--line); }
+  ul.need li::before, ul.check li::before {
+    content: ""; position: absolute; left: 0; top: 0.9rem; width: 1rem; height: 1rem;
+    border: 2px solid var(--ink-soft); border-radius: 3px;
+  }
+  ul.need li:last-child, ul.check li:last-child { border-bottom: 0; }
+  ul.plain { margin: 0 0 1.25rem; padding-left: 1.25rem; }
+  ul.plain li { margin-bottom: 0.35rem; }
+  ol.plain { margin: 0 0 1.25rem; padding-left: 1.4rem; }
+  ol.plain li { margin-bottom: 0.35rem; }
+
+  footer { margin-top: 3.5rem; color: var(--ink-soft); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+  a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 480px) { body { font-size: 16px; } h1 { font-size: 1.5rem; } h2 { font-size: 1.25rem; } }
+  @media print { body { background: #fff; color: #000; } .codeblock { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+
+<h1>คู่มือเชื่อมต่อ AS400 (IBM i) ผ่าน ODBC แบบทีละขั้นตั้งแต่ศูนย์</h1>
+<p class="lede">ครอบคลุมทั้ง Node.js และ ASP.NET Core บน VS Code พร้อม best practices เขียนจากเอกสารบริบทโปรเจกต์ iws-clone ของคุณ โดยยึดกฎเดิมทั้งหมด: ไม่ hardcode credential, parameterized query เท่านั้น, ใช้ connection pool, และ SELECT เท่านั้นบนข้อมูลจริง</p>
+
+<div class="callout warn">
+  <b class="label">ขอบเขตของเอกสารนี้</b>
+  <p>โค้ดในเอกสารเป็นตัวอย่างประกอบการสอน ยังไม่ได้ถูกนำไปใช้กับโปรเจกต์จริงของคุณ ตาม workflow ที่ตกลงกัน เราจะกลับมาทำเป็นแผนทีละ phase และรอคุณอนุมัติก่อนลงมือจริงทุกครั้ง เอกสารนี้ครอบคลุมเฉพาะการเข้าถึง Db2 for i ผ่าน SQL ด้วย ODBC ส่วนการเรียก RPG/CL ผ่าน itoolkit (SSH) ใน ibmi.js ไม่เกี่ยวข้องและไม่ถูกแตะ</p>
+</div>
+
+<nav class="toc" aria-label="สารบัญ">
+  <ol>
+    <li><a href="#part0">ส่วนที่ 0: พื้นฐานที่ใช้ร่วมกัน (ทำก่อนเขียนโค้ดทุกแบบ)</a></li>
+    <li><a href="#part1">ส่วนที่ 1: Node.js</a></li>
+    <li><a href="#part2">ส่วนที่ 2: ASP.NET Core</a></li>
+    <li><a href="#part3">ส่วนที่ 3: เปรียบเทียบสองแบบ และเลือกอย่างไร</a></li>
+    <li><a href="#part4">ส่วนที่ 4: แก้ปัญหาที่พบบ่อย</a></li>
+    <li><a href="#part5">ส่วนที่ 5: Checklist ก่อนถือว่า "พร้อม read-only"</a></li>
+  </ol>
+</nav>
+
+<!-- ===================== PART 0 ===================== -->
+<h2 id="part0">ส่วนที่ 0: พื้นฐานที่ใช้ร่วมกัน</h2>
+<p class="part-note">ทั้ง Node.js และ ASP.NET ใช้ ODBC driver ตัวเดียวกัน ปัญหาส่วนใหญ่ (ประมาณเกือบทั้งหมดในทางปฏิบัติ) เกิดที่ชั้น driver, network และสิทธิ์ ไม่ใช่ที่โค้ด จึงต้องทำส่วนนี้ให้จบและพิสูจน์ด้วยเครื่องมือนอกโค้ดก่อน</p>
+
+<h3>0.1 ภาพรวม: ข้อมูลเดินทางผ่านกี่ชั้น</h3>
+<ol class="flow">
+  <li>แอปของคุณ<small>Node.js หรือ .NET</small></li>
+  <li>ODBC Driver Manager<small>Windows ODBC หรือ unixODBC</small></li>
+  <li>IBM i Access ODBC Driver<small>ไฟล์ driver จาก IBM</small></li>
+  <li>Network<small>VPN, firewall</small></li>
+  <li>IBM i host servers<small>สิทธิ์ของ user profile</small></li>
+  <li>Db2 for i<small>library และตาราง</small></li>
+</ol>
+<div class="why">
+  <p><b>ทำไมต้องรู้:</b> แต่ละชั้นมีอาการเสียของตัวเอง เช่น หา driver ไม่เจอ (ชั้น 2-3), connect ไม่ติดหรือ timeout (ชั้น 4), login ไม่ผ่านหรือ "not authorized" (ชั้น 5), หาตารางไม่เจอ (ชั้น 6) ถ้าอ่านข้อความ error แล้วรู้ว่าเสียชั้นไหน จะไม่ต้องไล่แก้โค้ดที่ไม่ผิด</p>
+</div>
+
+<h3>0.2 ข้อมูลที่ต้องได้จาก IT ก่อน</h3>
+<p>อย่าเริ่มติดตั้งหรือเขียนอะไรจนกว่าจะได้ครบ และขอรหัสผ่านผ่านช่องทางที่ปลอดภัย ไม่ใช่แชทหรืออีเมลที่เก็บถาวร</p>
+<ul class="need">
+  <li>Host หรือ IP ของ AS400 (คีย์เวิร์ด <code>SYSTEM</code>)</li>
+  <li>ต้องต่อ VPN หรืออยู่ในเครือข่ายภายในหรือไม่ และ firewall เปิดอะไรให้เครื่อง dev บ้าง</li>
+  <li>Port ที่เปิดให้ และใช้ SSL หรือไม่</li>
+  <li>Library เริ่มต้น (คีย์เวิร์ด <code>DBQ</code>) และ library ที่ควรเข้าถึงจริง</li>
+  <li>User profile ที่ออกให้สำหรับ dev โดยเฉพาะ ควรมีสิทธิ์แค่อ่านตารางที่จำเป็น</li>
+  <li>นโยบายรหัสผ่าน (หมดอายุกี่วัน) เพื่อไม่ให้ระบบพังกลางทางเพราะรหัสหมดอายุ</li>
+</ul>
+
+<h3>0.3 ติดตั้งเครื่องมือ</h3>
+<p>ตัวอย่างนี้สมมติ Windows 64-bit ส่วน Linux/macOS จะระบุความต่างไว้</p>
+<ol class="plain">
+  <li><b>VS Code</b> รุ่นล่าสุด จาก code.visualstudio.com</li>
+  <li><b>Node.js LTS</b> (ถ้าทำแบบ Node) ตรวจรุ่นล่าสุดที่ nodejs.org แล้วยืนยันด้วย <code>node -v</code></li>
+  <li><b>.NET SDK</b> (ถ้าทำแบบ ASP.NET) ใช้รุ่น LTS ล่าสุด ปัจจุบันคือ .NET 10 ยืนยันด้วย <code>dotnet --info</code></li>
+  <li><b>IBM i Access ODBC Driver</b> ได้จาก IBM i Access Client Solutions (ACS) ต้องดาวน์โหลดผ่านช่องทางของ IBM ด้วยบัญชีที่บริษัทมีสิทธิ์ ให้ถาม IT ว่าบริษัทมีแพ็กเกจติดตั้งกลางหรือไม่ ถ้ามีให้ใช้ของบริษัทเพื่อให้รุ่นตรงกับที่ IT รองรับ</li>
+  <li><b>Extensions ใน VS Code:</b> "C# Dev Kit" (สำหรับ .NET), "ESLint" (สำหรับ Node), และ "REST Client" (ไว้ยิง request ทดสอบจากไฟล์ .http)</li>
+</ol>
+<div class="callout warn">
+  <b class="label">Bitness ต้องตรงกัน</b>
+  <p>Driver 64-bit ใช้กับ Node.js 64-bit และ .NET 64-bit เท่านั้น ถ้าผสม 32/64 จะเจอ error ว่าหา driver ไม่เจอ ทั้งที่มองเห็นอยู่ในเครื่อง ตรวจสอบ driver ที่ลงทะเบียนไว้จริงได้ดังนี้</p>
+</div>
+<div class="codeblock"><div class="fname">PowerShell (Windows)</div>
+<pre><code># Lists installed 64-bit ODBC drivers. The Name column is the exact string
+# that must appear in DRIVER={...} - copy it, do not retype it.
+Get-OdbcDriver -Platform "64-bit" | Where-Object Name -like "*IBM i*"</code></pre></div>
+<div class="codeblock"><div class="fname">bash (Linux)</div>
+<pre><code># Lists drivers registered with unixODBC (reads /etc/odbcinst.ini)
+odbcinst -q -d</code></pre></div>
+<p>บน Linux ชื่อ driver มักลงท้ายด้วย "64-bit" ต่างจากบน Windows จึงต้องคัดลอกชื่อจากผลลัพธ์จริง ส่วน macOS ให้ตรวจเอกสาร IBM ว่ารุ่น ACS ที่ใช้รองรับ ODBC บน macOS หรือไม่</p>
+
+<h3>0.4 พิสูจน์ network ก่อนทำอย่างอื่น</h3>
+<p>ต่อ VPN ถ้าจำเป็น แล้วทดสอบว่าเครื่องเรียก AS400 ได้ ค่า port ด้านล่างเป็นค่าที่พบโดยทั่วไปของ IBM i host servers ต้องยืนยันกับ IT บริษัทอีกครั้ง</p>
+<div class="codeblock"><div class="fname">PowerShell (Windows)</div>
+<pre><code># 449  = port mapper (driver asks it which port each service uses)
+# 8471 = database host server (the actual SQL traffic)
+# 8476 = signon server (validates user and password)
+# With SSL these are usually 9471 / 9476 instead - confirm with IT.
+Test-NetConnection -ComputerName &lt;HOST&gt; -Port 449
+Test-NetConnection -ComputerName &lt;HOST&gt; -Port 8471
+Test-NetConnection -ComputerName &lt;HOST&gt; -Port 8476</code></pre></div>
+<div class="why">
+  <p><b>เหตุผล:</b> ถ้าผลเป็น TcpTestSucceeded : False แปลว่าเป็นเรื่อง VPN หรือ firewall ให้หยุดและแจ้ง IT ไม่ต้องไปแก้ connection string หมายเหตุ: เอกสารเดิมของคุณใส่ <code>PORT=</code> ใน connection string ให้ตรวจใน ODBC Administrator ว่า driver รุ่นที่ติดตั้งรองรับคีย์เวิร์ดนี้จริงหรือไม่ ถ้าไม่รองรับ driver จะหา port เองผ่าน port mapper</p>
+</div>
+
+<h3>0.5 พิสูจน์ driver และ login ด้วยเครื่องมือนอกโค้ด</h3>
+<p>บน Windows เปิด "ODBC Data Sources (64-bit)" สร้าง User DSN ชั่วคราวด้วย driver ของ IBM ใส่ system และ user แล้วกด Test Connection บน Linux ใช้ <code>isql -v ชื่อDSN</code> แทน</p>
+<div class="why">
+  <p><b>เหตุผล:</b> ถ้าขั้นนี้ผ่าน แปลว่า driver, network และ credential ถูกต้องทั้งหมด หลังจากนี้ถ้าโค้ดต่อไม่ติด ปัญหาอยู่ในโค้ดหรือ connection string แน่นอน นี่คือวิธีแยกปัญหาที่เร็วที่สุด และอย่าใส่รหัสผ่านบนบรรทัดคำสั่ง เพราะจะติดอยู่ใน shell history</p>
+</div>
+
+<h3>0.6 ตั้งชั้นป้องกันแบบสองชั้น</h3>
+<p>ข้อมูลเป็นข้อมูลจริง ต้องไม่ให้ความปลอดภัยขึ้นกับวินัยของโค้ดอย่างเดียว</p>
+<ol class="plain">
+  <li><b>ชั้นที่ 1 (สำคัญที่สุด): สิทธิ์ของ user profile</b> ขอให้ IT ออก profile ที่มีสิทธิ์อ่านเท่านั้น (authority แบบ *USE บนตารางที่จำเป็น) ชั้นนี้ฝั่งเซิร์ฟเวอร์บังคับ โค้ดเลี่ยงไม่ได้</li>
+  <li><b>ชั้นที่ 2: คีย์เวิร์ด <code>CONNTYPE=2</code></b> ใน connection string ตามเอกสาร IBM ค่า 2 หมายถึง read-only ให้ใช้ได้เฉพาะ SELECT ส่วนค่าเริ่มต้นคือ 0 (อ่านเขียนได้) ชั้นนี้กันความผิดพลาดของเราเอง</li>
+  <li><b>ชั้นที่ 3: guard ในโค้ด</b> ตรวจว่า SQL ขึ้นต้นด้วย SELECT ก่อนส่ง ชั้นนี้ไม่ใช่กำแพงความปลอดภัยจริง เป็นแค่ตัวจับความผิดพลาดตอนพัฒนา</li>
+</ol>
+
+<h3>0.7 จัดการ secret ให้ถูกตั้งแต่แรก</h3>
+<ul class="plain">
+  <li>ห้าม commit รหัสผ่านทุกกรณี ใส่ไฟล์ที่เก็บ secret ใน <code>.gitignore</code> ก่อนสร้างไฟล์นั้น</li>
+  <li>รหัสผ่านที่มีอักขระ <code>;</code> หรือ <code>}</code> จะทำให้ connection string เพี้ยน ต้องครอบด้วยปีกกาและเบิลปีกกาปิด (โค้ดตัวอย่างมี helper ให้แล้ว)</li>
+  <li>อย่า log connection string หรือค่า parameter ที่เป็นข้อมูลส่วนบุคคล</li>
+</ul>
+
+<!-- ===================== PART 1 NODE ===================== -->
+<h2 id="part1">ส่วนที่ 1: Node.js <span class="tag node">odbc + Express</span></h2>
+<p class="part-note">ใช้แพ็กเกจ <code>odbc</code> (native binding) ซึ่งเป็นตัวเดียวกับที่ db.js เดิมใช้ ตัวอย่างเขียนแบบ CommonJS (<code>require</code>) เพื่อให้เข้ากับสไตล์ db.js เดิม ถ้าโปรเจกต์คุณเป็น ESM ให้แปลงเป็น import ได้ตรง ๆ</p>
+
+<h3>1.1 สร้างโปรเจกต์และติดตั้ง</h3>
+<div class="codeblock"><div class="fname">terminal ใน VS Code (Ctrl+`)</div>
+<pre><code>mkdir as400-node-demo
+cd as400-node-demo
+npm init -y
+npm install odbc express dotenv
+code .</code></pre></div>
+<div class="why">
+  <p><b>เหตุผล:</b> <code>odbc</code> เป็น native addon จึงต้องคอมไพล์หรือดาวน์โหลด binary สำเร็จ บน Linux ต้องมี unixODBC และ header ก่อน (เช่น <code>sudo apt-get install unixodbc unixodbc-dev</code>) บน Windows ถ้าไม่มี binary สำเร็จรูปสำหรับ Node รุ่นของคุณ จะต้องมี Visual Studio Build Tools และ Python สำหรับ node-gyp ถ้า install ไม่ผ่าน ให้อ่านข้อความ error ส่วนบนสุดก่อน มักบอกว่าขาดอะไร <code>dotenv</code> ใช้อ่านไฟล์ .env ตามกฎเดิม (Node รุ่นใหม่มี <code>--env-file</code> แทนได้ แต่ dotenv ทำงานเหมือนกันทุกรุ่นจึงปลอดภัยกว่าในทีมที่ใช้ Node หลายเวอร์ชัน)</p>
+</div>
+
+<h3>1.2 สร้าง .gitignore ก่อน แล้วค่อยสร้าง .env</h3>
+<div class="codeblock"><div class="fname">.gitignore</div>
+<pre><code>node_modules/
+.env</code></pre></div>
+<div class="codeblock"><div class="fname">.env.example  (ไฟล์นี้ commit ได้ มีแต่ชื่อตัวแปร ไม่มีค่าจริง)</div>
+<pre><code>AS400_DRIVER=IBM i Access ODBC Driver
+AS400_HOST=
+AS400_PORT=
+AS400_USER=
+AS400_PASSWORD=
+AS400_LIBRARY=
+AS400_SSL=0
+POOL_MAX=10</code></pre></div>
+<p>จากนั้นคัดลอกเป็น <code>.env</code> แล้วกรอกค่าจริง ค่า <code>AS400_DRIVER</code> ให้คัดลอกจากผลลัพธ์ในข้อ 0.3</p>
+<div class="why">
+  <p><b>เหตุผลที่ทำ .gitignore ก่อน:</b> ถ้าสร้าง .env แล้ว <code>git add .</code> ก่อนตั้ง ignore รหัสผ่านจะเข้า history ทันที และลบทีหลังไม่หมดเพราะยังค้างอยู่ใน commit เก่า</p>
+</div>
+
+<h3>1.3 config.js: ตรวจ config ตอนเริ่มโปรแกรม</h3>
+<div class="codeblock"><div class="fname">config.js</div>
+<pre><code>'use strict';
+require('dotenv').config();
+
+// Fail fast: a missing setting should stop the app at startup with a clear
+// message, not surface later as a confusing ODBC error on the first request.
+const required = ['AS400_DRIVER', 'AS400_HOST', 'AS400_USER', 'AS400_PASSWORD', 'AS400_LIBRARY'];
+const missing = required.filter((key) =&gt; !process.env[key]);
+if (missing.length &gt; 0) {
+  throw new Error(`Missing environment variables: ${missing.join(', ')}`);
+}
+
+module.exports = {
+  driver: process.env.AS400_DRIVER,
+  host: process.env.AS400_HOST,
+  port: process.env.AS400_PORT || null,
+  user: process.env.AS400_USER,
+  password: process.env.AS400_PASSWORD,
+  library: process.env.AS400_LIBRARY,
+  ssl: process.env.AS400_SSL === '1',
+  poolMax: Number(process.env.POOL_MAX || 10),
+};</code></pre></div>
+
+<h3>1.4 db.js: connection pool แบบมีชั้นป้องกัน</h3>
+<div class="codeblock"><div class="fname">db.js</div>
+<pre><code>'use strict';
+const odbc = require('odbc');
+const cfg = require('./config');
+
+// ODBC rule: wrap a value in braces and double any closing brace.
+// Why: without this, a password containing ';' or '}' silently splits the
+// connection string and produces a misleading "login failed" error.
+const braced = (value) =&gt; `{${String(value).replace(/}/g, '}}')}`;
+
+function buildConnectionString() {
+  const parts = [
+    `DRIVER=${braced(cfg.driver)}`,
+    `SYSTEM=${cfg.host}`,
+    `UID=${braced(cfg.user)}`,
+    `PWD=${braced(cfg.password)}`,
+    `DBQ=${cfg.library}`,
+    // Second lock behind the read-only user profile: 2 = SELECT only.
+    'CONNTYPE=2',
+  ];
+  // Only send PORT if configured; verify your driver version supports it.
+  if (cfg.port) parts.push(`PORT=${cfg.port}`);
+  if (cfg.ssl) parts.push('SSL=1');
+  return parts.join(';') + ';';
+}
+
+// Cache the promise, not the pool. If two requests arrive before the pool is
+// ready, both await the same promise instead of each creating a pool.
+let poolPromise = null;
+function getPool() {
+  if (!poolPromise) {
+    poolPromise = odbc
+      .pool({
+        connectionString: buildConnectionString(),
+        initialSize: 2,        // warm connections: first requests avoid login cost
+        incrementSize: 2,      // grow in small steps when the pool is exhausted
+        maxSize: cfg.poolMax,  // hard cap: protects the AS400 from too many jobs
+        connectionTimeout: 60, // seconds an idle connection may live
+        loginTimeout: 15,      // seconds to wait for a login before failing
+      })
+      .catch((err) =&gt; {
+        poolPromise = null; // allow a retry on the next call after a failure
+        throw err;
+      });
+  }
+  return poolPromise;
+}
+
+// Guard against mistakes during development. This is NOT a security boundary:
+// the real barrier is the read-only user profile and CONNTYPE=2 above.
+const READ_ONLY = /^\s*(select|with|values)\b/i;
+
+async function query(sql, params = []) {
+  if (!READ_ONLY.test(sql)) {
+    throw new Error('Only SELECT statements are allowed');
+  }
+  const pool = await getPool();
+  // pool.query borrows a connection, runs the statement, and returns the
+  // connection to the pool. We never open/close per request (rule from AGENTS.md).
+  const rows = await pool.query(sql, params);
+  // CHAR columns on IBM i are space-padded; trim so callers get clean strings.
+  return rows.map((row) =&gt;
+    Object.fromEntries(
+      Object.entries(row).map(([k, v]) =&gt; [k, typeof v === 'string' ? v.trimEnd() : v])
+    )
+  );
+}
+
+async function close() {
+  if (!poolPromise) return;
+  const pool = await poolPromise;
+  await pool.close();
+  poolPromise = null;
+}
+
+module.exports = { query, close };</code></pre></div>
+<div class="why">
+  <p><b>ทางเลือกที่พิจารณา:</b> ใช้ connection เดี่ยวแล้วใช้ซ้ำ (ง่ายกว่า แต่ request พร้อมกันจะต่อคิว และถ้า connection หลุดต้องเขียนกู้เองทั้งหมด) จึงเลือก pool ตามกฎเดิม ส่วนค่า <code>maxSize</code> ต้องคุยกับ IT เพราะแต่ละ connection กินหนึ่ง job บน AS400 เริ่มต่ำ ๆ แล้วค่อยเพิ่มตามการใช้งานจริง</p>
+</div>
+
+<h3>1.4.1 สคริปต์ทดสอบการเชื่อมต่อแบบขั้นบันได</h3>
+<div class="codeblock"><div class="fname">scripts/test-connection.js</div>
+<pre><code>'use strict';
+const { query, close } = require('../db');
+
+async function main() {
+  // Step A: prove connect + login. SYSDUMMY1 is a one-row system table that
+  // needs no special authority, so a failure here is about connection, not data.
+  const a = await query('SELECT 1 AS OK FROM SYSIBM.SYSDUMMY1');
+  console.log('A. connect ok:', a[0].OK);
+
+  // Step B: prove WHO we are and WHERE we landed. Confirms the profile IT gave us.
+  const b = await query('SELECT CURRENT USER AS USR, CURRENT SERVER AS SRV FROM SYSIBM.SYSDUMMY1');
+  console.log('B. user/server:', b[0].USR, b[0].SRV);
+
+  // Step C: prove read access to one real table with a single row.
+  // Replace MYLIB.MYTABLE with a real object. Keep FETCH FIRST so we never
+  // scan a large production table by accident.
+  const c = await query('SELECT * FROM MYLIB.MYTABLE FETCH FIRST 1 ROWS ONLY');
+  console.log('C. sample columns:', Object.keys(c[0] || {}));
+  // Print column names only, not values: real company data should not land in logs.
+}
+
+main()
+  .catch((err) =&gt; { console.error('FAILED:', err.message); process.exitCode = 1; })
+  .finally(close);</code></pre></div>
+<div class="codeblock"><div class="fname">terminal</div>
+<pre><code>node scripts/test-connection.js</code></pre></div>
+<p>ผลที่ควรได้: ขั้น A ผ่านแปลว่า driver, network และ login ถูกต้อง ขั้น B บอกว่าเราเป็นใครบนเครื่องปลายทาง ขั้น C ผ่านแปลว่ามีสิทธิ์อ่านตารางจริง แต่ละขั้นล้มด้วยเหตุผลต่างกัน จึงแยกกันเพื่อให้รู้ทันทีว่าติดที่ชั้นไหน</p>
+
+<h3>1.5 server.js: endpoint ตัวอย่างตาม pattern P_ISFOUND</h3>
+<div class="codeblock"><div class="fname">server.js</div>
+<pre><code>'use strict';
+const express = require('express');
+const { query, close } = require('./db');
+
+const app = express();
+
+app.get('/health/db', async (req, res) =&gt; {
+  try {
+    const rows = await query('SELECT CURRENT USER AS USR FROM SYSIBM.SYSDUMMY1');
+    res.json({ STATUS: 'OK', USR: rows[0].USR });
+  } catch (err) {
+    // Log the detail server-side; return a generic code to the client.
+    // Driver messages can reveal host names and library names.
+    console.error('health check failed:', err.message);
+    res.status(503).json({ STATUS: 'DB_UNAVAILABLE' });
+  }
+});
+
+app.get('/api/items/:code', async (req, res) =&gt; {
+  try {
+    const code = String(req.params.code);
+    // Validate length before touching the database (10 = example column length).
+    if (code.length === 0 || code.length &gt; 10) {
+      return res.status(400).json({ ERROR: 'INVALID_CODE' });
+    }
+    // XXCD / XXNM are PLACEHOLDERS. Use the real prefix from the company
+    // naming table. Do not invent a prefix: if the column is not in the table, stop and ask.
+    const rows = await query(
+      'SELECT XXCD, XXNM FROM MYLIB.MYTABLE WHERE XXCD = ? FETCH FIRST 1 ROWS ONLY',
+      [code] // bound parameter: never concatenate user input into the SQL text
+    );
+    // Not found is still HTTP 200 with P_ISFOUND "0" (existing contract, no 404).
+    if (rows.length === 0) return res.json({ P_ISFOUND: '0' });
+    res.json({ P_ISFOUND: '1', XXCD: rows[0].XXCD, XXNM: rows[0].XXNM });
+  } catch (err) {
+    console.error('items lookup failed:', err.message);
+    res.status(500).json({ ERROR: 'INTERNAL_ERROR' });
+  }
+});
+
+const server = app.listen(3000, () =&gt; console.log('listening on 3000'));
+
+// Graceful shutdown: stop accepting requests, then close pooled connections so
+// no orphan jobs stay on the AS400 after a restart.
+async function shutdown() {
+  server.close(async () =&gt; { await close(); process.exit(0); });
+}
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);</code></pre></div>
+
+<h3>1.6 รันและทดสอบใน VS Code</h3>
+<div class="codeblock"><div class="fname">requests.http  (ใช้กับ extension REST Client กด "Send Request")</div>
+<pre><code>### database health
+GET http://localhost:3000/health/db
+
+### found case (use a real code that exists)
+GET http://localhost:3000/api/items/A001
+
+### not found case: expect HTTP 200 with P_ISFOUND "0"
+GET http://localhost:3000/api/items/ZZZZZ</code></pre></div>
+<div class="codeblock"><div class="fname">.vscode/launch.json  (กด F5 เพื่อ debug และตั้ง breakpoint ได้)</div>
+<pre><code>{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run server",
+      "program": "${workspaceFolder}/server.js",
+      "skipFiles": ["&lt;node_internals&gt;/**"]
+    }
+  ]
+}</code></pre></div>
+
+<h3>1.7 Best practices ฝั่ง Node.js สรุป</h3>
+<ul class="plain">
+  <li>สร้าง pool ครั้งเดียวต่อโปรเซส และเก็บเป็น promise เพื่อกันสร้างซ้ำตอน request พร้อมกัน</li>
+  <li>ตั้ง <code>maxSize</code>, <code>loginTimeout</code>, <code>connectionTimeout</code> เสมอ ไม่ปล่อยค่าเริ่มต้น</li>
+  <li>ทุก query ต้องมี <code>FETCH FIRST n ROWS ONLY</code> ตอนพัฒนา กันดึงตารางใหญ่ทั้งตาราง</li>
+  <li>ระบุ library นำหน้าชื่อตารางเสมอ (<code>MYLIB.MYTABLE</code>) ไม่พึ่ง library list เพราะเครื่อง dev กับเครื่องจริงอาจไม่เหมือนกัน</li>
+  <li>ข้อมูล CHAR มีช่องว่างต่อท้าย ตัดที่ชั้นแปลงข้อมูล (ตรงกับ fieldMapping ในสถาปัตยกรรมเดิม) ส่วนวันที่แบบตัวเลข (D8, D6) ให้แปลงที่ชั้นเดียวกัน</li>
+  <li>ไม่ส่งข้อความ error ของ driver ให้ client และไม่ log ค่า parameter</li>
+  <li>ปิด pool ตอน shutdown ทุกครั้ง</li>
+</ul>
+
+<!-- ===================== PART 2 DOTNET ===================== -->
+<h2 id="part2">ส่วนที่ 2: ASP.NET Core <span class="tag dotnet">System.Data.Odbc + Minimal API</span></h2>
+<p class="part-note">ใช้ <code>System.Data.Odbc</code> ของ Microsoft ซึ่งเรียก ODBC driver ตัวเดียวกับฝั่ง Node เลือก Minimal API เพราะไฟล์น้อยกว่า MVC เหมาะกับ endpoint แบบ lookup ง่าย ๆ ถ้าทีมใช้ Controllers เป็นมาตรฐาน ตรรกะเชื่อมต่อด้านล่างย้ายไปใช้ได้เหมือนกัน</p>
+
+<h3>2.1 ตรวจเครื่องมือ</h3>
+<div class="codeblock"><div class="fname">terminal</div>
+<pre><code># Confirm SDK version AND runtime architecture (must be x64 to match a 64-bit driver)
+dotnet --info</code></pre></div>
+<p>ในผลลัพธ์ให้ดูบรรทัด RID ว่าเป็น <code>win-x64</code> (หรือ <code>linux-x64</code>) ซึ่งต้องตรงกับ bitness ของ ODBC driver ตามที่อธิบายในข้อ 0.3</p>
+
+<h3>2.2 สร้างโปรเจกต์</h3>
+<div class="codeblock"><div class="fname">terminal</div>
+<pre><code>dotnet new web -n As400Api
+cd As400Api
+dotnet add package System.Data.Odbc
+dotnet user-secrets init
+code .</code></pre></div>
+<p>เมื่อเปิดใน VS Code ครั้งแรก ถ้ามีข้อความให้เพิ่ม asset สำหรับ build และ debug ให้กดยืนยัน (จะสร้าง <code>.vscode/launch.json</code> ให้)</p>
+
+<h3>2.3 เก็บค่าตั้ง: แยกค่าธรรมดากับ secret</h3>
+<div class="codeblock"><div class="fname">appsettings.json  (ไม่มี secret ในไฟล์นี้ commit ได้)</div>
+<pre><code>{
+  "As400": {
+    "Driver": "IBM i Access ODBC Driver",
+    "Host": "your-as400-host",
+    "Library": "MYLIB",
+    "Ssl": false,
+    "MaxConcurrency": 8,
+    "CommandTimeoutSeconds": 30
+  }
+}</code></pre></div>
+<div class="codeblock"><div class="fname">terminal  (secret เก็บนอกโฟลเดอร์โปรเจกต์)</div>
+<pre><code>dotnet user-secrets set "As400:User" "YOURPROFILE"
+dotnet user-secrets set "As400:Password" "your-password"</code></pre></div>
+<div class="why">
+  <p><b>เหตุผล:</b> user-secrets เก็บไฟล์ไว้ในโฟลเดอร์ผู้ใช้ของเครื่อง ไม่ใช่ในโปรเจกต์ จึงไม่มีทางถูก commit โดยไม่ตั้งใจ (เทียบได้กับ .env ที่อยู่ใน .gitignore) ตอน deploy จริงให้ใช้ environment variable ชื่อ <code>As400__Password</code> (ขีดล่างสองตัวแทนระดับซ้อน) ระบบ configuration ของ ASP.NET อ่านทับค่าให้เอง หมายเหตุ: คำสั่งที่พิมพ์รหัสผ่านจะค้างอยู่ใน shell history ควรล้าง history หลังตั้งค่า</p>
+</div>
+
+<h3>2.4 Options class: ตรวจ config ตอนเริ่มโปรแกรม</h3>
+<div class="codeblock"><div class="fname">As400Options.cs</div>
+<pre><code>using System.ComponentModel.DataAnnotations;
+
+public sealed class As400Options
+{
+    public const string SectionName = "As400";
+
+    // [Required] rejects null AND empty strings, so a missing setting stops the
+    // app at startup (see ValidateOnStart) instead of failing on the first request.
+    [Required] public string Driver { get; set; } = "";
+    [Required] public string Host { get; set; } = "";
+    [Required] public string Library { get; set; } = "";
+    [Required] public string User { get; set; } = "";
+    [Required] public string Password { get; set; } = "";
+
+    public int? Port { get; set; }
+    public bool Ssl { get; set; }
+
+    // Upper bound on simultaneous DB calls. Protects the AS400 (one job per
+    // connection) and protects our own thread pool.
+    [Range(1, 50)] public int MaxConcurrency { get; set; } = 8;
+    [Range(1, 300)] public int CommandTimeoutSeconds { get; set; } = 30;
+}</code></pre></div>
+
+<h3>2.5 As400Db.cs: service สำหรับ query แบบปลอดภัย</h3>
+<div class="codeblock"><div class="fname">As400Db.cs</div>
+<pre><code>using System.Data.Odbc;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
+
+// Registered as a singleton: it holds only immutable settings and a semaphore,
+// so one shared instance is safe and cheap.
+public sealed partial class As400Db : IDisposable
+{
+    private readonly As400Options _opt;
+    private readonly string _connectionString;
+    private readonly SemaphoreSlim _gate;
+
+    public As400Db(IOptions&lt;As400Options&gt; options)
+    {
+        _opt = options.Value;
+        _connectionString = Build(_opt);
+        _gate = new SemaphoreSlim(_opt.MaxConcurrency);
+    }
+
+    // ODBC rule: wrap in braces and double any closing brace, so a password
+    // containing ';' or '}' cannot break the connection string.
+    private static string Braced(string v) =&gt; "{" + v.Replace("}", "}}") + "}";
+
+    private static string Build(As400Options o)
+    {
+        var parts = new List&lt;string&gt;
+        {
+            $"DRIVER={Braced(o.Driver)}",
+            $"SYSTEM={o.Host}",
+            $"UID={Braced(o.User)}",
+            $"PWD={Braced(o.Password)}",
+            $"DBQ={o.Library}",
+            "CONNTYPE=2", // second lock behind the read-only profile: SELECT only
+        };
+        if (o.Port is int p) parts.Add($"PORT={p}"); // verify driver supports PORT
+        if (o.Ssl) parts.Add("SSL=1");
+        return string.Join(';', parts) + ";";
+    }
+
+    // Guard for development mistakes, not a security boundary.
+    [GeneratedRegex(@"^\s*(select|with|values)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex ReadOnlyPattern();
+
+    public async Task&lt;List&lt;Dictionary&lt;string, object?&gt;&gt;&gt; QueryAsync(
+        string sql, object?[] args, CancellationToken ct)
+    {
+        if (!ReadOnlyPattern().IsMatch(sql))
+            throw new InvalidOperationException("Only SELECT statements are allowed.");
+
+        // Cap concurrent DB calls. System.Data.Odbc does its work synchronously
+        // under the hood, so many parallel calls would occupy many threads.
+        await _gate.WaitAsync(ct);
+        try
+        {
+            // 'using' returns the connection to the driver manager pool on Dispose.
+            // Opening per call is correct in ADO.NET; the pool makes it cheap.
+            using var conn = new OdbcConnection(_connectionString);
+            conn.Open();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
+            cmd.CommandTimeout = _opt.CommandTimeoutSeconds;
+
+            // ODBC parameters are POSITIONAL: names are ignored, only order matters.
+            // Each '?' in the SQL text is filled by the next parameter in this loop.
+            foreach (var a in args)
+                cmd.Parameters.Add(new OdbcParameter { Value = a ?? DBNull.Value });
+
+            using var reader = cmd.ExecuteReader();
+            var rows = new List&lt;Dictionary&lt;string, object?&gt;&gt;();
+            while (reader.Read())
+            {
+                var row = new Dictionary&lt;string, object?&gt;(StringComparer.OrdinalIgnoreCase);
+                for (var i = 0; i &lt; reader.FieldCount; i++)
+                {
+                    var v = reader.GetValue(i);
+                    // CHAR columns on IBM i are space-padded; trim for clean output.
+                    row[reader.GetName(i)] = v is DBNull ? null : v is string s ? s.TrimEnd() : v;
+                }
+                rows.Add(row);
+            }
+            return rows;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public void Dispose() =&gt; _gate.Dispose();
+}</code></pre></div>
+
+<h3>2.6 Program.cs: ประกอบทุกอย่างเข้าด้วยกัน</h3>
+<div class="codeblock"><div class="fname">Program.cs</div>
+<pre><code>using Microsoft.AspNetCore.Diagnostics;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Bind + validate at startup. ValidateOnStart makes a bad config crash immediately
+// with a readable message instead of failing on the first database call.
+builder.Services.AddOptions&lt;As400Options&gt;()
+    .Bind(builder.Configuration.GetSection(As400Options.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder.Services.AddSingleton&lt;As400Db&gt;();
+
+var app = builder.Build();
+
+// One place to turn any unexpected exception into a safe response.
+// Detail goes to the log; the client only sees a generic code.
+app.UseExceptionHandler(errorApp =&gt; errorApp.Run(async ctx =&gt;
+{
+    var feature = ctx.Features.Get&lt;IExceptionHandlerFeature&gt;();
+    app.Logger.LogError(feature?.Error, "Unhandled error on {Path}", ctx.Request.Path);
+    ctx.Response.StatusCode = 500;
+    await ctx.Response.WriteAsJsonAsync(new { ERROR = "INTERNAL_ERROR" });
+}));
+
+app.MapGet("/health/db", async (As400Db db, CancellationToken ct) =&gt;
+{
+    var rows = await db.QueryAsync(
+        "SELECT CURRENT USER AS USR, CURRENT SERVER AS SRV FROM SYSIBM.SYSDUMMY1", [], ct);
+    return Results.Ok(new { STATUS = "OK", USR = rows[0]["USR"], SRV = rows[0]["SRV"] });
+});
+
+app.MapGet("/api/items/{code}", async (string code, As400Db db, CancellationToken ct) =&gt;
+{
+    // Validate before touching the database (10 = example column length).
+    if (code.Length is 0 or &gt; 10)
+        return Results.BadRequest(new { ERROR = "INVALID_CODE" });
+
+    // XXCD / XXNM are PLACEHOLDERS. Use the real prefix from the company naming
+    // table. Never invent a prefix: if the column is missing there, stop and ask.
+    var rows = await db.QueryAsync(
+        "SELECT XXCD, XXNM FROM MYLIB.MYTABLE WHERE XXCD = ? FETCH FIRST 1 ROWS ONLY",
+        [code], ct);
+
+    // Not found stays HTTP 200 with P_ISFOUND "0" (existing contract, no 404).
+    return rows.Count == 0
+        ? Results.Ok(new { P_ISFOUND = "0" })
+        : Results.Ok(new { P_ISFOUND = "1", XXCD = rows[0]["XXCD"], XXNM = rows[0]["XXNM"] });
+});
+
+app.Run();</code></pre></div>
+<p>ข้อสังเกต: <code>CancellationToken ct</code> ที่ส่งต่อไปทุกชั้น ทำให้เมื่อ client ยกเลิก request งานที่รอคิวใน semaphore จะหยุดตามไปด้วย ไม่ค้างกินทรัพยากร</p>
+
+<h3>2.7 รันและทดสอบใน VS Code</h3>
+<div class="codeblock"><div class="fname">terminal</div>
+<pre><code>dotnet run</code></pre></div>
+<p>ดู port ที่ใช้จริงในบรรทัด "Now listening on" หรือใน <code>Properties/launchSettings.json</code> แล้วใช้ไฟล์ <code>requests.http</code> แบบเดียวกับข้อ 1.6 โดยเปลี่ยน port หรือกด F5 เพื่อ debug ผ่าน C# Dev Kit ได้เลย ถ้า config ไม่ครบ แอปจะหยุดตั้งแต่ตอนเริ่มพร้อมข้อความบอกว่าขาดค่าอะไร ซึ่งเป็นพฤติกรรมที่ต้องการ</p>
+
+<h3>2.8 เรื่อง connection pooling ใน .NET (จุดที่ต่างจาก Node ที่สุด)</h3>
+<div class="callout warn">
+  <b class="label">ต้องตรวจสอบเอง อย่าสมมติว่าเปิดอยู่</b>
+  <p>ใน System.Data.Odbc การ pool ไม่ได้ทำโดยตัวไลบรารี .NET แต่ทำโดย ODBC Driver Manager ของระบบ บน Windows ตั้งได้ที่แท็บ "Connection Pooling" ใน ODBC Administrator (ต่อ driver) บน Linux ตั้งใน <code>odbcinst.ini</code> ด้วยคีย์ <code>Pooling</code> และ <code>CPTimeout</code> ยืนยันรายละเอียดกับเอกสาร Microsoft และ unixODBC ของรุ่นที่ใช้</p>
+</div>
+<div class="why">
+  <p><b>วิธีพิสูจน์ว่า pool ทำงานจริง:</b> ให้ IT ช่วยดู job ของ database server (prestart jobs ชื่อ QZDASOINIT ใน subsystem QUSRWRK) ขณะยิง request ต่อเนื่อง ถ้า pool ทำงาน จำนวน job จะคงที่ ถ้าไม่ทำงาน จะเห็น job เกิดและดับทุก request ซึ่งขัดกับกฎ "ห้ามเปิด/ปิด connection ทุก request" ของคุณ และ semaphore ในโค้ดตัวอย่างช่วยจำกัดขอบบนให้แม้ pool จะไม่ทำงาน</p>
+</div>
+
+<h3>2.9 Best practices ฝั่ง ASP.NET Core สรุป</h3>
+<ul class="plain">
+  <li>ใช้ Options pattern พร้อม <code>ValidateOnStart</code> ให้ config ผิดพังตั้งแต่เริ่ม</li>
+  <li>secret อยู่ใน user-secrets (dev) และ environment variable (deploy) ไม่อยู่ใน appsettings.json</li>
+  <li>เปิด connection ด้วย <code>using</code> ต่อหนึ่งคำสั่ง และพึ่ง driver manager pool ห้ามเก็บ <code>OdbcConnection</code> ไว้เป็น field แบบ singleton</li>
+  <li>ODBC parameter เป็นแบบตำแหน่ง (<code>?</code>) เรียงลำดับให้ตรง และสร้างผ่าน <code>OdbcParameter</code> เสมอ</li>
+  <li>จำกัด concurrent ด้วย <code>SemaphoreSlim</code> และตั้ง <code>CommandTimeout</code> ทุกคำสั่ง</li>
+  <li>เข้าใจว่า async ของ System.Data.Odbc ส่วนใหญ่ไม่ใช่ async I/O จริง จึงไม่ควรยิงขนานจำนวนมากโดยไม่จำกัด</li>
+  <li>จัดการ exception ที่ middleware จุดเดียว และไม่ส่งข้อความ driver ให้ client</li>
+  <li>ตรวจให้แน่ว่า runtime เป็น x64 ตรงกับ driver</li>
+</ul>
+
+<!-- ===================== PART 3 ===================== -->
+<h2 id="part3">ส่วนที่ 3: เปรียบเทียบสองแบบ และเลือกอย่างไร</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>หัวข้อ</th><th>Node.js (odbc)</th><th>ASP.NET Core (System.Data.Odbc)</th></tr></thead>
+  <tbody>
+    <tr><td>Pool</td><td>มีในตัวแพ็กเกจ ตั้ง <code>maxSize</code> และ timeout ในโค้ด</td><td>อยู่ที่ ODBC Driver Manager ของระบบ ต้องตั้งและตรวจนอกโค้ด</td></tr>
+    <tr><td>Parameter</td><td>อาร์เรย์ตามลำดับ <code>['a','b']</code></td><td><code>OdbcParameter</code> ตามลำดับ (ชื่อถูกละเลย)</td></tr>
+    <tr><td>Secret</td><td>ไฟล์ .env ใน .gitignore</td><td>user-secrets (dev) และ environment variable (deploy)</td></tr>
+    <tr><td>ตรวจ config ตอนเริ่ม</td><td>เขียนเอง (ตัวอย่างใน config.js)</td><td>Options pattern พร้อม <code>ValidateOnStart</code> ในตัว</td></tr>
+    <tr><td>การติดตั้ง</td><td>native addon อาจต้อง build tools</td><td>แพ็กเกจ NuGet ติดตั้งง่าย</td></tr>
+    <tr><td>Async จริง</td><td>ไม่บล็อก event loop</td><td>ส่วนใหญ่บล็อกเธรด จึงต้องจำกัด concurrent</td></tr>
+    <tr><td>Hot-reload endpoint</td><td>ทำได้ตามสถาปัตยกรรม endpoints.json เดิม</td><td>ต้องออกแบบเอง (เช่น อ่านไฟล์ config ใหม่เป็นระยะ)</td></tr>
+    <tr><td>เหมาะเมื่อ</td><td>ต่อยอด iws-clone เดิมที่มี registry และ itoolkit อยู่แล้ว</td><td>ทีมและโครงสร้างพื้นฐานของบริษัทเป็น .NET อยู่แล้ว</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="why">
+  <p><b>ข้อพิจารณา:</b> ถ้าเป้าหมายคือใช้สถาปัตยกรรม config-driven เดิม (endpoints.json, hot-reload, itoolkit) ให้ต่อยอดที่ Node เพราะไม่ต้องเขียนใหม่ทั้งชุด ส่วน ASP.NET เหมาะเมื่อบริษัทมาตรฐานเป็น .NET หรือต้องรวมเข้ากับระบบ .NET อื่น ทั้งสองแบบใช้ ODBC driver เดียวกัน จึงเรียนรู้ส่วนที่ 0 ครั้งเดียวใช้ได้ทั้งคู่ และทั้งสองแบบต้องผ่านสิทธิ์ read-only เหมือนกัน</p>
+</div>
+
+<!-- ===================== PART 4 ===================== -->
+<h2 id="part4">ส่วนที่ 4: แก้ปัญหาที่พบบ่อย</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>อาการ</th><th>สาเหตุที่พบบ่อย</th><th>วิธีตรวจ</th></tr></thead>
+  <tbody>
+    <tr><td>Data source name not found and no default driver specified (IM002)</td><td>ชื่อ driver ใน <code>DRIVER=</code> ไม่ตรงกับที่ลงทะเบียน หรือ bitness ไม่ตรง</td><td>คัดลอกชื่อจาก <code>Get-OdbcDriver</code> หรือ <code>odbcinst -q -d</code> และเช็ค 32/64-bit</td></tr>
+    <tr><td>Driver could not be loaded, system error 193</td><td>โปรเซส 64-bit พยายามโหลด driver 32-bit (หรือกลับกัน)</td><td>ติดตั้ง driver ให้ตรง bitness ของ Node หรือ .NET</td></tr>
+    <tr><td>Timeout ตอน connect</td><td>ไม่ได้ต่อ VPN หรือ firewall ปิด port</td><td>ทดสอบ port ตามข้อ 0.4 แล้วแจ้ง IT</td></tr>
+    <tr><td>Login ไม่ผ่าน</td><td>รหัสผ่านผิด, หมดอายุ, profile ถูกปิด, หรืออักขระ <code>;</code> <code>}</code> ในรหัสผ่านที่ไม่ได้ escape</td><td>ทดสอบด้วย DSN ในข้อ 0.5 ก่อน แล้วตรวจ helper <code>braced</code></td></tr>
+    <tr><td>SQL0204: ไม่พบตาราง</td><td>library หรือชื่อตารางผิด หรือไม่ได้ระบุ library</td><td>ระบุ <code>LIB.TABLE</code> เต็ม และเช็คว่า profile เห็น library นั้น</td></tr>
+    <tr><td>SQL0551: ไม่มีสิทธิ์ในออบเจ็กต์</td><td>profile ไม่มีสิทธิ์อ่านตารางนี้</td><td>แจ้ง IT เพื่อขอสิทธิ์เฉพาะตารางที่จำเป็น อย่าขอสิทธิ์กว้างเกินจำเป็น</td></tr>
+    <tr><td>SQL0104: token ไม่ถูกต้อง</td><td>ไวยากรณ์ SQL ผิด (เช่น ใช้ LIMIT แทน FETCH FIRST)</td><td>Db2 for i ใช้ <code>FETCH FIRST n ROWS ONLY</code></td></tr>
+    <tr><td>npm install odbc ล้มเหลว</td><td>ไม่มี unixODBC (Linux) หรือ build tools (Windows)</td><td>อ่าน error บรรทัดบนสุด แล้วติดตั้งส่วนที่ขาด</td></tr>
+    <tr><td>ค่า CHAR มีช่องว่างต่อท้าย เปรียบเทียบไม่ตรง</td><td>CHAR ใน IBM i เติมช่องว่างให้ครบความยาว</td><td>trim ที่ชั้นแปลงข้อมูลตามตัวอย่าง</td></tr>
+  </tbody>
+</table>
+</div>
+<p>หมายเหตุ: รหัส error ของ driver ที่ขึ้นต้นด้วย CWB มาจากชั้น driver และ network ให้จดรหัสเต็มแล้วค้นในเอกสาร IBM หรือแจ้ง IT พร้อมรหัสนั้น จะเร็วกว่าเดาสาเหตุเอง</p>
+
+<!-- ===================== PART 5 ===================== -->
+<h2 id="part5">ส่วนที่ 5: Checklist ก่อนถือว่า "พร้อม read-only"</h2>
+<ul class="check">
+  <li>ได้ข้อมูล connection ครบจาก IT และรับรหัสผ่านผ่านช่องทางปลอดภัย</li>
+  <li>เครื่อง dev เข้าถึง AS400 ได้ (VPN ถ้าจำเป็น) และผ่านการทดสอบ port</li>
+  <li>ชื่อ driver ตรงตัวอักษรและ bitness ตรงกับ Node หรือ .NET</li>
+  <li>DSN ทดสอบนอกโค้ดผ่าน (ข้อ 0.5)</li>
+  <li>.gitignore ครอบคลุมไฟล์ secret ก่อนสร้างไฟล์นั้น</li>
+  <li>user profile เป็น read-only จริง และ connection string มี <code>CONNTYPE=2</code></li>
+  <li>ทดสอบขั้น A, B, C ผ่านตามลำดับ ขั้น C อ่านแถวเดียวจากตารางจริง</li>
+  <li>ทุก query เป็นแบบ parameterized และมี <code>FETCH FIRST</code></li>
+  <li>ตรวจแล้วว่า pool ทำงานจริง (จำนวน job ฝั่ง AS400 คงที่)</li>
+  <li>error ที่ส่งถึง client เป็นรหัสกลาง ไม่ใช่ข้อความ driver</li>
+  <li>ชื่อ field และ endpoint ใหม่ทุกตัวอ้างจากตาราง naming convention ของบริษัท ตัวไหนไม่มีให้หยุดถามก่อน</li>
+  <li>ยังไม่มี INSERT, UPDATE, DELETE, CREATE, ALTER หรือ DROP จนกว่าจะได้รับการยืนยันจากคุณเป็นลายลักษณ์อักษร</li>
+</ul>
+
+<div class="callout stop">
+  <b class="label">ก่อนเปิดใช้สิทธิ์เขียนในอนาคต</b>
+  <p>ต้องมีขั้นตอนอนุมัติแยกต่างหาก ใช้ profile แยกจาก profile อ่านอย่างเดียว, ทดสอบบนสำเนาข้อมูลก่อน และเปลี่ยน <code>CONNTYPE</code> เฉพาะ connection ที่จำเป็นเท่านั้น ไม่เปลี่ยนทั้งระบบ</p>
+</div>
+
+<footer>
+  ค่า port, ชื่อ driver บน Linux และคีย์เวิร์ด <code>PORT</code> เป็นข้อมูลที่พบโดยทั่วไป ต้องยืนยันกับ IT บริษัทและเอกสาร IBM ของรุ่นที่ติดตั้งจริง ตัวอย่าง XXCD, XXNM, MYLIB, MYTABLE เป็นตัวแทน ให้แทนด้วยชื่อจริงตามตารางมาตรฐานของบริษัท
+</footer>
+
+</main>
+</body>
+</html>

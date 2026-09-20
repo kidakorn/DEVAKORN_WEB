@@ -223,20 +223,55 @@ var result = await db.Orders
     <div>
 
       <div class="section">
-        <div class="section-head">คำสั่ง terminal ที่ใช้บ่อย</div>
+        <div class="section-head">คำสั่ง dotnet CLI — สร้างโปรเจกต์</div>
         <div class="section-body">
-          <pre>dotnet --version
-dotnet new webapp -o Name
-dotnet new webapi -o Name
-dotnet run
-dotnet watch run
-dotnet add package ชื่อ
+          <pre>dotnet --version              # เช็คเวอร์ชัน SDK
+dotnet new webapp -o Name     # Razor Pages
+dotnet new webapi -o Name     # Web API เปล่า
+dotnet new blazorserver -o N  # Blazor Server
+dotnet new mvc -o Name        # MVC แบบดั้งเดิม
+dotnet new classlib -o Name   # Class library
+dotnet new console -o Name    # Console app เปล่า
+dotnet new sln                # สร้างไฟล์ solution (.sln)
+dotnet sln add ./ProjName     # เพิ่ม project เข้า solution</pre>
+        </div>
+      </div>
 
-dotnet tool install --global dotnet-ef
-dotnet ef migrations add ชื่อ
-dotnet ef database update
+      <div class="section">
+        <div class="section-head">คำสั่ง dotnet CLI — รันและ build</div>
+        <div class="section-body">
+          <pre>dotnet run                    # รันครั้งเดียว
+dotnet watch run               # รัน + reload อัตโนมัติเมื่อแก้โค้ด
+dotnet build                   # compile อย่างเดียว ไม่รัน
+dotnet publish -c Release -o ./publish
+dotnet test                    # รัน unit test ทั้งหมดในโปรเจกต์</pre>
+        </div>
+      </div>
 
-dotnet publish -c Release -o ./publish</pre>
+      <div class="section">
+        <div class="section-head">คำสั่ง dotnet CLI — จัดการ package</div>
+        <div class="section-body">
+          <pre>dotnet add package ชื่อ Package
+dotnet add package ชื่อ --version 8.0.0
+dotnet remove package ชื่อ
+dotnet list package             # ดู package ที่ติดตั้งไว้ทั้งหมด
+dotnet list package --outdated  # เช็คว่า package ไหนมีเวอร์ชันใหม่กว่า</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">คำสั่ง dotnet CLI — EF Core (ฐานข้อมูล)</div>
+        <div class="section-body">
+          <pre>dotnet tool install --global dotnet-ef
+dotnet tool update --global dotnet-ef
+
+dotnet ef migrations add ชื่อ        # สร้าง migration ใหม่
+dotnet ef migrations remove          # ลบ migration ล่าสุดที่ยังไม่ update
+dotnet ef migrations list            # ดู migration ทั้งหมด
+dotnet ef database update            # apply migration ล่าสุดเข้า database จริง
+dotnet ef database update ชื่อ_migration_เก่า  # ย้อนกลับไป migration นั้น
+dotnet ef database drop              # ลบ database ทิ้งทั้งหมด (ระวัง!)
+dotnet ef dbcontext info             # ดูข้อมูล DbContext ที่ใช้อยู่</pre>
         </div>
       </div>
 
@@ -369,6 +404,63 @@ app.Run();</pre>
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:16px;">
+    <div class="section-head">Visual Studio (GUI) เทียบกับ VS Code (คำสั่ง/วิธีทำ)</div>
+    <div class="section-body">
+      <table class="mini">
+        <tr><th>ใน Visual Studio ทำผ่าน GUI</th><th>ใน VS Code ทำแบบนี้แทน</th></tr>
+        <tr><td>File → New → Project</td><td>terminal: <code>dotnet new webapp -o ชื่อ</code> (หรือ Command Palette → ".NET: New Project")</td></tr>
+        <tr><td>Solution Explorer → คลิกขวา → Add → New Item → Razor Page</td><td>สร้างไฟล์ .cshtml + .cshtml.cs เองในโฟลเดอร์ Pages/ (ไม่มี wizard ให้ แต่ VS Code auto-suggest boilerplate ให้บางส่วน)</td></tr>
+        <tr><td>Solution Explorer → คลิกขวา → Add → Class</td><td>สร้างไฟล์ .cs เปล่าเอง แล้วพิมพ์ <code>class ชื่อ</code></td></tr>
+        <tr><td>Tools → NuGet Package Manager → Manage NuGet Packages</td><td>terminal: <code>dotnet add package ชื่อ</code> หรือติดตั้ง extension "NuGet Gallery" เพิ่มถ้าอยากได้ UI คลิกเลือก</td></tr>
+        <tr><td>Package Manager Console: <code>Add-Migration ชื่อ</code></td><td>terminal: <code>dotnet ef migrations add ชื่อ</code> (คำสั่งคนละชุด แต่ทำงานเหมือนกัน)</td></tr>
+        <tr><td>Package Manager Console: <code>Update-Database</code></td><td>terminal: <code>dotnet ef database update</code></td></tr>
+        <tr><td>SQL Server Object Explorer (ดูข้อมูลใน table)</td><td>ติดตั้ง extension "SQL Server (mssql)" ของ Microsoft แล้วเชื่อมต่อผ่านนั้น</td></tr>
+        <tr><td>Scaffolding: คลิกขวา → Add → New Scaffolded Item → Razor Pages using EF</td><td>ไม่มี wizard เทียบเท่า ต้องเขียนไฟล์เองตามที่สอนใน Module 15 (Full Project) — หรือติดตั้ง
+        <code>dotnet-aspnet-codegenerator</code> เป็น global tool แล้วรันคำสั่ง scaffold เองผ่าน terminal (ใช้ยากกว่า เขียนเองมักเร็วกว่าสำหรับหน้าไม่กี่หน้า)</td></tr>
+        <tr><td>F5 (Run / Debug)</td><td>เหมือนกัน — กด F5 ใน VS Code ได้เลย (ครั้งแรกจะถาม generate launch.json ให้กด Yes)</td></tr>
+        <tr><td>Solution Explorer → คลิกขวาโปรเจกต์ → Set as Startup Project</td><td>ถ้ามีหลายโปรเจกต์ในโฟลเดอร์เดียว ตั้งค่าใน .vscode/launch.json เอง (ระบุ path ของโปรเจกต์ที่จะรัน)</td></tr>
+        <tr><td>Solution Explorer → คลิกขวา → Add → Reference (อ้างอิงโปรเจกต์อื่น)</td><td>terminal: <code>dotnet add reference ../ชื่อโปรเจกต์อื่น</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:16px;">
+    <div class="section-head">Command Palette และ Keyboard Shortcut ที่ใช้บ่อยใน VS Code</div>
+    <div class="section-body">
+      <table class="mini">
+        <tr><th>ทำอะไร</th><th>วิธีเรียก</th></tr>
+        <tr><td>เปิด/ปิด terminal</td><td>Ctrl+` (ปุ่มเครื่องหมายเน้นเสียง ข้างเลข 1)</td></tr>
+        <tr><td>เปิด Command Palette (สั่งงานทุกอย่างผ่านพิมพ์ค้นหา)</td><td>Ctrl+Shift+P</td></tr>
+        <tr><td>สร้างโปรเจกต์ .NET ใหม่ผ่าน UI แทนพิมพ์คำสั่งเอง</td><td>Command Palette → พิมพ์ ".NET: New Project"</td></tr>
+        <tr><td>Generate assets สำหรับ build/debug (launch.json, tasks.json)</td><td>Command Palette → ".NET: Generate Assets for Build and Debug"</td></tr>
+        <tr><td>ไปดูนิยามของ class/method ที่เคอร์เซอร์อยู่</td><td>F12 (Go to Definition)</td></tr>
+        <tr><td>หาว่ามีที่ไหนเรียกใช้ method/class นี้บ้าง</td><td>Shift+F12 (Find All References)</td></tr>
+        <tr><td>Quick Fix (เช่น auto-generate constructor, add using)</td><td>Ctrl+. เมื่อเคอร์เซอร์อยู่บนบรรทัดที่มีหลอดไฟสีเหลือง</td></tr>
+        <tr><td>Format โค้ดทั้งไฟล์ให้เยื้องสวยงาม</td><td>Shift+Alt+F</td></tr>
+        <tr><td>Rename ตัวแปร/method ทุกที่ที่ใช้พร้อมกัน</td><td>F2 เมื่อเคอร์เซอร์อยู่บนชื่อนั้น</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:16px;">
+    <div class="section-head">Documentation อ้างอิงสำหรับพัฒนาบน VS Code</div>
+    <div class="section-body">
+      <table class="mini">
+        <tr><th>เรื่อง</th><th>Link</th></tr>
+        <tr><td>เริ่มต้น C# ใน VS Code แบบ official</td><td><a href="https://code.visualstudio.com/docs/csharp/get-started" target="_blank">code.visualstudio.com/docs/csharp/get-started</a></td></tr>
+        <tr><td>C# Dev Kit — คำถามที่พบบ่อย/แก้ปัญหา</td><td><a href="https://code.visualstudio.com/docs/csharp/cs-dev-kit-faq" target="_blank">code.visualstudio.com/docs/csharp/cs-dev-kit-faq</a></td></tr>
+        <tr><td>.NET CLI — เอกสารคำสั่งทั้งหมดแบบละเอียด</td><td><a href="https://learn.microsoft.com/en-us/dotnet/core/tools/" target="_blank">learn.microsoft.com/dotnet/core/tools</a></td></tr>
+        <tr><td>dotnet command reference (ทุก option ของทุกคำสั่ง)</td><td><a href="https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet" target="_blank">learn.microsoft.com/dotnet/core/tools/dotnet</a></td></tr>
+        <tr><td>EF Core CLI (dotnet ef) แบบละเอียด</td><td><a href="https://learn.microsoft.com/en-us/ef/core/cli/dotnet" target="_blank">learn.microsoft.com/ef/core/cli/dotnet</a></td></tr>
+        <tr><td>Hello World แบบ official ล่าสุด (VS Code + C# Dev Kit)</td><td><a href="https://dotnet.microsoft.com/en-us/learn/dotnet/hello-world-tutorial/intro" target="_blank">dotnet.microsoft.com — Hello World in 5 minutes</a></td></tr>
+      </table>
+      <p style="font-size:12.5px;color:#4a5568;margin-top:10px;">
+        ไม่ต้องเปิดอ่านทั้งหมดตอนนี้ — เก็บไว้เป็นจุดอ้างอิงเวลาต้องการรายละเอียดของคำสั่งใดคำสั่งหนึ่งลึกกว่าที่ cheat sheet นี้ให้ไว้
+      </p>
     </div>
   </div>
 
