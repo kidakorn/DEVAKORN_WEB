@@ -52,11 +52,14 @@
   }
 
   table.mini{
-    width:100%; border-collapse:collapse; font-size:12.5px;
+    width:100%; border-collapse:collapse; font-size:12.5px; table-layout:fixed;
   }
-  table.mini th, table.mini td{ border:1px solid var(--line); padding:5px 8px; text-align:left; }
+  table.mini th, table.mini td{
+    border:1px solid var(--line); padding:5px 8px; text-align:left;
+    word-break:break-word; overflow-wrap:break-word;
+  }
   table.mini th{ background:#f6f8fa; font-family:var(--mono); font-size:10.5px; color:#4a5568; }
-  table.mini code{ font-size:11.5px; }
+  table.mini code{ font-size:11.5px; word-break:break-all; }
 
   footer{
     margin-top:32px; padding-top:14px; border-top:1px solid var(--line);
@@ -68,6 +71,19 @@ table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-wid
 table thead, table tbody{ display:table; width:100%; }
 pre, img, svg{ max-width:100%; }
 body{ overflow-x:hidden; }
+
+/* This file's tables are mostly prose (not wide code grids) — wrap text instead of
+   scrolling horizontally, which reads much better on a phone */
+table.mini{
+  display:table !important; overflow-x:visible !important;
+}
+table.mini tr > *:first-child{ width:34%; }
+
+@media (max-width: 480px){
+  table.mini{ font-size:11.5px; }
+  table.mini th, table.mini td{ padding:4px 6px; }
+  table.mini tr > *:first-child{ width:38%; }
+}
 
 @media (max-width: 640px){
   .grid{ grid-template-columns:1fr !important; }
@@ -460,6 +476,29 @@ app.Run();</pre>
       </table>
       <p style="font-size:12.5px;color:#4a5568;margin-top:10px;">
         ไม่ต้องเปิดอ่านทั้งหมดตอนนี้ — เก็บไว้เป็นจุดอ้างอิงเวลาต้องการรายละเอียดของคำสั่งใดคำสั่งหนึ่งลึกกว่าที่ cheat sheet นี้ให้ไว้
+      </p>
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:16px;">
+    <div class="section-head">Documentation ของ VS Code เอง (แบบทั่วไป ไม่เจาะจง C#)</div>
+    <div class="section-body">
+      <p style="font-size:13px;color:#4a5568;margin:0 0 10px;">
+        ตารางก่อนหน้าคือเอกสารเฉพาะฝั่ง C#/.NET ส่วนตารางนี้คือการใช้งาน VS Code ในฐานะ editor เฉยๆ
+        (ใช้ได้กับทุกภาษา ไม่ใช่แค่ C#)
+      </p>
+      <table class="mini">
+        <tr><th>เรื่อง</th><th>Link</th></tr>
+        <tr><td>รู้จักหน้าตา UI ของ VS Code (Explorer, Search, Extensions ฯลฯ)</td><td><a href="https://code.visualstudio.com/docs/getstarted/userinterface" target="_blank">code.visualstudio.com/docs/getstarted/userinterface</a></td></tr>
+        <tr><td>พื้นฐานการแก้ไขโค้ด (multi-cursor, find/replace, IntelliSense)</td><td><a href="https://code.visualstudio.com/docs/editor/codebasics" target="_blank">code.visualstudio.com/docs/editor/codebasics</a></td></tr>
+        <tr><td>Debugging แบบทั่วไป (breakpoint, watch, call stack) ไม่เจาะจงภาษา</td><td><a href="https://code.visualstudio.com/docs/editor/debugging" target="_blank">code.visualstudio.com/docs/editor/debugging</a></td></tr>
+        <tr><td>ติดตั้ง/จัดการ extension ผ่าน Marketplace</td><td><a href="https://code.visualstudio.com/docs/editor/extension-marketplace" target="_blank">code.visualstudio.com/docs/editor/extension-marketplace</a></td></tr>
+        <tr><td>รายการ keyboard shortcut ทั้งหมดแบบละเอียด (แยกตาม OS)</td><td><a href="https://code.visualstudio.com/docs/getstarted/keybindings" target="_blank">code.visualstudio.com/docs/getstarted/keybindings</a></td></tr>
+        <tr><td>Tips and Tricks รวมเทคนิคที่คนใช้ VS Code ควรรู้</td><td><a href="https://code.visualstudio.com/docs/editing/getting-started/tips-and-tricks" target="_blank">code.visualstudio.com — Tips and Tricks</a></td></tr>
+      </table>
+      <p style="font-size:12.5px;color:#4a5568;margin-top:10px;">
+        แนะนำให้อ่าน "userinterface" กับ "codebasics" ก่อนสุด ถ้ายังไม่คุ้นกับ VS Code มาก่อนเลย
+        (มาจาก editor อื่นหรือจาก Visual Studio) ที่เหลือเปิดอ่านทีหลังตามที่จำเป็นได้
       </p>
     </div>
   </div>
