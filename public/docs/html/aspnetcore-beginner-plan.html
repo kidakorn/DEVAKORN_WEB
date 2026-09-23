@@ -1314,8 +1314,10 @@ dotnet ef database update</pre>
       <div class="idea-box">
         <b>ข้อควรรู้ก่อนลองหัวข้อนี้:</b> โปรเจกต์ที่สร้างด้วย <code>dotnet new webapp</code> ตั้งแต่หัวข้อ 13
         เป็น Razor Pages ธรรมดา ยังไม่รองรับไฟล์ .razor ทันที ถ้าอยากลองโค้ดข้างล่างนี้จริง ต้องสร้างโปรเจกต์ใหม่แยกต่างหาก
-        ด้วยคำสั่ง <code>dotnet new blazorserver -o BlazorTest</code> (รายละเอียดเต็มอยู่ใน Module 13 ของ
-        webapp-deepdive) หัวข้อนี้จึงเน้นให้ "อ่านเข้าใจ syntax" เป็นหลักก่อน ยังไม่ต้องรันจริงก็ได้
+        ด้วยคำสั่ง <code>dotnet new blazor -o BlazorTest</code> (template รวมของ .NET 8 ขึ้นไป เรียกว่า
+        "Blazor Web App" ค่า interactivity เริ่มต้นเป็นแบบ Server ซึ่งพฤติกรรมใกล้เคียงกับตัวอย่างในหัวข้อนี้
+        ดูรายละเอียดเพิ่มเติมได้ใน Module 6 ของ webapp-deepdive) หัวข้อนี้จึงเน้นให้ "อ่านเข้าใจ syntax" เป็นหลักก่อน
+        ยังไม่ต้องรันจริงก็ได้
       </div>
       <p><b>ถ้าจะลองจริง สร้างไฟล์ที่:</b> <code>Components/Pages/ProductSearch.razor</code>
       (ในโปรเจกต์ Blazor ที่สร้างแยกต่างหากตามด้านบน)</p>

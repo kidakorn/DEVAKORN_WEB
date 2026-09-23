@@ -6,6 +6,7 @@
 <title>ASP.NET Core — Zero to Hero</title>
 <style>
 
+
 :root{
     --ink: #1b2430;
     --paper: #eef1f4;
@@ -610,6 +611,7 @@ table.mini tr > *:first-child{ width:34%; }
   table.mini th, table.mini td{ padding:4px 6px; }
   table.mini tr > *:first-child{ width:38%; }
 }
+
 
 </style>
 </head>
@@ -2338,8 +2340,10 @@ dotnet ef database update</pre>
 <div class="idea-box">
 <b>ข้อควรรู้ก่อนลองหัวข้อนี้:</b> โปรเจกต์ที่สร้างด้วย <code>dotnet new webapp</code> ตั้งแต่หัวข้อ 13
         เป็น Razor Pages ธรรมดา ยังไม่รองรับไฟล์ .razor ทันที ถ้าอยากลองโค้ดข้างล่างนี้จริง ต้องสร้างโปรเจกต์ใหม่แยกต่างหาก
-        ด้วยคำสั่ง <code>dotnet new blazorserver -o BlazorTest</code> (รายละเอียดเต็มอยู่ใน Module 13 ของ
-        webapp-deepdive) หัวข้อนี้จึงเน้นให้ "อ่านเข้าใจ syntax" เป็นหลักก่อน ยังไม่ต้องรันจริงก็ได้
+        ด้วยคำสั่ง <code>dotnet new blazor -o BlazorTest</code> (template รวมของ .NET 8 ขึ้นไป เรียกว่า
+        "Blazor Web App" ค่า interactivity เริ่มต้นเป็นแบบ Server ซึ่งพฤติกรรมใกล้เคียงกับตัวอย่างในหัวข้อนี้
+        ดูรายละเอียดเพิ่มเติมได้ใน Module 6 ของ webapp-deepdive) หัวข้อนี้จึงเน้นให้ "อ่านเข้าใจ syntax" เป็นหลักก่อน
+        ยังไม่ต้องรันจริงก็ได้
       </div>
 <p><b>ถ้าจะลองจริง สร้างไฟล์ที่:</b> <code>Components/Pages/ProductSearch.razor</code>
       (ในโปรเจกต์ Blazor ที่สร้างแยกต่างหากตามด้านบน)</p>
@@ -2881,6 +2885,24 @@ public class CreateModel : PageModel
 <span class="module-duration">4-5 วัน</span>
 </div>
 <div class="module-body">
+<div class="why-box">
+<b>สร้างโปรเจกต์ Blazor ก่อนเริ่ม module นี้:</b> ตั้งแต่ .NET 8 ขึ้นไป (รวม .NET 10) ใช้ template รวมชื่อ
+        "Blazor Web App" เรียกผ่านคำสั่งเดียว:
+        <pre>dotnet new blazor -o MyBlazorApp</pre>
+        ระหว่างสร้าง SDK จะถามค่า interactivity (<code>-int</code>) — ถ้าไม่ระบุจะได้ค่าเริ่มต้นเป็น
+        <b>Server</b> ซึ่งพฤติกรรมใกล้เคียงกับ Blazor Server รุ่นเก่าที่สุด เหมาะกับเริ่มต้นเรียนรู้ก่อน
+        ตัวเลือกอื่นที่เลือกได้ภายหลังคือ <code>WebAssembly</code> (รันในเบราว์เซอร์ล้วน) และ
+        <code>Auto</code> (สลับเองอัตโนมัติ) — ยังไม่ต้องสนใจสองตัวหลังตอนนี้ เอาแค่ Server ให้คล่องก่อน
+      </div>
+<div class="pitfall">
+<b>จุดที่ต่างจาก Blazor รุ่นเก่าอย่างมาก — ต้องเปิด interactivity เอง:</b> ใน template รวมนี้
+        หน้าเว็บจะ render แบบ static ก่อนเสมอ (คลิกอะไรไม่ตอบสนองเลย) จนกว่าจะประกาศ <code>@rendermode</code>
+        ที่ component นั้นชัดเจน ถ้าลองโค้ด <code>@bind</code>/<code>@onclick</code> ใน module นี้แล้วไม่ทำงาน
+        ให้เพิ่มบรรทัดนี้ไว้บนสุดของไฟล์ .razor ก่อนเสมอ:
+        <pre>@rendermode InteractiveServer</pre>
+        (ถ้าตอนสร้างโปรเจกต์ใส่ flag <code>-ai</code> เพิ่ม เช่น <code>dotnet new blazor -o MyApp -ai</code>
+        จะเปิด interactive ให้ทั้งแอปอัตโนมัติ ไม่ต้องประกาศทีละไฟล์)
+      </div>
 <ul style="margin:0 0 16px; padding-left:20px;">
 <li>ส่ง event จาก component ลูกกลับไปหา component แม่ (EventCallback)</li>
 <li>แชร์ค่าข้ามหลาย component โดยไม่ต้องส่งผ่าน props ทีละชั้น (Cascading Parameter)</li>
@@ -4260,7 +4282,7 @@ var result = await db.Orders
 <pre>dotnet --version              # เช็คเวอร์ชัน SDK
 dotnet new webapp -o Name     # Razor Pages
 dotnet new webapi -o Name     # Web API เปล่า
-dotnet new blazorserver -o N  # Blazor Server
+dotnet new blazor -o Name     # Blazor Web App (unified template, .NET 8+)
 dotnet new mvc -o Name        # MVC แบบดั้งเดิม
 dotnet new classlib -o Name   # Class library
 dotnet new console -o Name    # Console app เปล่า
