@@ -2903,6 +2903,57 @@ public class CreateModel : PageModel
         (ถ้าตอนสร้างโปรเจกต์ใส่ flag <code>-ai</code> เพิ่ม เช่น <code>dotnet new blazor -o MyApp -ai</code>
         จะเปิด interactive ให้ทั้งแอปอัตโนมัติ ไม่ต้องประกาศทีละไฟล์)
       </div>
+<div class="subblock">
+<div class="subblock-label">โครงสร้างไฟล์ที่ได้หลังสร้างโปรเจกต์</div>
+<p>รัน <code>dotnet new blazor -o MyBlazorApp</code> แล้วจะได้โครงสร้างนี้ทันที (ต่างจาก Razor Pages
+        ใน Module 14 พอสมควร เพราะ Blazor จัดกลุ่มไฟล์ไว้ในโฟลเดอร์ <code>Components/</code> เป็นหลัก):</p>
+<pre>MyBlazorApp/
+├── bin/                          (auto-generate ตอน build — ไม่ต้องแตะ)
+├── obj/                          (auto-generate ตอน build — ไม่ต้องแตะ)
+├── Components/
+│   ├── Layout/
+│   │   ├── MainLayout.razor          โครงหน้าเว็บกลาง เทียบเท่า _Layout.cshtml ของ Razor Pages
+│   │   ├── MainLayout.razor.css      CSS เฉพาะของ component นี้เท่านั้น (scoped CSS)
+│   │   ├── NavMenu.razor             เมนูนำทางด้านข้าง
+│   │   └── NavMenu.razor.css
+│   ├── Pages/
+│   │   ├── Home.razor                หน้าแรก (เทียบเท่า Pages/Index.cshtml)
+│   │   ├── Counter.razor             หน้าตัวอย่างสาธิต state (ลบทิ้งได้เมื่อเริ่มงานจริง)
+│   │   ├── Weather.razor             หน้าตัวอย่างสาธิตดึงข้อมูล (ลบทิ้งได้เช่นกัน)
+│   │   └── Error.razor               หน้าแสดง error กลาง
+│   ├── _Imports.razor            using ที่ใช้ร่วมกันทุกไฟล์ .razor ในโปรเจกต์ (คล้าย _ViewImports.cshtml)
+│   ├── App.razor                 จุดเริ่มต้นของทั้งแอป โหลด Routes.razor และกำหนด render mode หลัก
+│   └── Routes.razor              ตั้งค่า routing ของทั้งแอป
+├── Properties/
+│   └── launchSettings.json       ตั้งค่า port และ environment ตอน develop
+├── wwwroot/
+│   ├── app.css                   CSS กลางของทั้งแอป
+│   ├── favicon.png
+│   └── bootstrap/                 Bootstrap ที่ติดมาให้ default
+├── appsettings.json
+├── appsettings.Development.json
+├── MyBlazorApp.csproj
+├── MyBlazorApp.http               ไฟล์ทดสอบ API แบบเดียวกับที่แนะนำใน Module 4 (REST Client)
+└── Program.cs</pre>
+</div>
+<div class="subblock">
+<div class="subblock-label">เทียบกับโครงสร้าง Razor Pages ที่เรียนมาก่อน (Module 14)</div>
+<table class="summary">
+<thead><tr><th>Razor Pages</th><th>Blazor Web App</th><th>หน้าที่เหมือนกันคือ</th></tr></thead>
+<tbody>
+<tr><td>Pages/Shared/_Layout.cshtml</td><td>Components/Layout/MainLayout.razor</td><td>โครงหน้าเว็บกลาง</td></tr>
+<tr><td>Pages/Index.cshtml</td><td>Components/Pages/Home.razor</td><td>หน้าแรก</td></tr>
+<tr><td>Pages/_ViewImports.cshtml</td><td>Components/_Imports.razor</td><td>using กลางที่ใช้ทุกหน้า</td></tr>
+<tr><td>Program.cs (MapRazorPages)</td><td>Program.cs (MapRazorComponents) + Routes.razor</td><td>กำหนด routing</td></tr>
+<tr><td>ไม่มีเทียบเท่าตรงๆ</td><td>*.razor.css (scoped CSS)</td><td>CSS ที่ใช้เฉพาะ component นั้น ไม่รั่วไปกระทบ component อื่น</td></tr>
+</tbody>
+</table>
+</div>
+<div class="idea-box">
+<b>โฟลเดอร์ Models/, Data/, Services/ ยังใช้แบบเดียวกับที่เรียนใน Module 14:</b> กฎการวางไฟล์
+        (Model ไปที่ Models/, DbContext ไปที่ Data/, business logic ไปที่ Services/) ยังใช้หลักการเดียวกัน
+        ทุกประการ ต่างแค่ฝั่งหน้าเว็บที่ย้ายจาก Pages/ ไปเป็น Components/Pages/ เท่านั้น
+      </div>
 <ul style="margin:0 0 16px; padding-left:20px;">
 <li>ส่ง event จาก component ลูกกลับไปหา component แม่ (EventCallback)</li>
 <li>แชร์ค่าข้ามหลาย component โดยไม่ต้องส่งผ่าน props ทีละชั้น (Cascading Parameter)</li>
