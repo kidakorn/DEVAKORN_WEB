@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blazor เจาะลึก — สร้างระบบ CRUD ทีละขั้น</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #4b2f8a;
+    --accent-soft: #e4dcf0;
+    --ok: #2f6b4f;
+    --ok-soft: #dcece2;
+    --warn: #8a5a2f;
+    --warn-soft: #f0e3d6;
+    --code-bg: #1b2430;
+    --code-ink: #e8ecf1;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.68; font-size:15px;
+  }
+  .wrap{ max-width:980px; margin:0 auto; padding:48px 24px 100px; }
+  header{ border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:32px; }
+  .doc-id{ font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:8px; }
+  h1{ font-size:27px; margin:0 0 12px; font-weight:700; letter-spacing:-0.01em; }
+  .subtitle{ color:#4a5568; max-width:75ch; font-size:14.5px; }
+
+  .overview-box{
+    background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent);
+    padding:18px 20px; margin:28px 0 36px; font-size:14px;
+  }
+  .overview-box dl{ display:grid; grid-template-columns:auto 1fr; gap:6px 16px; margin:0; }
+  .overview-box dt{ font-family:var(--mono); color:#4a5568; font-size:12.5px; white-space:nowrap; }
+  .overview-box dd{ margin:0; }
+
+  .project-banner{
+    background:var(--ink); color:#fff; padding:16px 20px; margin-bottom:36px; font-family:var(--mono);
+    font-size:13px; display:flex; gap:10px; align-items:baseline; flex-wrap:wrap;
+  }
+  .project-banner b{ color:#fff; }
+  .project-banner .pname{ color:#c9b8e3; font-weight:700; }
+
+  nav.toc{
+    background:var(--panel); border:1px solid var(--line); padding:18px 22px; margin-bottom:44px; font-size:13.5px;
+  }
+  nav.toc .toc-title{ font-family:var(--mono); font-size:11.5px; color:#4a5568; margin-bottom:10px; }
+  nav.toc ol{ columns:2; margin:0; padding-left:18px; }
+  nav.toc a{ color:var(--ink); text-decoration:none; border-bottom:1px solid transparent; }
+  nav.toc a:hover{ border-bottom-color:var(--accent); }
+
+  .step{
+    background:var(--panel); border:1px solid var(--line); margin-bottom:26px; scroll-margin-top:20px;
+  }
+  .step-head{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    padding:18px 22px; background:var(--accent-soft); border-bottom:1px solid var(--line);
+  }
+  .step-head-left{ display:flex; align-items:baseline; gap:12px; }
+  .step-num{ font-family:var(--mono); font-size:12px; color:var(--accent); font-weight:700; }
+  .step-title{ font-size:18px; font-weight:700; }
+  .step-duration{
+    font-family:var(--mono); font-size:11.5px; color:var(--accent);
+    background:#fff; padding:3px 10px; border-radius:2px; border:1px solid var(--line);
+  }
+  .step-body{ padding:20px 22px 22px; }
+  .step-body p{ margin:0 0 12px; }
+  .step-body p:last-child{ margin-bottom:0; }
+
+  .file-tag{
+    display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:12.5px;
+    background:var(--ok-soft); color:var(--ok); padding:4px 10px; border-radius:3px; margin:10px 0 4px;
+    border:1px solid #a8c9b5;
+  }
+  .file-tag.edit{ background:var(--warn-soft); color:var(--warn); border-color:#d8bb96; }
+  .file-tag .fpath{ font-weight:700; }
+
+  .cli-tag{
+    display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:12.5px;
+    background:var(--accent-soft); color:var(--accent); padding:4px 10px; border-radius:3px; margin:10px 0 4px;
+    border:1px solid #c9b8e3;
+  }
+
+  pre{
+    margin:0 0 10px; padding:12px 14px; background:var(--code-bg); color:var(--code-ink);
+    font-family:var(--mono); font-size:12.5px; overflow-x:auto; line-height:1.6;
+  }
+  pre:last-child{ margin-bottom:0; }
+
+  .why-box{
+    background:#f6f8fa; border-left:3px solid var(--accent); padding:12px 16px; margin-bottom:14px; font-size:13.5px;
+  }
+  .why-box b{ color:var(--accent); }
+
+  .pitfall{
+    background:var(--warn-soft); border-left:3px solid var(--warn); padding:12px 14px; font-size:13.5px; margin-top:12px;
+  }
+  .pitfall b{ color:var(--warn); }
+
+  .exercise{
+    background:#f6f8fa; border:1px solid var(--line); border-left:3px solid var(--ok);
+    padding:12px 14px; font-size:13.5px; margin-top:12px;
+  }
+  .exercise b{ color:var(--ok); }
+
+  details.answer{
+    margin-top:8px; background:#f6f8fa; border:1px solid var(--ok); border-radius:2px; font-size:13px;
+  }
+  details.answer summary{
+    cursor:pointer; padding:8px 12px; font-family:var(--mono); font-size:12px; color:var(--ok);
+    font-weight:600; list-style:none; user-select:none;
+  }
+  details.answer summary::-webkit-details-marker{ display:none; }
+  details.answer summary::before{ content:"▸ "; }
+  details.answer[open] summary::before{ content:"▾ "; }
+  details.answer[open] summary{ border-bottom:1px solid var(--line); }
+  details.answer .answer-body{ padding:10px 14px 12px; }
+  details.answer .answer-body pre{ margin:6px 0; }
+
+  .tree-box{
+    background:var(--code-bg); color:var(--code-ink); font-family:var(--mono); font-size:12px;
+    padding:14px 16px; overflow-x:auto; line-height:1.7; margin:10px 0;
+  }
+
+  footer{
+    margin-top:56px; padding-top:16px; border-top:1px solid var(--line);
+    font-size:12px; color:#8a94a3; font-family:var(--mono);
+  }
+
+  table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+  table thead, table tbody{ display:table; width:100%; }
+  pre, img, svg{ max-width:100%; }
+  body{ overflow-x:hidden; }
+
+  @media (max-width: 700px){
+    .wrap{ padding:32px 16px 60px; }
+    h1{ font-size:21px; }
+    nav.toc ol{ columns:1; }
+    pre{ font-size:11.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">DEEP-DIVE / blazor-crud-system / rev.1</div>
+    <h1>Blazor เจาะลึก — สร้างระบบ CRUD ทีละขั้น</h1>
+    <p class="subtitle">
+      ใช่ครับ งานเว็บแอปฝั่ง ASP.NET ส่วนใหญ่ตอนนี้ไปทาง Blazor เป็นหลัก (แทนที่ Razor Pages แบบเดิมในหลายบริษัท)
+      ไฟล์นี้เจาะจง Blazor ล้วนๆ สร้างระบบจริงทีละขั้น เริ่มจาก CRUD ง่ายที่สุด แล้วค่อยๆ เพิ่มฟีเจอร์
+      ทุกขั้นบอกชื่อไฟล์ ชื่อโปรเจกต์ และคำสั่ง CLI ที่ต้องพิมพ์ใน VS Code ชัดเจนเสมอ
+    </p>
+  </header>
+
+  <div class="project-banner">
+    <span>ชื่อโปรเจกต์ที่ใช้ตลอดไฟล์นี้:</span> <span class="pname">BlazorCrudApp</span>
+    <span>— ถ้าตั้งชื่ออื่น ให้แทนที่คำนี้ทุกจุดที่เจอในโค้ดตัวอย่าง (namespace จะอิงชื่อนี้ด้วย)</span>
+  </div>
+
+  <div class="overview-box">
+    <dl>
+      <dt>ก่อนเริ่มไฟล์นี้</dt><dd>ควรทำ aspnetcore-beginner-plan.html (19 หัวข้อ) จบมาก่อน โดยเฉพาะ Part B (C# พื้นฐาน)</dd>
+      <dt>ระบบตัวอย่าง</dt><dd>ระบบจัดการสินค้า (Product) — เลือกเพราะเรียบง่าย ขยายฟีเจอร์ได้ตรงไปตรงมา</dd>
+      <dt>ระยะเวลารวมโดยประมาณ</dt><dd>3-4 สัปดาห์ ถ้าเรียนวันละ 1 ชั่วโมง</dd>
+    </dl>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">สารบัญ — 15 ขั้น</div>
+    <ol>
+      <li><a href="#s1">1. สร้างโปรเจกต์</a></li>
+      <li><a href="#s2">2. ทำความรู้จักไฟล์ที่ได้มา</a></li>
+      <li><a href="#s3">3. Model + EF Core + Migration</a></li>
+      <li><a href="#s4">4. หน้า Read — แสดงรายการ</a></li>
+      <li><a href="#s5">5. หน้า Create — เพิ่มข้อมูล</a></li>
+      <li><a href="#s6">6. หน้า Update — แก้ไขข้อมูล</a></li>
+      <li><a href="#s7">7. Delete — ลบข้อมูล</a></li>
+      <li><a href="#s8">8. เพิ่มช่องค้นหาแบบ real-time</a></li>
+      <li><a href="#s9">9. เพิ่ม Filter แบบ dropdown</a></li>
+      <li><a href="#s10">10. แบ่งหน้า (Pagination) เป็น component แยก</a></li>
+      <li><a href="#s11">11. เรียงลำดับคอลัมน์ (Sorting)</a></li>
+      <li><a href="#s12">12. แยก Component ย่อยให้ใช้ซ้ำได้</a></li>
+      <li><a href="#s13">13. Loading state + Error handling</a></li>
+      <li><a href="#s14">14. เพิ่ม Chart ด้วย JS Interop</a></li>
+      <li><a href="#s15">15. ผังโปรเจกต์สรุปทั้งหมด</a></li>
+    </ol>
+  </nav>
+
+  <!-- ================= STEP 1 ================= -->
+  <div class="step" id="s1">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 1</span><span class="step-title">สร้างโปรเจกต์</span></div>
+      <span class="step-duration">10 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="cli-tag">รันใน terminal ของ VS Code (Ctrl+`)</div>
+      <pre>dotnet new blazor -o BlazorCrudApp
+cd BlazorCrudApp
+code .</pre>
+      <p>ไม่ต้องใส่ <code>-ai</code> หรือ <code>-int</code> ก็ได้ตอนนี้ ค่าเริ่มต้นคือ interactivity แบบ Server
+      ซึ่งเพียงพอสำหรับทั้งไฟล์นี้ (ยังไม่ต้องสนใจ WebAssembly/Auto ตอนนี้)</p>
+
+      <p><b>ติดตั้ง package ที่ต้องใช้ทันที</b> (EF Core สำหรับต่อฐานข้อมูล):</p>
+      <div class="cli-tag">รันใน terminal ที่ root ของโปรเจกต์</div>
+      <pre>dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet tool install --global dotnet-ef</pre>
+
+      <p>ทดสอบว่าโปรเจกต์รันได้ปกติก่อนไปต่อ:</p>
+      <div class="cli-tag">รันที่ root ของโปรเจกต์</div>
+      <pre>dotnet watch run</pre>
+      <p>เปิด URL ที่ terminal แสดง ควรเห็นหน้าเว็บตัวอย่าง (Home, Counter, Weather) ของ template เริ่มต้น</p>
+    </div>
+  </div>
+
+  <!-- ================= STEP 2 ================= -->
+  <div class="step" id="s2">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 2</span><span class="step-title">ทำความรู้จักไฟล์ที่ได้มา</span></div>
+      <span class="step-duration">10 นาที</span>
+    </div>
+    <div class="step-body">
+      <p>ไม่ต้องท่องจำทุกไฟล์ แค่รู้จัก 4 จุดที่จะแก้บ่อยที่สุดในไฟล์นี้:</p>
+      <div class="tree-box">BlazorCrudApp/
+├── Components/
+│   ├── Layout/
+│   │   ├── MainLayout.razor      &lt;- โครงหน้าเว็บกลาง จะแก้ใน Step 12
+│   │   └── NavMenu.razor         &lt;- เมนูซ้าย จะเพิ่มลิงก์ในนี้
+│   ├── Pages/
+│   │   ├── Home.razor            &lt;- จะลบตัวอย่างเดิมทิ้งใน Step 4
+│   │   ├── Counter.razor         &lt;- ตัวอย่างจาก template ลบทิ้งได้เลยตอนนี้
+│   │   └── Weather.razor         &lt;- ตัวอย่างจาก template ลบทิ้งได้เลยตอนนี้
+│   └── _Imports.razor            &lt;- using กลาง จะเพิ่มบรรทัดในนี้
+├── Program.cs                    &lt;- จะเพิ่ม EF Core ลงทะเบียนใน Step 3
+└── BlazorCrudApp.csproj</div>
+
+      <div class="file-tag edit">ลบไฟล์: <span class="fpath">Components/Pages/Counter.razor</span></div>
+      <div class="file-tag edit">ลบไฟล์: <span class="fpath">Components/Pages/Weather.razor</span></div>
+      <p>ลบ 2 ไฟล์นี้ทิ้งได้เลย (คลิกขวา → Delete ใน VS Code) เพื่อไม่ให้ปนกับระบบที่กำลังจะสร้าง
+      ถ้ายังไม่มั่นใจ จะเก็บไว้ก่อนก็ได้ ไม่กระทบอะไร</p>
+
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Components/Layout/NavMenu.razor</span></div>
+      <p>หาบรรทัดที่มีลิงก์ไป Counter และ Weather แล้วลบทิ้ง (จะเพิ่มลิงก์ของระบบเราเองใน Step 4)</p>
+    </div>
+  </div>
+
+  <!-- ================= STEP 3 ================= -->
+  <div class="step" id="s3">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 3</span><span class="step-title">Model + EF Core + Migration</span></div>
+      <span class="step-duration">20 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="file-tag">สร้างไฟล์ใหม่: <span class="fpath">Models/Product.cs</span></div>
+      <pre>using System.ComponentModel.DataAnnotations;
+
+namespace BlazorCrudApp.Models;
+
+public class Product
+{
+    public int Id { get; set; }
+
+    [Required(ErrorMessage = "กรุณากรอกชื่อสินค้า")]
+    [StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [Range(0, 1000000)]
+    public decimal Price { get; set; }
+
+    public int StockQuantity { get; set; }
+
+    public string Category { get; set; } = "ทั่วไป";
+}</pre>
+
+      <div class="file-tag">สร้างไฟล์ใหม่: <span class="fpath">Data/AppDbContext.cs</span></div>
+      <pre>using Microsoft.EntityFrameworkCore;
+using BlazorCrudApp.Models;
+
+namespace BlazorCrudApp.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options) { }
+    public DbSet&lt;Product&gt; Products => Set&lt;Product&gt;();
+}</pre>
+
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Program.cs</span></div>
+      <p>เพิ่ม <code>using BlazorCrudApp.Data;</code> บนสุด แล้วเพิ่ม 2 บรรทัดก่อน <code>builder.Build()</code>:</p>
+      <pre>using BlazorCrudApp.Data;   // เพิ่มบรรทัดนี้
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+// เพิ่ม 2 บรรทัดนี้
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite("Data Source=blazorcrud.db"));
+
+var app = builder.Build();
+// ... โค้ดเดิมที่เหลือไม่ต้องแก้ ...</pre>
+
+      <div class="cli-tag">รันที่ root ของโปรเจกต์ (BlazorCrudApp/)</div>
+      <pre>dotnet ef migrations add InitialCreate
+dotnet ef database update</pre>
+      <div class="pitfall">
+        <b>ถ้า error ว่าหา dotnet-ef ไม่เจอ:</b> ปิด terminal แล้วเปิดใหม่หลังจาก
+        <code>dotnet tool install --global dotnet-ef</code> ใน Step 1 (เหมือน SDK ต้อง reload path ใหม่)
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STEP 4 ================= -->
+  <div class="step" id="s4">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 4</span><span class="step-title">หน้า Read — แสดงรายการ</span></div>
+      <span class="step-duration">25 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Components/Pages/Home.razor</span> (ใช้แทนหน้าเดิมของ template ไปเลย)</div>
+      <pre>@page "/"
+@rendermode InteractiveServer
+@using BlazorCrudApp.Data
+@using BlazorCrudApp.Models
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Db
+
+&lt;PageTitle&gt;รายการสินค้า&lt;/PageTitle&gt;
+
+&lt;h1&gt;รายการสินค้า&lt;/h1&gt;
+
+&lt;a href="/create"&gt;+ เพิ่มสินค้าใหม่&lt;/a&gt;
+
+&lt;table class="table"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;&lt;th&gt;ชื่อ&lt;/th&gt;&lt;th&gt;ราคา&lt;/th&gt;&lt;th&gt;คงเหลือ&lt;/th&gt;&lt;th&gt;&lt;/th&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+    @foreach (var product in products)
+    {
+        &lt;tr&gt;
+            &lt;td&gt;@product.Name&lt;/td&gt;
+            &lt;td&gt;@product.Price บาท&lt;/td&gt;
+            &lt;td&gt;@product.StockQuantity&lt;/td&gt;
+            &lt;td&gt;
+                &lt;a href="@($"/edit/{product.Id}")"&gt;แก้ไข&lt;/a&gt;
+                &lt;button @onclick="() =&gt; DeleteAsync(product.Id)"&gt;ลบ&lt;/button&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    }
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+@code {
+    private List&lt;Product&gt; products = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await Db.Products.AsNoTracking().ToListAsync();
+    }
+
+    private async Task DeleteAsync(int id)
+    {
+        var product = await Db.Products.FindAsync(id);
+        if (product is not null)
+        {
+            Db.Products.Remove(product);
+            await Db.SaveChangesAsync();
+            products = await Db.Products.AsNoTracking().ToListAsync();
+        }
+    }
+}</pre>
+      <p>ความหมายของสิ่งที่ต่างจาก Razor Pages ที่เคยเรียน:</p>
+      <p><code>@rendermode InteractiveServer</code> — บังคับให้หน้านี้ interactive (ไม่งั้นปุ่มลบจะกดไม่ได้
+      ตามที่เตือนไว้ใน Module 6 ของ webapp-deepdive)</p>
+      <p><code>@inject AppDbContext Db</code> — วิธี inject service เข้ามาใช้ในไฟล์ .razor โดยตรง
+      (ไม่ต้องผ่าน constructor แบบ PageModel)</p>
+      <p><code>OnInitializedAsync</code> — เทียบเท่า <code>OnGetAsync</code> ของ Razor Pages ทำงานตอน
+      component โหลดครั้งแรก</p>
+
+      <div class="exercise">
+        <b>ลองทำ:</b> รันโปรเจกต์แล้วเปิดหน้าแรก ควรเห็นตารางว่างเปล่า (ยังไม่มีข้อมูล) ลองเพิ่มข้อมูลตรงๆ
+        ผ่าน SQLite ก่อน หรือรอทำหน้า Create ใน Step ถัดไปแล้วค่อยทดสอบพร้อมกัน
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STEP 5 ================= -->
+  <div class="step" id="s5">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 5</span><span class="step-title">หน้า Create — เพิ่มข้อมูล</span></div>
+      <span class="step-duration">20 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="file-tag">สร้างไฟล์ใหม่: <span class="fpath">Components/Pages/CreateProduct.razor</span></div>
+      <pre>@page "/create"
+@rendermode InteractiveServer
+@using BlazorCrudApp.Data
+@using BlazorCrudApp.Models
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+&lt;PageTitle&gt;เพิ่มสินค้าใหม่&lt;/PageTitle&gt;
+
+&lt;h1&gt;เพิ่มสินค้าใหม่&lt;/h1&gt;
+
+&lt;EditForm Model="newProduct" OnValidSubmit="SaveAsync"&gt;
+    &lt;DataAnnotationsValidator /&gt;
+    &lt;ValidationSummary /&gt;
+
+    &lt;label&gt;ชื่อสินค้า&lt;/label&gt;
+    &lt;InputText @bind-Value="newProduct.Name" /&gt;
+
+    &lt;label&gt;ราคา&lt;/label&gt;
+    &lt;InputNumber @bind-Value="newProduct.Price" /&gt;
+
+    &lt;label&gt;จำนวนคงเหลือ&lt;/label&gt;
+    &lt;InputNumber @bind-Value="newProduct.StockQuantity" /&gt;
+
+    &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
+&lt;/EditForm&gt;
+
+@code {
+    private Product newProduct = new();
+
+    private async Task SaveAsync()
+    {
+        Db.Products.Add(newProduct);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/");
+    }
+}</pre>
+      <p>จุดที่ต่างจากฟอร์มของ Razor Pages ชัดเจนที่สุด:</p>
+      <p><code>&lt;EditForm Model="..." OnValidSubmit="..."&gt;</code> — คือ component ฟอร์มของ Blazor เอง
+      แทนที่ <code>&lt;form method="post"&gt;</code> ธรรมดา ตรวจ validation ให้อัตโนมัติก่อนเรียก
+      <code>OnValidSubmit</code> เสมอ (ถ้าข้อมูลไม่ผ่าน [Required]/[Range] จะไม่เรียก method นี้เลย)</p>
+      <p><code>&lt;InputText @bind-Value="..."&gt;</code> — เทียบเท่า <code>asp-for</code> ของ Razor Pages
+      แต่ผูกค่าแบบ two-way binding ทันที ไม่ต้อง submit ก่อนถึงจะเห็นค่าอัพเดท</p>
+      <p><code>NavigationManager</code> — ตัวที่ใช้เปลี่ยนหน้าใน Blazor เทียบเท่า
+      <code>RedirectToPage()</code> ของ Razor Pages</p>
+
+      <div class="pitfall">
+        <b>ลืมบ่อย:</b> ลืม <code>@rendermode InteractiveServer</code> แล้วกดปุ่มบันทึกไม่ทำงานเลย
+        (ฟอร์มดูปกติแต่กดแล้วไม่มีอะไรเกิดขึ้น เพราะหน้ายัง static อยู่)
+      </div>
+
+      <div class="exercise">
+        <b>ลองทำ:</b> เพิ่มลิงก์ "แก้ไข" ในหน้า NavMenu.razor ให้ชี้มาที่ <code>/create</code> ด้วย
+        แล้วทดสอบเพิ่มสินค้า 2-3 ชิ้น กลับไปหน้าแรกดูว่าแสดงครบไหม
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STEP 6 ================= -->
+  <div class="step" id="s6">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 6</span><span class="step-title">หน้า Update — แก้ไขข้อมูล</span></div>
+      <span class="step-duration">20 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="file-tag">สร้างไฟล์ใหม่: <span class="fpath">Components/Pages/EditProduct.razor</span></div>
+      <pre>@page "/edit/{Id:int}"
+@rendermode InteractiveServer
+@using BlazorCrudApp.Data
+@using BlazorCrudApp.Models
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+&lt;PageTitle&gt;แก้ไขสินค้า&lt;/PageTitle&gt;
+
+&lt;h1&gt;แก้ไขสินค้า&lt;/h1&gt;
+
+@if (editProduct is not null)
+{
+    &lt;EditForm Model="editProduct" OnValidSubmit="SaveAsync"&gt;
+        &lt;DataAnnotationsValidator /&gt;
+        &lt;ValidationSummary /&gt;
+
+        &lt;label&gt;ชื่อสินค้า&lt;/label&gt;
+        &lt;InputText @bind-Value="editProduct.Name" /&gt;
+
+        &lt;label&gt;ราคา&lt;/label&gt;
+        &lt;InputNumber @bind-Value="editProduct.Price" /&gt;
+
+        &lt;button type="submit"&gt;บันทึกการแก้ไข&lt;/button&gt;
+    &lt;/EditForm&gt;
+}
+else
+{
+    &lt;p&gt;กำลังโหลด...&lt;/p&gt;
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Product? editProduct;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editProduct = await Db.Products.FindAsync(Id);
+    }
+
+    private async Task SaveAsync()
+    {
+        Db.Products.Update(editProduct!);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/");
+    }
+}</pre>
+      <p><code>@page "/edit/{Id:int}"</code> — รับค่าจาก URL แบบเดียวกับ <code>@page "{id:int}"</code>
+      ของ Razor Pages แต่ตัวแปรต้องประกาศเป็น <code>[Parameter]</code> คู่กับชื่อใน route (ตัวพิมพ์ใหญ่-เล็ก
+      ต้องตรงกัน — <code>{Id:int}</code> คู่กับ <code>public int Id</code>)</p>
+      <p><code>if (editProduct is not null)</code> — จำเป็นมากเพราะ <code>OnInitializedAsync</code>
+      เป็น async ตัวหน้าเว็บจะ render ก่อนข้อมูลโหลดเสร็จเสมอ ถ้าไม่เช็ค null จะ error ทันที
+      (ตรงกับที่เตือนไว้ใน FAQ หมวด Blazor)</p>
+
+      <div class="exercise">
+        <b>ลองทำ:</b> ทดสอบกดปุ่ม "แก้ไข" จากหน้าแรก ตรวจว่าค่าเดิมโหลดมาแสดงในฟอร์มถูกต้องก่อน submit
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STEP 7 ================= -->
+  <div class="step" id="s7">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 7</span><span class="step-title">Delete — ลบข้อมูล</span></div>
+      <span class="step-duration">5 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="why-box">
+        <b>ทำไมสั้น:</b> เขียนปุ่มลบไว้แล้วตั้งแต่ Step 4 (method <code>DeleteAsync</code> ในหน้า Home.razor)
+        เพราะ Blazor ไม่ต้องมี handler พิเศษแบบ <code>asp-page-handler="Delete"</code> ของ Razor Pages —
+        แค่ผูก <code>@onclick</code> เข้ากับ method ธรรมดาได้เลย ครบ CRUD แล้วตั้งแต่ Step 6
+      </div>
+      <div class="exercise">
+        <b>ลองทำ:</b> ทดสอบ CRUD ครบ 4 อย่างให้จบ (Create → Read → Update → Delete) ก่อนไปต่อ Step 8
+        ถือว่าได้ระบบ CRUD พื้นฐานที่ใช้งานได้จริงแล้ว
+      </div>
+      <details class="answer"><summary>เช็คลิสต์ก่อนไปต่อ</summary><div class="answer-body">
+เพิ่มสินค้าใหม่ผ่าน /create ได้ → เห็นในหน้าแรกทันที (Read) → กดแก้ไขแล้วค่าเดิมโหลดมาถูก → บันทึกแล้วค่าที่หน้าแรกอัพเดท
+→ กดลบแล้วแถวหายไปจากตารางทันทีโดยไม่ reload หน้าเลย ถ้าทุกอย่างผ่าน แปลว่าพร้อมไปต่อฟีเจอร์เสริมแล้ว
+</div></details>
+    </div>
+  </div>
+
+  <!-- ================= STEP 8 ================= -->
+  <div class="step" id="s8">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 8</span><span class="step-title">เพิ่มช่องค้นหาแบบ real-time</span></div>
+      <span class="step-duration">15 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Components/Pages/Home.razor</span></div>
+      <p>เพิ่มช่องค้นหาไว้เหนือตาราง:</p>
+      <pre>&lt;input @bind="searchText" @bind:event="oninput" placeholder="ค้นหาชื่อสินค้า..." /&gt;
+
+&lt;table class="table"&gt;
+    ...
+    @foreach (var product in FilteredProducts)
+    {
+        ...
+    }
+    ...
+&lt;/table&gt;
+
+@code {
+    private List&lt;Product&gt; products = new();
+    private string searchText = "";
+
+    private IEnumerable&lt;Product&gt; FilteredProducts =&gt;
+        products.Where(p =&gt; p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+
+    // ... OnInitializedAsync และ DeleteAsync เหมือนเดิม ...
+}</pre>
+      <p>แก้ <code>@foreach (var product in products)</code> เดิมให้เป็น
+      <code>@foreach (var product in FilteredProducts)</code> เท่านั้น ที่เหลือไม่ต้องแก้อะไร
+      พิมพ์ในช่องค้นหาแล้ว list จะกรองทันทีโดยไม่ reload หน้า เพราะ <code>FilteredProducts</code>
+      คำนวณใหม่ทุกครั้งที่ <code>searchText</code> เปลี่ยน</p>
+    </div>
+  </div>
+
+  <!-- ================= STEP 9 ================= -->
+  <div class="step" id="s9">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 9</span><span class="step-title">เพิ่ม Filter แบบ dropdown</span></div>
+      <span class="step-duration">15 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Components/Pages/Home.razor</span></div>
+      <pre>&lt;select @bind="selectedCategory"&gt;
+    &lt;option value=""&gt;ทุกหมวดหมู่&lt;/option&gt;
+    @foreach (var cat in products.Select(p =&gt; p.Category).Distinct())
+    {
+        &lt;option value="@cat"&gt;@cat&lt;/option&gt;
+    }
+&lt;/select&gt;
+
+@code {
+    private string selectedCategory = "";
+
+    private IEnumerable&lt;Product&gt; FilteredProducts =&gt;
+        products
+            .Where(p =&gt; p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            .Where(p =&gt; string.IsNullOrEmpty(selectedCategory) || p.Category == selectedCategory);
+}</pre>
+      <p>เพิ่มเงื่อนไข <code>.Where</code> ต่อกันเรื่อยๆ ใน <code>FilteredProducts</code> ได้ตามต้องการ
+      รูปแบบนี้ขยายไปเป็น filter หลายตัวพร้อมกันได้ (เหมือนที่ระบบสต๊อกจริงมักมี filter ปี/เดือน/หมวดพร้อมกัน)</p>
+    </div>
+  </div>
+
+  <!-- ================= STEP 10 ================= -->
+  <div class="step" id="s10">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 10</span><span class="step-title">แบ่งหน้า (Pagination) เป็น Component แยก</span></div>
+      <span class="step-duration">25 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="why-box">
+        <b>ทำไมแยก component:</b> pagination เป็นของที่ใช้ซ้ำได้ทุกหน้าตาราง แยกไว้ครั้งเดียวใช้ได้ตลอดโปรเจกต์
+      </div>
+      <div class="file-tag">สร้างไฟล์ใหม่: <span class="fpath">Components/Shared/Pagination.razor</span></div>
+      <pre>&lt;div class="pagination"&gt;
+    &lt;button disabled="@(CurrentPage == 1)" @onclick="() =&gt; ChangePage(CurrentPage - 1)"&gt;ก่อนหน้า&lt;/button&gt;
+
+    &lt;span&gt;หน้า @CurrentPage จาก @TotalPages&lt;/span&gt;
+
+    &lt;button disabled="@(CurrentPage == TotalPages)" @onclick="() =&gt; ChangePage(CurrentPage + 1)"&gt;ถัดไป&lt;/button&gt;
+&lt;/div&gt;
+
+@code {
+    [Parameter] public int CurrentPage { get; set; }
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public EventCallback&lt;int&gt; CurrentPageChanged { get; set; }
+
+    private async Task ChangePage(int newPage)
+    {
+        if (newPage &gt;= 1 &amp;&amp; newPage &lt;= TotalPages)
+        {
+            await CurrentPageChanged.InvokeAsync(newPage);
+        }
+    }
+}</pre>
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Components/Pages/Home.razor</span></div>
+      <pre>&lt;Pagination CurrentPage="currentPage" TotalPages="totalPages"
+            CurrentPageChanged="@(page =&gt; currentPage = page)" /&gt;
+
+@code {
+    private int currentPage = 1;
+    private const int pageSize = 10;
+
+    private int totalPages =&gt;
+        (int)Math.Ceiling(FilteredProducts.Count() / (double)pageSize);
+
+    private IEnumerable&lt;Product&gt; PagedProducts =&gt;
+        FilteredProducts.Skip((currentPage - 1) * pageSize).Take(pageSize);
+}</pre>
+      <p>แก้ <code>@foreach</code> ในตารางจาก <code>FilteredProducts</code> เป็น <code>PagedProducts</code>
+      แทน <code>[Parameter] public EventCallback&lt;int&gt; CurrentPageChanged</code> คือรูปแบบมาตรฐานของ
+      Blazor สำหรับทำ two-way binding เอง (ตั้งชื่อ <code>XxxChanged</code> คู่กับ parameter <code>Xxx</code>
+      เสมอ ทำให้ใช้ <code>@bind-CurrentPage="currentPage"</code> แบบสั้นได้ในอนาคตถ้าต้องการ)</p>
+
+      <div class="pitfall">
+        <b>ลืมบ่อย:</b> เปลี่ยน filter (เช่นพิมพ์ค้นหาใหม่) แล้วลืม reset <code>currentPage</code> กลับเป็น 1
+        ทำให้ค้างอยู่หน้า 5 ทั้งที่ผลลัพธ์กรองใหม่มีแค่ 2 หน้า ควรเพิ่มโค้ด reset currentPage=1 ทุกครั้งที่
+        searchText หรือ selectedCategory เปลี่ยน
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STEP 11 ================= -->
+  <div class="step" id="s11">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 11</span><span class="step-title">เรียงลำดับคอลัมน์ (Sorting)</span></div>
+      <span class="step-duration">15 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Components/Pages/Home.razor</span></div>
+      <pre>&lt;th @onclick='() =&gt; SortBy("Name")' style="cursor:pointer"&gt;ชื่อ &amp;#8597;&lt;/th&gt;
+&lt;th @onclick='() =&gt; SortBy("Price")' style="cursor:pointer"&gt;ราคา &amp;#8597;&lt;/th&gt;
+
+@code {
+    private string sortColumn = "Name";
+    private bool sortAscending = true;
+
+    private void SortBy(string column)
+    {
+        if (sortColumn == column)
+        {
+            sortAscending = !sortAscending;
+        }
+        else
+        {
+            sortColumn = column;
+            sortAscending = true;
+        }
+    }
+
+    private IEnumerable&lt;Product&gt; SortedProducts
+    {
+        get
+        {
+            var sorted = sortColumn switch
+            {
+                "Price" =&gt; FilteredProducts.OrderBy(p =&gt; p.Price),
+                _ =&gt; FilteredProducts.OrderBy(p =&gt; p.Name)
+            };
+            return sortAscending ? sorted : sorted.Reverse();
+        }
+    }
+}</pre>
+      <p>ต้องเปลี่ยนจุดที่ <code>PagedProducts</code> อ้างอิง <code>FilteredProducts</code> เดิม ให้ไปอ้างอิง
+      <code>SortedProducts</code> แทน (เรียง <b>ก่อน</b> ตัดหน้าเสมอ ไม่งั้นแบ่งหน้าจะสลับมั่ว)</p>
+    </div>
+  </div>
+
+  <!-- ================= STEP 12 ================= -->
+  <div class="step" id="s12">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 12</span><span class="step-title">แยก Component ย่อยให้ใช้ซ้ำได้</span></div>
+      <span class="step-duration">20 นาที</span>
+    </div>
+    <div class="step-body">
+      <p>ตอนนี้ Home.razor เริ่มยาวมาก (ตาราง + ค้นหา + filter + pagination + sort ในไฟล์เดียว)
+      แยกแถวตารางออกเป็น component ย่อยเพื่อให้อ่านง่ายขึ้น (ตามแนวทาง Module 6 ของ webapp-deepdive)</p>
+
+      <div class="file-tag">สร้างไฟล์ใหม่: <span class="fpath">Components/Shared/ProductRow.razor</span></div>
+      <pre>&lt;tr&gt;
+    &lt;td&gt;@Product.Name&lt;/td&gt;
+    &lt;td&gt;@Product.Price บาท&lt;/td&gt;
+    &lt;td&gt;@Product.StockQuantity&lt;/td&gt;
+    &lt;td&gt;
+        &lt;a href="@($"/edit/{Product.Id}")"&gt;แก้ไข&lt;/a&gt;
+        &lt;button @onclick="HandleDelete"&gt;ลบ&lt;/button&gt;
+    &lt;/td&gt;
+&lt;/tr&gt;
+
+@code {
+    [Parameter] public Product Product { get; set; } = default!;
+    [Parameter] public EventCallback&lt;int&gt; OnDelete { get; set; }
+
+    private async Task HandleDelete()
+    {
+        await OnDelete.InvokeAsync(Product.Id);
+    }
+}</pre>
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Components/Pages/Home.razor</span></div>
+      <pre>@foreach (var product in PagedProducts)
+{
+    &lt;ProductRow Product="product" OnDelete="DeleteAsync" /&gt;
+}</pre>
+      <p>Home.razor สั้นลงมาก เพราะรายละเอียดของ 1 แถวย้ายไปอยู่ที่ ProductRow.razor แทน
+      ถ้าอยากเปลี่ยนหน้าตาแถวทีหลัง แก้ที่ไฟล์เดียวจบ</p>
+    </div>
+  </div>
+
+  <!-- ================= STEP 13 ================= -->
+  <div class="step" id="s13">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 13</span><span class="step-title">Loading State + Error Handling</span></div>
+      <span class="step-duration">15 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Components/Pages/Home.razor</span></div>
+      <pre>@code {
+    private List&lt;Product&gt; products = new();
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            products = await Db.Products.AsNoTracking().ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่";
+            Logger.LogError(ex, "โหลดรายการสินค้าไม่สำเร็จ");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}</pre>
+      <pre>@if (isLoading)
+{
+    &lt;p&gt;กำลังโหลดข้อมูล...&lt;/p&gt;
+}
+else if (errorMessage is not null)
+{
+    &lt;div class="alert alert-danger"&gt;@errorMessage&lt;/div&gt;
+}
+else
+{
+    &lt;table class="table"&gt;
+        ...
+    &lt;/table&gt;
+}</pre>
+      <p>ต้อง <code>@inject ILogger&lt;Home&gt; Logger</code> เพิ่มบนสุดของไฟล์ด้วยถ้าจะใช้
+      <code>Logger.LogError</code> (ตามที่เรียนใน Module 7 ของ webapp-deepdive)</p>
+    </div>
+  </div>
+
+  <!-- ================= STEP 14 ================= -->
+  <div class="step" id="s14">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 14</span><span class="step-title">เพิ่ม Chart ด้วย JS Interop</span></div>
+      <span class="step-duration">25 นาที</span>
+    </div>
+    <div class="step-body">
+      <div class="why-box">
+        <b>ทำไมต้องพึ่ง JavaScript:</b> Blazor ไม่มี chart library ในตัว การวาดกราฟ (เช่น Chart.js)
+        ต้องเรียกผ่าน JS interop เป็นหนึ่งในไม่กี่จุดที่ Blazor "ต้อง" แตะ JavaScript จริงๆ
+      </div>
+
+      <div class="file-tag">สร้างไฟล์ใหม่: <span class="fpath">wwwroot/js/chartInterop.js</span></div>
+      <pre>window.renderStockChart = (canvasId, labels, data) =&gt; {
+    new Chart(document.getElementById(canvasId), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{ label: 'จำนวนคงเหลือ', data: data }]
+        }
+    });
+};</pre>
+
+      <div class="file-tag edit">แก้ไฟล์: <span class="fpath">Components/App.razor</span> (เพิ่ม script tag)</div>
+      <p>หาแท็ก <code>&lt;/body&gt;</code> แล้วเพิ่มก่อนบรรทัดนั้น (ต้องโหลด Chart.js จาก CDN ก่อนไฟล์ของเราเอง):</p>
+      <pre>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;
+&lt;script src="js/chartInterop.js"&gt;&lt;/script&gt;</pre>
+
+      <div class="file-tag">สร้างไฟล์ใหม่: <span class="fpath">Components/Pages/Dashboard.razor</span></div>
+      <pre>@page "/dashboard"
+@rendermode InteractiveServer
+@inject AppDbContext Db
+@inject IJSRuntime JS
+
+&lt;h1&gt;Dashboard&lt;/h1&gt;
+&lt;canvas id="stockChart"&gt;&lt;/canvas&gt;
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var products = await Db.Products.AsNoTracking().ToListAsync();
+            var labels = products.Select(p =&gt; p.Name).ToArray();
+            var data = products.Select(p =&gt; p.StockQuantity).ToArray();
+
+            await JS.InvokeVoidAsync("renderStockChart", "stockChart", labels, data);
+        }
+    }
+}</pre>
+      <p><code>OnAfterRenderAsync</code> (ไม่ใช่ <code>OnInitializedAsync</code>) เพราะต้องรอให้ HTML
+      element <code>&lt;canvas&gt;</code> ถูกวาดขึ้นจอจริงก่อน ถึงจะเรียก JS ไปวาดกราฟลงบน element นั้นได้
+      พารามิเตอร์ <code>firstRender</code> กันไม่ให้วาดกราฟซ้ำทุกครั้งที่หน้าจอ re-render</p>
+
+      <div class="pitfall">
+        <b>ลืมบ่อย:</b> ลืมเพิ่ม <code>@inject IJSRuntime JS</code> หรือลืมโหลด Chart.js จาก CDN ก่อน
+        ไฟล์ chartInterop.js ของเราเอง (ลำดับ script tag สำคัญ — ต้องโหลด Chart.js ก่อนเสมอ)
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STEP 15 ================= -->
+  <div class="step" id="s15">
+    <div class="step-head">
+      <div class="step-head-left"><span class="step-num">STEP 15</span><span class="step-title">ผังโปรเจกต์สรุปทั้งหมด</span></div>
+      <span class="step-duration">อ้างอิง</span>
+    </div>
+    <div class="step-body">
+      <p>หลังทำครบ 14 ขั้น โปรเจกต์ <b>BlazorCrudApp</b> ควรมีหน้าตาแบบนี้:</p>
+      <div class="tree-box">BlazorCrudApp/
+├── Components/
+│   ├── Layout/
+│   │   ├── MainLayout.razor
+│   │   └── NavMenu.razor              (แก้แล้ว — ลบลิงก์ Counter/Weather)
+│   ├── Pages/
+│   │   ├── Home.razor                 (Read + Search + Filter + Sort + Pagination)
+│   │   ├── CreateProduct.razor        (Create)
+│   │   ├── EditProduct.razor          (Update)
+│   │   └── Dashboard.razor            (Chart)
+│   ├── Shared/
+│   │   ├── Pagination.razor           (component ใช้ซ้ำ)
+│   │   └── ProductRow.razor           (component ใช้ซ้ำ)
+│   └── _Imports.razor
+├── Data/
+│   └── AppDbContext.cs
+├── Models/
+│   └── Product.cs
+├── wwwroot/
+│   └── js/
+│       └── chartInterop.js
+├── blazorcrud.db                      (สร้างอัตโนมัติจาก migration)
+├── Program.cs                         (แก้แล้ว — เพิ่ม EF Core)
+└── BlazorCrudApp.csproj</div>
+
+      <p>โครงสร้างนี้คือ MVP ของระบบ CRUD จริงที่ขยายฟีเจอร์ต่อได้เรื่อยๆ ตามแนวทางเดียวกับที่ทำในไฟล์นี้
+      (สร้างหน้าใหม่ = สร้าง .razor ใหม่ใน Components/Pages/, ของใช้ซ้ำ = แยกไป Components/Shared/)</p>
+
+      <div class="exercise">
+        <b>ต่อยอด (ไม่มีเฉลย):</b> ลองเพิ่ม field <code>SupplierEmail</code> ใน Product แบบมี validation
+        <code>[EmailAddress]</code> ตามที่เรียนใน Module 3 ของ webapp-deepdive แล้วทำ migration ใหม่
+        เพิ่ม column ให้ครบทั้งฟอร์ม Create และ Edit
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ทุก code block ในไฟล์นี้ทดสอบแนวคิดตรงกับ Blazor Web App เวอร์ชัน .NET 8 ขึ้นไป (รวม .NET 10)
+    ถ้าใช้เวอร์ชันเก่ากว่านั้นบาง syntax อาจต่างเล็กน้อย แนะนำอัพเดท SDK เป็นเวอร์ชันล่าสุดก่อนเริ่ม
+  </footer>
+
+</div>
+</body>
+</html>

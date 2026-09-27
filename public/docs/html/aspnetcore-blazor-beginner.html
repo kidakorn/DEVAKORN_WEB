@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blazor สำหรับผู้เริ่มต้นจริงๆ</title>
+<style>
+  :root{
+    --ink: #1b2430;
+    --paper: #eef1f4;
+    --panel: #ffffff;
+    --line: #c7cfd8;
+    --accent: #4b2f8a;
+    --accent-soft: #e4dcf0;
+    --ok: #2f6b4f;
+    --ok-soft: #dcece2;
+    --code-bg: #1b2430;
+    --code-ink: #e8ecf1;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --sans: 'IBM Plex Sans Thai', 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.7; font-size:15px;
+  }
+  .wrap{ max-width:900px; margin:0 auto; padding:48px 24px 100px; }
+  header{ border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:32px; }
+  .doc-id{ font-family:var(--mono); font-size:12px; color:var(--accent); margin-bottom:8px; }
+  h1{ font-size:26px; margin:0 0 12px; font-weight:700; letter-spacing:-0.01em; }
+  .subtitle{ color:#4a5568; max-width:75ch; font-size:14.5px; }
+
+  .prereq-box{
+    background:#fff8e8; border:1px solid #e3c98a; border-left:4px solid #b8860b;
+    padding:16px 20px; margin:24px 0 36px; font-size:14px;
+  }
+  .prereq-box b{ color:#8a6608; }
+
+  .overview-box{
+    background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent);
+    padding:18px 20px; margin:28px 0 36px; font-size:14px;
+  }
+  .overview-box dl{ display:grid; grid-template-columns:auto 1fr; gap:6px 16px; margin:0; }
+  .overview-box dt{ font-family:var(--mono); color:#4a5568; font-size:12.5px; white-space:nowrap; }
+  .overview-box dd{ margin:0; }
+
+  nav.toc{
+    background:var(--panel); border:1px solid var(--line); padding:18px 22px; margin-bottom:40px; font-size:13.5px;
+  }
+  nav.toc .toc-title{ font-family:var(--mono); font-size:11.5px; color:#4a5568; margin-bottom:10px; }
+  nav.toc ol{ columns:2; margin:0; padding-left:18px; }
+  nav.toc a{ color:var(--ink); text-decoration:none; border-bottom:1px solid transparent; }
+  nav.toc a:hover{ border-bottom-color:var(--accent); }
+
+  .topic{
+    background:var(--panel); border:1px solid var(--line); margin-bottom:18px; scroll-margin-top:20px;
+  }
+  .topic-head{
+    display:flex; align-items:baseline; gap:12px; padding:14px 20px;
+    background:var(--accent-soft); border-bottom:1px solid var(--line);
+  }
+  .topic-num{ font-family:var(--mono); font-size:12px; color:var(--accent); font-weight:700; white-space:nowrap; }
+  .topic-title{ font-size:16px; font-weight:700; }
+  .topic-body{ padding:18px 20px 20px; }
+  .topic-body p{ margin:0 0 12px; }
+  .topic-body p:last-child{ margin-bottom:0; }
+
+  .analogy{
+    background:var(--ok-soft); border-left:3px solid var(--ok); padding:12px 16px; margin-bottom:14px; font-size:13.5px;
+  }
+  .analogy b{ color:var(--ok); }
+
+  .idea-box{
+    background:#f6f8fa; border-left:3px solid var(--accent); padding:12px 16px; margin-bottom:14px; font-size:14px;
+  }
+  .idea-box b{ color:var(--accent); }
+
+  .file-tag{
+    display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:12.5px;
+    background:var(--ok-soft); color:var(--ok); padding:4px 10px; border-radius:3px; margin:10px 0 4px;
+    border:1px solid #a8c9b5;
+  }
+  .file-tag.edit{ background:#f0e3d6; color:#8a5a2f; border-color:#d8bb96; }
+
+  pre{
+    margin:10px 0; padding:12px 14px; background:var(--code-bg); color:var(--code-ink);
+    font-family:var(--mono); font-size:12.5px; overflow-x:auto; line-height:1.6;
+  }
+
+  .try-it{
+    background:#fff; border:1px dashed var(--line); padding:10px 14px; font-size:13.5px; margin-top:12px;
+  }
+  .try-it b{ color:var(--ink); }
+
+  details.answer{
+    margin-top:8px; background:#f6f8fa; border:1px solid var(--ok); border-radius:2px; font-size:13px;
+  }
+  details.answer summary{
+    cursor:pointer; padding:8px 12px; font-family:var(--mono); font-size:12px; color:var(--ok);
+    font-weight:600; list-style:none; user-select:none;
+  }
+  details.answer summary::-webkit-details-marker{ display:none; }
+  details.answer summary::before{ content:"▸ "; }
+  details.answer[open] summary::before{ content:"▾ "; }
+  details.answer[open] summary{ border-bottom:1px solid var(--line); }
+  details.answer .answer-body{ padding:10px 14px 12px; }
+  details.answer .answer-body pre{ margin:6px 0; }
+
+  table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+  table thead, table tbody{ display:table; width:100%; }
+  pre, img, svg{ max-width:100%; }
+  body{ overflow-x:hidden; }
+
+  footer{
+    margin-top:56px; padding-top:16px; border-top:1px solid var(--line);
+    font-size:12px; color:#8a94a3; font-family:var(--mono);
+  }
+
+  @media (max-width: 700px){
+    .wrap{ padding:32px 16px 60px; }
+    h1{ font-size:20px; }
+    nav.toc ol{ columns:1; }
+    pre{ font-size:11.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="doc-id">LEARNING-PLAN / blazor-true-beginner / rev.1</div>
+    <h1>Blazor สำหรับผู้เริ่มต้นจริงๆ</h1>
+    <p class="subtitle">
+      ไม่รีบ ไม่ข้ามขั้น หนึ่งแนวคิดต่อหนึ่งหัวข้อ อธิบายด้วยการเปรียบเทียบก่อนเสมอ แล้วค่อยโชว์โค้ด
+      สำหรับคนที่มีพื้นฐาน C# แล้วแต่ไม่เคยแตะ Blazor เลย
+    </p>
+  </header>
+
+  <div class="prereq-box">
+    <b>ก่อนเริ่มไฟล์นี้:</b> ต้องมีพื้นฐาน C# มาก่อน (ตัวแปร, if/else, loop, method, class, List)
+    ถ้ายังไม่มี ให้ไปทำ <code>aspnetcore-beginner-plan.html</code> หัวข้อ 1-12 ก่อน (ไม่ต้องทำหัวข้อ 13-19
+    ของไฟล์นั้น เพราะเป็นเรื่อง Razor Pages ซึ่งไฟล์นี้จะสอน Blazor แทนโดยตรง) ไฟล์นี้จะไม่ทวน C# พื้นฐานซ้ำเลย
+  </div>
+
+  <div class="overview-box">
+    <dl>
+      <dt>เป้าหมาย</dt><dd>เข้าใจ Blazor ตั้งแต่ "component คืออะไร" จนสร้างระบบ CRUD เล็กๆ ได้เอง</dd>
+      <dt>เครื่องมือ</dt><dd>VS Code + C# Dev Kit + .NET SDK (8 ขึ้นไป)</dd>
+      <dt>ระยะเวลา</dt><dd>3-4 สัปดาห์ ถ้าเรียนวันละ 30-60 นาที</dd>
+    </dl>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">สารบัญ (14 หัวข้อ)</div>
+    <ol>
+      <li><a href="#t1">Blazor คืออะไร</a></li>
+      <li><a href="#t2">Component คืออะไร</a></li>
+      <li><a href="#t3">สร้างโปรเจกต์แรก</a></li>
+      <li><a href="#t4">แก้ไฟล์แรก เห็นผลจริง</a></li>
+      <li><a href="#t5">ตัวแปรใน Component (State)</a></li>
+      <li><a href="#t6">รับคลิกจากผู้ใช้ (Event)</a></li>
+      <li><a href="#t7">ผูกค่าสองทาง (@bind)</a></li>
+      <li><a href="#t8">ทำไมต้อง @rendermode</a></li>
+      <li><a href="#t9">ส่งค่าจากแม่สู่ลูก (Parameter)</a></li>
+      <li><a href="#t10">ส่งค่าจากลูกกลับแม่ (EventCallback)</a></li>
+      <li><a href="#t11">เชื่อมฐานข้อมูล</a></li>
+      <li><a href="#t12">ฟอร์มด้วย EditForm</a></li>
+      <li><a href="#t13">รวมเป็น CRUD เล็กๆ</a></li>
+      <li><a href="#t14">ก้าวต่อไป</a></li>
+    </ol>
+  </nav>
+
+  <div class="topic" id="t1">
+    <div class="topic-head"><span class="topic-num">01</span><span class="topic-title">Blazor คืออะไร</span></div>
+    <div class="topic-body">
+      <p>ถ้าเคยเรียน Razor Pages มาก่อน (หน้าเว็บที่กด submit แล้ว reload ทั้งหน้าใหม่ทุกครั้ง) Blazor คือ
+      อีกวิธีสร้างหน้าเว็บด้วย C# เหมือนกัน แต่ทำให้หน้าเว็บ "อัพเดทเฉพาะจุด" ได้โดยไม่ต้อง reload ทั้งหน้า</p>
+      <div class="analogy">
+        <b>เปรียบเทียบ:</b> Razor Pages เหมือนถ่ายรูปหน้าจอใหม่ทุกครั้งที่มีอะไรเปลี่ยน (ถ่ายรูปทั้งห้องใหม่
+        แม้แค่ย้ายแจกันดอกไม้) ส่วน Blazor เหมือนมีคนคอยเดินเข้าไปขยับแค่แจกันดอกไม้อันเดียวในห้องจริง
+        โดยไม่ต้องรื้อทั้งห้องใหม่ ผลลัพธ์ที่เห็นเหมือนกัน แต่ Blazor เร็วกว่าและรู้สึกลื่นไหลกว่า
+      </div>
+      <p>ถ้าไม่เคยเรียน Razor Pages มาก่อนเลยก็ไม่เป็นไร ไฟล์นี้อธิบาย Blazor แบบไม่อิงกับ Razor Pages
+      อยู่แล้ว แค่รู้ไว้เฉยๆ ว่าทั้งสองแบบใช้ C# เหมือนกัน ต่างกันแค่วิธีอัพเดทหน้าจอ</p>
+    </div>
+  </div>
+
+  <div class="topic" id="t2">
+    <div class="topic-head"><span class="topic-num">02</span><span class="topic-title">Component คืออะไร</span></div>
+    <div class="topic-body">
+      <p>Blazor สร้างหน้าเว็บจากชิ้นส่วนเล็กๆ เรียกว่า <b>component</b> แต่ละ component คือ 1 ไฟล์นามสกุล
+      <code>.razor</code> ที่รวม "หน้าตา" (HTML) กับ "พฤติกรรม" (C#) ไว้ในไฟล์เดียวกัน</p>
+      <div class="analogy">
+        <b>เปรียบเทียบ:</b> เหมือนตัวต่อเลโก้ แต่ละชิ้น (component) มีรูปร่างและหน้าที่ของตัวเอง
+        เอามาประกอบกันเป็นหน้าเว็บทั้งหน้าได้ เช่น หน้าเดียวอาจประกอบด้วย component เมนู + component
+        การ์ดสินค้า + component ปุ่มกด ซึ่งแต่ละอันแยกไฟล์กันชัดเจน
+      </div>
+      <p>ตัวอย่างหน้าตาไฟล์ .razor (ยังไม่ต้องเข้าใจทุกบรรทัดตอนนี้ แค่ดูภาพรวม):</p>
+      <pre>&lt;h1&gt;สวัสดี&lt;/h1&gt;
+&lt;p&gt;วันนี้คือ @DateTime.Now&lt;/p&gt;
+
+@code {
+    // ส่วนนี้คือ C# ธรรมดา
+}</pre>
+      <p>ส่วนบน (HTML) เรียกว่า "markup" ส่วนล่างในวงเล็บ <code>@code { }</code> คือ C# ล้วนๆ ที่เคยเรียนมาแล้ว
+      เครื่องหมาย <code>@</code> คือตัวบอกว่า "ต่อไปนี้คือ C# ไม่ใช่ข้อความธรรมดา"</p>
+    </div>
+  </div>
+
+  <div class="topic" id="t3">
+    <div class="topic-head"><span class="topic-num">03</span><span class="topic-title">สร้างโปรเจกต์แรก</span></div>
+    <div class="topic-body">
+      <p>เปิด terminal ใน VS Code (Ctrl+`) แล้วพิมพ์ทีละบรรทัด:</p>
+      <pre>dotnet new blazor -o MyFirstBlazor
+cd MyFirstBlazor
+code .</pre>
+      <p><code>dotnet new blazor -o MyFirstBlazor</code> คือคำสั่งสร้างโปรเจกต์ Blazor เปล่าๆ (มีตัวอย่างมาให้)
+      ใส่ไว้ในโฟลเดอร์ชื่อ MyFirstBlazor ส่วน <code>code .</code> คือเปิดโฟลเดอร์นั้นด้วย VS Code</p>
+      <p>ลองรันดู:</p>
+      <pre>dotnet watch run</pre>
+      <p>เปิด URL ที่ terminal แสดง ควรเห็นหน้าเว็บตัวอย่างขึ้นมา (มีเมนู Home, Counter, Weather)
+      นี่คือ Blazor app แรกของคุณที่รันสำเร็จแล้ว</p>
+      <div class="try-it"><b>ลองทำ:</b> คลิกเมนู "Counter" ในหน้าเว็บที่เปิดอยู่ ลองกดปุ่ม "Click me"
+      สังเกตว่าตัวเลขเพิ่มขึ้นโดยหน้าเว็บไม่กระพริบหรือโหลดใหม่เลย — นี่คือสิ่งที่ analogy ในหัวข้อ 1
+      พูดถึง (อัพเดทเฉพาะจุด)</div>
+    </div>
+  </div>
+
+  <div class="topic" id="t4">
+    <div class="topic-head"><span class="topic-num">04</span><span class="topic-title">แก้ไฟล์แรก เห็นผลจริง</span></div>
+    <div class="topic-body">
+      <p>เปิดไฟล์ <code>Components/Pages/Home.razor</code> (อยู่ในโฟลเดอร์ Components/Pages/)
+      จะเห็นโค้ดสั้นๆ ประมาณนี้:</p>
+      <pre>@page "/"
+
+&lt;PageTitle&gt;Home&lt;/PageTitle&gt;
+
+&lt;h1&gt;Hello, world!&lt;/h1&gt;
+
+Welcome to your new app.</pre>
+      <p><code>@page "/"</code> คือการบอกว่า component นี้เข้าถึงได้ผ่าน URL หน้าแรก (เทียบเท่า
+      <code>@page</code> ของ Razor Pages ที่อาจเคยเห็นมาก่อน)</p>
+      <div class="try-it"><b>ลองทำ:</b> แก้ข้อความ "Hello, world!" เป็นชื่อตัวเอง บันทึกไฟล์ (Ctrl+S)
+      แล้วดูหน้าเว็บที่เปิดค้างไว้ ควรเปลี่ยนให้อัตโนมัติภายใน 1-2 วินาที (เพราะรันด้วย dotnet watch)</div>
+    </div>
+  </div>
+
+  <div class="topic" id="t5">
+    <div class="topic-head"><span class="topic-num">05</span><span class="topic-title">ตัวแปรใน Component (State)</span></div>
+    <div class="topic-body">
+      <p>component เก็บ "ค่าที่จำไว้" ของตัวเองได้ เรียกว่า <b>state</b> ก็คือตัวแปร C# ธรรมดาที่ประกาศไว้ใน
+      <code>@code { }</code> นั่นเอง</p>
+      <pre>&lt;h1&gt;สวัสดี @name&lt;/h1&gt;
+
+@code {
+    private string name = "Somchai";
+}</pre>
+      <div class="analogy">
+        <b>เปรียบเทียบ:</b> state เหมือนกระดานไวท์บอร์ดเล็กๆ ที่ component แต่ละอันมีของตัวเอง
+        เขียนอะไรไว้บนกระดานนี้ ก็แสดงผลบนหน้าจอตามนั้น พอลบแล้วเขียนใหม่ หน้าจอก็เปลี่ยนตาม
+      </div>
+      <p>สังเกตว่า <code>@name</code> ในส่วน HTML คือการ "อ่านค่า" ตัวแปร name มาแสดง ใช้เครื่องหมาย
+      <code>@</code> นำหน้าเสมอเวลาจะแทรกค่า C# ลงในส่วน HTML</p>
+      <div class="try-it"><b>ลองทำ:</b> เพิ่มตัวแปร <code>age</code> (ชนิด int) ใน @code แล้วแสดงผลว่า
+      "อายุ X ปี" ต่อจากชื่อในหัวข้อนี้</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+<pre>&lt;h1&gt;สวัสดี @name อายุ @age ปี&lt;/h1&gt;
+
+@code {
+    private string name = "Somchai";
+    private int age = 25;
+}</pre>
+</div></details>
+    </div>
+  </div>
+
+  <div class="topic" id="t6">
+    <div class="topic-head"><span class="topic-num">06</span><span class="topic-title">รับคลิกจากผู้ใช้ (Event)</span></div>
+    <div class="topic-body">
+      <p>ให้ component ตอบสนองเมื่อผู้ใช้คลิกปุ่ม ใช้ <code>@onclick</code> ผูกกับ method ที่เขียนไว้</p>
+      <pre>&lt;p&gt;กดแล้ว @count ครั้ง&lt;/p&gt;
+&lt;button @onclick="IncreaseCount"&gt;กดที่นี่&lt;/button&gt;
+
+@code {
+    private int count = 0;
+
+    private void IncreaseCount()
+    {
+        count++;
+    }
+}</pre>
+      <p>พอกดปุ่ม Blazor จะเรียก <code>IncreaseCount()</code> ให้อัตโนมัติ แล้ว "วาดหน้าจอใหม่เอง"
+      ทันทีที่ state เปลี่ยน ไม่ต้องเขียนโค้ดสั่งวาดใหม่เอง — เป็นเสน่ห์หลักของ Blazor ที่ต่างจากการเขียน
+      JavaScript ธรรมดาที่ต้องสั่งอัพเดท HTML เองทุกจุด</p>
+      <div class="try-it"><b>ลองทำ:</b> เพิ่มปุ่มที่สองชื่อ "รีเซ็ต" กดแล้วให้ count กลับเป็น 0</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+<pre>&lt;button @onclick="ResetCount"&gt;รีเซ็ต&lt;/button&gt;
+
+@code {
+    private void ResetCount()
+    {
+        count = 0;
+    }
+}</pre>
+</div></details>
+    </div>
+  </div>
+
+  <div class="topic" id="t7">
+    <div class="topic-head"><span class="topic-num">07</span><span class="topic-title">ผูกค่าสองทาง (@bind)</span></div>
+    <div class="topic-body">
+      <p>ถ้าอยากให้ผู้ใช้พิมพ์ข้อความแล้วตัวแปรเปลี่ยนตามทันที (ไม่ต้องกดปุ่ม) ใช้ <code>@bind</code></p>
+      <pre>&lt;input @bind="username" @bind:event="oninput" /&gt;
+&lt;p&gt;คุณพิมพ์ว่า: @username&lt;/p&gt;
+
+@code {
+    private string username = "";
+}</pre>
+      <div class="analogy">
+        <b>เปรียบเทียบ:</b> ปกติ (หัวข้อ 6) เหมือนกดปุ่มส่งจดหมายถึงจะรู้ผล แต่ @bind เหมือนคุยโทรศัพท์สด
+        พิมพ์อะไรในช่อง input ตัวแปร username ก็เปลี่ยนตามทันที ไม่ต้องรอกดอะไรเลย
+      </div>
+      <p><code>@bind:event="oninput"</code> คือการบอกว่า "อัพเดททันทีที่พิมพ์" ถ้าไม่ใส่ส่วนนี้ ค่าเริ่มต้น
+      ของ @bind จะอัพเดทตอน "คลิกออกจากช่อง input" แทน (คือพิมพ์เสร็จแล้วกดที่อื่นถึงจะอัพเดท)</p>
+      <div class="try-it"><b>ลองทำ:</b> ลองเอา <code>@bind:event="oninput"</code> ออก แล้วสังเกตความต่าง
+      ว่าข้อความด้านล่างอัพเดทช้าลงยังไง (ต้องคลิกออกจากช่องก่อนถึงจะเห็นค่าใหม่)</div>
+    </div>
+  </div>
+
+  <div class="topic" id="t8">
+    <div class="topic-head"><span class="topic-num">08</span><span class="topic-title">ทำไมต้อง @rendermode</span></div>
+    <div class="topic-body">
+      <p>ถ้าลองสร้างหน้าใหม่เอง (ไม่ใช่ Home.razor ที่มีมาให้ตั้งแต่ต้น) แล้วโค้ดจากหัวข้อ 5-7 ไม่ทำงานเลย
+      (กดปุ่มไม่ตอบสนอง พิมพ์อะไรก็ไม่อัพเดท) ไม่ใช่เพราะเขียนผิด แต่เพราะยังไม่ได้เปิด "interactivity"</p>
+      <div class="analogy">
+        <b>เปรียบเทียบ:</b> ค่าเริ่มต้นของหน้าใหม่เหมือนรูปถ่ายหน้าเว็บ (ดูได้ แต่กดอะไรไม่ได้เลย)
+        ต้องบอก Blazor ชัดเจนว่า "หน้านี้ขอเป็นแบบโต้ตอบได้จริง" ก่อน ถึงจะกดปุ่มหรือพิมพ์อะไรแล้วเห็นผล
+      </div>
+      <p>วิธีเปิด ใส่บรรทัดนี้ไว้ใกล้บนสุดของไฟล์ .razor ต่อจาก <code>@page</code>:</p>
+      <pre>@page "/my-new-page"
+@rendermode InteractiveServer</pre>
+      <p>ทำไม Home.razor เดิมถึงทำงานได้โดยไม่ต้องใส่เอง เพราะ template ตั้งค่าไว้ให้ "ทั้งแอป" interactive
+      อัตโนมัติตั้งแต่สร้างโปรเจกต์แล้ว (ผ่านไฟล์ App.razor) แต่ถ้าสร้างหน้าเองใหม่ๆ บางครั้งต้องประกาศ
+      ซ้ำเฉพาะไฟล์ ถ้าเจอปัญหา "กดอะไรไม่ได้เลย" ให้นึกถึงหัวข้อนี้เป็นอันดับแรก</p>
+    </div>
+  </div>
+
+  <div class="topic" id="t9">
+    <div class="topic-head"><span class="topic-num">09</span><span class="topic-title">ส่งค่าจากแม่สู่ลูก (Parameter)</span></div>
+    <div class="topic-body">
+      <p>ถ้าอยากใช้ component เดิมซ้ำหลายครั้ง แต่ใส่ข้อมูลต่างกันแต่ละครั้ง ใช้ <b>Parameter</b></p>
+      <div class="analogy">
+        <b>เปรียบเทียบ:</b> เหมือนแม่พิมพ์ขนม พิมพ์เดียวใช้ซ้ำได้หลายชิ้น แต่ใส่แป้งคนละสีคนละรสได้
+        แม่พิมพ์คือ component ส่วนแป้งที่ใส่แต่ละครั้งคือ Parameter
+      </div>
+      <p><b>สร้างไฟล์ใหม่:</b> <code>Components/Greeting.razor</code> (component ลูก)</p>
+      <pre>&lt;h3&gt;สวัสดี @Name&lt;/h3&gt;
+
+@code {
+    [Parameter] public string Name { get; set; } = "";
+}</pre>
+      <p>เรียกใช้จาก Home.razor (component แม่):</p>
+      <pre>&lt;Greeting Name="Somchai" /&gt;
+&lt;Greeting Name="Somying" /&gt;</pre>
+      <p>ผลลัพธ์คือได้ข้อความทักทาย 2 อัน ชื่อต่างกัน จาก component เดียวกัน <code>[Parameter]</code>
+      คือคำที่บอกว่า "property นี้รับค่าจากข้างนอกได้" ชื่อ attribute ตอนเรียกใช้ (<code>Name="..."</code>)
+      ต้องตรงกับชื่อ property เป๊ะ</p>
+      <div class="try-it"><b>ลองทำ:</b> เพิ่ม Parameter อีกตัวชื่อ Age (int) ใน Greeting.razor
+      แล้วเรียกใช้พร้อมส่งอายุมาด้วย</div>
+      <details class="answer"><summary>ดูเฉลย</summary><div class="answer-body">
+<pre>&lt;h3&gt;สวัสดี @Name อายุ @Age ปี&lt;/h3&gt;
+
+@code {
+    [Parameter] public string Name { get; set; } = "";
+    [Parameter] public int Age { get; set; }
+}</pre>
+เรียกใช้: <code>&lt;Greeting Name="Somchai" Age="25" /&gt;</code>
+</div></details>
+    </div>
+  </div>
+
+  <div class="topic" id="t10">
+    <div class="topic-head"><span class="topic-num">10</span><span class="topic-title">ส่งค่าจากลูกกลับแม่ (EventCallback)</span></div>
+    <div class="topic-body">
+      <p>หัวข้อ 9 คือส่งค่า "ลงไป" จากแม่สู่ลูก ตอนนี้จะทำกลับกัน — ให้ลูก "แจ้งข่าว" กลับไปหาแม่ เช่น
+      ตอนมีคนกดปุ่มในลูก แล้วแม่อยากรู้</p>
+      <div class="analogy">
+        <b>เปรียบเทียบ:</b> เหมือนลูกโทรบอกแม่ว่า "หนูกดปุ่มแล้วนะ" แม่ฟังแล้วจะทำอะไรต่อก็ได้
+        ลูกแค่แจ้ง ไม่ได้สั่งว่าแม่ต้องทำอะไร
+      </div>
+      <p><b>แก้ไฟล์:</b> <code>Components/Greeting.razor</code> (เพิ่มปุ่มและ EventCallback)</p>
+      <pre>&lt;h3&gt;สวัสดี @Name&lt;/h3&gt;
+&lt;button @onclick="HandleClick"&gt;กดทักทายกลับ&lt;/button&gt;
+
+@code {
+    [Parameter] public string Name { get; set; } = "";
+    [Parameter] public EventCallback&lt;string&gt; OnGreet { get; set; }
+
+    private async Task HandleClick()
+    {
+        await OnGreet.InvokeAsync(Name);
+    }
+}</pre>
+      <p><b>แก้ไฟล์:</b> <code>Components/Pages/Home.razor</code> (ฟังข่าวจากลูก)</p>
+      <pre>&lt;Greeting Name="Somchai" OnGreet="HandleGreeting" /&gt;
+&lt;p&gt;@lastMessage&lt;/p&gt;
+
+@code {
+    private string lastMessage = "";
+
+    private void HandleGreeting(string name)
+    {
+        lastMessage = $"{name} กดทักทายกลับมาแล้ว!";
+    }
+}</pre>
+      <p><code>EventCallback&lt;string&gt;</code> คือ "ช่องทางแจ้งข่าว" ที่ส่งค่าเป็น string กลับไปได้
+      ส่วน <code>OnGreet.InvokeAsync(Name)</code> คือการ "โทรแจ้ง" จริงๆ พอแม่ (Home.razor) ผูก
+      <code>OnGreet="HandleGreeting"</code> ไว้ ก็จะมี method นั้นถูกเรียกทุกครั้งที่ลูกแจ้งข่าวมา</p>
+    </div>
+  </div>
+
+  <div class="topic" id="t11">
+    <div class="topic-head"><span class="topic-num">11</span><span class="topic-title">เชื่อมฐานข้อมูล</span></div>
+    <div class="topic-body">
+      <p>ทุกอย่างที่เรียนมาเก็บข้อมูลแค่ชั่วคราว (ปิดเบราว์เซอร์แล้วหาย) ถ้าอยากเก็บถาวรต้องต่อฐานข้อมูล
+      ด้วย EF Core (เครื่องมือเดียวกับที่ Razor Pages ใช้)</p>
+      <pre>dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+dotnet add package Microsoft.EntityFrameworkCore.Design</pre>
+      <p><b>สร้างไฟล์ใหม่:</b> <code>Models/Product.cs</code></p>
+      <pre>namespace MyFirstBlazor.Models;
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public decimal Price { get; set; }
+}</pre>
+      <p><b>สร้างไฟล์ใหม่:</b> <code>Data/AppDbContext.cs</code></p>
+      <pre>using Microsoft.EntityFrameworkCore;
+using MyFirstBlazor.Models;
+
+namespace MyFirstBlazor.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options) { }
+    public DbSet&lt;Product&gt; Products => Set&lt;Product&gt;();
+}</pre>
+      <p><b>แก้ไฟล์:</b> <code>Program.cs</code> (เพิ่ม 2 บรรทัดก่อน builder.Build())</p>
+      <pre>using MyFirstBlazor.Data;
+
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite("Data Source=app.db"));</pre>
+      <pre>dotnet tool install --global dotnet-ef
+dotnet ef migrations add InitialCreate
+dotnet ef database update</pre>
+      <p>ตอนนี้ในหน้า .razor ไหนก็ตาม เรียกใช้ฐานข้อมูลได้ด้วย <code>@inject AppDbContext Db</code>
+      ไว้บนสุดของไฟล์ แล้วเรียก <code>Db.Products.ToListAsync()</code> ได้เลย</p>
+    </div>
+  </div>
+
+  <div class="topic" id="t12">
+    <div class="topic-head"><span class="topic-num">12</span><span class="topic-title">ฟอร์มด้วย EditForm</span></div>
+    <div class="topic-body">
+      <p>Blazor มี component ฟอร์มพิเศษชื่อ <code>EditForm</code> ที่ตรวจสอบข้อมูลให้อัตโนมัติ</p>
+      <pre>@page "/add-product"
+@rendermode InteractiveServer
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+&lt;EditForm Model="newProduct" OnValidSubmit="SaveAsync"&gt;
+    &lt;InputText @bind-Value="newProduct.Name" /&gt;
+    &lt;InputNumber @bind-Value="newProduct.Price" /&gt;
+    &lt;button type="submit"&gt;บันทึก&lt;/button&gt;
+&lt;/EditForm&gt;
+
+@code {
+    private Product newProduct = new();
+
+    private async Task SaveAsync()
+    {
+        Db.Products.Add(newProduct);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/");
+    }
+}</pre>
+      <p><code>OnValidSubmit</code> ทำงานก็ต่อเมื่อข้อมูลในฟอร์มถูกต้องเท่านั้น (ยังไม่ได้ใส่กฎ validation
+      ในตัวอย่างนี้ แต่ EditForm รองรับ [Required]/[Range] แบบเดียวกับที่เคยเรียนได้ทันทีถ้าเพิ่มเข้าไปใน
+      class Product)</p>
+      <p><code>NavigationManager</code> คือตัวเปลี่ยนหน้าของ Blazor <code>Nav.NavigateTo("/")</code>
+      คือ "พาไปหน้าแรก" หลังบันทึกเสร็จ</p>
+    </div>
+  </div>
+
+  <div class="topic" id="t13">
+    <div class="topic-head"><span class="topic-num">13</span><span class="topic-title">รวมเป็น CRUD เล็กๆ</span></div>
+    <div class="topic-body">
+      <p>ตอนนี้รวมทุกอย่างจากหัวข้อ 11-12 เข้าด้วยกัน แก้ <code>Home.razor</code> ให้แสดงรายการสินค้าจริง
+      พร้อมปุ่มลบ:</p>
+      <pre>@page "/"
+@rendermode InteractiveServer
+@inject AppDbContext Db
+
+&lt;h1&gt;สินค้าทั้งหมด&lt;/h1&gt;
+&lt;a href="/add-product"&gt;+ เพิ่มสินค้า&lt;/a&gt;
+
+&lt;ul&gt;
+@foreach (var p in products)
+{
+    &lt;li&gt;
+        @p.Name — @p.Price บาท
+        &lt;button @onclick="() =&gt; DeleteAsync(p.Id)"&gt;ลบ&lt;/button&gt;
+    &lt;/li&gt;
+}
+&lt;/ul&gt;
+
+@code {
+    private List&lt;Product&gt; products = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await Db.Products.ToListAsync();
+    }
+
+    private async Task DeleteAsync(int id)
+    {
+        var product = await Db.Products.FindAsync(id);
+        if (product is not null)
+        {
+            Db.Products.Remove(product);
+            await Db.SaveChangesAsync();
+            products = await Db.Products.ToListAsync();
+        }
+    }
+}</pre>
+      <p><code>OnInitializedAsync</code> คือ method พิเศษที่ Blazor เรียกให้อัตโนมัติตอน component
+      เพิ่งถูกสร้างขึ้นมาครั้งแรก (เหมือน "ทำสิ่งนี้ทันทีที่หน้าเปิด")</p>
+      <div class="try-it"><b>ลองทำ:</b> ทดสอบเพิ่มสินค้าผ่าน /add-product แล้วกลับมาหน้าแรก ดูว่าแสดงครบไหม
+      ลองกดปุ่มลบดูว่าหายไปจากหน้าจอทันทีโดยไม่ reload หน้าเลยหรือเปล่า</div>
+      <details class="answer"><summary>เช็คลิสต์</summary><div class="answer-body">
+ถ้าเพิ่มสินค้าแล้วไม่เห็นในหน้าแรก เช็คว่า Nav.NavigateTo("/") ทำงานจริงไหม (URL เปลี่ยนกลับมาหน้าแรกไหม)
+ถ้ากดลบแล้วไม่มีอะไรเกิดขึ้นเลย ให้เช็คว่าใส่ <code>@rendermode InteractiveServer</code> ไว้ที่ Home.razor
+แล้วหรือยัง (ตามหัวข้อ 8) เป็นสาเหตุอันดับหนึ่งที่ทำให้ปุ่มกดไม่ได้ผล
+</div></details>
+    </div>
+  </div>
+
+  <div class="topic" id="t14">
+    <div class="topic-head"><span class="topic-num">14</span><span class="topic-title">ก้าวต่อไป</span></div>
+    <div class="topic-body">
+      <p>ถ้าทำมาถึงตรงนี้ได้ แปลว่าเข้าใจแนวคิดหลักของ Blazor ครบแล้ว: component, state, event, @bind,
+      Parameter, EventCallback, และต่อฐานข้อมูลได้เอง</p>
+      <div class="idea-box">
+        <b>ขั้นต่อไป:</b> ไปที่ไฟล์ <code>aspnetcore-blazor-deepdive.html</code> — เป็นไฟล์ที่สร้างระบบ CRUD
+        เต็มรูปแบบต่อจากพื้นฐานที่เพิ่งเรียนไป มีค้นหา, filter, pagination, sorting, แยก component ใช้ซ้ำ,
+        และเชื่อมกราฟด้วย JavaScript ครบ 15 ขั้นตอน
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ทุกหัวข้อควรลงมือทำ "ลองทำ" ก่อนไปหัวข้อถัดไปเสมอ ถ้าติดตรงไหน กลับไปอ่านหัวข้อก่อนหน้าซ้ำได้
+    โค้ดในไฟล์นี้ทดสอบกับ Blazor Web App เวอร์ชัน .NET 8 ขึ้นไป (รวม .NET 10)
+  </footer>
+
+</div>
+</body>
+</html>
