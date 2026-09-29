@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track F — พร้อม Production จริง</title>
+<style>
+  :root{
+    --ink:#1b2430; --paper:#eef1f4; --panel:#fff; --line:#c7cfd8;
+    --accent:#4b2f8a; --accent-soft:#e4dcf0; --ok:#2f6b4f; --ok-soft:#dcece2;
+    --warn:#8a5a2f; --warn-soft:#f0e3d6; --code-bg:#1b2430; --code-ink:#e8ecf1;
+    --mono:'JetBrains Mono',monospace; --sans:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif;
+  }
+  *{box-sizing:border-box;} body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.68;font-size:15px;overflow-x:hidden;}
+  .wrap{max-width:980px;margin:0 auto;padding:48px 24px 100px;}
+  header{border-bottom:2px solid var(--ink);padding-bottom:24px;margin-bottom:32px;}
+  .doc-id{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:8px;}
+  h1{font-size:27px;margin:0 0 12px;font-weight:700;}
+  .subtitle{color:#4a5568;max-width:75ch;font-size:14.5px;}
+  .overview-box{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:18px 20px;margin:28px 0 36px;font-size:14px;}
+  .overview-box dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0;}
+  .overview-box dt{font-family:var(--mono);color:#4a5568;font-size:12.5px;white-space:nowrap;}
+  .overview-box dd{margin:0;}
+  nav.toc{background:var(--panel);border:1px solid var(--line);padding:18px 22px;margin-bottom:44px;font-size:13.5px;}
+  nav.toc .toc-title{font-family:var(--mono);font-size:11.5px;color:#4a5568;margin-bottom:10px;}
+  nav.toc ol{columns:2;margin:0;padding-left:18px;}
+  nav.toc a{color:var(--ink);text-decoration:none;}
+  .module{background:var(--panel);border:1px solid var(--line);margin-bottom:26px;scroll-margin-top:20px;}
+  .module-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:18px 22px;background:var(--accent-soft);border-bottom:1px solid var(--line);}
+  .module-head-left{display:flex;align-items:baseline;gap:12px;}
+  .module-num{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;}
+  .module-title{font-size:18px;font-weight:700;}
+  .module-duration{font-family:var(--mono);font-size:11.5px;color:var(--accent);background:#fff;padding:3px 10px;border-radius:2px;border:1px solid var(--line);}
+  .module-body{padding:20px 22px 22px;}
+  .module-body p{margin:0 0 12px;} .module-body p:last-child{margin-bottom:0;}
+  .why-box{background:#f6f8fa;border-left:3px solid var(--accent);padding:12px 16px;margin-bottom:16px;font-size:13.5px;}
+  .why-box b{color:var(--accent);}
+  .file-tag{display:inline-flex;font-family:var(--mono);font-size:12.5px;background:var(--ok-soft);color:var(--ok);padding:4px 10px;border-radius:3px;margin:10px 0 4px;border:1px solid #a8c9b5;}
+  .cli-tag{display:inline-flex;font-family:var(--mono);font-size:12.5px;background:var(--accent-soft);color:var(--accent);padding:4px 10px;border-radius:3px;margin:10px 0 4px;border:1px solid #c9b8e3;}
+  .subblock{margin-bottom:16px;} .subblock:last-child{margin-bottom:0;}
+  .subblock-label{font-family:var(--mono);font-size:11.5px;color:var(--accent);margin-bottom:6px;}
+  pre{margin:0 0 10px;padding:12px 14px;background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);font-size:12.5px;overflow-x:auto;line-height:1.6;}
+  pre:last-child{margin-bottom:0;}
+  .exercise{background:#f6f8fa;border:1px solid var(--line);border-left:3px solid var(--ok);padding:12px 14px;font-size:13.5px;margin-top:12px;}
+  .exercise b{color:var(--ok);}
+  .pitfall{background:var(--warn-soft);border-left:3px solid var(--warn);padding:12px 14px;font-size:13.5px;margin-top:12px;}
+  .pitfall b{color:var(--warn);}
+  table{display:block;overflow-x:auto;max-width:100%;} table thead,table tbody{display:table;width:100%;}
+  table.mini{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.mini th,table.mini td{border:1px solid var(--line);padding:6px 9px;text-align:left;}
+  table.mini th{background:#f6f8fa;font-family:var(--mono);font-size:10.5px;color:#4a5568;}
+  footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:#8a94a3;font-family:var(--mono);}
+  @media (max-width:700px){.wrap{padding:32px 16px 60px;} h1{font-size:21px;} nav.toc ol{columns:1;} pre{font-size:11.5px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="doc-id">TRACK-F / production-readiness / rev.1</div>
+    <h1>Track F — พร้อม Production จริง</h1>
+    <p class="subtitle">ทุกอย่างที่ต้องทำก่อน "ปล่อยระบบให้คนอื่นใช้จริง" — logging ที่ debug ได้จริงตอนมีปัญหา, security review, และ deploy จริงขึ้น server/Docker ต่างจากการรันบนเครื่องตัวเองหลายอย่าง</p>
+  </header>
+
+  <div class="overview-box">
+    <dl>
+      <dt>ก่อนเริ่ม</dt><dd>ควรทำ Track A, B (debug) แล้ว และเข้าใจโครงสร้างระบบพอสมควร</dd>
+      <dt>ระยะเวลา</dt><dd>2-3 สัปดาห์</dd>
+    </dl>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">สารบัญ</div>
+    <ol>
+      <li><a href="#m1">1. Logging ที่ใช้ debug ได้จริงตอน Production</a></li>
+      <li><a href="#m2">2. Security Review Checklist</a></li>
+      <li><a href="#m3">3. Configuration และ Secret Management</a></li>
+      <li><a href="#m4">4. Health Check</a></li>
+      <li><a href="#m5">5. Deploy ด้วย Docker</a></li>
+      <li><a href="#m6">6. Deploy บน IIS (Windows Server)</a></li>
+      <li><a href="#m7">7. Checklist ก่อนปล่อยจริง</a></li>
+    </ol>
+  </nav>
+
+  <div class="module" id="m1">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 1</span><span class="module-title">Logging ที่ใช้ Debug ได้จริงตอน Production</span></div><span class="module-duration">3 วัน</span></div>
+    <div class="module-body">
+      <div class="why-box"><b>ต่างจากตอน dev:</b> ตอน dev มี breakpoint ให้หยุดดูค่าได้ แต่ตอน production (server จริง มีผู้ใช้จริงอยู่) ทำอย่างนั้นไม่ได้เลย log คือ "หลักฐานเดียว" ที่เหลือไว้ให้ไล่ปัญหาย้อนหลัง ถ้า log ไม่ดี = debug ไม่ได้</div>
+      <div class="subblock">
+        <div class="subblock-label">ติดตั้ง Serilog — logging library ที่นิยมที่สุดใน .NET</div>
+        <div class="cli-tag">รันที่ root ของโปรเจกต์</div>
+        <pre>dotnet add package Serilog.AspNetCore
+dotnet add package Serilog.Sinks.File</pre>
+        <div class="file-tag">แก้ไฟล์: Program.cs</div>
+        <pre>using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File("logs/app-.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();</pre>
+        <p>ผลลัพธ์: log ถูกเขียนลงไฟล์ในโฟลเดอร์ <code>logs/</code> แยกไฟล์ตามวัน ช่วยให้ย้อนดูปัญหาของวันที่ระบุได้ทันที</p>
+      </div>
+      <div class="subblock">
+        <div class="subblock-label">Log ที่ดี vs Log ที่ไม่มีประโยชน์</div>
+        <pre>// ไม่มีประโยชน์ — ไม่รู้ว่าอะไรผิด ใคร ตอนไหน
+Logger.LogError("เกิดข้อผิดพลาด");
+
+// ดี — มีบริบทครบ ค้นหา/กรองได้
+Logger.LogError(ex,
+    "สร้างออเดอร์ไม่สำเร็จ CustomerId={CustomerId} ItemCount={ItemCount}",
+    customerId, cartItems.Count);</pre>
+        <p><b>หลักการ:</b> log ต้องตอบได้ว่า "อะไรเกิดขึ้น, กับใคร/ข้อมูลอะไร, ตอนไหน" — placeholder แบบ <code>{CustomerId}</code> (ไม่ใช่ string interpolation) ทำให้ Serilog เก็บเป็น field แยกที่ค้นหา/กรองได้ในภายหลัง</p>
+      </div>
+      <div class="pitfall"><b>ห้าม log ข้อมูลอ่อนไหวเด็ดขาด:</b> รหัสผ่าน, token, เลขบัตรประชาชน, เลขบัญชี — ไฟล์ log มักถูกเก็บนานกว่าที่คิดและคนเข้าถึงได้กว้างกว่าฐานข้อมูลหลัก ถ้า log มีข้อมูลพวกนี้จะกลายเป็นช่องโหว่ด้านความปลอดภัยทันที</div>
+    </div>
+  </div>
+
+  <div class="module" id="m2">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 2</span><span class="module-title">Security Review Checklist</span></div><span class="module-duration">3 วัน</span></div>
+    <div class="module-body">
+      <p>ตรวจทีละข้อก่อนปล่อยระบบจริง (ต่อยอดจาก Module 9 ของ webapp-deepdive ที่สอน XSS/CSRF/SQL Injection ไว้แล้ว):</p>
+      <table class="mini">
+        <tr><th>หัวข้อ</th><th>ตรวจอะไร</th><th>วิธีตรวจ</th></tr>
+        <tr><td>Authorization ครบทุกหน้า</td><td>ทุกหน้าที่ควรต้อง login มี <code>[Authorize]</code> ครบไหม (ลืมแค่หน้าเดียวก็เข้าตรงๆ ได้)</td><td>ไล่ดูทุกไฟล์ใน Components/Pages/ ทีละไฟล์</td></tr>
+        <tr><td>Authorization ฝั่ง backend ด้วย</td><td>ซ่อนปุ่มใน UI ไม่พอ ต้องเช็คสิทธิ์ใน Service ด้วย (ป้องกันการเรียกตรงๆ)</td><td>ลองเรียก method โดยไม่ผ่านหน้าเว็บ ดูว่ายังเช็คสิทธิ์อยู่ไหม</td></tr>
+        <tr><td>Connection string / secret</td><td>ไม่มี password จริงใน appsettings.json ที่ commit ขึ้น git</td><td>ค้นด้วย Ctrl+Shift+F หาคำว่า "Password=" ทั้งโปรเจกต์</td></tr>
+        <tr><td>Error message ไม่เปิดเผยรายละเอียดภายใน</td><td>Production ต้องไม่แสดง stack trace ให้ผู้ใช้เห็น</td><td>เช็ค <code>app.UseExceptionHandler()</code> ตั้งไว้ และ environment เป็น Production จริง</td></tr>
+        <tr><td>HTTPS บังคับ</td><td>ไม่มีทางเข้าใช้ผ่าน http ธรรมดาได้</td><td>เช็ค <code>app.UseHttpsRedirection()</code> และตั้ง HSTS</td></tr>
+        <tr><td>Dependency ที่มีช่องโหว่</td><td>Package ที่ใช้มี security advisory หรือไม่</td><td>รัน <code>dotnet list package --vulnerable</code></td></tr>
+        <tr><td>Input validation ฝั่ง server</td><td>ทุก form ตรวจข้อมูลฝั่ง server ด้วย ไม่พึ่ง validation ฝั่ง client อย่างเดียว</td><td>ลองส่งข้อมูลผิดรูปแบบตรงๆ (ข้าม UI) ดูว่า reject ไหม</td></tr>
+      </table>
+      <div class="cli-tag">ตรวจ package ที่มีช่องโหว่</div>
+      <pre>dotnet list package --vulnerable</pre>
+    </div>
+  </div>
+
+  <div class="module" id="m3">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 3</span><span class="module-title">Configuration และ Secret Management</span></div><span class="module-duration">2 วัน</span></div>
+    <div class="module-body">
+      <div class="subblock">
+        <div class="subblock-label">แยก config ตาม environment (ทบทวนจาก webapp-deepdive Module 8 พร้อมลงลึกขึ้น)</div>
+        <pre>appsettings.json                 // ค่ากลาง ไม่มี secret
+appsettings.Development.json     // เฉพาะ dev (SQLite ไฟล์ local)
+appsettings.Production.json      // เฉพาะ production (ไม่ใส่ secret จริงในไฟล์นี้ด้วย!)</pre>
+        <p>secret จริง (connection string production, API key ของ IWS) ต้องส่งเข้าไปทาง <b>Environment Variable</b> ของ server เท่านั้น ไม่ใส่ในไฟล์ใดๆ ที่ commit ขึ้น git</p>
+      </div>
+      <div class="subblock">
+        <div class="subblock-label">รูปแบบการตั้ง Environment Variable สำหรับ config ที่ซ้อนกัน</div>
+        <pre># appsettings.json มี  {"ConnectionStrings": {"Default": "..."}}
+# ตั้ง env variable ทับด้วยชื่อแบบมี __ (สองขีดล่าง) คั่นระดับ:
+ConnectionStrings__Default="Server=...;Password=..."</pre>
+        <p>ASP.NET Core อ่าน environment variable ทับค่าใน appsettings.json ให้อัตโนมัติ โดยใช้ <code>__</code> (double underscore) แทนระดับที่ซ้อนกัน</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="module" id="m4">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 4</span><span class="module-title">Health Check</span></div><span class="module-duration">1 วัน</span></div>
+    <div class="module-body">
+      <div class="why-box"><b>ทำไมต้องมี:</b> ให้ระบบ monitoring (หรือแค่เปิดเบราว์เซอร์เช็คเอง) รู้ได้ทันทีว่า "แอปยังทำงานปกติไหม ต่อฐานข้อมูลได้ไหม" โดยไม่ต้องล็อกอินเข้าใช้งานจริง</div>
+      <div class="file-tag">แก้ไฟล์: Program.cs</div>
+      <pre>builder.Services.AddHealthChecks()
+    .AddDbContextCheck&lt;AppDbContext&gt;();
+
+// ...
+app.MapHealthChecks("/health");</pre>
+      <p>เปิด <code>/health</code> ในเบราว์เซอร์ ถ้าทุกอย่างปกติจะได้คำตอบ "Healthy" ถ้าต่อฐานข้อมูลไม่ได้จะได้ "Unhealthy" ทันที เหมาะกับ IWS integration ในอนาคตด้วย (เพิ่ม check ว่าเรียก IWS ได้ไหมได้ในที่เดียวกัน)</p>
+    </div>
+  </div>
+
+  <div class="module" id="m5">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 5</span><span class="module-title">Deploy ด้วย Docker</span></div><span class="module-duration">3-4 วัน</span></div>
+    <div class="module-body">
+      <div class="why-box"><b>ทำไมใช้ Docker:</b> แก้ปัญหา "ทำงานบนเครื่องผมได้ แต่บน server พัง" เพราะ Docker จับทุกอย่างที่แอปต้องใช้ (เวอร์ชัน .NET, dependency) ห่อรวมเป็นก้อนเดียว รันได้เหมือนกันทุกที่</div>
+      <div class="file-tag">สร้างไฟล์ใหม่: Dockerfile (ที่ root ของโปรเจกต์ ไม่มีนามสกุล)</div>
+      <pre># ขั้น 1: build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+COPY *.csproj .
+RUN dotnet restore
+COPY . .
+RUN dotnet publish -c Release -o /app
+
+# ขั้น 2: run (ใช้ image เล็กกว่า ไม่มี SDK)
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+WORKDIR /app
+COPY --from=build /app .
+ENTRYPOINT ["dotnet", "BlazorCrudApp.dll"]</pre>
+      <p>เปลี่ยนเลขเวอร์ชัน (9.0) ให้ตรงกับ .NET SDK ที่ใช้พัฒนา และเปลี่ยน <code>BlazorCrudApp.dll</code> ให้ตรงกับชื่อโปรเจกต์จริง</p>
+      <div class="cli-tag">Build และรัน</div>
+      <pre>docker build -t blazorcrudapp .
+docker run -p 8080:8080 -e ConnectionStrings__Default="..." blazorcrudapp</pre>
+      <p><code>-p 8080:8080</code> เปิดพอร์ตจาก container ออกมาให้เข้าถึงจากภายนอก และ <code>-e</code> คือส่ง environment variable เข้าไป (ตรงกับ Module 3)</p>
+      <div class="pitfall"><b>ข้อควรระวัง:</b> Blazor Server ต้องเปิด WebSocket ผ่าน reverse proxy/load balancer ที่อยู่หน้า container ด้วย ถ้าไม่เปิด SignalR connection จะเชื่อมไม่ได้ หน้าเว็บจะโหลดขึ้นแต่กดอะไรไม่ได้เลย (อาการเดียวกับลืม rendermode แต่สาเหตุต่างกัน)</div>
+    </div>
+  </div>
+
+  <div class="module" id="m6">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 6</span><span class="module-title">Deploy บน IIS (Windows Server)</span></div><span class="module-duration">2-3 วัน</span></div>
+    <div class="module-body">
+      <div class="why-box"><b>ทำไมต้องรู้:</b> หลายบริษัทที่มี Windows Server + SQL Server อยู่แล้ว (เหมือนสภาพแวดล้อมที่คุยกันไว้ตอนต้น) ยังใช้ IIS เป็นหลัก มากกว่า Docker</div>
+      <div class="cli-tag">Publish ไฟล์สำหรับ deploy</div>
+      <pre>dotnet publish -c Release -o ./publish</pre>
+      <div class="subblock">
+        <div class="subblock-label">สิ่งที่ต้องเตรียมบน Windows Server (ทำครั้งเดียว)</div>
+        <p><b>1.</b> ติดตั้ง <b>.NET Hosting Bundle</b> (ดาวน์โหลดจาก dotnet.microsoft.com ตรงกับเวอร์ชัน .NET ที่ใช้) — ตัวนี้ทำให้ IIS รัน ASP.NET Core ได้</p>
+        <p><b>2.</b> เปิด <b>WebSocket Protocol</b> ใน Windows Features (Server Manager → Add Roles and Features → Web Server → Application Development → WebSocket Protocol) — <b>จำเป็นสำหรับ Blazor Server</b></p>
+        <p><b>3.</b> สร้าง Site ใหม่ใน IIS Manager ชี้ Physical Path ไปที่โฟลเดอร์ที่ copy ไฟล์ publish ไปวาง</p>
+        <p><b>4.</b> ตั้ง Application Pool เป็น <b>"No Managed Code"</b> (ASP.NET Core ไม่ได้รันบน .NET Framework แบบเดิม)</p>
+        <p><b>5.</b> ตั้ง Environment Variable ของ Application Pool สำหรับ secret ต่างๆ</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="module" id="m7">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 7</span><span class="module-title">Checklist ก่อนปล่อยจริง</span></div><span class="module-duration">อ้างอิง</span></div>
+    <div class="module-body">
+      <p>ตรวจทุกข้อก่อนปล่อยระบบให้ผู้ใช้จริงใช้ ทุกข้อที่ยังไม่ผ่าน = ความเสี่ยงที่ยังไม่ได้จัดการ:</p>
+      <table class="mini">
+        <tr><th>หมวด</th><th>รายการตรวจ</th></tr>
+        <tr><td>Logging</td><td>Serilog ตั้งค่าแล้ว, log เขียนลงไฟล์จริง, ไม่มีข้อมูลอ่อนไหวใน log</td></tr>
+        <tr><td>Security</td><td>[Authorize] ครบ, ไม่มี secret ใน git, HTTPS บังคับ, ไม่มี package ช่องโหว่</td></tr>
+        <tr><td>Config</td><td>Environment Variable ตั้งบน server ครบ, ไม่มี connection string จริงใน repo</td></tr>
+        <tr><td>Health</td><td>/health ทำงาน และเช็คฐานข้อมูลได้</td></tr>
+        <tr><td>Test</td><td>รัน <code>dotnet test</code> ผ่านทุกตัวก่อน publish</td></tr>
+        <tr><td>Backup</td><td>ฐานข้อมูลมีแผน backup และเคยทดสอบ restore จริงแล้ว (backup ที่ไม่เคยทดสอบ restore = ไม่มี backup)</td></tr>
+        <tr><td>Rollback</td><td>รู้วิธีย้อนกลับเวอร์ชันเก่าถ้า deploy ใหม่แล้วมีปัญหา (เก็บไฟล์ publish เวอร์ชันก่อนหน้าไว้เสมอ)</td></tr>
+        <tr><td>Monitoring</td><td>มีคนรู้ทันทีเมื่อระบบล่ม (ไม่ใช่รอผู้ใช้โทรมาแจ้ง)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <footer>Track F คือจุดที่ทักษะทั้งหมดจาก Track A-E มาบรรจบกัน — ระบบที่ดีไม่ใช่แค่ทำงานได้ แต่ต้อง "รู้ตัวเมื่อมันพัง" และ "แก้ไขได้เมื่อมันพัง"</footer>
+</div>
+</body>
+</html>

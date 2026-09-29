@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track D — เพิ่มฟีเจอร์แบบมีตั๋วงานจริง</title>
+<style>
+  :root{
+    --ink:#1b2430; --paper:#eef1f4; --panel:#fff; --line:#c7cfd8;
+    --accent:#4b2f8a; --accent-soft:#e4dcf0; --ok:#2f6b4f; --ok-soft:#dcece2;
+    --warn:#8a5a2f; --warn-soft:#f0e3d6; --code-bg:#1b2430; --code-ink:#e8ecf1;
+    --mono:'JetBrains Mono',monospace; --sans:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif;
+  }
+  *{box-sizing:border-box;} body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.68;font-size:15px;overflow-x:hidden;}
+  .wrap{max-width:980px;margin:0 auto;padding:48px 24px 100px;}
+  header{border-bottom:2px solid var(--ink);padding-bottom:24px;margin-bottom:32px;}
+  .doc-id{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:8px;}
+  h1{font-size:27px;margin:0 0 12px;font-weight:700;}
+  .subtitle{color:#4a5568;max-width:75ch;font-size:14.5px;}
+  .overview-box{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:18px 20px;margin:28px 0 36px;font-size:14px;}
+  .overview-box dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0;}
+  .overview-box dt{font-family:var(--mono);color:#4a5568;font-size:12.5px;white-space:nowrap;}
+  .overview-box dd{margin:0;}
+  nav.toc{background:var(--panel);border:1px solid var(--line);padding:18px 22px;margin-bottom:44px;font-size:13.5px;}
+  nav.toc .toc-title{font-family:var(--mono);font-size:11.5px;color:#4a5568;margin-bottom:10px;}
+  nav.toc ol{columns:2;margin:0;padding-left:18px;}
+  nav.toc a{color:var(--ink);text-decoration:none;}
+  .module{background:var(--panel);border:1px solid var(--line);margin-bottom:26px;scroll-margin-top:20px;}
+  .module-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:18px 22px;background:var(--accent-soft);border-bottom:1px solid var(--line);}
+  .module-head-left{display:flex;align-items:baseline;gap:12px;}
+  .module-num{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;}
+  .module-title{font-size:18px;font-weight:700;}
+  .module-duration{font-family:var(--mono);font-size:11.5px;color:var(--accent);background:#fff;padding:3px 10px;border-radius:2px;border:1px solid var(--line);}
+  .module-body{padding:20px 22px 22px;}
+  .module-body p{margin:0 0 12px;} .module-body p:last-child{margin-bottom:0;}
+  .why-box{background:#f6f8fa;border-left:3px solid var(--accent);padding:12px 16px;margin-bottom:16px;font-size:13.5px;}
+  .why-box b{color:var(--accent);}
+  .ticket{background:#fffbea;border:1px solid #e3d48a;border-left:4px solid #b89b2c;padding:14px 18px;margin:12px 0 16px;font-size:13.5px;}
+  .ticket .ticket-id{font-family:var(--mono);font-size:11px;color:#8a7420;margin-bottom:4px;font-weight:700;}
+  .ticket .ticket-from{font-size:12px;color:#6b5f2a;margin-bottom:8px;}
+  .subblock{margin-bottom:16px;} .subblock:last-child{margin-bottom:0;}
+  .subblock-label{font-family:var(--mono);font-size:11.5px;color:var(--accent);margin-bottom:6px;}
+  pre{margin:0 0 10px;padding:12px 14px;background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);font-size:12.5px;overflow-x:auto;line-height:1.6;}
+  pre:last-child{margin-bottom:0;}
+  .exercise{background:#f6f8fa;border:1px solid var(--line);border-left:3px solid var(--ok);padding:12px 14px;font-size:13.5px;margin-top:12px;}
+  .exercise b{color:var(--ok);}
+  .pitfall{background:var(--warn-soft);border-left:3px solid var(--warn);padding:12px 14px;font-size:13.5px;margin-top:12px;}
+  .pitfall b{color:var(--warn);}
+  table{display:block;overflow-x:auto;max-width:100%;} table thead,table tbody{display:table;width:100%;}
+  table.mini{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.mini th,table.mini td{border:1px solid var(--line);padding:6px 9px;text-align:left;}
+  table.mini th{background:#f6f8fa;font-family:var(--mono);font-size:10.5px;color:#4a5568;}
+  footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:#8a94a3;font-family:var(--mono);}
+  @media (max-width:700px){.wrap{padding:32px 16px 60px;} h1{font-size:21px;} nav.toc ol{columns:1;} pre{font-size:11.5px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="doc-id">TRACK-D / feature-tickets / rev.1</div>
+    <h1>Track D — เพิ่มฟีเจอร์แบบมีตั๋วงานจริง</h1>
+    <p class="subtitle">จำลอง requirement สั้นๆ แบบที่หัวหน้าสั่งงานจริง ให้ implement ในระบบที่มีอยู่แล้ว ไม่ใช่เริ่มจากศูนย์ ฝึก impact analysis (แก้ตรงนี้กระทบตรงไหนบ้าง) ก่อนลงมือแก้เสมอ</p>
+  </header>
+
+  <div class="overview-box">
+    <dl>
+      <dt>ก่อนเริ่ม</dt><dd>ต้องมีระบบ Order Management จาก Track A แล้ว จะใช้เป็น "ระบบเดิม" ที่ต้องเพิ่มฟีเจอร์เข้าไป</dd>
+      <dt>ระยะเวลา</dt><dd>2-3 สัปดาห์</dd>
+    </dl>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">สารบัญ</div>
+    <ol>
+      <li><a href="#m1">1. กระบวนการทำงานกับ Ticket จริง</a></li>
+      <li><a href="#m2">2. Ticket 1 — เพิ่ม Filter ตามสถานะออเดอร์</a></li>
+      <li><a href="#m3">3. Ticket 2 — Export เป็น Excel</a></li>
+      <li><a href="#m4">4. Ticket 3 — เพิ่มสถานะออเดอร์ (กระทบหลายจุด)</a></li>
+      <li><a href="#m5">5. Ticket 4 — Requirement กำกวม ต้องถามกลับ</a></li>
+      <li><a href="#m6">6. Ticket 5-8 — ฝึกเอง (ไม่มีเฉลย)</a></li>
+    </ol>
+  </nav>
+
+  <div class="module" id="m1">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 1</span><span class="module-title">กระบวนการทำงานกับ Ticket จริง</span></div><span class="module-duration">1 วัน</span></div>
+    <div class="module-body">
+      <div class="why-box"><b>ทำไมต้องมีกระบวนการ:</b> มือใหม่มักเห็น requirement แล้วเปิดโค้ดลงมือแก้ทันที ผลคือแก้ผิดที่ แก้ไม่ครบ หรือแก้แล้วกระทบส่วนอื่นโดยไม่รู้ตัว กระบวนการ 5 ขั้นนี้ป้องกันปัญหาพวกนั้นได้</div>
+      <div class="subblock">
+        <div class="subblock-label">5 ขั้นตอนก่อนแตะโค้ดทุกครั้ง</div>
+        <p><b>1. อ่าน requirement ซ้ำ 2 รอบ</b> รอบแรกอ่านให้จบ รอบสองขีดเส้นใต้คำที่กำกวม (เช่น "เร็วๆ นี้", "บางครั้ง", "ผู้ใช้ทั่วไป")</p>
+        <p><b>2. เขียน acceptance criteria ด้วยตัวเอง</b> ระบุเป็นข้อๆ ว่า "ต้องทำได้แบบไหนถึงเรียกว่าเสร็จ" (ทดสอบได้จริง ไม่ใช่คำกว้างๆ)</p>
+        <p><b>3. Impact analysis</b> ใช้ Shift+F12 (Find All References) หาว่าจะแก้อะไรบ้าง และมีใครเรียกใช้สิ่งที่จะแก้อยู่ ก่อนลงมือแก้</p>
+        <p><b>4. แก้เล็กที่สุดก่อน</b> เริ่มจาก thin slice ที่ทำงานได้ครบ flow เดียว (UI → DB) ก่อนเพิ่มรายละเอียดทีหลัง</p>
+        <p><b>5. ทดสอบตาม acceptance criteria ที่เขียนไว้</b> ไม่ใช่ทดสอบแค่ "ดูเหมือนทำงาน"</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="module" id="m2">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 2</span><span class="module-title">Ticket 1 — เพิ่ม Filter ตามสถานะออเดอร์</span></div><span class="module-duration">2 วัน</span></div>
+    <div class="module-body">
+      <div class="ticket">
+        <div class="ticket-id">TICKET #101</div>
+        <div class="ticket-from">จาก: หัวหน้าฝ่ายขาย</div>
+        "ขอฟิลเตอร์ในหน้ารายการออเดอร์ให้เลือกดูตามสถานะได้ (ทั้งหมด / รอชำระเงิน / ชำระแล้ว / ยกเลิก)"
+      </div>
+      <div class="subblock">
+        <div class="subblock-label">ขั้น 1-2 — วิเคราะห์ requirement</div>
+        <p><b>คำที่ต้องเช็ค:</b> "สถานะ" — ระบบปัจจุบันมี field Status ไหม? ถ้าไม่มี ต้องเพิ่มเข้าไปก่อนซึ่งกระทบ database (ต้อง migration)</p>
+        <p><b>Acceptance criteria ที่เขียนเอง:</b></p>
+        <p>✓ dropdown มี 4 ตัวเลือก (ทั้งหมด, รอชำระเงิน, ชำระแล้ว, ยกเลิก)<br>
+        ✓ เลือกแล้ว list กรองทันทีโดยไม่ reload หน้า<br>
+        ✓ ค่าเริ่มต้นคือ "ทั้งหมด" (เหมือนเดิมก่อนมี filter)<br>
+        ✓ ออเดอร์เดิมที่สร้างไว้ก่อนมี field Status ต้องแสดงในตัวเลือกที่เหมาะสม (ไม่หายไป)</p>
+      </div>
+      <div class="subblock">
+        <div class="subblock-label">ขั้น 3 — Impact analysis</div>
+        <p>ถ้าต้องเพิ่ม field Status ให้ Order: Shift+F12 ที่ class Order ดูว่ามีกี่ที่ที่ new Order() ซึ่งต้องกำหนด Status เริ่มต้นให้ด้วย จุดที่พลาดบ่อยคือลืมจุดสร้างออเดอร์ที่ซ่อนอยู่ในไฟล์ที่ไม่คาดคิด</p>
+      </div>
+      <div class="subblock">
+        <div class="subblock-label">ขั้น 4 — Implement (thin slice ก่อน)</div>
+        <pre>// Models/OrderStatus.cs (ใหม่)
+public enum OrderStatus { PendingPayment, Paid, Cancelled }
+
+// Models/Order.cs (แก้)
+public OrderStatus Status { get; set; } = OrderStatus.PendingPayment;</pre>
+        <pre>dotnet ef migrations add AddOrderStatus
+dotnet ef database update</pre>
+        <p><b>ประเด็นสำคัญ — ข้อมูลเดิม:</b> ค่า default <code>PendingPayment</code> ที่ตั้งไว้ใน C# จะไม่ถูกใส่ให้แถวเก่าที่มีอยู่แล้วในฐานข้อมูลโดยอัตโนมัติ (ต้องดูว่า migration ที่ generate ให้ตั้ง default value ให้ database ด้วยหรือไม่ ถ้าไม่ตั้ง แถวเก่าอาจได้ค่า 0 ซึ่งตรงกับ PendingPayment เผอิญพอดีเพราะ enum ตัวแรก = 0 แต่ถ้าเรียงลำดับ enum ผิดในอนาคต ข้อมูลเก่าจะกลายเป็นสถานะผิดโดยไม่มีใครรู้ตัว)</p>
+      </div>
+      <div class="pitfall"><b>ข้อควรจำ:</b> อย่าเปลี่ยนลำดับหรือแทรกค่าใน enum กลางๆ หลังจากมีข้อมูลจริงในฐานข้อมูลแล้ว เพราะ EF Core เก็บ enum เป็นตัวเลข (0, 1, 2...) การแทรกค่าตรงกลางทำให้ตัวเลขของค่าเดิมเปลี่ยน ข้อมูลเก่าทั้งหมดจะแสดงสถานะผิดทันที ถ้าจำเป็นต้องเพิ่มค่าใหม่ ให้เพิ่มต่อท้ายเสมอ</div>
+    </div>
+  </div>
+
+  <div class="module" id="m3">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 3</span><span class="module-title">Ticket 2 — Export เป็น Excel</span></div><span class="module-duration">2-3 วัน</span></div>
+    <div class="module-body">
+      <div class="ticket">
+        <div class="ticket-id">TICKET #102</div>
+        <div class="ticket-from">จาก: ฝ่ายบัญชี</div>
+        "ขอปุ่ม Export รายการออเดอร์ที่กรองอยู่เป็น Excel หน่อย เอาไปทำรายงานต่อ"
+      </div>
+      <div class="subblock">
+        <div class="subblock-label">วิเคราะห์ — คำที่ต้องจับสังเกต</div>
+        <p>"ที่กรองอยู่" — หมายถึง export เฉพาะข้อมูลที่กรองอยู่ตอนนี้ (ตามฟิลเตอร์จาก Ticket #101) ไม่ใช่ทั้งหมด ต้องส่งเงื่อนไขกรองไปด้วย ไม่ใช่ export ทุกแถวในตาราง</p>
+      </div>
+      <div class="subblock">
+        <div class="subblock-label">เตรียม package</div>
+        <pre>dotnet add package ClosedXML</pre>
+      </div>
+      <div class="subblock">
+        <div class="subblock-label">ทำเป็น Service แยก (ไม่ยัดใน component)</div>
+        <p><b>สร้างไฟล์ใหม่:</b> <code>Services/ExcelExportService.cs</code></p>
+        <pre>using ClosedXML.Excel;
+
+public class ExcelExportService
+{
+    public byte[] ExportOrders(IEnumerable&lt;Order&gt; orders)
+    {
+        using var workbook = new XLWorkbook();
+        var sheet = workbook.Worksheets.Add("Orders");
+
+        sheet.Cell(1, 1).Value = "เลขที่ออเดอร์";
+        sheet.Cell(1, 2).Value = "ลูกค้า";
+        sheet.Cell(1, 3).Value = "ยอดรวม";
+        sheet.Cell(1, 4).Value = "สถานะ";
+
+        int row = 2;
+        foreach (var o in orders)
+        {
+            sheet.Cell(row, 1).Value = o.Id;
+            sheet.Cell(row, 2).Value = o.Customer?.Name;
+            sheet.Cell(row, 3).Value = o.TotalAmount;
+            sheet.Cell(row, 4).Value = o.Status.ToString();
+            row++;
+        }
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return stream.ToArray();
+    }
+}</pre>
+        <p>ทำไมแยกเป็น Service: ถ้าฝ่ายอื่นขอ export ตารางอื่นในอนาคต (เช่น รายการสินค้า) จะได้ใช้ pattern เดียวกันซ้ำได้ ไม่ต้องเขียนใหม่ทุกครั้ง และทดสอบแยกจาก UI ได้ง่าย</p>
+      </div>
+      <div class="subblock">
+        <div class="subblock-label">ดาวน์โหลดไฟล์ใน Blazor — ต้องพึ่ง JS Interop</div>
+        <p><b>สร้างไฟล์ใหม่:</b> <code>wwwroot/js/download.js</code></p>
+        <pre>window.downloadFile = (fileName, base64) =&gt; {
+    const link = document.createElement('a');
+    link.download = fileName;
+    link.href = 'data:application/octet-stream;base64,' + base64;
+    link.click();
+};</pre>
+        <pre>private async Task ExportAsync()
+{
+    var bytes = ExportService.ExportOrders(FilteredOrders);
+    await JS.InvokeVoidAsync("downloadFile", "orders.xlsx", Convert.ToBase64String(bytes));
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="module" id="m4">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 4</span><span class="module-title">Ticket 3 — เพิ่มสถานะออเดอร์ (กระทบหลายจุด)</span></div><span class="module-duration">3 วัน</span></div>
+    <div class="module-body">
+      <div class="ticket">
+        <div class="ticket-id">TICKET #103</div>
+        <div class="ticket-from">จาก: ฝ่ายคลังสินค้า</div>
+        "อยากได้สถานะ 'จัดส่งแล้ว' เพิ่มเข้ามา และตอนกดจัดส่ง ให้ระบบตัดสต๊อกสินค้าจริงตอนนั้นเลย (ไม่ใช่ตอนสั่งซื้อ)"
+      </div>
+      <div class="why-box"><b>ทำไม ticket นี้ยากกว่าสองอันแรก:</b> ไม่ใช่แค่เพิ่ม enum อีกค่า แต่เปลี่ยน "จุดตัดสต๊อก" จากตอนสร้างออเดอร์ (ที่ทำไว้ใน Track A Module 4) ไปเป็นตอนจัดส่ง ซึ่งกระทบ business logic เดิมโดยตรง</div>
+      <div class="subblock">
+        <div class="subblock-label">Impact analysis ที่ต้องทำก่อนแก้</div>
+        <p><b>1.</b> หาจุดที่ตัดสต๊อกอยู่ตอนนี้ (Shift+F12 ที่ <code>StockQuantity</code>) → เจอใน Transaction ของ Track A Module 4</p>
+        <p><b>2.</b> ตัดสินใจ: ย้ายไปตัดตอนจัดส่ง แล้วตอนสร้างออเดอร์ควรทำอะไรแทน? (จอง/reserve สต๊อกไว้ก่อนไหม หรือปล่อยสั่งซื้อได้ไม่จำกัดจนกว่าจะตัดจริง?) — ต้องถามฝ่ายคลังกลับ เพราะ requirement ไม่ได้บอกชัด</p>
+        <p><b>3.</b> ออเดอร์ที่ถูกสร้างไว้แล้วก่อนเปลี่ยน logic (สต๊อกถูกตัดไปแล้วตอนสั่ง) จะเกิดอะไรขึ้นถ้ากดจัดส่งแล้วตัดสต๊อกซ้ำอีกรอบ? = ตัดซ้ำสองเท่า ต้องมีแผนจัดการข้อมูลเดิมนี้</p>
+      </div>
+      <div class="pitfall"><b>บทเรียนสำคัญ:</b> การเปลี่ยน business rule ที่ฝังอยู่ในระบบมาแล้ว มักมี "ข้อมูลเก่าที่ทำตามกฎเดิม" ซ่อนอยู่เสมอ ต้องคิดเรื่อง data migration หรือ backward compatibility ก่อนลงมือแก้เสมอ ไม่ใช่แค่แก้ logic ใหม่แล้วจบ</div>
+    </div>
+  </div>
+
+  <div class="module" id="m5">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 5</span><span class="module-title">Ticket 4 — Requirement กำกวม ต้องถามกลับ</span></div><span class="module-duration">1 วัน</span></div>
+    <div class="module-body">
+      <div class="ticket">
+        <div class="ticket-id">TICKET #104</div>
+        <div class="ticket-from">จาก: ผู้จัดการ</div>
+        "ทำให้ระบบเร็วขึ้นหน่อย ตอนนี้ช้า"
+      </div>
+      <div class="why-box"><b>ทักษะที่สำคัญมาก:</b> requirement แบบนี้มีอยู่จริงในงานทุกที่ ห้ามเริ่มแก้โค้ดทันที ต้องถามกลับให้ได้ข้อมูลที่ทำงานต่อได้ก่อน</div>
+      <div class="subblock">
+        <div class="subblock-label">คำถามที่ควรถามกลับ (ตัวอย่าง)</div>
+        <p><b>1.</b> "ช้า" ตรงหน้าไหน/ฟังก์ชันไหนเป็นหลัก? (หน้าเปิดช้า, กดบันทึกช้า, export ช้า?)</p>
+        <p><b>2.</b> ช้าตลอดเวลา หรือช้าเฉพาะบางช่วง/บางข้อมูล? (เช่น เฉพาะตอนมีออเดอร์เยอะเกิน 1000 รายการ)</p>
+        <p><b>3.</b> "เร็วพอ" คือกี่วินาที? (ต้องมีตัวเลขเป้าหมาย ไม่งั้นไม่รู้ว่าเมื่อไหร่ถึงจะเสร็จ)</p>
+        <p><b>4.</b> เริ่มช้าตั้งแต่เมื่อไหร่? (ถ้าเพิ่งช้าลงหลังจากมีอะไรเปลี่ยนแปลง มักบอกสาเหตุได้ทันที)</p>
+      </div>
+      <div class="exercise"><b>ลองทำ:</b> เขียนคำถามกลับสำหรับ requirement กำกวมอื่นๆ เช่น "ขอหน้าตาให้ทันสมัยขึ้น" หรือ "อยากได้รายงานที่ดูง่ายกว่านี้" ฝึกแปลง requirement กำกวมให้เป็นคำถามที่ตอบได้ชัดเจน</div>
+    </div>
+  </div>
+
+  <div class="module" id="m6">
+    <div class="module-head"><div class="module-head-left"><span class="module-num">MODULE 6</span><span class="module-title">Ticket 5-8 — ฝึกเอง (ไม่มีเฉลย)</span></div><span class="module-duration">1-2 สัปดาห์</span></div>
+    <div class="module-body">
+      <p>ทำแต่ละ ticket ให้ครบกระบวนการ 5 ขั้นจาก Module 1 (ไม่ข้ามขั้นวิเคราะห์) เขียนบันทึกสั้นๆ ของตัวเองว่า "impact analysis เจออะไรบ้าง" ก่อนลงมือแก้ทุกครั้ง:</p>
+      <table class="mini">
+        <tr><th>Ticket</th><th>Requirement</th><th>จุดที่ควรระวัง</th></tr>
+        <tr><td>#105</td><td>"ให้ลูกค้าแต่ละคนมีส่วนลดประจำตัว (%) ที่ใช้อัตโนมัติตอนสั่งซื้อ"</td><td>ส่วนลดควรเก็บใน OrderItem ด้วยไหม (เหมือน PriceAtOrderTime)? ถ้าลูกค้าเปลี่ยนส่วนลดทีหลัง ออเดอร์เก่าจะกระทบไหม?</td></tr>
+        <tr><td>#106</td><td>"ขอรายงานสรุปยอดขายรายวัน ส่งเข้าอีเมลทุกเช้า"</td><td>ต้องมี background job (ไม่ใช่ request จากผู้ใช้) — จะรันที่ไหน? ถ้า server restart ระหว่างส่งจะเกิดอะไรขึ้น?</td></tr>
+        <tr><td>#107</td><td>"ห้ามแก้ไขออเดอร์หลังจัดส่งแล้ว"</td><td>ต้องเช็คทั้งฝั่ง UI (ซ่อนปุ่ม) และ backend (ป้องกัน request ตรงๆ) — ทำแค่ฝั่งเดียวไม่พอ</td></tr>
+        <tr><td>#108</td><td>"เก็บประวัติว่าใครแก้ไขออเดอร์อะไรเมื่อไหร่ (audit log)"</td><td>ต้องแตะทุกจุดที่มีการแก้ไขออเดอร์ (Shift+F12 หาให้ครบ) อย่าลืมจุดที่ซ่อนอยู่ในไฟล์ที่ไม่คาดคิด</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <footer>Track D ฝึกจนกลายเป็นนิสัย — "คิดก่อนแก้เสมอ" ทักษะนี้แยกคนที่เขียนโค้ดได้ ออกจากคนที่ทำงานร่วมกับระบบจริงในทีมได้</footer>
+</div>
+</body>
+</html>
