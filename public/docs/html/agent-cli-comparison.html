@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เปรียบเทียบ Agent CLI</title>
+<style>
+  /*
+    Design notes (why, not what):
+    - Single file with embedded CSS and no external fonts or scripts, so it opens offline
+      and nothing breaks if a CDN disappears.
+    - Colours are CSS variables with a prefers-color-scheme override, so one file reads
+      well on a phone at night and on a desktop in daylight.
+    - Status is carried by text labels ("ยังไม่ยืนยัน"), not by colour alone, so it stays
+      readable for colour-blind readers and in grayscale prints.
+  */
+  :root {
+    --bg: #ffffff; --fg: #1b1f24; --muted: #5b6570; --line: #d9dee4;
+    --accent: #0b5fff; --card: #f6f8fa; --code-bg: #eef1f4;
+    --warn-bg: #fff4d6; --warn-fg: #6b4a00; --warn-line: #e6c36a;
+    --note-bg: #e8f1ff; --note-fg: #0a3a8a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11151a; --fg: #e6e9ed; --muted: #9aa5b1; --line: #2b333c;
+      --accent: #6ea2ff; --card: #1a2027; --code-bg: #232b34;
+      --warn-bg: #3a2f12; --warn-fg: #f2d78b; --warn-line: #7a6221;
+      --note-bg: #14263f; --note-fg: #a9c8ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 56px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", "Sarabun", sans-serif;
+    line-height: 1.65; font-size: 16px;
+  }
+  /* Phone-first gutter of 16px; widens on desktop without changing the reading width. */
+  main { max-width: 1100px; margin: 0 auto; padding: 0 16px 64px; }
+  header.top { padding: 28px 0 8px; }
+  h1 { font-size: 1.7rem; margin: 0 0 6px; line-height: 1.3; }
+  h2 { font-size: 1.3rem; margin: 40px 0 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+  h3 { font-size: 1.05rem; margin: 20px 0 6px; }
+  p { margin: 8px 0; }
+  .sub { color: var(--muted); margin: 0; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.88em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px;
+    word-break: break-word;
+  }
+  pre {
+    background: var(--code-bg); padding: 12px 14px; border-radius: 8px; overflow-x: auto;
+    font-size: 0.88rem; line-height: 1.5;
+  }
+  pre code { background: none; padding: 0; }
+
+  /* Sticky nav: the page is long, and jumping between comparison sections is the main use. */
+  nav.toc {
+    position: sticky; top: 0; z-index: 10; background: var(--bg);
+    border-bottom: 1px solid var(--line); margin: 0 -16px; padding: 8px 16px;
+    display: flex; gap: 14px; overflow-x: auto; white-space: nowrap; font-size: 0.92rem;
+  }
+  nav.toc a { color: var(--accent); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+
+  .box { border-radius: 8px; padding: 12px 14px; margin: 14px 0; border: 1px solid var(--line); background: var(--card); }
+  .box.warn { background: var(--warn-bg); color: var(--warn-fg); border-color: var(--warn-line); }
+  .box.note { background: var(--note-bg); color: var(--note-fg); border-color: transparent; }
+  .box strong.t { display: block; margin-bottom: 2px; }
+  .box ul { margin: 6px 0 0; padding-left: 20px; }
+
+  .b {
+    display: inline-block; font-size: 0.72rem; padding: 0 6px; border-radius: 10px;
+    border: 1px solid var(--warn-line); background: var(--warn-bg); color: var(--warn-fg);
+    vertical-align: middle; white-space: nowrap; margin-left: 4px;
+  }
+
+  /* Tables: wrapped in a scroller because five vendor columns cannot fit a phone;
+     the first column is sticky so the row label stays visible while scrolling sideways. */
+  .wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 880px; font-size: 0.9rem; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 11px; border-bottom: 1px solid var(--line); }
+  thead th { background: var(--card); position: sticky; top: 0; }
+  tbody tr:last-child td, tbody tr:last-child th { border-bottom: none; }
+  tbody th { background: var(--card); font-weight: 600; min-width: 130px; position: sticky; left: 0; }
+  td ul { margin: 0; padding-left: 16px; }
+  td li { margin: 2px 0; }
+
+  details { border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; background: var(--bg); }
+  summary { cursor: pointer; padding: 11px 14px; font-weight: 600; }
+  details[open] summary { border-bottom: 1px solid var(--line); }
+  details .in { padding: 4px 14px 12px; }
+  .cols { display: grid; grid-template-columns: 1fr; gap: 0 24px; }
+  @media (min-width: 760px) { .cols { grid-template-columns: 1fr 1fr; } }
+  ol.steps li { margin: 8px 0; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<main>
+
+<header class="top">
+  <h1>เปรียบเทียบ Agent CLI: Claude Code, Codex CLI, Gemini CLI, Copilot CLI, Aider</h1>
+  <p class="sub">ข้อมูลตรวจจากเอกสารทางการของแต่ละค่าย ณ วันที่ 13 ตุลาคม 2026</p>
+</header>
+
+<nav class="toc" aria-label="สารบัญ">
+  <a href="#start">เริ่มใช้</a>
+  <a href="#overview">ภาพรวม</a>
+  <a href="#tasks">เทียบตามงาน</a>
+  <a href="#slash">Slash commands</a>
+  <a href="#config">ไฟล์คอนฟิก</a>
+  <a href="#security">Permission</a>
+  <a href="#extend">MCP / Hooks</a>
+  <a href="#vendors">รายค่าย</a>
+  <a href="#choose">เลือกใช้</a>
+  <a href="#caveats">ข้อควรระวัง</a>
+</nav>
+
+<div class="box warn" role="note">
+  <strong class="t">อ่านก่อน: สถานะของ Gemini CLI</strong>
+  หน้าเอกสารทางการของ Gemini CLI ระบุว่า Google แทนที่ด้วย Antigravity CLI สำหรับผู้ใช้ฟรีและ Google One
+  ตั้งแต่ 18 มิถุนายน 2026 เอกสารไม่ได้บอกว่าแผนจ่ายเงิน (Google AI Pro/Ultra, Code Assist, API, Vertex)
+  ยังใช้ Gemini CLI ได้หรือไม่ และตัวเลขโควตาฟรีใน README ขัดกับประกาศนี้ ควรตรวจสถานะปัจจุบันก่อนเลือกใช้
+</div>
+
+<div class="box note">
+  <strong class="t">วิธีอ่านป้ายสถานะ</strong>
+  เซลล์ที่ไม่มีป้ายคือข้อมูลที่ยืนยันจากเอกสารทางการ ส่วนป้าย <span class="b">ยังไม่ยืนยัน</span>
+  หมายถึงไม่พบในเอกสารที่อ่านหรือเอกสารขัดกันเอง ผมเลือกระบุช่องว่างตรง ๆ แทนการเดาให้ดูครบ
+  เพราะ CLI กลุ่มนี้เปลี่ยน flag และชื่อคำสั่งบ่อย
+</div>
+
+<!-- ============ START ============ -->
+<h2 id="start">ลำดับเริ่มต้นที่แนะนำ (ใช้ได้กับทุกค่าย)</h2>
+<p>ลำดับนี้เป็นข้อเสนอของผมเอง ไม่ได้มาจากเอกสารค่ายใดค่ายหนึ่ง แต่ละขั้นมีเหตุผลกำกับ</p>
+<ol class="steps">
+  <li><strong>เริ่มในโฟลเดอร์ของโปรเจกต์ที่อยู่ใน git และ commit งานค้างก่อน</strong>
+    เพราะ agent แก้ไฟล์ได้จริง การมี commit ล่าสุดทำให้ย้อนกลับด้วย <code>git diff</code> หรือ <code>git restore</code> ได้เสมอ
+    (Codex <code>exec</code> บังคับให้อยู่ใน git repo ด้วย)</li>
+  <li><strong>สร้างไฟล์คำสั่งประจำโปรเจกต์ด้วย <code>/init</code></strong>
+    เพื่อให้ agent รู้โครงสร้างและกติกา (build, test, สไตล์โค้ด) โดยไม่ต้องอธิบายซ้ำทุกครั้ง
+    แล้วแก้ไขไฟล์ที่ได้ด้วยมือ เพราะไฟล์ที่ agent สร้างให้มักกว้างเกินจำเป็น</li>
+  <li><strong>ใช้โหมดวางแผน (plan) กับงานที่ไม่ชัดเจน</strong>
+    โหมดนี้อ่านอย่างเดียว ไม่แก้ไฟล์ ได้อ่านแผนก่อนลงมือ ถูกกว่าการแก้ไขผิดทิศแล้วต้องย้อน</li>
+  <li><strong>เปิดการอนุมัติแบบถามทุกครั้งในช่วงแรก</strong>
+    ค่อยอนุญาตเฉพาะคำสั่งที่ปลอดภัยและใช้ซ้ำบ่อย (เช่น รัน test) ผ่านกฎ allow ของแต่ละเครื่องมือ
+    หลีกเลี่ยงโหมดข้ามการอนุมัติทั้งหมดนอกสภาพแวดล้อมที่แยกจากเครื่องจริง</li>
+  <li><strong>ตรวจ diff ก่อน commit เสมอ</strong>
+    agent ทำงานเร็วแต่ผิดได้ ผู้ตรวจสุดท้ายคือคุณ ใช้ <code>/review</code> หรือ <code>/diff</code> เป็นตัวช่วยอ่าน ไม่ใช่ตัวแทนการอ่าน</li>
+</ol>
+
+<!-- ============ OVERVIEW ============ -->
+<h2 id="overview">1. ภาพรวม</h2>
+<div class="wrap">
+<table>
+  <thead>
+    <tr><th></th><th>Claude Code</th><th>Codex CLI</th><th>Gemini CLI</th><th>GitHub Copilot CLI</th><th>Aider</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>ผู้พัฒนา</th><td>Anthropic</td><td>OpenAI</td><td>Google</td><td>GitHub</td><td>Aider-AI (ชุมชนโอเพนซอร์ส)</td></tr>
+    <tr><th>คำสั่งเรียก</th><td><code>claude</code></td><td><code>codex</code></td><td><code>gemini</code></td><td><code>copilot</code></td><td><code>aider</code></td></tr>
+    <tr><th>ซอร์ส / ไลเซนส์</th>
+      <td>ไม่ได้ตรวจในรอบนี้ <span class="b">ยังไม่ยืนยัน</span></td>
+      <td>โอเพนซอร์ส Apache-2.0</td>
+      <td>โอเพนซอร์ส</td>
+      <td>ไม่ได้ตรวจในรอบนี้ <span class="b">ยังไม่ยืนยัน</span></td>
+      <td>โอเพนซอร์ส Apache-2.0</td></tr>
+    <tr><th>ติดตั้ง</th>
+      <td><ul>
+        <li><code>curl -fsSL https://claude.ai/install.sh | bash</code> (macOS/Linux/WSL)</li>
+        <li><code>irm https://claude.ai/install.ps1 | iex</code> (Windows PowerShell)</li>
+        <li><code>brew install --cask claude-code</code></li>
+        <li><code>npm install -g @anthropic-ai/claude-code</code> (Node.js 22+)</li>
+      </ul></td>
+      <td><ul>
+        <li><code>curl -fsSL https://chatgpt.com/codex/install.sh | sh</code></li>
+        <li><code>npm install -g @openai/codex</code></li>
+        <li><code>brew install --cask codex</code></li>
+        <li>อัปเดตด้วย <code>codex update</code></li>
+      </ul></td>
+      <td><ul>
+        <li><code>npm install -g @google/gemini-cli</code> (Node.js 20+)</li>
+        <li><code>npx @google/gemini-cli</code> (ลองโดยไม่ติดตั้ง)</li>
+        <li><code>brew install gemini-cli</code></li>
+      </ul></td>
+      <td><ul>
+        <li><code>npm install -g @github/copilot</code> (Node.js 22+)</li>
+        <li><code>winget install GitHub.Copilot</code></li>
+        <li><code>curl -fsSL https://gh.io/copilot-install | bash</code></li>
+      </ul></td>
+      <td><ul>
+        <li><code>python -m pip install aider-install</code> แล้วรัน <code>aider-install</code></li>
+        <li><code>curl -LsSf https://aider.chat/install.sh | sh</code></li>
+        <li><code>pipx install aider-chat</code></li>
+      </ul></td></tr>
+    <tr><th>การยืนยันตัวตน</th>
+      <td>บัญชี Claude Pro/Max/Team/Enterprise หรือ Console ผ่าน <code>/login</code> หรือ <code>ANTHROPIC_API_KEY</code> แผนฟรีของ claude.ai ไม่รวม Claude Code</td>
+      <td>Sign in with ChatGPT (ตามแผนสมาชิก) หรือ API key (คิดตามการใช้งาน)</td>
+      <td>Google login, <code>GEMINI_API_KEY</code>, หรือ Vertex AI (ดูกล่องเตือนด้านบน)</td>
+      <td><code>copilot login</code> หรือ PAT ที่มีสิทธิ์ "Copilot Requests" ต้องมีสมาชิก Copilot</td>
+      <td>API key ของผู้ให้บริการโมเดลแต่ละราย (<code>--api-key provider=key</code> หรือ <code>.env</code>)</td></tr>
+    <tr><th>โมเดลที่ใช้ได้</th>
+      <td>โมเดล Claude ผ่าน Anthropic API, Amazon Bedrock, Google Vertex AI, Microsoft Foundry</td>
+      <td>โมเดล OpenAI และโมเดลในเครื่องผ่าน <code>--oss</code> (Ollama, LM Studio) ผู้ให้บริการอื่นต้องรองรับ Responses API</td>
+      <td>โมเดล Gemini เท่านั้น</td>
+      <td>หลายค่าย (Claude, GPT, Gemini ฯลฯ) ขึ้นกับแผนและนโยบายองค์กร หรือใช้ผู้ให้บริการของตัวเองผ่าน env var</td>
+      <td>รองรับโมเดลส่วนใหญ่ รวม OpenRouter และโมเดลในเครื่อง (Ollama, เซิร์ฟเวอร์ที่เข้ากันได้กับ OpenAI)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============ TASKS ============ -->
+<h2 id="tasks">2. เทียบตามงานที่ต้องทำ</h2>
+<p>ตารางนี้จัดตามงานแทนจัดตามค่าย เพื่อให้เห็นทันทีว่า "งานเดียวกัน ใช้คำสั่งอะไร"</p>
+<div class="wrap">
+<table>
+  <thead>
+    <tr><th>งาน</th><th>Claude Code</th><th>Codex CLI</th><th>Gemini CLI</th><th>Copilot CLI</th><th>Aider</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>เริ่มแบบโต้ตอบ</th>
+      <td><code>claude</code><br><code>claude "query"</code></td>
+      <td><code>codex</code><br><code>codex "PROMPT"</code></td>
+      <td><code>gemini</code><br><code>gemini "query"</code></td>
+      <td><code>copilot</code><br><code>-i "PROMPT"</code> เริ่มแล้วรัน prompt แรก</td>
+      <td><code>aider [files]</code></td></tr>
+    <tr><th>รันครั้งเดียวแล้วจบ</th>
+      <td><code>claude -p "query"</code><br>ส่งข้อมูลผ่าน pipe ได้</td>
+      <td><code>codex exec "..."</code> (alias <code>e</code>)<br>ค่าเริ่มต้น read-only และต้องอยู่ใน git repo</td>
+      <td><code>gemini -p "prompt"</code></td>
+      <td><code>copilot -p "..."</code><br><code>-s</code> แสดงเฉพาะคำตอบ</td>
+      <td><code>aider --message "..." file</code><br><code>--message-file</code> อ่านจากไฟล์</td></tr>
+    <tr><th>ทำงานต่อจากเดิม</th>
+      <td><code>-c</code> / <code>--continue</code><br><code>-r [id|name]</code></td>
+      <td><code>codex resume [ID]</code><br><code>codex exec resume --last</code></td>
+      <td><code>-r latest</code> หรือระบุเลขลำดับ<br><code>--list-sessions</code></td>
+      <td><code>--continue</code> (ล่าสุด)<br><code>-r [ID|name]</code></td>
+      <td>ไม่พบในเอกสารที่อ่าน <span class="b">ยังไม่ยืนยัน</span></td></tr>
+    <tr><th>เลือกโมเดล</th>
+      <td><code>--model</code> (เช่น <code>sonnet</code>, <code>opus</code>)<br><code>--effort low..max</code></td>
+      <td><code>-m</code> / <code>--model</code></td>
+      <td><code>-m</code> / <code>--model</code> (<code>auto</code>, <code>pro</code>, <code>flash</code>)</td>
+      <td><code>--model=MODEL</code> (<code>auto</code> ให้ระบบเลือก)<br><code>--effort</code></td>
+      <td><code>--model</code><br><code>--architect</code> ใช้สองโมเดล</td></tr>
+    <tr><th>โหมดอนุมัติ</th>
+      <td><code>--permission-mode</code><br>default, acceptEdits, plan, auto, dontAsk, bypassPermissions</td>
+      <td><code>-a</code> on-request | never<br><code>-s</code> read-only | workspace-write | danger-full-access</td>
+      <td><code>--approval-mode</code><br>default, auto_edit, plan, yolo</td>
+      <td><code>/permissions</code> default | assisted | allow-all<br><code>--mode</code> interactive | plan | autopilot</td>
+      <td>ไม่มีระบบ permission ถามยืนยันเป็นครั้ง ๆ<br><code>--yes-always</code> ยืนยันอัตโนมัติ</td></tr>
+    <tr><th>ข้ามการอนุมัติทั้งหมด (อันตราย)</th>
+      <td><code>--dangerously-skip-permissions</code></td>
+      <td><code>--yolo</code> (เหมือน <code>--dangerously-bypass-approvals-and-sandbox</code>)</td>
+      <td><code>--approval-mode yolo</code> (flag <code>-y</code>/<code>--yolo</code> ถูกประกาศเลิกใช้)</td>
+      <td><code>--allow-all</code> / <code>--yolo</code></td>
+      <td><code>--yes-always</code> (ตอบ yes ให้ ไม่ได้เปิดสิทธิ์เพิ่ม)</td></tr>
+    <tr><th>เพิ่มโฟลเดอร์ที่เข้าถึงได้</th>
+      <td><code>--add-dir</code></td>
+      <td><code>--add-dir</code></td>
+      <td><code>--include-directories</code></td>
+      <td><code>--add-dir PATH</code> หรือ <code>/add-dir</code></td>
+      <td>เพิ่มไฟล์ด้วย <code>/add</code> หรือ <code>--file</code> (รายไฟล์)</td></tr>
+    <tr><th>ผลลัพธ์แบบ JSON</th>
+      <td><code>--output-format json|stream-json</code><br><code>--json-schema</code></td>
+      <td><code>codex exec --json</code> (JSONL)<br><code>--output-schema</code></td>
+      <td><code>-o json|stream-json</code></td>
+      <td><code>--output-format=json</code> (JSONL)</td>
+      <td>ไม่พบในเอกสารที่อ่าน <span class="b">ยังไม่ยืนยัน</span></td></tr>
+  </tbody>
+</table>
+</div>
+<p>ข้อสังเกต: <code>--yolo</code> ของ Gemini ถูกประกาศเลิกใช้ และ <code>--yes-always</code> ของ Aider
+ไม่เท่ากับการข้ามสิทธิ์ เพราะ Aider ไม่มีระบบสิทธิ์ให้ข้ามตั้งแต่แรก</p>
+
+<!-- ============ SLASH ============ -->
+<h2 id="slash">3. Slash commands ที่เทียบกันได้</h2>
+<div class="wrap">
+<table>
+  <thead>
+    <tr><th>หน้าที่</th><th>Claude Code</th><th>Codex CLI</th><th>Gemini CLI</th><th>Copilot CLI</th><th>Aider</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>สร้างไฟล์คำสั่งโปรเจกต์</th><td><code>/init</code></td><td><code>/init</code></td><td><code>/init</code></td><td><code>/init</code></td><td>ไม่มี เขียน <code>CONVENTIONS.md</code> เอง</td></tr>
+    <tr><th>ย่อ context</th><td><code>/compact</code></td><td><code>/compact</code></td><td><code>/compress</code></td><td><code>/compact</code></td><td>ไม่พบ มี <code>/clear</code> และ <code>/reset</code> (ล้าง ไม่ใช่สรุป)</td></tr>
+    <tr><th>ล้างบทสนทนา</th><td><code>/clear</code></td><td><code>/new</code> (เริ่มแชตใหม่)</td><td><code>/clear</code></td><td><code>/clear</code></td><td><code>/clear</code></td></tr>
+    <tr><th>สลับโมเดล</th><td><code>/model</code></td><td><code>/model</code></td><td><code>/model</code></td><td><code>/model</code></td><td><code>/model</code>, <code>/editor-model</code>, <code>/weak-model</code></td></tr>
+    <tr><th>จัดการ MCP</th><td><code>/mcp</code></td><td><code>/mcp</code> (แสดงเซิร์ฟเวอร์ที่เชื่อมอยู่)</td><td><code>/mcp</code></td><td><code>/mcp</code></td><td>ไม่มี</td></tr>
+    <tr><th>โหมดวางแผน</th><td>ไม่พบ slash แยก ใช้ <code>--permission-mode plan</code> หรือ Shift+Tab <span class="b">ยังไม่ยืนยัน</span></td><td><code>/plan</code></td><td><code>/plan</code></td><td><code>/plan</code></td><td><code>/architect</code>, <code>/ask</code></td></tr>
+    <tr><th>รีวิวโค้ด</th><td><code>/review</code>, <code>/security-review</code>, <code>/diff</code></td><td><code>/review</code> (และ <code>codex review</code>)</td><td>ไม่พบในรายการที่อ่าน <span class="b">ยังไม่ยืนยัน</span></td><td><code>/review</code>, <code>/security-review</code>, <code>/diff</code></td><td><code>/diff</code></td></tr>
+    <tr><th>กลับไปทำต่อ</th><td><code>/resume</code></td><td>ใช้ <code>codex resume</code> (slash ไม่ยืนยัน)</td><td><code>/resume</code>, <code>/chat</code></td><td><code>/resume</code></td><td>ไม่พบ</td></tr>
+    <tr><th>ย้อนการเปลี่ยนแปลง</th><td><code>/rewind</code></td><td>ไม่พบในรายการที่อ่าน <span class="b">ยังไม่ยืนยัน</span></td><td><code>/rewind</code>, <code>/restore</code></td><td><code>/undo</code>, <code>/rewind</code></td><td><code>/undo</code> (ย้อน commit ล่าสุดของ aider)</td></tr>
+    <tr><th>ดูการใช้งาน</th><td><code>/cost</code>, <code>/usage</code>, <code>/stats</code></td><td><code>/status</code>, <code>/usage</code></td><td><code>/stats</code></td><td><code>/usage</code></td><td><code>/tokens</code></td></tr>
+    <tr><th>จัดการสิทธิ์</th><td><code>/permissions</code></td><td>เอกสารอ้างถึง <code>/permissions</code> แต่ไม่อยู่ในตารางที่อ่าน <span class="b">ยังไม่ยืนยัน</span></td><td><code>/permissions</code> (ความเชื่อถือโฟลเดอร์), <code>/policies</code></td><td><code>/permissions</code></td><td>ไม่มี</td></tr>
+    <tr><th>Hooks / agents / skills</th><td><code>/hooks</code>, <code>/agents</code>, <code>/skills</code></td><td><code>/hooks</code> (ตรวจและเชื่อถือ hooks)</td><td><code>/hooks</code>, <code>/agents</code>, <code>/skills</code></td><td><code>/agent</code>, <code>/skills</code>, <code>/plugin</code></td><td>ไม่มี</td></tr>
+  </tbody>
+</table>
+</div>
+<p>หมายเหตุ Codex: หน้า slash commands ของเอกสารปนคำสั่งของแอปกับ CLI เข้าด้วยกัน
+จึงยืนยันไม่ได้ว่า CLI รองรับทุกคำสั่งที่ลิสต์ไว้ ให้พิมพ์ <code>/</code> ใน TUI เพื่อดูรายการจริงของเวอร์ชันที่ติดตั้ง</p>
+
+<!-- ============ CONFIG ============ -->
+<h2 id="config">4. ไฟล์คอนฟิกและไฟล์คำสั่งประจำโปรเจกต์</h2>
+<div class="wrap">
+<table>
+  <thead>
+    <tr><th></th><th>Claude Code</th><th>Codex CLI</th><th>Gemini CLI</th><th>Copilot CLI</th><th>Aider</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>ไฟล์คำสั่งโปรเจกต์</th>
+      <td><code>CLAUDE.md</code> หรือ <code>.claude/CLAUDE.md</code><br>ส่วนตัว: <code>CLAUDE.local.md</code><br>ทั้งผู้ใช้: <code>~/.claude/CLAUDE.md</code></td>
+      <td><code>AGENTS.md</code> (จากราก repo ลงมาถึงโฟลเดอร์ปัจจุบัน ไฟล์ใกล้สุดมีผลมากสุด)<br><code>AGENTS.override.md</code> ชนะ<br>เพดานรวม 32 KiB เป็นค่าเริ่มต้น</td>
+      <td><code>GEMINI.md</code> (ใน <code>~/.gemini/</code>, โฟลเดอร์ทำงานและโฟลเดอร์แม่)<br>รองรับ <code>@file.md</code> import<br>เปลี่ยนชื่อไฟล์ได้ด้วย <code>context.fileName</code></td>
+      <td><code>.github/copilot-instructions.md</code><br><code>.github/instructions/**/*.instructions.md</code><br><code>AGENTS.md</code></td>
+      <td>ไฟล์ markdown ใดก็ได้ เช่น <code>CONVENTIONS.md</code> โหลดด้วย <code>--read</code> หรือ <code>read:</code> ใน config</td></tr>
+    <tr><th>คอนฟิกผู้ใช้ / โปรเจกต์</th>
+      <td>ใน settings ของ Claude Code ชื่อและตำแหน่งไฟล์ไม่ได้ยืนยันในรอบนี้ <span class="b">ยังไม่ยืนยัน</span></td>
+      <td><code>~/.codex/config.toml</code><br><code>.codex/config.toml</code> (เฉพาะโปรเจกต์ที่เชื่อถือ)<br><code>/etc/codex/config.toml</code></td>
+      <td><code>~/.gemini/settings.json</code><br><code>.gemini/settings.json</code><br><code>/etc/gemini-cli/settings.json</code></td>
+      <td><code>~/.copilot/settings.json</code> (เปลี่ยนด้วย <code>COPILOT_HOME</code>)<br><code>.github/copilot/settings.json</code><br><code>settings.local.json</code></td>
+      <td><code>.aider.conf.yml</code> (home หรือราก repo)<br><code>.env</code> ตัวแปร <code>AIDER_*</code><br><code>.aiderignore</code></td></tr>
+    <tr><th>คำสั่งกำหนดเอง / skills</th>
+      <td>Skills: <code>.claude/skills/&lt;name&gt;/SKILL.md</code> เรียกด้วย <code>/name</code><br>โฟลเดอร์ <code>.claude/commands/</code> ถูกรวมเข้ากับ skills แล้ว</td>
+      <td>Skills: <code>SKILL.md</code> ใน <code>~/.agents/skills</code> หรือ <code>&lt;repo&gt;/.agents/skills</code><br>custom prompts: ไม่พบในเอกสารปัจจุบัน <span class="b">ยังไม่ยืนยัน</span></td>
+      <td>ไฟล์ TOML ใน <code>~/.gemini/commands/</code> หรือ <code>.gemini/commands/</code><br><code>git/commit.toml</code> กลายเป็น <code>/git:commit</code><br>ใช้ <code>{{args}}</code>, <code>!{shell}</code>, <code>@{file}</code></td>
+      <td>Skills ใน <code>.github/skills</code><br>custom agents ใน <code>.github/agents</code><br>ไฟล์ <code>.prompt.md</code>: ไม่พบ <span class="b">ยังไม่ยืนยัน</span></td>
+      <td>ไม่มีระบบเทียบเท่า มี <code>/save</code> และ <code>/load</code> สำหรับสคริปต์คำสั่ง</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="box note">
+  <strong class="t">เหตุผลที่ควรรู้ชื่อไฟล์เหล่านี้</strong>
+  ไฟล์คำสั่งโปรเจกต์คือวิธีที่ถูกที่สุดในการให้ agent จำกติกาของโปรเจกต์ข้ามเซสชัน
+  ค่ายต่าง ๆ ตั้งชื่อไม่เหมือนกัน (<code>AGENTS.md</code> ถูกอ่านโดยทั้ง Codex และ Copilot) การรู้ว่าใครอ่านไฟล์ไหน
+  ช่วยลดจำนวนไฟล์ซ้ำซ้อนใน repo เดียวกันได้
+</div>
+
+<!-- ============ SECURITY ============ -->
+<h2 id="security">5. ระบบ Permission และ Sandbox</h2>
+<div class="wrap">
+<table>
+  <thead>
+    <tr><th></th><th>Claude Code</th><th>Codex CLI</th><th>Gemini CLI</th><th>Copilot CLI</th><th>Aider</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>แนวคิดหลัก</th>
+      <td>โหมดสิทธิ์ 6 แบบ และกฎ allow/ask/deny ต่อเครื่องมือ กฎ deny ใช้ได้ทุกโหมดแม้โหมดข้ามสิทธิ์</td>
+      <td>สองชั้นแยกกัน: sandbox ที่ระบบปฏิบัติการบังคับ (จำกัดการเข้าถึง) กับ approval policy (ควบคุมว่าเมื่อไรถามคุณ)</td>
+      <td>4 โหมดอนุมัติ และ policy engine แบบกฎ TOML (allow, deny, ask_user) เมื่อรันแบบไม่โต้ตอบ <code>ask_user</code> ทำงานเป็น deny</td>
+      <td>โฟลเดอร์ที่เชื่อถือ + ถามเป็นรายเครื่องมือ (อนุมัติครั้งเดียว/ทั้งเซสชัน/ปฏิเสธ) การอนุมัติไม่คงข้ามเซสชัน</td>
+      <td>ไม่มีระบบ permission หรือ sandbox ถามยืนยัน yes/no เป็นครั้ง ๆ เช่น เพิ่มไฟล์เข้าแชต</td></tr>
+    <tr><th>ค่าเริ่มต้น</th>
+      <td>โหมด default ถามก่อนแก้ไฟล์และรันคำสั่ง</td>
+      <td>ใน git repo: workspace-write + on-request<br>นอก git: read-only<br>เครือข่ายปิดโดยค่าเริ่มต้น</td>
+      <td>โหมด default</td>
+      <td>ถามเชื่อถือโฟลเดอร์ตอนเริ่มครั้งแรก</td>
+      <td>แก้ไฟล์แล้ว auto-commit ทุกครั้ง</td></tr>
+    <tr><th>Sandbox</th>
+      <td><code>/sandbox</code> (Windows ต้องใช้ WSL 2 จึงมี sandbox)</td>
+      <td>ในตัว มี <code>codex sandbox</code> แยก; <code>.git</code>, <code>.agents</code>, <code>.codex</code> เป็น read-only ในพื้นที่เขียนได้</td>
+      <td>เปิดด้วย <code>-s</code>, <code>GEMINI_SANDBOX</code> หรือ settings: macOS Seatbelt, Docker/Podman, gVisor, LXC (ทดลอง), Windows native</td>
+      <td>ทางเลือกด้วย <code>--sandbox</code> หรือ <code>/sandbox enable</code></td>
+      <td>ไม่มี ใช้ git เป็นตาข่ายนิรภัย: <code>/undo</code> ย้อน commit ล่าสุด</td></tr>
+    <tr><th>ข้อจำกัดที่เอกสารระบุ</th>
+      <td>CLAUDE.md เป็นคำแนะนำ ไม่ใช่การบังคับ ถ้าต้องการกฎเด็ดขาดให้ใช้ hooks</td>
+      <td><code>approval_policy = untrusted</code> เลิกใช้แล้ว</td>
+      <td>policy ระดับ workspace ถูกระบุว่าใช้งานไม่ได้ (issue #18186)</td>
+      <td>การจำกัด path ใช้ heuristic ไม่รับประกัน; deny ของ <code>write(PATH)</code> ไม่รองรับ glob แต่ตัวอย่าง allow ใช้ glob ได้ เอกสารยังไม่ชัด</td>
+      <td>commit การเปลี่ยนแปลงของคุณที่ค้างอยู่ก่อนเสมอ ยกเว้นใช้ <code>--no-dirty-commits</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============ EXTEND ============ -->
+<h2 id="extend">6. MCP, Hooks, Subagents, Plugins</h2>
+<div class="wrap">
+<table>
+  <thead>
+    <tr><th></th><th>Claude Code</th><th>Codex CLI</th><th>Gemini CLI</th><th>Copilot CLI</th><th>Aider</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>MCP</th>
+      <td><code>claude mcp add --transport http|sse|stdio &lt;name&gt; ...</code><br>ขอบเขต: local (ค่าเริ่มต้น), project (<code>.mcp.json</code>), user<br><code>claude mcp login &lt;name&gt;</code> สำหรับ OAuth</td>
+      <td>ตาราง <code>[mcp_servers.&lt;name&gt;]</code> ใน <code>config.toml</code><br>ตัวอย่าง CLI: <code>codex mcp add example --url https://mcp.example.com ...</code><br><code>codex mcp login &lt;server&gt;</code></td>
+      <td><code>gemini mcp add &lt;name&gt; &lt;command|url&gt;</code><br>หรือแก้ <code>mcpServers</code> ใน settings.json<br>ชื่อเครื่องมือขึ้นต้น <code>mcp_&lt;server&gt;_</code> หลีกเลี่ยง underscore ในชื่อเซิร์ฟเวอร์</td>
+      <td><code>copilot mcp add --transport http NAME URL</code><br><code>~/.copilot/mcp-config.json</code><br>มี GitHub MCP server ในตัว นโยบาย MCP ขององค์กรยังไม่ถูกบังคับโดย CLI</td>
+      <td>ไม่พบในเอกสารทางการ ถือว่าไม่รองรับโดยตรง (มีโปรเจกต์ภายนอกที่ทำให้ aider เป็น MCP server แต่ไม่ใช่ฟีเจอร์ของ aider)</td></tr>
+    <tr><th>Hooks</th>
+      <td>มี ตั้งใน settings: PreToolUse, PostToolUse, UserPromptSubmit, Stop, SessionStart ฯลฯ ชนิด handler: command, http, mcp_tool, prompt, agent; exit code 2 บล็อกการทำงาน<br>รายละเอียดเพิ่มเติม (เอกสาร hooks ฉบับเต็มยังไม่ได้อ่าน) <span class="b">ยังไม่ยืนยัน</span></td>
+      <td>มี 12 events รวม PreToolUse, PermissionRequest, SubagentStart ฯลฯ handler ที่ทำงานจริงคือ <code>command</code> และ <code>mcp_tool</code> (<code>prompt</code>, <code>agent</code> ถูกอ่านแต่ข้าม) ต้องเชื่อถือผ่าน <code>/hooks</code> ก่อนใช้</td>
+      <td>มี 11 events (เช่น BeforeTool, AfterTool, SessionStart) รองรับเฉพาะ <code>command</code> exit code 2 บล็อก hook ของโปรเจกต์ถูก fingerprint เตือนเมื่อเปลี่ยน</td>
+      <td>ไฟล์ JSON ที่ <code>.github/hooks/NAME.json</code> หรือ <code>~/.copilot/hooks/</code> events เช่น sessionStart, preToolUse, postToolUse ชนิด <code>command</code> ต้องรีสตาร์ตหลังแก้</td>
+      <td>ไม่มี ที่ใกล้เคียงที่สุดคือ <code>--notifications-command</code> และ <code>--git-commit-verify</code> (รัน git pre-commit hook)</td></tr>
+    <tr><th>Subagents</th>
+      <td>ไฟล์ markdown ใน <code>.claude/agents/</code> หรือ <code>~/.claude/agents/</code> ในตัว: Explore, Plan, General-purpose</td>
+      <td>มี (ฟีเจอร์ <code>multi_agent</code> เปิดโดยค่าเริ่มต้น) ตำแหน่งไฟล์ custom agent ไม่พบในเอกสารที่อ่าน <span class="b">ยังไม่ยืนยัน</span></td>
+      <td>ไฟล์ markdown ใน <code>.gemini/agents/</code> หรือ <code>~/.gemini/agents/</code> เรียกด้วย <code>@name</code> ในตัว: codebase_investigator, cli_help, generalist; subagent เรียก subagent ไม่ได้</td>
+      <td>custom agents ใน <code>.github/agents</code>, <code>~/.copilot/agents</code> เรียกด้วย <code>/agent</code> หรือ <code>--agent=NAME</code> <code>/fleet</code> รัน subagents แบบขนาน</td>
+      <td>ไม่มี (architect/editor คือการจับคู่สองโมเดล ไม่ใช่ subagent)</td></tr>
+    <tr><th>Plugins / Extensions</th>
+      <td>โฟลเดอร์ที่มี <code>.claude-plugin/plugin.json</code> รวม skills, agents, hooks, MCP<br><code>claude plugin install &lt;name&gt;@&lt;marketplace&gt;</code></td>
+      <td><code>codex plugin</code> และ <code>codex plugin marketplace</code> (skills เป็นรูปแบบเขียน plugin เป็นหน่วยแจกจ่าย)</td>
+      <td>Extensions: <code>gemini extensions install &lt;github-url&gt;</code> รวม prompts, MCP, commands, hooks, subagents, skills</td>
+      <td><code>copilot plugin</code> และ <code>/plugin</code> รวม skills และ MCP servers ได้; plugin ให้ hooks ได้หรือไม่ ไม่ยืนยัน <span class="b">ยังไม่ยืนยัน</span></td>
+      <td>ไม่มี</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============ VENDORS ============ -->
+<h2 id="vendors">7. รายละเอียดรายค่าย</h2>
+<p>แต่ละส่วนพับได้ เปิดเฉพาะค่ายที่สนใจ ข้อความ "จุดเด่น/จุดอ่อน" เป็นการสังเคราะห์จากเอกสาร ไม่ใช่คำประกาศของค่ายนั้น</p>
+
+<details>
+  <summary>Claude Code</summary>
+  <div class="in">
+    <h3>Flag ที่ใช้บ่อย</h3>
+    <ul>
+      <li><code>--model</code>, <code>--effort</code> เลือกโมเดลและระดับการให้เหตุผล</li>
+      <li><code>-c</code>, <code>-r</code>, <code>--fork-session</code>, <code>-n</code> จัดการเซสชัน</li>
+      <li><code>--allowedTools</code>, <code>--disallowedTools</code>, <code>--tools</code> กำหนดเครื่องมือ</li>
+      <li><code>--max-turns</code>, <code>--max-budget-usd</code> จำกัดรอบและงบ (โหมด <code>-p</code>)</li>
+      <li><code>--append-system-prompt[-file]</code>, <code>--mcp-config</code>, <code>--settings</code>, <code>-w</code> (worktree)</li>
+      <li>Subcommands: <code>claude mcp</code>, <code>plugin</code>, <code>auth</code>, <code>update</code>, <code>doctor</code>, <code>setup-token</code>, <code>agents</code></li>
+    </ul>
+    <p>สำหรับสคริปต์: <code>--bare</code> ข้าม hooks, skills, plugins, MCP และ CLAUDE.md เพื่อให้ผลทำซ้ำได้
+    แต่ต้องใช้ <code>ANTHROPIC_API_KEY</code> เพราะไม่อ่านการ login แบบสมาชิก</p>
+    <div class="cols">
+      <div><h3>จุดเด่น</h3><ul>
+        <li>ครบทั้ง hooks, subagents, plugins, MCP, skills</li>
+        <li>โหมด print รองรับ JSON และ streaming</li>
+        <li>กฎ deny ใช้ได้ทุกโหมด</li>
+        <li>รองรับ worktree แยกงาน</li></ul></div>
+      <div><h3>จุดอ่อน</h3><ul>
+        <li>ต้องมีแผนจ่ายเงินหรือบัญชี Console</li>
+        <li>CLAUDE.md เป็นคำแนะนำ ไม่ใช่การบังคับ</li>
+        <li>Windows แบบ native ไม่มี sandbox (WSL 2 มี) และต้องมี Git for Windows</li>
+        <li>เซสชันยาวทำให้ context และค่าใช้จ่ายโต (เปิด auto-compaction เป็นค่าเริ่มต้น)</li></ul></div>
+    </div>
+  </div>
+</details>
+
+<details>
+  <summary>Codex CLI</summary>
+  <div class="in">
+    <h3>Flag ที่ใช้บ่อย</h3>
+    <ul>
+      <li><code>-m</code>, <code>-a</code>, <code>-s</code>, <code>-C</code>, <code>--add-dir</code></li>
+      <li><code>-c key=value</code> แทนค่าใน config ชั่วคราว; <code>-p</code> เลือก profile</li>
+      <li><code>-i</code> แนบรูป; <code>--search</code> ค้นเว็บสด; <code>--oss</code> ใช้โมเดลในเครื่อง</li>
+      <li><code>codex exec</code>: <code>--json</code>, <code>-o</code>, <code>--output-schema</code>, <code>--skip-git-repo-check</code>, <code>--ephemeral</code></li>
+      <li>Subcommands: <code>resume</code>, <code>fork</code>, <code>review</code>, <code>mcp</code>, <code>plugin</code>, <code>sandbox</code>, <code>doctor</code>, <code>update</code> และอื่น ๆ (บางตัวทดลอง)</li>
+    </ul>
+    <p><code>--full-auto</code> ถูกประกาศเลิกใช้ สำหรับงานที่ต้องแก้ไฟล์ใน <code>exec</code> ให้ระบุ <code>--sandbox workspace-write</code></p>
+    <div class="cols">
+      <div><h3>จุดเด่น</h3><ul>
+        <li>sandbox ระดับระบบปฏิบัติการ เครือข่ายปิดเป็นค่าเริ่มต้น</li>
+        <li>เหมาะกับสคริปต์: <code>exec --json</code>, <code>--output-schema</code>, resume, GitHub Action</li>
+        <li>config แบบชั้น พร้อม profiles</li>
+        <li>ใช้แผน ChatGPT ที่มีอยู่ได้ และมีโหมดโมเดลในเครื่อง</li></ul></div>
+      <div><h3>จุดอ่อน</h3><ul>
+        <li><code>exec</code> ต้องอยู่ใน git repo และเริ่มที่ read-only</li>
+        <li>ผู้ให้บริการอื่นต้องรองรับ Responses API</li>
+        <li>โมเดลหมุนเวียนและเลิกให้บริการเร็ว ตามเอกสารมีรุ่นที่ถูกเลิกในช่วงสิงหาคม-ตุลาคม 2026</li>
+        <li>เอกสารกระจัดกระจายและเพิ่งย้ายโดเมน (developers.openai.com ไปที่ learn.chatgpt.com)</li></ul></div>
+    </div>
+  </div>
+</details>
+
+<details>
+  <summary>Gemini CLI</summary>
+  <div class="in">
+    <div class="box warn"><strong class="t">สถานะ</strong>
+      ดูกล่องเตือนด้านบนของหน้า เรื่องการแทนที่ด้วย Antigravity CLI ผมไม่ได้ค้นรายละเอียดของ Antigravity CLI ในรอบนี้</div>
+    <h3>Flag ที่ใช้บ่อย</h3>
+    <ul>
+      <li><code>-p</code> ไม่โต้ตอบ; <code>-i</code> รัน prompt แล้วต่อแบบโต้ตอบ</li>
+      <li><code>-m</code>, <code>-s</code>, <code>--approval-mode</code>, <code>-o</code>, <code>--include-directories</code></li>
+      <li><code>-r</code>, <code>--list-sessions</code>, <code>--delete-session</code></li>
+      <li><code>-w</code> (worktree ต้องเปิด <code>experimental.worktrees</code>)</li>
+      <li>Checkpointing ไม่ใช่ flag แล้ว (ลบใน v0.11.0) ให้เปิด <code>general.checkpointing.enabled: true</code> ใน settings</li>
+      <li>ในแชต: <code>@path</code> แทรกไฟล์หรือโฟลเดอร์, <code>!cmd</code> รันคำสั่งเชลล์</li>
+    </ul>
+    <div class="cols">
+      <div><h3>จุดเด่น</h3><ul>
+        <li>โอเพนซอร์ส ปรับแต่งได้หลากหลาย: hooks, policy, subagents, extensions, MCP, คำสั่ง TOML</li>
+        <li>มีตัวเลือก sandbox หลายแบบ</li>
+        <li>มี checkpoint และ restore</li>
+        <li>README ระบุ context 1M token (ไม่ได้ตรวจซ้ำ)</li></ul></div>
+      <div><h3>จุดอ่อน</h3><ul>
+        <li>ถูกแทนที่สำหรับผู้ใช้ฟรีและ Google One ตามประกาศ</li>
+        <li>ใช้ได้เฉพาะโมเดล Gemini</li>
+        <li>policy ระดับ workspace ใช้ไม่ได้ และ checkpointing ปิดเป็นค่าเริ่มต้น</li>
+        <li>หลายฟีเจอร์ยังทดลอง (worktree, ACP, LXC)</li></ul></div>
+    </div>
+  </div>
+</details>
+
+<details>
+  <summary>GitHub Copilot CLI</summary>
+  <div class="in">
+    <h3>Flag ที่ใช้บ่อย</h3>
+    <ul>
+      <li><code>-p</code>, <code>-i</code>, <code>-s</code>, <code>--output-format=json</code>, <code>--share=PATH</code></li>
+      <li><code>--model</code>, <code>--effort</code>, <code>--max-ai-credits</code></li>
+      <li><code>--allow-tool</code>, <code>--deny-tool</code>, <code>--allow-url</code>, <code>--deny-url</code>, <code>--allow-all</code></li>
+      <li><code>--continue</code>, <code>-r</code>, <code>-n</code>, <code>-w</code>, <code>--agent</code>, <code>--plugin-dir</code></li>
+      <li>รูปแบบกฎสิทธิ์: <code>Kind(arg)</code> เช่น <code>shell(git:*)</code>, <code>url(github.com)</code>, <code>write(src/*.ts)</code></li>
+      <li>เฉพาะตัว: <code>/fleet</code> (subagents ขนาน), <code>/every</code> (prompt ซ้ำตามเวลา), <code>/after</code> (prompt ครั้งเดียว), <code>/delegate</code>, <code>copilot --cloud</code> (เซสชันบน sandbox คลาวด์ ยังเป็น public preview)</li>
+    </ul>
+    <div class="cols">
+      <div><h3>จุดเด่น</h3><ul>
+        <li>ผสานกับ GitHub (PR, issues, Actions) แน่น</li>
+        <li>เลือกได้หลายโมเดลหลายค่าย</li>
+        <li>โหมด plan/autopilot, <code>/fleet</code>, sandbox ทั้งแบบคลาวด์และในเครื่อง</li>
+        <li>รวมอยู่ในทุกแผน Copilot ตามเอกสาร</li></ul></div>
+      <div><h3>จุดอ่อน</h3><ul>
+        <li>องค์กรปิดการใช้ด้วยนโยบายได้</li>
+        <li>นโยบาย MCP ขององค์กรไม่ถูกบังคับโดย CLI</li>
+        <li>การเชื่อถือโฟลเดอร์เป็น heuristic</li>
+        <li>เอกสาร billing ขัดกันเอง (AI credits เทียบ premium requests) ให้ดู <code>copilot help billing</code></li></ul></div>
+    </div>
+  </div>
+</details>
+
+<details>
+  <summary>Aider</summary>
+  <div class="in">
+    <h3>Slash commands หลัก</h3>
+    <ul>
+      <li><code>/add</code>, <code>/drop</code>, <code>/read-only</code> จัดการไฟล์ในแชต</li>
+      <li><code>/run</code> (หรือ <code>!</code>), <code>/test</code>, <code>/lint</code> รันคำสั่งแล้วป้อนผลกลับเข้าแชต</li>
+      <li><code>/undo</code>, <code>/diff</code>, <code>/commit</code>, <code>/git</code> ทำงานกับ git</li>
+      <li><code>/architect</code>, <code>/ask</code>, <code>/code</code>, <code>/context</code>, <code>/chat-mode</code> สลับโหมด</li>
+      <li><code>/map</code>, <code>/tokens</code>, <code>/web</code>, <code>/paste</code>, <code>/voice</code></li>
+    </ul>
+    <h3>Flag ที่ใช้บ่อย</h3>
+    <ul>
+      <li><code>--model</code>, <code>--edit-format</code>, <code>--architect</code>, <code>--editor-model</code>, <code>--map-tokens</code></li>
+      <li><code>--message</code>, <code>--message-file</code>, <code>--yes-always</code>, <code>--dry-run</code></li>
+      <li><code>--no-auto-commits</code>, <code>--no-dirty-commits</code>, <code>--git-commit-verify</code></li>
+      <li><code>--lint-cmd</code>, <code>--test-cmd</code>, <code>--auto-lint</code>, <code>--auto-test</code></li>
+      <li>ค่าที่ใช้ได้ของ <code>--edit-format</code> ไม่ได้ยืนยันในรอบนี้ <span class="b">ยังไม่ยืนยัน</span></li>
+    </ul>
+    <p>แนวคิดต่างจากตัวอื่น: Aider เป็นเครื่องมือจับคู่เขียนโค้ดที่ผูกกับ git โดยตรง ทุกการแก้ไขกลายเป็น commit
+    พร้อมข้อความที่โมเดลเขียน และผู้เขียนใน git ต่อท้ายด้วย "(aider)" การย้อนกลับจึงทำได้ด้วย <code>/undo</code></p>
+    <div class="cols">
+      <div><h3>จุดเด่น</h3><ul>
+        <li>ย้อนกลับง่ายด้วย git, มี repo map ช่วยเรื่อง context</li>
+        <li>ใช้ได้กับโมเดลเกือบทุกค่ายและโมเดลในเครื่อง</li>
+        <li>วงจร lint/test ในตัว, โหมด architect/editor</li>
+        <li>เขียนสคริปต์ได้ด้วย <code>--message</code></li></ul></div>
+      <div><h3>จุดอ่อน</h3><ul>
+        <li>ไม่มี MCP, hooks, subagents, plugins ตามเอกสาร</li>
+        <li>ไม่มีระบบ permission หรือ sandbox ละเอียด</li>
+        <li>Python API ไม่ได้รับการสนับสนุนอย่างเป็นทางการ</li>
+        <li>คุณภาพขึ้นกับความสามารถของโมเดลในการสร้างรูปแบบการแก้ไขที่ถูกต้อง</li></ul></div>
+    </div>
+  </div>
+</details>
+
+<!-- ============ CHOOSE ============ -->
+<h2 id="choose">8. เลือกใช้ตามสถานการณ์</h2>
+<p>ส่วนนี้เป็นข้อเสนอจากการสังเคราะห์ข้อมูลข้างบน ไม่ใช่คำแนะนำจากค่ายใดค่ายหนึ่ง</p>
+<div class="wrap">
+<table style="min-width:640px">
+  <thead><tr><th>สถานการณ์</th><th>ตัวเลือกที่เข้าทาง</th><th>เหตุผล</th></tr></thead>
+  <tbody>
+    <tr><th>อยากได้ระบบขยายครบ (hooks, subagents, plugins, MCP) และใช้โมเดล Claude</th><td>Claude Code</td><td>ครบทุกมิติใน section 6 และกฎ deny ใช้ได้ทุกโหมด</td></tr>
+    <tr><th>มีแผน ChatGPT อยู่แล้ว และอยากได้ sandbox ที่ระบบปฏิบัติการบังคับ</th><td>Codex CLI</td><td>ใช้ล็อกอินเดิมได้ และเครือข่ายปิดโดยค่าเริ่มต้น</td></tr>
+    <tr><th>ทำงานบน GitHub เป็นหลัก หรืออยากสลับโมเดลหลายค่ายในเครื่องมือเดียว</th><td>GitHub Copilot CLI</td><td>ผสาน PR/issues ในตัว และเลือกโมเดลได้หลายค่าย</td></tr>
+    <tr><th>อยากได้เครื่องมือเบา ใช้โมเดลได้อิสระหรือรันในเครื่อง และชอบ workflow ที่ทุกอย่างเป็น commit</th><td>Aider</td><td>ผูกกับ git และไม่ผูกกับค่ายโมเดล แลกกับการไม่มี MCP/hooks/permission</td></tr>
+    <tr><th>จะใช้ Gemini</th><td>ตรวจสถานะก่อน</td><td>ดูกล่องเตือนเรื่อง Antigravity CLI และตรวจแผนของคุณกับหน้าเอกสารทางการ</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============ CAVEATS ============ -->
+<h2 id="caveats">9. ข้อควรระวังและสิ่งที่ยังไม่ยืนยัน</h2>
+<div class="box warn">
+  <strong class="t">ช่องว่างของข้อมูลในหน้านี้</strong>
+  <ul>
+    <li>Gemini CLI: สถานะสำหรับแผนจ่ายเงินและโควตาฟรีปัจจุบันไม่ชัด</li>
+    <li>Codex CLI: รายการ slash commands ปนกับแอป, ไม่พบตำแหน่งไฟล์ custom subagent, ไม่พบ custom prompts</li>
+    <li>Copilot CLI: เอกสาร billing ขัดกัน, ยังไม่ยืนยันว่า plugin ให้ hooks ได้หรือไม่, ส่วนท้ายของหน้า reference และส่วน hooks/permissions บางส่วนอ่านไม่ครบ</li>
+    <li>Claude Code: ไม่ได้อ่านเอกสาร hooks ฉบับเต็มและรายการตัวแปรสภาพแวดล้อมทั้งหมด; ชื่อไฟล์ settings ไม่ได้ยืนยัน</li>
+    <li>Aider: ค่า <code>--edit-format</code> และลำดับความสำคัญของไฟล์คอนฟิกไม่ได้ยืนยัน; อ่านหน้า issue tracker ไม่ได้</li>
+  </ul>
+</div>
+<p>คำแนะนำก่อนใช้จริง: รัน <code>--help</code> ของแต่ละเครื่องมือ (Claude Code ระบุว่า <code>--help</code> ไม่ได้แสดงทุก flag
+ให้ดูหน้า CLI reference ประกอบ) และพิมพ์ <code>/</code> ใน TUI เพื่อดูรายการคำสั่งของเวอร์ชันที่ติดตั้งจริง
+เพราะชื่อโมเดล flag และราคาของเครื่องมือกลุ่มนี้เปลี่ยนภายในไม่กี่เดือน</p>
+
+<footer>
+  จัดทำจากการค้นเอกสารทางการของแต่ละค่าย ณ 13 ตุลาคม 2026
+  ที่มา: code.claude.com/docs, github.com/openai/codex และ learn.chatgpt.com/docs, geminicli.com/docs,
+  docs.github.com (Copilot CLI), aider.chat/docs
+</footer>
+
+</main>
+</body>
+</html>
